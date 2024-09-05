@@ -50,12 +50,13 @@ def process_file_list(file_list: List[str], api_key: str) -> Dict[str, Any]:
     }
     """
     prompt += "\nMake sure to include all relevant files and categorize them correctly."
+    prompt += "\nAll the files in the list must be present in the output JSON string. Include also the files and figurs with `EV` in the figure label name"
     prompt += "\nReturn **ONLY** the `json` code"
     prompt += "\nIf no files are found or if the list is empty, please return an empty JSON object: {}"
 
     try:
         response = client.messages.create(
-            model="claude-3-opus-20240229",
+            model="claude-3-5-sonnet-20240620",
             max_tokens=2000,
             messages=[
                 {"role": "user", "content": prompt}

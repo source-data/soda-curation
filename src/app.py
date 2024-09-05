@@ -47,24 +47,29 @@ def process_uploaded_file(uploaded_file):
             st.text(f"File Details: {file_details}")
             
             st.success(f"File {uploaded_file.name} is successfully uploaded")
-            st.info(f"Temporary directory path: {tmp_dir}")
 
             # Process the ZIP file
             ejp_files, ejp_process_dir = process_zip_file(zip_path, tmp_dir)
 
             if ejp_files:
-                st.success(f"Found {len(ejp_files)} files in the eJP folder:")
-                for file in ejp_files:
-                    st.text(file)
-                st.info(f"eJP files extracted to: {ejp_process_dir}")
+                st.success(f"Found {len(ejp_files)} files in the eJP folder.")
 
                 # Process the file list using the Anthropic API
                 file_structure = get_file_structure(ejp_files)
                 if file_structure:
-                    st.success("File structure processed successfully:")
-                    st.json(file_structure)
-                    # Add this line for debugging
-                    st.text(f"Debug: Raw JSON output: {json.dumps(file_structure)}")
+                    st.success("File structure processed successfully.")
+                    
+                    # Create tabs for different pipeline stages
+                    tab1, tab2, tab3 = st.tabs(["File Structure", "Future Step 1", "Future Step 2"])
+                    
+                    with tab1:
+                        st.json(file_structure)
+                    
+                    with tab2:
+                        st.info("This tab will show results from a future pipeline step.")
+                    
+                    with tab3:
+                        st.info("This tab will show results from another future pipeline step.")
                 else:
                     st.warning("No valid file structure could be determined. Please check the uploaded files.")
             else:

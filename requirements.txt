@@ -1,4 +1,4 @@
-anthropic
+anthropic==0.34.2
 streamlit==1.36.0
 Pillow
 opencv-python==4.8.0.74
