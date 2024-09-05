@@ -9,7 +9,9 @@ import streamlit as st
 import os
 import tempfile
 import hashlib
-from src.zip_processor import process_zip_file  # Use relative import
+import json
+from src.zip_processor import process_zip_file
+from src.assistants import get_file_structure
 
 def main():
     """Main function to run the Streamlit app."""
@@ -55,6 +57,16 @@ def process_uploaded_file(uploaded_file):
                 for file in ejp_files:
                     st.text(file)
                 st.info(f"eJP files extracted to: {ejp_process_dir}")
+
+                # Process the file list using the Anthropic API
+                file_structure = get_file_structure(ejp_files)
+                if file_structure:
+                    st.success("File structure processed successfully:")
+                    st.json(file_structure)
+                    # Add this line for debugging
+                    st.text(f"Debug: Raw JSON output: {json.dumps(file_structure)}")
+                else:
+                    st.warning("No valid file structure could be determined. Please check the uploaded files.")
             else:
                 st.warning("No eJP folder found in the ZIP file.")
 
@@ -62,8 +74,6 @@ def process_uploaded_file(uploaded_file):
 
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
-
-    st.info("Processing functionality implemented.")
 
 if __name__ == "__main__":
     main()

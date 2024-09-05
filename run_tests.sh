@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Run pytest
-pytest /app/tests/
+pytest /app/tests/ -v
