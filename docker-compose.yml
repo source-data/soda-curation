@@ -1,0 +1,43 @@
+version: '3.3'
+
+services:
+  app:
+    build: .
+    container_name: soda_curation_app
+    restart: always
+    ports:
+      - "8484:8484"
+      - "2233:22"
+      - "9260:9260"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    volumes:
+      - .:/app
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - PANELIZATION_MODEL=${PANELIZATION_MODEL}
+      - OPENAI_ORG_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - PYTHONPATH=/app
+    command: ["/app/start.sh"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8484"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  test:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - PANELIZATION_MODEL=${PANELIZATION_MODEL}
+      - OPENAI_ORG_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - PYTHONPATH=/app
+    command: ["/app/run_tests.sh"]
