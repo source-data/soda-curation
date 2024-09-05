@@ -24,6 +24,9 @@ def process_file_list(file_list: List[str], api_key: str) -> Dict[str, Any]:
     Raises:
         Exception: If the API call fails or the response cannot be parsed.
     """
+    if not file_list:
+        return {}
+
     client = Anthropic(api_key=api_key)
 
     prompt = "Here's a list of files:\n\n"
@@ -50,7 +53,6 @@ def process_file_list(file_list: List[str], api_key: str) -> Dict[str, Any]:
     }
     """
     prompt += "\nMake sure to include all relevant files and categorize them correctly."
-    prompt += "\nAll the files in the list must be present in the output JSON string. Include also the files and figurs with `EV` in the figure label name"
     prompt += "\nReturn **ONLY** the `json` code"
     prompt += "\nIf no files are found or if the list is empty, please return an empty JSON object: {}"
 
@@ -69,18 +71,7 @@ def process_file_list(file_list: List[str], api_key: str) -> Dict[str, Any]:
         # Parse the JSON
         result = json.loads(json_str)
         
-        # If the result is an empty object, return it as is
-        if not result:
-            return result
-        
-        # Validate the result structure
-        if "manuscript" not in result or "figures" not in result["manuscript"]:
-            raise ValueError("Invalid response structure from the AI assistant")
-        
         return result
-    except json.JSONDecodeError:
-        # If JSON parsing fails, return an empty JSON object
-        return {}
     except Exception as e:
         raise Exception(f"Error processing files with Anthropic API: {str(e)}")
 
