@@ -8,14 +8,27 @@ import pytest
 from streamlit.testing.v1 import AppTest
 from unittest.mock import patch, MagicMock
 import io
+import zipfile
+import tempfile
+import os
 
-def create_mock_file():
+def create_mock_file(with_ejp=True):
     """Create a mock file object for testing purposes."""
     mock_file = MagicMock()
     mock_file.name = "test.zip"
     mock_file.type = "application/zip"
-    mock_file.size = 1024
-    mock_file.getvalue.return_value = b"test content"
+    
+    # Create a real ZIP file in memory
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+        if with_ejp:
+            zf.writestr('some_folder/eJP/file1.txt', 'content1')
+            zf.writestr('some_folder/eJP/file2.txt', 'content2')
+        else:
+            zf.writestr('some_folder/file1.txt', 'content1')
+    
+    mock_file.getvalue.return_value = zip_buffer.getvalue()
+    mock_file.size = len(zip_buffer.getvalue())
     return mock_file
 
 def test_app_title():
@@ -54,9 +67,18 @@ def test_file_processing_info():
         at.run()
         assert any("processed" in i.value.lower() for i in at.info)
 
-def test_temporary_file_info():
-    """Test if the temporary file path is displayed."""
+def test_ejp_folder_found():
+    """Test if the eJP folder is found and its contents are displayed."""
     with patch('streamlit.file_uploader', return_value=create_mock_file()):
         at = AppTest.from_file("src/app.py")
         at.run()
-        assert any("temporary file path" in i.value.lower() for i in at.info)
+        assert any("Found 2 files in the eJP folder" in s.value for s in at.success)
+        assert any("file1.txt" in t.value for t in at.text)
+        assert any("file2.txt" in t.value for t in at.text)
+
+def test_ejp_folder_not_found():
+    """Test the behavior when no eJP folder is found in the ZIP file."""
+    with patch('streamlit.file_uploader', return_value=create_mock_file(with_ejp=False)):
+        at = AppTest.from_file("src/app.py")
+        at.run()
+        assert any("No eJP folder found in the ZIP file" in w.value for w in at.warning)

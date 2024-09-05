@@ -19,7 +19,7 @@ SODA Curation is a Streamlit application that provides a simple interface for up
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/soda-curation.git
+   git clone https://github.com/source-data/soda-curation.git
    cd soda-curation
    ```
 

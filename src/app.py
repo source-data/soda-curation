@@ -9,6 +9,7 @@ import streamlit as st
 import os
 import tempfile
 import hashlib
+from src.zip_processor import process_zip_file  # Use relative import
 
 def main():
     """Main function to run the Streamlit app."""
@@ -35,28 +36,34 @@ def process_uploaded_file(uploaded_file):
         file_hash = hashlib.md5(uploaded_file.getvalue()).hexdigest()
 
         # Process the new file
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_file:
-            tmp_file.write(uploaded_file.getvalue())
-            tmp_file_path = tmp_file.name
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            zip_path = os.path.join(tmp_dir, uploaded_file.name)
+            with open(zip_path, 'wb') as f:
+                f.write(uploaded_file.getvalue())
 
-        file_details = {"FileName": uploaded_file.name, "FileType": uploaded_file.type, "FileSize": uploaded_file.size}
-        st.text(f"File Details: {file_details}")
-        
-        st.success(f"File {uploaded_file.name} is successfully uploaded")
-        st.info(f"Temporary file path: {tmp_file_path}")
+            file_details = {"FileName": uploaded_file.name, "FileType": uploaded_file.type, "FileSize": uploaded_file.size}
+            st.text(f"File Details: {file_details}")
+            
+            st.success(f"File {uploaded_file.name} is successfully uploaded")
+            st.info(f"Temporary directory path: {tmp_dir}")
 
-        # TODO: Process the file
-        # results = process_file(tmp_file_path)
+            # Process the ZIP file
+            ejp_files, ejp_process_dir = process_zip_file(zip_path, tmp_dir)
+
+            if ejp_files:
+                st.success(f"Found {len(ejp_files)} files in the eJP folder:")
+                for file in ejp_files:
+                    st.text(file)
+                st.info(f"eJP files extracted to: {ejp_process_dir}")
+            else:
+                st.warning("No eJP folder found in the ZIP file.")
 
         st.info("File processed successfully.")
-
-        # Clean up the temporary file
-        os.unlink(tmp_file_path)
 
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-    st.info("Processing functionality to be implemented.")
+    st.info("Processing functionality implemented.")
 
 if __name__ == "__main__":
     main()

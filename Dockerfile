@@ -27,9 +27,8 @@ RUN sed -i 's/UsePAM yes/UsePAM no/' /etc/ssh/sshd_config
 COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-RUN pip install pytest
 
-# Copy the application code, tests, and Streamlit config
+# Copy the application code
 COPY src/ /app/src/
 COPY tests/ /app/tests/
 COPY .streamlit/ /app/.streamlit/
@@ -38,9 +37,8 @@ COPY start.sh /app/start.sh
 # Set correct permissions for start.sh
 RUN chmod +x /app/start.sh
 
-# Create a non-root user
-RUN useradd -m appuser
-RUN chown -R appuser:appuser /app
+# Set PYTHONPATH
+ENV PYTHONPATH=/app:$PYTHONPATH
 
 # Expose the Streamlit port
 EXPOSE 8484
