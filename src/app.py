@@ -11,7 +11,7 @@ import tempfile
 import hashlib
 import json
 from src.zip_processor import process_zip_file
-from src.assistants import get_file_structure
+from src.assistants import get_file_structure, process_file_list
 
 def main():
     """Main function to run the Streamlit app."""
@@ -53,10 +53,40 @@ def process_uploaded_file(uploaded_file):
 
             if ejp_files:
                 st.success(f"Found {len(ejp_files)} files in the eJP folder.")
+                
+                # Debug: Show the list of files found in the eJP folder
+                st.subheader("Files found in eJP folder:")
+                st.json(ejp_files)
+
+                # Debug: Show the result of the first assistant (file structure determination)
+                st.subheader("Initial file structure:")
+                api_key = os.getenv('ANTHROPIC_API_KEY')
+                initial_structure = process_file_list(ejp_files, api_key)
+                st.json(initial_structure)
 
                 # Process the file list using the Anthropic API
-                file_structure = get_file_structure(ejp_files)
-                if file_structure:
+                st.subheader("Detailed logs from get_file_structure:")
+                import io
+                import sys
+
+                # Redirect stdout to capture print statements
+                old_stdout = sys.stdout
+                sys.stdout = buffer = io.StringIO()
+
+                file_structure = get_file_structure(ejp_files, base_path=ejp_process_dir)
+
+                # Restore stdout and get the captured output
+                sys.stdout = old_stdout
+                debug_output = buffer.getvalue()
+
+                # Display the debug output
+                st.text(debug_output)
+                
+                # Debug: Show the result of get_file_structure
+                st.subheader("Result of get_file_structure:")
+                st.json(file_structure)
+
+                if file_structure and 'manuscript' in file_structure:
                     st.success("File structure processed successfully.")
                     
                     # Create tabs for different pipeline stages
@@ -64,6 +94,11 @@ def process_uploaded_file(uploaded_file):
                     
                     with tab1:
                         st.json(file_structure)
+                        
+                        # Display figure captions separately for better visibility
+                        st.subheader("Figure Captions")
+                        for figure in file_structure['manuscript'].get('figures', []):
+                            st.write(f"{figure['figure_label']}: {figure.get('figure_caption', 'No caption available')}")
                     
                     with tab2:
                         st.info("This tab will show results from a future pipeline step.")
@@ -79,6 +114,6 @@ def process_uploaded_file(uploaded_file):
 
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
-
+        
 if __name__ == "__main__":
     main()

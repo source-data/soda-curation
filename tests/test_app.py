@@ -111,3 +111,31 @@ def test_ejp_folder_found(mock_process_zip_file, mock_get_file_structure):
         
         assert any("Found" in s.value and "files in the eJP folder" in s.value for s in at.success), "eJP folder found message not displayed"
         assert any("File structure processed successfully" in s.value for s in at.success), "File structure success message not found"
+        
+def test_file_processing_info(mock_process_zip_file, mock_get_file_structure):
+    """Test if the information of the processed file is displayed correctly in tabs."""
+    with patch('streamlit.file_uploader', return_value=create_mock_file()):
+        at = AppTest.from_file("src/app.py")
+        at.run(timeout=15)
+        
+        # Check if the success message is displayed
+        assert any("File structure processed successfully" in s.value for s in at.success)
+        
+        # Check if tabs are created
+        assert len(at.tabs) == 3
+        assert at.tabs[0].label == "File Structure"
+        assert at.tabs[1].label == "Future Step 1"
+        assert at.tabs[2].label == "Future Step 2"
+        
+        # Check if JSON output is displayed in the first tab
+        json_output = [e for e in at.tabs[0].json if "JOURNAL-2023-12345" in str(e.value)]
+        assert len(json_output) > 0, "JSON output not found in the first tab"
+        
+        # Check if figure captions are displayed
+        assert any("Figure Captions" in s.value for s in at.tabs[0].subheader)
+        assert any("Figure 1:" in w.value for w in at.tabs[0].write)
+        
+        # Verify the content of the JSON output
+        json_content = json_output[0].value
+        assert json_content["manuscript"]["id_"] == "JOURNAL-2023-12345"
+        assert "figure_caption" in json_content["manuscript"]["figures"][0]

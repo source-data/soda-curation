@@ -17,3 +17,4 @@ pytest
 python-docx
 PyMuPDF
 pytest
+PyPDF2
