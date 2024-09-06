@@ -110,10 +110,21 @@ def extract_figure_captions(manuscript_files: List[str], api_key: str, base_path
             if file_path.endswith('.docx'):
                 try:
                     doc = docx.Document(full_path)
-                    paragraphs = [para.text for para in doc.paragraphs]
-                    # Find paragraphs that likely contain figure captions
-                    figure_paragraphs = [p for p in paragraphs if re.match(r'^Figure\s+\d+', p, re.IGNORECASE)]
-                    file_content = "\n\n".join(figure_paragraphs)
+                    paragraphs = [para.text for para in doc.paragraphs if para.text.strip()]
+                    
+                    # Group paragraphs by figure
+                    figure_contents = {}
+                    current_figure = None
+                    for para in paragraphs:
+                        if para.startswith('Figure ') or para.startswith('Fig. '):
+                            current_figure = para.split('.')[0]
+                            figure_contents[current_figure] = [para]
+                        elif current_figure:
+                            figure_contents[current_figure].append(para)
+                    
+                    # Join paragraphs for each figure
+                    file_content = "\n\n".join([f"{fig}\n" + "\n".join(paras) for fig, paras in figure_contents.items()])
+                    
                 except PackageNotFoundError:
                     print(f"Error: Unable to open DOCX file. It may be corrupted or not a valid DOCX file: {full_path}")
                     return None
@@ -139,40 +150,42 @@ def extract_figure_captions(manuscript_files: List[str], api_key: str, base_path
             print(f"No content extracted from {full_path}")
             return None
 
-        # prompt = f"Extract all figure captions from the following text. Return the result as a JSON object where keys are figure labels (e.g., 'Figure 1') and values are the corresponding captions:\n\n{file_content}"
-
-        prompt = """You are an AI assistant specialized in analyzing scientific manuscripts. Your task is to extract figure captions from the given text, which is typically from a scientific paper. Please follow these guidelines:
+        prompt = """You are an AI assistant specialized in analyzing scientific manuscripts. Your task is to extract complete figure captions from the given text, which is from a scientific paper. Please follow these guidelines carefully:
 
         1. Identify all figure captions in the text. These usually start with "Figure X" or "Fig. X", where X is a number.
-        
-        2. Each caption is compound by a figure title and a figure caption. Please extract both parts all together, including the description of all the panels composing the figure.
+
+        2. For each figure, extract the ENTIRE caption, including:
+        - The main title of the figure
+        - All sub-sections (usually labeled A, B, C, etc.)
+        - Any statistical information (e.g., p-values, correlation coefficients)
+        - Methodological notes or references to other parts of the paper
+        - Descriptions of all elements in the figure (e.g., what different colors or shapes represent)
+        - Any additional explanatory text, no matter how long it is
 
         3. Create a JSON object where:
         - Keys are the figure labels (e.g., "Figure 1", "Figure 2")
-        - Values are the corresponding complete captions, including all text up to the next figure caption or the end of the caption section
+        - Values are the corresponding complete captions, including ALL text associated with that figure
 
-        4. Preserve all formatting, such as line breaks, within the caption text.
+        4. Preserve all formatting within the caption text, including:
+        - Line breaks between sub-sections
+        - Special characters or symbols
+        - Italicized text (indicated by *asterisks* or _underscores_)
+        - Superscript (indicated by ^carets^) and subscript (indicated by ~tildes~)
 
-        5. If there are no figures or captions in the text, return an empty JSON object.
+        5. Ensure that you capture the full context of each caption, even if it spans multiple paragraphs.
 
-        6. Do not include any explanations or additional text outside of the JSON object in your response.
+        6. If there are no figures or captions in the text, return an empty JSON object.
 
-        Here's an example of the expected output format:
+        7. Do not include any explanations or additional text outside of the JSON object in your response.
 
-        {
-        "Figure 1": "Title figure 1. Caption for Figure 1.",
-        "Figure 2": "Title figure 2. Caption for Figure 2.",
-        "Figure 3": "Title figure 3. Caption for Figure 3."
-        }
+        Please process the given text and return the JSON object with the extracted figure captions, ensuring that each caption includes the FULL text as it appears in the manuscript, from the figure number to the last piece of information before the next figure or the end of the captions section."""
 
-        Please process the given text and return the JSON object with the extracted figure captions.
-        """
         prompt += f"\n\n{file_content}"
 
         try:
             response = client.messages.create(
                 model="claude-3-5-sonnet-20240620",
-                max_tokens=2000,
+                max_tokens=8000,
                 messages=[
                     {"role": "user", "content": prompt}
                 ]
