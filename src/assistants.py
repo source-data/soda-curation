@@ -81,22 +81,37 @@ def process_file_list(file_list: List[str], api_key: str) -> Dict[str, Any]:
     except Exception as e:
         raise Exception(f"Error processing files with Anthropic API: {str(e)}")
 
+
+def parse_figure_captions(text: str) -> Dict[str, str]:
+    pattern = r'(?:Figure|Fig)[.\s]*(\d+|EV\d+)[.\s]*((?:(?!(?:Figure|Fig)[.\s]*\d+|Fig[.\s]*EV\d+).)*)'
+    matches = re.findall(pattern, text, re.DOTALL)
+    return {f"Figure {num.strip()}": caption.strip() for num, caption in matches}
+
+def format_captions_with_assistant(text: str, client: Anthropic) -> Dict[str, str]:
+    prompt = f"""
+    Please format the following text into a JSON object where the keys are figure labels (e.g., "Figure 1", "Figure 2") and the values are the corresponding captions. Include all text associated with each figure. Here's the text:
+
+    {text}
+
+    Please return only the JSON object, with no additional explanation.
+    """
+    
+    response = client.messages.create(
+        model="claude-3-5-sonnet-20240620",
+        max_tokens=8000,
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
+    
+    try:
+        return json.loads(response.content[0].text)
+    except json.JSONDecodeError:
+        return {}
+
 def extract_figure_captions(manuscript_files: List[str], api_key: str, base_path: str = "") -> Dict[str, str]:
-    """
-    Extract figure captions from manuscript files using the Anthropic API.
-    Prioritizes DOCX files and falls back to PDF if necessary.
-
-    Args:
-        manuscript_files (List[str]): A list of paths to manuscript files (.docx or .pdf).
-        api_key (str): The Anthropic API key.
-        base_path (str): The base path to prepend to relative file paths.
-
-    Returns:
-        Dict[str, str]: A dictionary mapping figure labels to their captions.
-    """
     client = Anthropic(api_key=api_key)
-    captions = {}
-
+    
     def extract_from_file(file_path):
         full_path = os.path.join(base_path, file_path)
         print(f"Attempting to extract from file: {full_path}")
@@ -116,8 +131,8 @@ def extract_figure_captions(manuscript_files: List[str], api_key: str, base_path
                     figure_contents = {}
                     current_figure = None
                     for para in paragraphs:
-                        if para.startswith('Figure ') or para.startswith('Fig. '):
-                            current_figure = para.split('.')[0]
+                        if para.startswith('Figure ') or para.startswith('Fig. ') or para.startswith('Fig '):
+                            current_figure = para.split('.')[0].replace('Fig', 'Figure')
                             figure_contents[current_figure] = [para]
                         elif current_figure:
                             figure_contents[current_figure].append(para)
@@ -191,12 +206,20 @@ def extract_figure_captions(manuscript_files: List[str], api_key: str, base_path
                 ]
             )
             
-            extracted_captions = json.loads(response.content[0].text)
+            extracted_text = response.content[0].text
+            
+            # First, try to parse the output as JSON
+            try:
+                extracted_captions = json.loads(extracted_text)
+            except json.JSONDecodeError:
+                # If JSON parsing fails, use regex to extract captions
+                extracted_captions = parse_figure_captions(extracted_text)
+            
+            # If regex parsing produces an empty result, ask the assistant to format it
+            if not extracted_captions:
+                extracted_captions = format_captions_with_assistant(extracted_text, client)
+            
             return extracted_captions
-        except json.JSONDecodeError as e:
-            print(f"JSON decoding error for {full_path}: {str(e)}")
-            print(f"Raw response: {response.content[0].text}")
-            return None
         except Exception as e:
             print(f"Warning: Failed to extract captions from {full_path}: {str(e)}")
             print(traceback.format_exc())
