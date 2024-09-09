@@ -223,17 +223,6 @@ def get_file_structure(file_list: List[str], base_path: str = "") -> Dict[str, A
     """
     Process the file list, generate structured data about the manuscript and figures,
     and extract figure captions.
-
-    Args:
-        file_list (List[str]): A list of file paths to process.
-        base_path (str): The base path to prepend to relative file paths.
-
-    Returns:
-        Dict[str, Any]: A dictionary containing the structured data about the manuscript,
-                        figures, and their captions.
-
-    Raises:
-        Exception: If the API key is not set.
     """
     api_key = os.getenv('ANTHROPIC_API_KEY')
     if not api_key:
@@ -246,12 +235,8 @@ def get_file_structure(file_list: List[str], base_path: str = "") -> Dict[str, A
         result = process_file_list(file_list, api_key)
         print(f"Result from process_file_list: {json.dumps(result, indent=2)}")
         
-        if not result:
-            print("process_file_list returned an empty result")
-            return {}
-        
-        if 'manuscript' not in result:
-            print("'manuscript' key not found in the result from process_file_list")
+        if not result or 'manuscript' not in result:
+            print("process_file_list returned an empty result or 'manuscript' key not found")
             return {}
         
         # Extract figure captions
