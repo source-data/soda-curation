@@ -1,0 +1,9 @@
+[browser]
+gatherUsageStats = false
+
+[server]
+enableCsrfProtection = false
+enableXsrfProtection = false
+
+[global]
+developmentMode = false

@@ -1,47 +1,65 @@
+# Use NVIDIA PyTorch image as the base image
 FROM nvcr.io/nvidia/pytorch:23.01-py3
 
+# Set work directory
 WORKDIR /app
 
-# Set DEBIAN_FRONTEND to noninteractive to avoid tzdata prompts
-ENV DEBIAN_FRONTEND=noninteractive
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    POETRY_VERSION=1.8.0 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1 \
+    PYSETUP_PATH="/app" \
+    VENV_PATH="/app/.venv" \
+    DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     libglib2.0-0 \
-    openssh-server \
     poppler-utils \
     software-properties-common \
     ghostscript \
     curl \
     git \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up SSH server
-RUN mkdir /var/run/sshd
-RUN echo 'root:root' | chpasswd
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN sed -i 's/UsePAM yes/UsePAM no/' /etc/ssh/sshd_config
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 - --version ${POETRY_VERSION}
 
-# Copy and install Python dependencies
-COPY requirements.txt requirements.txt
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Add Poetry to PATH
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-# Copy the application code
-COPY src/ /app/src/
-COPY tests/ /app/tests/
-COPY .streamlit/ /app/.streamlit/
-COPY start.sh /app/start.sh
+# Copy project files
+COPY pyproject.toml poetry.lock* ./
+COPY src ./src
 
-# Set correct permissions for start.sh
-RUN chmod +x /app/start.sh
+# Install dependencies and the package
+RUN poetry config virtualenvs.create true \
+    && poetry install --no-interaction --no-ansi
+
+# Copy the config file
+COPY config.yaml /app/config.yaml
 
 # Set PYTHONPATH
-ENV PYTHONPATH=/app:$PYTHONPATH
+ENV PYTHONPATH=/app/src:$PYTHONPATH
 
-# Expose the Streamlit port
-EXPOSE 8484
+# Create a directory for input files
+RUN mkdir /app/input
 
-# Run the start script
-CMD ["/app/start.sh"]
+# Verify key package installations
+RUN poetry run python -c "import yaml; print(yaml.__file__)"
+RUN poetry run python -c "import openai; print(openai.__file__)"
+RUN poetry run python -c "import anthropic; print(anthropic.__file__)"
+
+# Set the entrypoint to use Poetry to run the script
+ENTRYPOINT ["poetry", "run", "python", "-m", "soda_curation.main"]
+
+# Set default command (can be overridden)
+CMD ["--zip", "/app/input/sample.zip", "--config", "/app/config.yaml"]
