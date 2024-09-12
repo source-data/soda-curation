@@ -2,40 +2,35 @@ import openai
 from typing import List, Dict
 from .general import StructureZipFile, ZipStructure
 from openai.types.beta.thread import Thread
+from .prompts import get_structure_zip_prompt
 
 class StructureZipFileGPT(StructureZipFile):
     def __init__(self, config: Dict):
         self.config = config
-        self._client = openai.Client(
-            api_key=self.config['api_key'],
-            # organization_key=self.config['org_key']
-        )
+        self._client = openai.Client(api_key=self.config['api_key'])
         self._assistant = self._client.beta.assistants.retrieve(
             config["structure_zip_assistant_id"]
-            )
+        )
         
+        # Update assistant instructions
+        prompt = get_structure_zip_prompt(
+            file_list="[File list will be provided in each request]",
+            custom_instructions=self.config.get('custom_prompt_instructions')
+        )
         self._assistant = self._client.beta.assistants.update(
             config["structure_zip_assistant_id"],
             model=self.config['model'],
             temperature=self.config['temperature'],
             top_p=self.config['top_p'],
-            )
+            instructions=prompt
+        )
 
     def _prepare_query(self, file_list: List[str]) -> Thread:
-        """
-        Prepare the query to be sent to the assistant.
-
-        Parameters:
-            file_list (List[str]): List of files in the Zip file.
-
-        Returns:
-            Thread: The thread containing the user prompt.
-        """
         thread = self._client.beta.threads.create(
             messages=[
                 {
                     "role": "user",
-                    "content": file_list,
+                    "content": f"Process this file list:\n{file_list}",
                 }
             ]
         )

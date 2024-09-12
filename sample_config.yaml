@@ -1,17 +1,14 @@
-ai: "anthropic"  # or "anthropic"
+ai: "openai"  # or "anthropic"
 
 openai:
-  org_key: "yout_org_key"
-  api_key: "yout_api_key"
-  model: "gpt-4o-2024-08-06"  # gpt-4o-2024-08-06 after October 2nd
-  temperature: 0.7
-  max_tokens: 4096
+  api_key: "your_openai_key"
+  model: "gpt-4o-2024-08-06"  
   top_p: 1.0
-  frequency_penalty: 0.0
-  presence_penalty: 0.0
+  temperature: 1.0
+  structure_zip_assistant_id: "asst_ID"
 
 anthropic:
-  api_key: "your_api_key"
+  api_key: "your_anthropic_id"
   model: "claude-3-5-sonnet-20240620"  # or "claude-instant-1", etc.
   temperature: 0.7
   max_tokens_to_sample: 8000
