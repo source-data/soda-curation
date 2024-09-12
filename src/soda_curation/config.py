@@ -17,10 +17,12 @@ def load_config(config_path: str) -> Dict[str, Any]:
     """
     try:
         with open(config_path, 'r') as config_file:
-            return yaml.safe_load(config_file)
+            documents = yaml.safe_load_all(config_file)
+            config = {}
+            for doc in documents:
+                config.update(doc)
+            return config
     except FileNotFoundError:
         raise FileNotFoundError(f"Configuration file not found: {config_path}")
     except yaml.YAMLError as e:
         raise yaml.YAMLError(f"Error parsing configuration file: {e}")
-
-# You can add more configuration-related functions here

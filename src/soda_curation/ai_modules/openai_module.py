@@ -64,9 +64,24 @@ class StructureZipFileGPT(StructureZipFile):
 
     def process_zip_structure(self, file_list: List[str]) -> ZipStructure:
         try:
-            json_response = self._run_prompt(file_list)
-            print(f"Debug - AI response: {json_response}")  # Debug print
-            return self._json_to_zip_structure(json_response)
+            thread = self._prepare_query(f"""[{", ".join(file_list)}]""")
+
+            run = self._client.beta.threads.runs.create_and_poll(
+                thread_id=thread.id,
+                assistant_id=self._assistant.id,
+            )
+
+            if run.status == 'completed':
+                messages = self._client.beta.threads.messages.list(
+                    thread_id=thread.id
+                )
+                result = messages.data[0].content[0].text.value
+                print(f"Debug - AI response: {result}")  # Debug print
+                return self._json_to_zip_structure(result)
+            else:
+                print(f"Debug - AI response: {run.status}")  # Debug print
+                return run.status
+
         except Exception as e:
             print(f"Error in AI processing: {str(e)}")
             return None

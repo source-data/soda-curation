@@ -34,6 +34,11 @@ class StructureZipFile(ABC):
     def _json_to_zip_structure(self, json_str: str) -> ZipStructure:
         try:
             data = json.loads(json_str)
+            required_fields = ['manuscript_id', 'xml', 'docx', 'pdf', 'appendix', 'figures']
+            if not all(field in data for field in required_fields):
+                print(f"Error: Missing required fields in JSON response")
+                return None
+
             figures = [Figure(
                 figure_label=fig.get('figure_label', ''),
                 img_files=fig.get('img_files', []),
