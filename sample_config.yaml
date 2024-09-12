@@ -1,55 +1,19 @@
-# General settings
-general:
-  output_directory: "/path/to/output"
-  log_level: "INFO"
+ai: "anthropic"  # or "anthropic"
 
-# AI API settings
-ai_api:
-  provider: "openai"  # Can be "openai" or "anthropic"
-  
-  openai:
-    api_key: "your_openai_api_key_here"
-    model: "gpt-4"
-    temperature: 0.7
-    max_tokens: 150
+openai:
+  org_key: "yout_org_key"
+  api_key: "yout_api_key"
+  model: "gpt-4o"  # or "gpt-3.5-turbo", etc.
+  temperature: 0.7
+  max_tokens: 4096
+  top_p: 1.0
+  frequency_penalty: 0.0
+  presence_penalty: 0.0
 
-  anthropic:
-    api_key: "your_anthropic_api_key_here"
-    model: "claude-v1"
-    temperature: 0.7
-    max_tokens_to_sample: 150
-
-# Pipeline settings
-pipeline:
-  steps:
-    - name: "unzip"
-      enabled: true
-    - name: "preprocess"
-      enabled: true
-    - name: "object_detection"
-      enabled: true
-      model: "yolov10"
-      confidence_threshold: 0.5
-    - name: "text_extraction"
-      enabled: true
-    - name: "ai_analysis"
-      enabled: true
-    - name: "postprocess"
-      enabled: true
-
-# Object detection settings
-object_detection:
-  yolov10:
-    weights_path: "/path/to/yolov10/weights.pt"
-    device: "cuda:0"  # Use "cpu" if no GPU is available
-
-# Text extraction settings
-text_extraction:
-  ocr_engine: "tesseract"
-  language: "eng"
-
-# Postprocessing settings
-postprocess:
-  output_format: "json"
-  include_metadata: true
-
+anthropic:
+  api_key: "your_api_key"
+  model: "claude-3-5-sonnet-20240620"  # or "claude-instant-1", etc.
+  temperature: 0.7
+  max_tokens_to_sample: 8000
+  top_p: 1.0
+  top_k: 5
