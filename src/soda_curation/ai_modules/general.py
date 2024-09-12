@@ -34,10 +34,18 @@ class StructureZipFile(ABC):
     def _json_to_zip_structure(self, json_str: str) -> ZipStructure:
         try:
             data = json.loads(json_str)
-            figures = [Figure(**fig) for fig in data.get('figures', [])]
+            figures = [Figure(
+                figure_label=fig.get('figure_label', ''),
+                img_files=fig.get('img_files', []),
+                sd_files=fig.get('sd_files', []),
+                figure_caption=fig.get('figure_caption', ''),
+                figure_panels=fig.get('figure_panels', [])
+            ) for fig in data.get('figures', [])]
             
             appendix = data.get('appendix', [])
-            if isinstance(appendix, str):
+            if appendix is None:
+                appendix = []
+            elif isinstance(appendix, str):
                 appendix = [appendix]
             
             return ZipStructure(
