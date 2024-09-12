@@ -24,7 +24,7 @@ def main():
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             file_list = zip_ref.namelist()
 
-        if config['ai'] == 'gpt':
+        if config['ai'] == 'openai':
             processor = StructureZipFileGPT(config['openai'])
         elif config['ai'] == 'anthropic':
             processor = StructureZipFileClaude(config['anthropic'])

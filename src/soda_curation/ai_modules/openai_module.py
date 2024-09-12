@@ -1,30 +1,75 @@
 import openai
 from typing import List, Dict
 from .general import StructureZipFile, ZipStructure
+from openai.types.beta.thread import Thread
 
 class StructureZipFileGPT(StructureZipFile):
     def __init__(self, config: Dict):
-        openai.api_key = config['api_key']
         self.config = config
-
-    def process_zip_structure(self, file_list: List[str]) -> ZipStructure:
-        prompt = f"Given the following list of files from a ZIP archive, parse the structure and return a JSON object following the ZipStructure format:\n\n{file_list}\n\nEnsure that the JSON object includes 'manuscript_id', 'xml', 'docx', 'pdf', 'appendix', and 'figures' fields, even if some are empty."
+        self._client = openai.Client(
+            api_key=self.config['api_key'],
+            # organization_key=self.config['org_key']
+        )
+        self._assistant = self._client.beta.assistants.retrieve(
+            config["structure_zip_assistant_id"]
+            )
         
-        try:
-            response = openai.ChatCompletion.create(
-                model=self.config['model'],
-                messages=[
-                    {"role": "system", "content": "You are an AI assistant that parses ZIP file structures and returns them in a specific JSON format."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=self.config['temperature'],
-                max_tokens=self.config['max_tokens'],
-                top_p=self.config['top_p'],
-                frequency_penalty=self.config['frequency_penalty'],
-                presence_penalty=self.config['presence_penalty']
+        self._assistant = self._client.beta.assistants.update(
+            config["structure_zip_assistant_id"],
+            model=self.config['model'],
+            temperature=self.config['temperature'],
+            top_p=self.config['top_p'],
             )
 
-            json_response = response.choices[0].message['content']
+    def _prepare_query(self, file_list: List[str]) -> Thread:
+        """
+        Prepare the query to be sent to the assistant.
+
+        Parameters:
+            file_list (List[str]): List of files in the Zip file.
+
+        Returns:
+            Thread: The thread containing the user prompt.
+        """
+        thread = self._client.beta.threads.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": file_list,
+                }
+            ]
+        )
+        return thread
+
+    def _run_prompt(self, file_list: List[str]) -> str:
+        """
+        Process the input user prompt using the AI assistant.
+
+        Parameters:
+            file_list (List[str]): List of files in the Zip file.
+
+        Returns:
+            str: JSON string from the AI assistant.
+        """
+        thread = self._prepare_query(f"""[{", ".join(file_list)}]""")
+
+        run = self._client.beta.threads.runs.create_and_poll(
+            thread_id=thread.id,
+            assistant_id=self._assistant.id,
+        )
+
+        if run.status == 'completed':
+            messages = self._client.beta.threads.messages.list(
+                thread_id=thread.id
+            )
+            result = messages.data[0].content[0].text.value
+            return result
+        else:
+            return run.status
+
+    def process_zip_structure(self, file_list: List[str]) -> ZipStructure:
+        try:
+            json_response = self._run_prompt(file_list)
             print(f"Debug - AI response: {json_response}")  # Debug print
             return self._json_to_zip_structure(json_response)
         except Exception as e:

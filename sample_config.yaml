@@ -3,7 +3,7 @@ ai: "anthropic"  # or "anthropic"
 openai:
   org_key: "yout_org_key"
   api_key: "yout_api_key"
-  model: "gpt-4o"  # or "gpt-3.5-turbo", etc.
+  model: "gpt-4o-2024-08-06"  # gpt-4o-2024-08-06 after October 2nd
   temperature: 0.7
   max_tokens: 4096
   top_p: 1.0
