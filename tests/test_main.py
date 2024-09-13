@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, Mock
 import zipfile
 from soda_curation.main import main
+import importlib
 
 @pytest.fixture
 def mock_argparse():

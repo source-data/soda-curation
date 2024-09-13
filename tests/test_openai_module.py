@@ -28,11 +28,13 @@ def sample_file_list():
         'suppl_data/Figure1_source.xlsx'
     ]
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_structure_zip_file_gpt_initialization(mock_openai_client, sample_config):
     gpt = StructureZipFileGPT(sample_config)
     assert gpt.config == sample_config
     mock_openai_client.assert_called_once_with(api_key='test_key')
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_process_zip_structure_success(mock_openai_client, sample_config, sample_file_list):
     mock_run = Mock()
     mock_run.status = 'completed'
@@ -67,6 +69,7 @@ def test_process_zip_structure_success(mock_openai_client, sample_config, sample
     assert len(result.figures) == 1
     assert result.figures[0].figure_label == "Figure 1"
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_process_zip_structure_run_failed(mock_openai_client, sample_config, sample_file_list):
     mock_run = Mock()
     mock_run.status = 'failed'
@@ -77,6 +80,7 @@ def test_process_zip_structure_run_failed(mock_openai_client, sample_config, sam
 
     assert result == 'failed'
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_process_zip_structure_invalid_json(mock_openai_client, sample_config, sample_file_list):
     mock_run = Mock()
     mock_run.status = 'completed'
@@ -90,6 +94,7 @@ def test_process_zip_structure_invalid_json(mock_openai_client, sample_config, s
 
     assert result is None
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_process_zip_structure_missing_fields(mock_openai_client, sample_config, sample_file_list):
     mock_run = Mock()
     mock_run.status = 'completed'
@@ -103,6 +108,7 @@ def test_process_zip_structure_missing_fields(mock_openai_client, sample_config,
 
     assert result is None
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_process_zip_structure_api_error(mock_openai_client, sample_config, sample_file_list):
     mock_openai_client.return_value.beta.threads.runs.create_and_poll.side_effect = Exception("API Error")
 
@@ -111,9 +117,21 @@ def test_process_zip_structure_api_error(mock_openai_client, sample_config, samp
 
     assert result is None
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_custom_prompt_instructions(mock_openai_client, sample_config):
     sample_config['custom_prompt_instructions'] = "Custom instructions here"
     gpt = StructureZipFileGPT(sample_config)
 
     update_call = mock_openai_client.return_value.beta.assistants.update.call_args
     assert "Custom instructions here" in update_call[1]['instructions']
+
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
+def test_process_zip_structure_openai_error(mock_openai_client, sample_config, sample_file_list, capsys):
+    mock_openai_client.return_value.beta.threads.runs.create_and_poll.side_effect = Exception("OpenAI API Error")
+
+    gpt = StructureZipFileGPT(sample_config)
+    result = gpt.process_zip_structure(sample_file_list)
+
+    assert result is None
+    captured = capsys.readouterr()
+    assert "Error in AI processing: OpenAI API Error" in captured.out

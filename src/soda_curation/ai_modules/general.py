@@ -39,13 +39,19 @@ class StructureZipFile(ABC):
                 print(f"Error: Missing required fields in JSON response")
                 return None
 
-            figures = [Figure(
-                figure_label=fig.get('figure_label', ''),
-                img_files=fig.get('img_files', []),
-                sd_files=fig.get('sd_files', []),
-                figure_caption=fig.get('figure_caption', ''),
-                figure_panels=fig.get('figure_panels', [])
-            ) for fig in data.get('figures', [])]
+            figures = []
+            for fig in data.get('figures', []):
+                try:
+                    figures.append(Figure(
+                        figure_label=fig['figure_label'],
+                        img_files=fig['img_files'],
+                        sd_files=fig['sd_files'],
+                        figure_caption=fig.get('figure_caption', ''),
+                        figure_panels=fig.get('figure_panels', [])
+                    ))
+                except KeyError as e:
+                    print(f"Error: Missing key in figure data: {str(e)}")
+                    return None
             
             appendix = data.get('appendix', [])
             if appendix is None:

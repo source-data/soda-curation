@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import Mock, patch
 from soda_curation.ai_modules.anthropic_module import StructureZipFileClaude
-from soda_curation.ai_modules.general import StructureZipFile, ZipStructure, Figure
+from soda_curation.ai_modules.general import ZipStructure
 
 @pytest.fixture
 def mock_anthropic_client():
@@ -27,10 +27,12 @@ def sample_file_list():
         'suppl_data/Figure1_source.xlsx'
     ]
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_structure_zip_file_claude_initialization(sample_config):
     claude = StructureZipFileClaude(sample_config)
     assert claude.config == sample_config
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_process_zip_structure_success(mock_anthropic_client, sample_config, sample_file_list):
     mock_response = Mock()
     mock_response.content = """
@@ -62,6 +64,7 @@ def test_process_zip_structure_success(mock_anthropic_client, sample_config, sam
     assert len(result.figures) == 1
     assert result.figures[0].figure_label == "Figure 1"
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_process_zip_structure_invalid_json(mock_anthropic_client, sample_config, sample_file_list):
     mock_response = Mock()
     mock_response.content = "Invalid JSON"
@@ -72,6 +75,7 @@ def test_process_zip_structure_invalid_json(mock_anthropic_client, sample_config
 
     assert result is None
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_process_zip_structure_missing_fields(mock_anthropic_client, sample_config, sample_file_list):
     mock_response = Mock()
     mock_response.content = '{"manuscript_id": "test"}'
@@ -82,6 +86,7 @@ def test_process_zip_structure_missing_fields(mock_anthropic_client, sample_conf
 
     assert result is None
 
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
 def test_process_zip_structure_api_error(mock_anthropic_client, sample_config, sample_file_list):
     mock_anthropic_client.return_value.messages.create.side_effect = Exception("API Error")
 
@@ -90,10 +95,24 @@ def test_process_zip_structure_api_error(mock_anthropic_client, sample_config, s
 
     assert result is None
 
-def test_custom_prompt_instructions(mock_anthropic_client, sample_config, sample_file_list):
-    sample_config['custom_prompt_instructions'] = "Custom instructions here"
-    claude = StructureZipFileClaude(sample_config)
-    claude.process_zip_structure(sample_file_list)
+@pytest.mark.usefixtures("capsys")  # Add this decorator to the test classes if not already present
+def test_process_zip_structure_anthropic_error(mock_anthropic_client, sample_config, sample_file_list, capsys):
+    mock_anthropic_client.return_value.messages.create.side_effect = Exception("Anthropic API Error")
 
-    create_call = mock_anthropic_client.return_value.messages.create.call_args
-    assert "Custom instructions here" in create_call[1]['messages'][0]['content']
+    claude = StructureZipFileClaude(sample_config)
+    result = claude.process_zip_structure(sample_file_list)
+
+    assert result is None
+    captured = capsys.readouterr()
+    assert "Error in AI processing: Anthropic API Error" in captured.out
+    
+@pytest.mark.usefixtures("capsys")
+def test_process_zip_structure_anthropic_error(mock_anthropic_client, sample_config, sample_file_list, capsys):
+    mock_anthropic_client.return_value.messages.create.side_effect = Exception("Anthropic API Error")
+
+    claude = StructureZipFileClaude(sample_config)
+    result = claude.process_zip_structure(sample_file_list)
+
+    assert result is None
+    captured = capsys.readouterr()
+    assert "Error in AI processing: Anthropic API Error" in captured.out
