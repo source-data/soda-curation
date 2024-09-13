@@ -1,3 +1,10 @@
+"""
+This module provides functionality for extracting figure captions from DOCX files using OpenAI's GPT model.
+
+It includes a class that interacts with the OpenAI API to process document content and extract
+figure captions, which are then integrated into a ZipStructure object.
+"""
+
 import json
 import os
 from io import BytesIO
@@ -14,6 +21,14 @@ import re
 class FigureCaptionExtractorGpt(FigureCaptionExtractor):
     """
     A class to extract figure captions using OpenAI's GPT model and an assistant.
+
+    This class provides methods to interact with the OpenAI API, process DOCX files,
+    and extract figure captions using GPT models.
+
+    Attributes:
+        config (Dict): Configuration dictionary for OpenAI API.
+        client (openai.OpenAI): OpenAI API client.
+        assistant (Assistant): OpenAI assistant object for caption extraction.
     """
 
     def __init__(self, config: Dict):
@@ -22,6 +37,9 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
         Args:
             config (Dict): Configuration dictionary for OpenAI API.
+
+        Raises:
+            openai.OpenAIError: If there's an issue initializing the OpenAI client or assistant.
         """
         self.config = config
         self.client = openai.OpenAI(api_key=self.config['api_key'])
@@ -31,21 +49,25 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         """
         Set up or retrieve the OpenAI assistant for caption extraction.
 
+        This method either creates a new assistant or updates an existing one
+        based on the configuration provided.
+
         Returns:
             Assistant: The OpenAI assistant object.
+
+        Raises:
+            openai.OpenAIError: If there's an issue creating or updating the assistant.
         """
         assistant_id = self.config.get("caption_extraction_assistant_id")
         self.prompt = get_extract_captions_prompt("")
 
         if assistant_id:
-            # Update existing assistant
             return self.client.beta.assistants.update(
                 assistant_id,
                 model=self.config['model'],
                 instructions=self.prompt
             )
         else:
-            # Create a new assistant if ID is not provided
             return self.client.beta.assistants.create(
                 name="Figure Caption Extractor",
                 instructions=self.prompt,
@@ -54,13 +76,17 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
     def _upload_file(self, file_path: str) -> FileObject:
         """
-        Upload a file to the assistant.
+        Upload a file to the OpenAI API for processing.
 
         Args:
             file_path (str): The path to the file to be uploaded.
 
         Returns:
             FileObject: The uploaded file object.
+
+        Raises:
+            FileNotFoundError: If the specified file does not exist.
+            openai.OpenAIError: If there's an issue uploading the file to OpenAI.
         """
         with open(file_path, "rb") as file:        
             file_object = self.client.files.create(
@@ -71,14 +97,19 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
     
     def _prepare_query(self, file_path: str) -> Thread:
         """
-        Prepare the query to be sent to the assistant.
+        Prepare the query to be sent to the OpenAI assistant.
+
+        This method uploads the file and creates a new thread with the initial message.
 
         Args:
-            user_prompt (str): The user prompt to be processed by the assistant.
-            file_path (str): The file path to the docx or pdf file.
+            file_path (str): The file path to the DOCX or PDF file.
 
         Returns:
             Thread: The thread containing the user prompt and file.
+
+        Raises:
+            FileNotFoundError: If the specified file does not exist.
+            openai.OpenAIError: If there's an issue creating the thread or uploading the file.
         """
         file_on_client = self._upload_file(file_path)
         thread = self.client.beta.threads.create(
@@ -103,20 +134,26 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         """
         Extract figure captions from the given DOCX file using OpenAI's GPT model.
 
+        This method processes the DOCX file, sends it to the OpenAI API for analysis,
+        and updates the ZipStructure with the extracted captions.
+
         Args:
             docx_path (str): Path to the DOCX file.
             zip_structure (ZipStructure): The current ZIP structure.
 
         Returns:
             ZipStructure: Updated ZIP structure with extracted captions.
+
+        Raises:
+            FileNotFoundError: If the DOCX file is not found.
+            openai.OpenAIError: If there's an issue with the OpenAI API request.
+            Exception: For any other unexpected errors during processing.
         """
         try:
             print(f"Debug: Processing file: {docx_path}")
             
-            # Prepare the query
             thread, file_object = self._prepare_query(docx_path)
 
-            # Run the assistant
             run = self.client.beta.threads.runs.create_and_poll(
                 thread_id=thread.id,
                 assistant_id=self.assistant.id,
@@ -152,13 +189,18 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         """
         Parse the response from GPT to extract figure captions.
 
+        This method attempts to extract JSON from the response text, falling back
+        to regex parsing if JSON extraction fails.
+
         Args:
             response_text (str): The response text from GPT.
 
         Returns:
             Dict[str, str]: A dictionary of figure labels and their captions.
+
+        Raises:
+            json.JSONDecodeError: If the response cannot be parsed as JSON.
         """
-        # First, try to extract JSON from code block
         json_match = re.search(r'```json\n(.*?)```', response_text, re.DOTALL)
         if json_match:
             json_str = json_match.group(1)
@@ -167,7 +209,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             except json.JSONDecodeError:
                 print("Failed to parse JSON from code block. Attempting to parse entire response.")
         
-        # If no code block or parsing failed, try to parse the entire response
         try:
             return json.loads(response_text)
         except json.JSONDecodeError:
@@ -177,6 +218,8 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
     def _parse_figure_captions(self, text: str) -> Dict[str, str]:
         """
         Parse figure captions using regex if JSON parsing fails.
+
+        This method uses regular expressions to extract figure captions from the text.
 
         Args:
             text (str): The text to parse for figure captions.
@@ -196,12 +239,15 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         """
         Update the ZipStructure with extracted captions.
 
+        This method updates the figure captions in the ZipStructure object based on
+        the extracted captions.
+
         Args:
             zip_structure (ZipStructure): The current ZIP structure.
             captions (Dict[str, str]): Dictionary of figure labels and their captions.
 
         Returns:
-            ZipStructure: Updated ZIP structure.
+            ZipStructure: Updated ZIP structure with new captions.
         """
         for figure in zip_structure.figures:
             if figure.figure_label in captions:
