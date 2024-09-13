@@ -1,11 +1,11 @@
 import pytest
 from unittest.mock import Mock, patch
-from soda_curation.ai_modules.openai_module import StructureZipFileGPT
-from soda_curation.ai_modules.general import StructureZipFile, ZipStructure, Figure
+from soda_curation.pipeline.zip_structure.openai import StructureZipFileGPT
+from soda_curation.pipeline.zip_structure.base import StructureZipFile, ZipStructure, Figure
 
 @pytest.fixture
 def mock_openai_client():
-    with patch('soda_curation.ai_modules.openai_module.openai.Client') as mock_client:
+    with patch('soda_curation.pipeline.zip_structure.openai.openai.Client') as mock_client:
         yield mock_client
 
 @pytest.fixture

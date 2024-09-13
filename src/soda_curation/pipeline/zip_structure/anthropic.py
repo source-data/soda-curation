@@ -1,6 +1,6 @@
 from anthropic import Anthropic
 from typing import List, Dict, Union
-from .general import StructureZipFile, ZipStructure, Figure
+from .base import StructureZipFile, ZipStructure, Figure
 from .prompts import get_structure_zip_prompt
 
 class StructureZipFileClaude(StructureZipFile):

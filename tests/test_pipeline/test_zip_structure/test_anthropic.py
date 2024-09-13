@@ -1,11 +1,11 @@
 import pytest
 from unittest.mock import Mock, patch
-from soda_curation.ai_modules.anthropic_module import StructureZipFileClaude
-from soda_curation.ai_modules.general import ZipStructure
+from soda_curation.pipeline.zip_structure.anthropic import StructureZipFileClaude
+from soda_curation.pipeline.zip_structure.base import ZipStructure
 
 @pytest.fixture
 def mock_anthropic_client():
-    with patch('soda_curation.ai_modules.anthropic_module.Anthropic') as mock_anthropic:
+    with patch('soda_curation.pipeline.zip_structure.anthropic.Anthropic') as mock_anthropic:
         yield mock_anthropic
 
 @pytest.fixture

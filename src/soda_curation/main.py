@@ -4,9 +4,9 @@ import zipfile
 import sys
 from pathlib import Path
 from .config import load_config
-from .ai_modules.openai_module import StructureZipFileGPT
-from .ai_modules.anthropic_module import StructureZipFileClaude
-from .ai_modules.general import CustomJSONEncoder
+from .pipeline.zip_structure.openai import StructureZipFileGPT
+from .pipeline.zip_structure.anthropic import StructureZipFileClaude
+from .pipeline.zip_structure.base import CustomJSONEncoder
 
 def main():
     parser = argparse.ArgumentParser(description="Process a ZIP file using soda-curation")

@@ -1,6 +1,6 @@
 import openai
 from typing import List, Dict
-from .general import StructureZipFile, ZipStructure
+from .base import StructureZipFile, ZipStructure
 from openai.types.beta.thread import Thread
 from .prompts import get_structure_zip_prompt
 

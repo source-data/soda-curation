@@ -1,6 +1,6 @@
 import pytest
 import json
-from soda_curation.ai_modules.general import StructureZipFile, ZipStructure, Figure
+from soda_curation.pipeline.zip_structure.base import StructureZipFile, ZipStructure, Figure
 
 class TestStructureZipFile(StructureZipFile):
     def process_zip_structure(self, file_list):
