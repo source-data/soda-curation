@@ -82,6 +82,20 @@ Output:
 """
 
 def get_structure_zip_prompt(file_list, custom_instructions=None):
+    """
+    Generate a prompt for ZIP structure parsing.
+
+    This function creates a prompt string for AI models to parse the structure of a ZIP file.
+    It includes instructions on how to interpret the file list and format the output.
+
+    Args:
+        file_list (str): A string representation of the files in the ZIP archive.
+        custom_instructions (str, optional): Custom instructions to override the default example.
+            Defaults to None, in which case EXAMPLE_INPUT_OUTPUT is used.
+
+    Returns:
+        str: A formatted prompt string for AI models to parse the ZIP structure.
+    """
     instructions = custom_instructions or EXAMPLE_INPUT_OUTPUT
     return STRUCTURE_ZIP_PROMPT.substitute(
         file_list=file_list,

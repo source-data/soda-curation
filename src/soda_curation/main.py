@@ -4,11 +4,24 @@ import zipfile
 import sys
 from pathlib import Path
 from .config import load_config
-from .pipeline.zip_structure.openai import StructureZipFileGPT
-from .pipeline.zip_structure.anthropic import StructureZipFileClaude
-from .pipeline.zip_structure.base import CustomJSONEncoder
+from .pipeline.zip_structure.zip_structure_openai import StructureZipFileGPT
+from .pipeline.zip_structure.zip_structure_anthropic import StructureZipFileClaude
+from .pipeline.zip_structure.zip_structure_base import CustomJSONEncoder
 
 def main():
+    """
+    Main function to process a ZIP file using soda-curation.
+
+    This function parses command-line arguments, loads the configuration,
+    processes the ZIP file, and outputs the results as JSON.
+
+    Command-line arguments:
+    --zip: Path to the input ZIP file
+    --config: Path to the configuration file
+
+    The function will exit with an error message if required arguments are missing,
+    if the ZIP file is not found or invalid, or if processing fails.
+    """
     parser = argparse.ArgumentParser(description="Process a ZIP file using soda-curation")
     parser.add_argument("--zip", help="Path to the input ZIP file")
     parser.add_argument("--config", help="Path to the configuration file")

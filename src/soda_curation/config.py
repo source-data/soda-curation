@@ -5,14 +5,17 @@ def load_config(config_path: str) -> Dict[str, Any]:
     """
     Load configuration from a YAML file.
 
+    This function reads a YAML configuration file and returns its contents as a dictionary.
+    It supports multi-document YAML files, merging all documents into a single dictionary.
+
     Args:
         config_path (str): Path to the configuration file.
 
     Returns:
-        Dict[str, Any]: Configuration dictionary.
+        Dict[str, Any]: Configuration dictionary containing all key-value pairs from the YAML file.
 
     Raises:
-        FileNotFoundError: If the configuration file is not found.
+        FileNotFoundError: If the configuration file is not found at the specified path.
         yaml.YAMLError: If there's an error parsing the YAML file.
     """
     try:

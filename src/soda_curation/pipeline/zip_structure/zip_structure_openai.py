@@ -1,11 +1,28 @@
 import openai
 from typing import List, Dict
-from .base import StructureZipFile, ZipStructure
+from .zip_structure_base import StructureZipFile, ZipStructure
 from openai.types.beta.thread import Thread
-from .prompts import get_structure_zip_prompt
+from .zip_structure_prompts import get_structure_zip_prompt
 
 class StructureZipFileGPT(StructureZipFile):
+    """
+    A class to process ZIP file structures using OpenAI's GPT model.
+
+    This class handles the interaction with OpenAI's API to parse and structure
+    the contents of a ZIP file.
+
+    Attributes:
+        config (Dict): Configuration dictionary for OpenAI API.
+        _client (openai.Client): OpenAI API client.
+        _assistant (openai.types.beta.assistant.Assistant): OpenAI assistant object.
+    """
     def __init__(self, config: Dict):
+        """
+        Initialize the StructureZipFileGPT instance.
+
+        Args:
+            config (Dict): Configuration dictionary for OpenAI API.
+        """
         self.config = config
         self._client = openai.Client(api_key=self.config['api_key'])
         self._assistant = self._client.beta.assistants.retrieve(
@@ -26,6 +43,15 @@ class StructureZipFileGPT(StructureZipFile):
         )
 
     def _prepare_query(self, file_list: List[str]) -> Thread:
+        """
+        Prepare a query thread for the OpenAI assistant.
+
+        Args:
+            file_list (List[str]): List of files in the ZIP archive.
+
+        Returns:
+            Thread: An OpenAI thread object containing the query.
+        """
         thread = self._client.beta.threads.create(
             messages=[
                 {
@@ -40,11 +66,11 @@ class StructureZipFileGPT(StructureZipFile):
         """
         Process the input user prompt using the AI assistant.
 
-        Parameters:
-            file_list (List[str]): List of files in the Zip file.
+        Args:
+            file_list (List[str]): List of files in the ZIP file.
 
         Returns:
-            str: JSON string from the AI assistant.
+            str: JSON string from the AI assistant or status of the run.
         """
         thread = self._prepare_query(f"""[{", ".join(file_list)}]""")
 
@@ -63,6 +89,19 @@ class StructureZipFileGPT(StructureZipFile):
             return run.status
 
     def process_zip_structure(self, file_list: List[str]) -> ZipStructure:
+        """
+        Process the ZIP file structure using the OpenAI assistant.
+
+        This method sends the file list to the OpenAI assistant, retrieves the response,
+        and converts it into a ZipStructure object.
+
+        Args:
+            file_list (List[str]): List of files in the ZIP archive.
+
+        Returns:
+            ZipStructure: A structured representation of the ZIP contents,
+                          or None if processing fails.
+        """
         try:
             thread = self._prepare_query(f"""[{", ".join(file_list)}]""")
 
