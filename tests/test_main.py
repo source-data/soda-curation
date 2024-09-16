@@ -1,8 +1,10 @@
 import pytest
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, MagicMock
 import zipfile
 from soda_curation.main import main
 import importlib
+from soda_curation.pipeline.zip_structure.zip_structure_base import ZipStructure, Figure
+
 
 @pytest.fixture
 def mock_argparse():
@@ -48,10 +50,31 @@ def mock_json():
     with patch('json.dumps') as mock_dumps:
         yield mock_dumps
 
-def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json):
+@pytest.fixture
+def mock_openai_client():
+    with patch('soda_curation.pipeline.extract_captions.extract_captions_openai.openai.OpenAI') as mock_client:
+        mock_client.return_value.beta.assistants.update.return_value = MagicMock()
+        mock_client.return_value.beta.assistants.create.return_value = MagicMock()
+        yield mock_client
+
+@pytest.fixture
+def mock_anthropic_client():
+    with patch('soda_curation.pipeline.extract_captions.extract_captions_anthropic.Anthropic') as mock_client:
+        mock_client.return_value.messages.create.return_value = MagicMock()
+        yield mock_client
+
+@pytest.fixture
+def mock_os():
+    with patch('os.path.exists', return_value=True), \
+         patch('os.remove'), \
+         patch('os.rmdir'), \
+         patch('os.walk', return_value=[]):
+        yield
+
+def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json, mock_openai_client, mock_os):
     """
     Test the main function's successful execution path.
-    
+
     This test verifies that when given valid inputs and configurations,
     the main function correctly processes a ZIP file and outputs the result.
     It checks that:
@@ -60,21 +83,35 @@ def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json):
     3. The result is properly serialized to JSON.
     """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
-    mock_load_config.return_value = {'ai': 'openai', 'openai': {'api_key': 'test'}}
+    mock_load_config.return_value = {
+        'ai': 'openai', 
+        'openai': {
+            'api_key': 'test',
+            'model': 'gpt-4',
+            'caption_extraction_assistant_id': 'test_assistant_id'
+        }
+    }
     mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
 
     with patch('soda_curation.main.Path.is_file', return_value=True):
         with patch('soda_curation.main.StructureZipFileGPT') as mock_gpt:
-            mock_gpt.return_value.process_zip_structure.return_value = {'result': 'success'}
+            mock_gpt.return_value.process_zip_structure.return_value = ZipStructure(
+                manuscript_id="test",
+                xml="test.xml",
+                docx="test.docx",
+                pdf="test.pdf",
+                appendix=[],
+                figures=[Figure("Figure 1", ["image1.png"], [], "TO BE ADDED IN LATER STEP", [])]
+            )
             mock_json.return_value = '{"result": "success"}'
 
             main()
 
             mock_gpt.assert_called_once()
             mock_gpt.return_value.process_zip_structure.assert_called_once_with(['file1', 'file2'])
-            mock_json.assert_called_once()
+            mock_json.assert_called()
 
-def test_main_anthropic(mock_argparse, mock_load_config, mock_zipfile, mock_json):
+def test_main_anthropic(mock_argparse, mock_load_config, mock_zipfile, mock_json, mock_anthropic_client, mock_os):
     """
     Test the main function when using the Anthropic AI provider.
     
@@ -86,19 +123,32 @@ def test_main_anthropic(mock_argparse, mock_load_config, mock_zipfile, mock_json
     3. The result is properly serialized to JSON.
     """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
-    mock_load_config.return_value = {'ai': 'anthropic', 'anthropic': {'api_key': 'test'}}
+    mock_load_config.return_value = {
+        'ai': 'anthropic', 
+        'anthropic': {
+            'api_key': 'test',
+            'model': 'claude-v1'
+        }
+    }
     mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
 
     with patch('soda_curation.main.Path.is_file', return_value=True):
         with patch('soda_curation.main.StructureZipFileClaude') as mock_claude:
-            mock_claude.return_value.process_zip_structure.return_value = {'result': 'success'}
+            mock_claude.return_value.process_zip_structure.return_value = ZipStructure(
+                manuscript_id="test",
+                xml="test.xml",
+                docx="test.docx",
+                pdf="test.pdf",
+                appendix=[],
+                figures=[Figure("Figure 1", ["image1.png"], [], "TO BE ADDED IN LATER STEP", [])]
+            )
             mock_json.return_value = '{"result": "success"}'
 
             main()
 
             mock_claude.assert_called_once()
             mock_claude.return_value.process_zip_structure.assert_called_once_with(['file1', 'file2'])
-            mock_json.assert_called_once()
+            mock_json.assert_called()
 
 def test_main_invalid_ai_provider(mock_argparse, mock_load_config, mock_zipfile):
     """
@@ -156,7 +206,7 @@ def test_main_invalid_zip_file(mock_argparse, mock_load_config, mock_zipfile):
         with pytest.raises(SystemExit):
             main()
 
-def test_main_processing_failure(mock_argparse, mock_load_config, mock_zipfile):
+def test_main_processing_failure(mock_argparse, mock_load_config, mock_zipfile, mock_openai_client, mock_os):
     """
     Test the main function's behavior when ZIP file processing fails.
     
@@ -164,7 +214,13 @@ def test_main_processing_failure(mock_argparse, mock_load_config, mock_zipfile):
     (returning None), the main function exits with a system error.
     """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
-    mock_load_config.return_value = {'ai': 'openai', 'openai': {'api_key': 'test'}}
+    mock_load_config.return_value = {
+        'ai': 'openai', 
+        'openai': {
+            'api_key': 'test',
+            'model': 'gpt-4'
+        }
+    }
     mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
 
     with patch('soda_curation.main.Path.is_file', return_value=True):
@@ -173,3 +229,134 @@ def test_main_processing_failure(mock_argparse, mock_load_config, mock_zipfile):
 
             with pytest.raises(SystemExit):
                 main()
+
+@pytest.fixture
+def mock_extract_captions():
+    with patch('soda_curation.main.FigureCaptionExtractorGpt') as mock_gpt:
+        with patch('soda_curation.main.FigureCaptionExtractorClaude') as mock_claude:
+            yield mock_gpt, mock_claude
+
+def test_main_with_caption_extraction_docx_success(mock_argparse, mock_load_config, mock_zipfile, mock_extract_captions, mock_json, mock_openai_client, mock_os):
+    mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
+    mock_load_config.return_value = {
+        'ai': 'openai', 
+        'openai': {
+            'api_key': 'test',
+            'model': 'gpt-4'
+        }
+    }
+    mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
+
+    mock_gpt, _ = mock_extract_captions
+    mock_gpt.return_value.extract_captions.return_value = ZipStructure(
+        manuscript_id="test",
+        xml="test.xml",
+        docx="test.docx",
+        pdf="test.pdf",
+        appendix=[],
+        figures=[Figure("Figure 1", ["image1.png"], [], "Extracted caption from DOCX", [])]
+    )
+
+    with patch('soda_curation.main.Path.is_file', return_value=True):
+        with patch('soda_curation.main.StructureZipFileGPT') as mock_structure_gpt:
+            mock_structure_gpt.return_value.process_zip_structure.return_value = ZipStructure(
+                manuscript_id="test",
+                xml="test.xml",
+                docx="test.docx",
+                pdf="test.pdf",
+                appendix=[],
+                figures=[Figure("Figure 1", ["image1.png"], [], "TO BE ADDED IN LATER STEP", [])]
+            )
+            main()
+
+        mock_structure_gpt.assert_called_once()
+        mock_gpt.return_value.extract_captions.assert_called_once()
+        assert mock_gpt.return_value.extract_captions.call_args[0][0].endswith('test.docx')
+
+def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_config, mock_zipfile, mock_extract_captions, mock_json, mock_openai_client, mock_os):
+    mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
+    mock_load_config.return_value = {
+        'ai': 'openai', 
+        'openai': {
+            'api_key': 'test',
+            'model': 'gpt-4'
+        }
+    }
+    mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
+
+    mock_gpt, _ = mock_extract_captions
+    mock_gpt.return_value.extract_captions.side_effect = [
+        ZipStructure(  # DOCX extraction result
+            manuscript_id="test",
+            xml="test.xml",
+            docx="test.docx",
+            pdf="test.pdf",
+            appendix=[],
+            figures=[Figure("Figure 1", ["image1.png"], [], "Figure caption not found.", [])]
+        ),
+        ZipStructure(  # PDF extraction result
+            manuscript_id="test",
+            xml="test.xml",
+            docx="test.docx",
+            pdf="test.pdf",
+            appendix=[],
+            figures=[Figure("Figure 1", ["image1.png"], [], "Extracted caption from PDF", [])]
+        )
+    ]
+
+    with patch('soda_curation.main.Path.is_file', return_value=True):
+        with patch('soda_curation.main.StructureZipFileGPT') as mock_structure_gpt:
+            mock_structure_gpt.return_value.process_zip_structure.return_value = ZipStructure(
+                manuscript_id="test",
+                xml="test.xml",
+                docx="test.docx",
+                pdf="test.pdf",
+                appendix=[],
+                figures=[Figure("Figure 1", ["image1.png"], [], "TO BE ADDED IN LATER STEP", [])]
+            )
+            main()
+
+        assert mock_gpt.return_value.extract_captions.call_count == 2
+        assert mock_gpt.return_value.extract_captions.call_args_list[0][0][0].endswith('test.docx')
+        assert mock_gpt.return_value.extract_captions.call_args_list[1][0][0].endswith('test.pdf')
+
+
+def test_main_with_caption_extraction_docx_only(mock_argparse, mock_load_config, mock_zipfile, mock_extract_captions, mock_json, mock_openai_client, mock_os):
+    mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
+    mock_load_config.return_value = {
+        'ai': 'openai', 
+        'openai': {
+            'api_key': 'test',
+            'model': 'gpt-4'
+        }
+    }
+    mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
+
+    mock_gpt, _ = mock_extract_captions
+    mock_gpt.return_value.extract_captions.return_value = ZipStructure(
+        manuscript_id="test",
+        xml="test.xml",
+        docx="test.docx",
+        pdf=None,
+        appendix=[],
+        figures=[Figure("Figure 1", ["image1.png"], [], "Extracted caption from DOCX", [])]
+    )
+
+    with patch('soda_curation.main.Path.is_file', return_value=True):
+        with patch('soda_curation.main.StructureZipFileGPT') as mock_structure_gpt:
+            mock_structure_gpt.return_value.process_zip_structure.return_value = ZipStructure(
+                manuscript_id="test",
+                xml="test.xml",
+                docx="test.docx",
+                pdf=None,
+                appendix=[],
+                figures=[Figure("Figure 1", ["image1.png"], [], "TO BE ADDED IN LATER STEP", [])]
+            )
+            main()
+
+        mock_structure_gpt.assert_called_once()
+        mock_gpt.return_value.extract_captions.assert_called_once()
+        assert mock_gpt.return_value.extract_captions.call_args[0][0].endswith('test.docx')
+
+
+

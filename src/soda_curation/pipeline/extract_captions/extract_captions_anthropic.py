@@ -3,7 +3,7 @@ import os
 import re
 import shutil
 import traceback
-from typing import Dict
+from typing import Dict, Any
 from anthropic import Anthropic
 from docx import Document
 from docx.opc.exceptions import PackageNotFoundError
@@ -16,12 +16,12 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
     A class to extract figure captions using Anthropic's Claude model.
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict[str, Any]):
         """
         Initialize the FigureCaptionExtractorClaude instance.
 
         Args:
-            config (Dict): Configuration dictionary for Anthropic API.
+            config (Dict[str, Any]): Configuration dictionary for Anthropic API.
         """
         self.config = config
         self.client = Anthropic(api_key=self.config['api_key'])
@@ -63,13 +63,13 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
                 ]
             )
             
-            extracted_text = response.content[0].text
+            extracted_text = response.content
             print(f"Debug: Full response from Anthropic API:\n{extracted_text}")
             
             captions = self._parse_response(extracted_text)
             if not captions:
                 print("Debug: Failed to extract captions from Claude's response")
-                return zip_structure
+                return self._update_zip_structure(zip_structure, {})
             
             updated_structure = self._update_zip_structure(zip_structure, captions)
             print(f"Debug: Updated ZIP structure: {updated_structure}")
@@ -79,7 +79,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         except Exception as e:
             print(f"Error in caption extraction: {str(e)}")
             print(traceback.format_exc())
-            return zip_structure
+            return self._update_zip_structure(zip_structure, {})
 
     def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
         """
@@ -179,7 +179,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         captions = {}
         matches = re.finditer(r'(Figure \d+[.:])(.+?)(?=(Figure \d+[.:])|\Z)', text, re.DOTALL)
         for match in matches:
-            figure_label = match.group(1).strip()
+            figure_label = match.group(1).strip().rstrip('.').rstrip(':')
             caption = match.group(2).strip()
             captions[figure_label] = caption
         return captions

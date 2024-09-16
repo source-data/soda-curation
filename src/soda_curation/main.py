@@ -53,20 +53,24 @@ def main():
     if result:
         print("Debug: ZIP structure processed successfully")
         
-        # Get the DOCX file path from the ZIP structure result
-        docx_file = result.docx
-        if not docx_file:
-            print("Error: No DOCX file found in the ZIP structure")
+        docx_path = os.path.join(extract_dir, result.docx) if result.docx else None
+        pdf_path = os.path.join(extract_dir, result.pdf) if result.pdf else None
+        
+        if not docx_path and not pdf_path:
+            print("Error: No DOCX or PDF file found in the ZIP structure")
             sys.exit(1)
         
-        docx_path = os.path.join(extract_dir, docx_file)
-        if not os.path.exists(docx_path):
-            print(f"Error: DOCX file not found at expected path: {docx_path}")
-            sys.exit(1)
+        captions_found = False
         
-        print(f"Debug: Using DOCX file: {docx_path}")
-        print("Debug: Extracting captions")
-        result = caption_extractor.extract_captions(docx_path, result)
+        if docx_path and os.path.exists(docx_path):
+            print(f"Debug: Extracting captions from DOCX file: {docx_path}")
+            result = caption_extractor.extract_captions(docx_path, result)
+            captions_found = any(fig.figure_caption != "Figure caption not found." for fig in result.figures)
+        
+        if not captions_found and pdf_path and os.path.exists(pdf_path):
+            print(f"Debug: Captions not found in DOCX. Extracting from PDF file: {pdf_path}")
+            result = caption_extractor.extract_captions(pdf_path, result)
+        
         print("Debug: Captions extraction process completed")
         print(json.dumps(result, indent=2, cls=CustomJSONEncoder))
     else:
