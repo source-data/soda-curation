@@ -1,10 +1,16 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 import json
 import logging
 
 logger = logging.getLogger(__name__)
+
+@dataclass
+class Panel:
+    panel_label: str
+    panel_caption: str
+    panel_bbox: List[float]
 
 @dataclass
 class Figure:
@@ -22,7 +28,8 @@ class Figure:
     img_files: List[str]
     sd_files: List[str]
     figure_caption: str = ""
-    figure_panels: List[str] = ()
+    figure_panels: List[str] = field(default_factory=list)
+    panels: List[Panel] = field(default_factory=list)
 
 @dataclass
 class ZipStructure:
@@ -62,7 +69,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             dict: A dictionary representation of the object if it's a ZipStructure or Figure instance.
             Any: The default serialization for other types.
         """
-        if isinstance(obj, (Figure, ZipStructure)):
+        if isinstance(obj, (Panel, Figure, ZipStructure)):
             return asdict(obj)
         return super().default(obj)
 

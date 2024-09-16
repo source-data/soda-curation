@@ -39,10 +39,20 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 # Copy project files
 COPY pyproject.toml poetry.lock* ./
 COPY src ./src
+COPY data/models/panel_detection_model_no_labels.pt ./data/models/
 
 # Install dependencies and the package
 RUN poetry config virtualenvs.create true \
     && poetry install --no-interaction --no-ansi
+
+# Install additional packages
+RUN poetry run pip install --upgrade pip \
+    && poetry run pip install opencv-python==4.8.0.74 \
+    && poetry run pip install -q git+https://github.com/THU-MIG/yolov10.git \
+    && poetry run pip install opencv-fixer==0.2.5 \
+    && poetry run pip install jupyterlab \
+    && poetry run pip install PyMuPDF pdf2image \
+    && poetry run python -c "from opencv_fixer import AutoFix; AutoFix()"
 
 # Copy the config file
 COPY config.yaml /app/config.yaml
@@ -57,6 +67,10 @@ RUN mkdir /app/input
 RUN poetry run python -c "import yaml; print(yaml.__file__)"
 RUN poetry run python -c "import openai; print(openai.__file__)"
 RUN poetry run python -c "import anthropic; print(anthropic.__file__)"
+RUN poetry run python -c "import cv2; print(cv2.__file__)"
+RUN poetry run python -c "from ultralytics import YOLO; print(YOLO)"
+RUN poetry run python -c "import fitz; print(fitz.__file__)"
+RUN poetry run python -c "import pdf2image; print(pdf2image.__file__)"
 
 # Development stage
 FROM base as development

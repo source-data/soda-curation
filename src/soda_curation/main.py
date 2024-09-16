@@ -11,6 +11,7 @@ from .pipeline.zip_structure.zip_structure_openai import StructureZipFileGPT
 from .pipeline.zip_structure.zip_structure_anthropic import StructureZipFileClaude
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
 from .pipeline.extract_captions.extract_captions_anthropic import FigureCaptionExtractorClaude
+from .pipeline.object_detection.object_detection import create_object_detection
 from .pipeline.zip_structure.zip_structure_base import CustomJSONEncoder
 
 def main():
@@ -54,6 +55,9 @@ def main():
         logger.error(f"Unknown AI provider: {config['ai']}")
         sys.exit(1)
 
+    # Initialize object detection
+    object_detector = create_object_detection(config)
+
     logger.info("Processing ZIP structure")
     result = zip_processor.process_zip_structure(file_list)
     if result:
@@ -71,9 +75,36 @@ def main():
             sys.exit(1)
         
         logger.info(f"Using DOCX file: {docx_path}")
-        logger.info("Extracting captions")
+        logger.info("Extracting captions from DOCX")
         result = caption_extractor.extract_captions(docx_path, result)
+        
+        # Check if captions were successfully extracted from DOCX
+        if all(figure.figure_caption == "Figure caption not found." for figure in result.figures):
+            logger.info("No captions found in DOCX. Attempting to extract from PDF.")
+            pdf_path = os.path.join(extract_dir, result.pdf)
+            if os.path.exists(pdf_path):
+                result = caption_extractor.extract_captions(pdf_path, result)
+            else:
+                logger.warning(f"PDF file not found at expected path: {pdf_path}")
+        
         logger.info("Captions extraction process completed")
+
+        # Perform object detection on figure images
+        logger.info("Performing object detection on figure images")
+        for figure in result.figures:
+            if figure.img_files:
+                img_path = os.path.join(extract_dir, figure.img_files[0])
+                if os.path.exists(img_path):
+                    try:
+                        panels = object_detector.detect_panels(img_path)
+                        figure.panels = panels
+                        logger.info(f"Detected {len(panels)} panels in {img_path}")
+                    except Exception as e:
+                        logger.error(f"Error during panel detection for {img_path}: {str(e)}")
+                        figure.panels = []
+                else:
+                    logger.warning(f"Image file not found: {img_path}")
+
         print(json.dumps(result, indent=2, cls=CustomJSONEncoder))
     else:
         logger.error("Failed to process ZIP structure")

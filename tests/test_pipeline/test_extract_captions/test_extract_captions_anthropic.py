@@ -50,11 +50,7 @@ def test_claude_extract_captions_success(mock_anthropic_client, sample_zip_struc
     mock_anthropic_client.return_value.messages.create.return_value = mock_response
 
     extractor = FigureCaptionExtractorClaude(sample_config)
-    with patch.object(extractor, '_parse_response', return_value={
-        "Figure 1": "This is caption for Figure 1",
-        "Figure 2": "This is caption for Figure 2"
-    }):
-        result = extractor.extract_captions("test.docx", sample_zip_structure)
+    result = extractor.extract_captions("test.docx", sample_zip_structure)
 
     assert result.figures[0].figure_caption == "This is caption for Figure 1"
     assert result.figures[1].figure_caption == "This is caption for Figure 2"
@@ -65,7 +61,8 @@ def test_claude_extract_captions_api_error(mock_anthropic_client, sample_zip_str
     extractor = FigureCaptionExtractorClaude(sample_config)
     result = extractor.extract_captions("test.docx", sample_zip_structure)
 
-    assert result == sample_zip_structure  # Should return original structure on error
+    assert result.figures[0].figure_caption == "Figure caption not found."
+    assert result.figures[1].figure_caption == "Figure caption not found."
 
 def test_claude_extract_captions_invalid_json(mock_anthropic_client, sample_zip_structure, sample_config, mock_file_operations):
     mock_response = Mock()
@@ -73,8 +70,7 @@ def test_claude_extract_captions_invalid_json(mock_anthropic_client, sample_zip_
     mock_anthropic_client.return_value.messages.create.return_value = mock_response
 
     extractor = FigureCaptionExtractorClaude(sample_config)
-    with patch.object(extractor, '_parse_response', return_value={}):
-        result = extractor.extract_captions("test.docx", sample_zip_structure)
+    result = extractor.extract_captions("test.docx", sample_zip_structure)
 
     assert result.figures[0].figure_caption == "Figure caption not found."
     assert result.figures[1].figure_caption == "Figure caption not found."
@@ -87,10 +83,7 @@ def test_claude_extract_captions_missing_figures(mock_anthropic_client, sample_z
     mock_anthropic_client.return_value.messages.create.return_value = mock_response
 
     extractor = FigureCaptionExtractorClaude(sample_config)
-    with patch.object(extractor, '_parse_response', return_value={
-        "Figure 1": "This is caption for Figure 1"
-    }):
-        result = extractor.extract_captions("test.docx", sample_zip_structure)
+    result = extractor.extract_captions("test.docx", sample_zip_structure)
 
     assert result.figures[0].figure_caption == "This is caption for Figure 1"
     assert result.figures[1].figure_caption == "Figure caption not found."
@@ -104,11 +97,7 @@ def test_claude_extract_captions_pdf_fallback(mock_anthropic_client, sample_zip_
     mock_anthropic_client.return_value.messages.create.return_value = mock_response
 
     extractor = FigureCaptionExtractorClaude(sample_config)
-    with patch.object(extractor, '_parse_response', return_value={
-        "Figure 1": "This is caption for Figure 1 from PDF",
-        "Figure 2": "This is caption for Figure 2 from PDF"
-    }):
-        result = extractor.extract_captions("test.pdf", sample_zip_structure)
+    result = extractor.extract_captions("test.pdf", sample_zip_structure)
 
     assert result.figures[0].figure_caption == "This is caption for Figure 1 from PDF"
     assert result.figures[1].figure_caption == "This is caption for Figure 2 from PDF"
@@ -119,8 +108,7 @@ def test_claude_extract_captions_empty_response(mock_anthropic_client, sample_zi
     mock_anthropic_client.return_value.messages.create.return_value = mock_response
 
     extractor = FigureCaptionExtractorClaude(sample_config)
-    with patch.object(extractor, '_parse_response', return_value={}):
-        result = extractor.extract_captions("test.docx", sample_zip_structure)
+    result = extractor.extract_captions("test.docx", sample_zip_structure)
 
     assert result.figures[0].figure_caption == "Figure caption not found."
     assert result.figures[1].figure_caption == "Figure caption not found."
@@ -131,20 +119,18 @@ def test_claude_extract_captions_malformed_json(mock_anthropic_client, sample_zi
     mock_anthropic_client.return_value.messages.create.return_value = mock_response
 
     extractor = FigureCaptionExtractorClaude(sample_config)
-    with patch.object(extractor, '_parse_response', return_value={"Figure 1": "Caption 1"}):
-        result = extractor.extract_captions("test.docx", sample_zip_structure)
+    result = extractor.extract_captions("test.docx", sample_zip_structure)
 
-    assert result.figures[0].figure_caption == "Caption 1"
+    assert result.figures[0].figure_caption == "Figure caption not found."
     assert result.figures[1].figure_caption == "Figure caption not found."
 
-@patch('soda_curation.pipeline.extract_captions.extract_captions_anthropic.Document')
-def test_claude_extract_captions_file_not_found(mock_document, mock_anthropic_client, sample_zip_structure, sample_config):
-    mock_document.side_effect = FileNotFoundError("File not found")
+def test_claude_extract_captions_file_not_found(mock_anthropic_client, sample_zip_structure, sample_config):
+    with patch('soda_curation.pipeline.extract_captions.extract_captions_anthropic.Document', side_effect=FileNotFoundError("File not found")):
+        extractor = FigureCaptionExtractorClaude(sample_config)
+        result = extractor.extract_captions("nonexistent.docx", sample_zip_structure)
 
-    extractor = FigureCaptionExtractorClaude(sample_config)
-    result = extractor.extract_captions("nonexistent.docx", sample_zip_structure)
-
-    assert result == sample_zip_structure  # Should return original structure on file not found
+    assert result.figures[0].figure_caption == "Figure caption not found."
+    assert result.figures[1].figure_caption == "Figure caption not found."
 
 def test_claude_extract_captions_unexpected_error(mock_anthropic_client, sample_zip_structure, sample_config, mock_file_operations):
     mock_anthropic_client.return_value.messages.create.side_effect = ValueError("Unexpected error")
@@ -152,4 +138,6 @@ def test_claude_extract_captions_unexpected_error(mock_anthropic_client, sample_
     extractor = FigureCaptionExtractorClaude(sample_config)
     result = extractor.extract_captions("test.docx", sample_zip_structure)
 
-    assert result == sample_zip_structure  # Should return original structure on unexpected error
+    assert result.figures[0].figure_caption == "Figure caption not found."
+    assert result.figures[1].figure_caption == "Figure caption not found."
+

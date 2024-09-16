@@ -15,8 +15,12 @@ anthropic:
   top_p: 1.0
   top_k: 5
 
+object_detection:
+  model_path: "data/models/panel_detection_model_no_labels.pt"
+  
 logging:
   level: "INFO"  # Can be DEBUG, INFO, WARNING, ERROR, CRITICAL
   file: "soda_curation.log"
   format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   date_format: "%Y-%m-%d %H:%M:%S"
+

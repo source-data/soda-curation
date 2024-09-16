@@ -18,7 +18,7 @@ ABSOLUTE_ZIP_PATH=$(realpath "$ZIP_FILE")
 ABSOLUTE_CONFIG_PATH=$(realpath "config.yaml")
 
 # Use a CPU-only base image
-docker run \
+docker run -it \
     -v "$ABSOLUTE_CONFIG_PATH:/app/config.yaml" \
     -v "$ABSOLUTE_ZIP_PATH:/app/input/$ZIP_FILENAME" \
     soda-curation-cpu \

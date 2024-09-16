@@ -9,7 +9,7 @@ from docx import Document
 from docx.opc.exceptions import PackageNotFoundError
 from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import get_extract_captions_prompt
-from ..zip_structure.zip_structure_base import ZipStructure
+from ..zip_structure.zip_structure_base import ZipStructure, Figure
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             file_content = self._extract_docx_content(new_file_path)
             if not file_content:
                 logger.warning(f"No content extracted from {new_file_path}")
-                return zip_structure
+                return self._update_zip_structure(zip_structure, {})
 
             prompt = get_extract_captions_prompt(file_content)
             
@@ -167,3 +167,21 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         logger.debug(f"Parsed {len(captions)} captions using regex")
         return captions
 
+    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
+        """
+        Update the ZipStructure with extracted captions.
+
+        Args:
+            zip_structure (ZipStructure): The current ZIP structure.
+            captions (Dict[str, str]): Dictionary of figure labels and their captions.
+
+        Returns:
+            ZipStructure: Updated ZIP structure.
+        """
+        for figure in zip_structure.figures:
+            if figure.figure_label in captions:
+                figure.figure_caption = captions[figure.figure_label]
+            else:
+                figure.figure_caption = "Figure caption not found."
+                logger.warning(f"No caption found for {figure.figure_label}")
+        return zip_structure
