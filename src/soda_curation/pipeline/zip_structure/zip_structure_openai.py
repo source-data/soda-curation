@@ -1,8 +1,11 @@
 import openai
+import logging
 from typing import List, Dict
 from .zip_structure_base import StructureZipFile, ZipStructure
 from openai.types.beta.thread import Thread
 from .zip_structure_prompts import get_structure_zip_prompt
+
+logger = logging.getLogger(__name__)
 
 class StructureZipFileGPT(StructureZipFile):
     """
@@ -41,6 +44,7 @@ class StructureZipFileGPT(StructureZipFile):
             top_p=self.config['top_p'],
             instructions=prompt
         )
+        logger.info("OpenAI assistant initialized and updated")
 
     def _prepare_query(self, file_list: List[str]) -> Thread:
         """
@@ -60,33 +64,8 @@ class StructureZipFileGPT(StructureZipFile):
                 }
             ]
         )
+        logger.debug(f"Query prepared with file list: {file_list}")
         return thread
-
-    def _run_prompt(self, file_list: List[str]) -> str:
-        """
-        Process the input user prompt using the AI assistant.
-
-        Args:
-            file_list (List[str]): List of files in the ZIP file.
-
-        Returns:
-            str: JSON string from the AI assistant or status of the run.
-        """
-        thread = self._prepare_query(f"""[{", ".join(file_list)}]""")
-
-        run = self._client.beta.threads.runs.create_and_poll(
-            thread_id=thread.id,
-            assistant_id=self._assistant.id,
-        )
-
-        if run.status == 'completed':
-            messages = self._client.beta.threads.messages.list(
-                thread_id=thread.id
-            )
-            result = messages.data[0].content[0].text.value
-            return result
-        else:
-            return run.status
 
     def process_zip_structure(self, file_list: List[str]) -> ZipStructure:
         """
@@ -115,13 +94,12 @@ class StructureZipFileGPT(StructureZipFile):
                     thread_id=thread.id
                 )
                 result = messages.data[0].content[0].text.value
-                print(f"Debug - AI response: {result}")  # Debug print
+                logger.debug(f"AI response: {result}")
                 return self._json_to_zip_structure(result)
             else:
-                print(f"Debug - AI response: {run.status}")  # Debug print
+                logger.error(f"AI processing failed with status: {run.status}")
                 return run.status
 
         except Exception as e:
-            print(f"Error in AI processing: {str(e)}")
+            logger.exception(f"Error in AI processing: {str(e)}")
             return None
-

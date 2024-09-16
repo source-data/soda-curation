@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 from dataclasses import dataclass, asdict
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 @dataclass
 class Figure:
@@ -109,7 +112,7 @@ class StructureZipFile(ABC):
             data = json.loads(json_str)
             required_fields = ['manuscript_id', 'xml', 'docx', 'pdf', 'appendix', 'figures']
             if not all(field in data for field in required_fields):
-                print(f"Error: Missing required fields in JSON response")
+                logger.error("Missing required fields in JSON response")
                 return None
 
             figures = []
@@ -123,7 +126,7 @@ class StructureZipFile(ABC):
                         figure_panels=fig.get('figure_panels', [])
                     ))
                 except KeyError as e:
-                    print(f"Error: Missing key in figure data: {str(e)}")
+                    logger.error(f"Missing key in figure data: {str(e)}")
                     return None
             
             appendix = data.get('appendix', [])
@@ -141,11 +144,11 @@ class StructureZipFile(ABC):
                 figures=figures
             )
         except json.JSONDecodeError:
-            print("Error: Invalid JSON response from AI")
+            logger.error("Invalid JSON response from AI")
             return None
         except KeyError as e:
-            print(f"Error: Missing key in JSON response: {str(e)}")
+            logger.error(f"Missing key in JSON response: {str(e)}")
             return None
         except Exception as e:
-            print(f"Error in parsing AI response: {str(e)}")
+            logger.exception(f"Error in parsing AI response: {str(e)}")
             return None

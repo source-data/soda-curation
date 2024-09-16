@@ -1,7 +1,10 @@
 from anthropic import Anthropic
+import logging
 from typing import List, Dict, Union
-from .zip_structure_base import StructureZipFile, ZipStructure, Figure
+from .zip_structure_base import StructureZipFile, ZipStructure
 from .zip_structure_prompts import get_structure_zip_prompt
+
+logger = logging.getLogger(__name__)
 
 class StructureZipFileClaude(StructureZipFile):
     """
@@ -23,6 +26,7 @@ class StructureZipFileClaude(StructureZipFile):
         """
         self.anthropic = Anthropic(api_key=config['api_key'])
         self.config = config
+        logger.info("Anthropic client initialized")
 
     def process_zip_structure(self, file_list: List[str]) -> ZipStructure:
         """
@@ -55,10 +59,10 @@ class StructureZipFileClaude(StructureZipFile):
 
             json_response = response.content
             json_str = self._extract_json(json_response)
-            print(f"Debug - AI response: {json_str}")  # Debug print
+            logger.debug(f"AI response: {json_str}")
             return self._json_to_zip_structure(json_str)
         except Exception as e:
-            print(f"Error in AI processing: {str(e)}")
+            logger.exception(f"Error in AI processing: {str(e)}")
             return None
 
     def _extract_json(self, response: Union[str, List]) -> str:
@@ -89,4 +93,5 @@ class StructureZipFileClaude(StructureZipFile):
         if start != -1 and end != -1:
             return text[start:end+1]
         else:
+            logger.error("No valid JSON object found in the response")
             raise ValueError("No valid JSON object found in the response")
