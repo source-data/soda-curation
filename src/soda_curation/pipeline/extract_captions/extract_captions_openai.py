@@ -17,7 +17,9 @@ from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import get_extract_captions_prompt
 from ..zip_structure.zip_structure_base import ZipStructure
 import re
+import logging
 
+logger = logging.getLogger(__name__)
 class FigureCaptionExtractorGpt(FigureCaptionExtractor):
     """
     A class to extract figure captions using OpenAI's GPT model and an assistant.
@@ -142,7 +144,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             ZipStructure: Updated ZIP structure with extracted captions.
         """
         try:
-            print(f"Debug: Processing file: {docx_path}")
+            logger.info(f"Processing file: {docx_path}")
             
             if not os.path.exists(docx_path):
                 raise FileNotFoundError(f"File not found: {docx_path}")
@@ -164,12 +166,12 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 captions = self._parse_response(result)
                 
                 if not captions:
-                    print("Debug: Failed to extract captions from GPT's response")
+                    logger.warning("Failed to extract captions from GPT's response")
                 
                 updated_structure = self._update_zip_structure(zip_structure, captions)
-                print(f"Debug: Updated ZIP structure: {updated_structure}")
+                logger.info(f"Updated ZIP structure: {updated_structure}")
             else:
-                print(f"Debug: Assistant run failed with status: {run.status}")
+                logger.error(f"Assistant run failed with status: {run.status}")
                 return zip_structure
 
             # Clean up the file
@@ -178,10 +180,10 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             return updated_structure
         
         except FileNotFoundError as e:
-            print(f"Error: {str(e)}")
+            logger.error(f"File not found: {str(e)}")
             return zip_structure
         except Exception as e:
-            print(f"Error in caption extraction: {str(e)}")
+            logger.exception(f"Error in caption extraction: {str(e)}")
             return zip_structure
 
     def _parse_response(self, response_text: str) -> Dict[str, str]:
@@ -201,13 +203,13 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             try:
                 return json.loads(json_str)
             except json.JSONDecodeError:
-                print("Failed to parse JSON from code block. Attempting to parse entire response.")
+                logger.warning("Failed to parse JSON from code block. Attempting to parse entire response.")
         
         # If no code block or parsing failed, try to parse the entire response
         try:
             return json.loads(response_text)
         except json.JSONDecodeError:
-            print("Failed to parse JSON from GPT's response. Attempting regex parsing.")
+            logger.warning("Failed to parse JSON from GPT's response. Attempting regex parsing.")
             return self._parse_figure_captions(response_text)
 
     def _parse_figure_captions(self, text: str) -> Dict[str, str]:

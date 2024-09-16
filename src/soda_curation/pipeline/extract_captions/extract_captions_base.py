@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
+import logging
 from typing import Dict, Any
 from ..zip_structure.zip_structure_base import ZipStructure
+
+logger = logging.getLogger(__name__)
 
 class FigureCaptionExtractor(ABC):
     """
@@ -35,4 +38,7 @@ class FigureCaptionExtractor(ABC):
         for figure in zip_structure.figures:
             if figure.figure_label in captions:
                 figure.figure_caption = captions[figure.figure_label]
+                logger.debug(f"Updated caption for {figure.figure_label}")
+            else:
+                logger.warning(f"No caption found for {figure.figure_label}")
         return zip_structure

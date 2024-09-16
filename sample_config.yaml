@@ -14,3 +14,9 @@ anthropic:
   max_tokens_to_sample: 8000
   top_p: 1.0
   top_k: 5
+
+logging:
+  level: "INFO"  # Can be DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "soda_curation.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"

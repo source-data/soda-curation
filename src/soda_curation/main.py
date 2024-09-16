@@ -3,8 +3,10 @@ import json
 import zipfile
 import sys
 import os
+import logging
 from pathlib import Path
 from .config import load_config
+from .logging_config import setup_logging
 from .pipeline.zip_structure.zip_structure_openai import StructureZipFileGPT
 from .pipeline.zip_structure.zip_structure_anthropic import StructureZipFileClaude
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
@@ -22,10 +24,14 @@ def main():
         sys.exit(1)
 
     config = load_config(args.config)
+    setup_logging(config)
+    
+    logger = logging.getLogger(__name__)
+    
     zip_path = Path(args.zip)
     
     if not zip_path.is_file():
-        print(f"Error: ZIP file not found: {args.zip}")
+        logger.error(f"ZIP file not found: {args.zip}")
         sys.exit(1)
 
     extract_dir = zip_path.parent / zip_path.stem
@@ -33,9 +39,9 @@ def main():
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             file_list = zip_ref.namelist()
             zip_ref.extractall(extract_dir)
-        print(f"Extracted ZIP contents to: {extract_dir}")
+        logger.info(f"Extracted ZIP contents to: {extract_dir}")
     except zipfile.BadZipFile:
-        print(f"Error: Invalid ZIP file: {args.zip}")
+        logger.error(f"Invalid ZIP file: {args.zip}")
         sys.exit(1)
 
     if config['ai'] == 'openai':
@@ -45,40 +51,36 @@ def main():
         zip_processor = StructureZipFileClaude(config['anthropic'])
         caption_extractor = FigureCaptionExtractorClaude(config['anthropic'])
     else:
-        print(f"Error: Unknown AI provider: {config['ai']}")
+        logger.error(f"Unknown AI provider: {config['ai']}")
         sys.exit(1)
 
-    print("Debug: Processing ZIP structure")
+    logger.info("Processing ZIP structure")
     result = zip_processor.process_zip_structure(file_list)
     if result:
-        print("Debug: ZIP structure processed successfully")
+        logger.info("ZIP structure processed successfully")
         
-        docx_path = os.path.join(extract_dir, result.docx) if result.docx else None
-        pdf_path = os.path.join(extract_dir, result.pdf) if result.pdf else None
-        
-        if not docx_path and not pdf_path:
-            print("Error: No DOCX or PDF file found in the ZIP structure")
+        # Get the DOCX file path from the ZIP structure result
+        docx_file = result.docx
+        if not docx_file:
+            logger.error("No DOCX file found in the ZIP structure")
             sys.exit(1)
         
-        captions_found = False
+        docx_path = os.path.join(extract_dir, docx_file)
+        if not os.path.exists(docx_path):
+            logger.error(f"DOCX file not found at expected path: {docx_path}")
+            sys.exit(1)
         
-        if docx_path and os.path.exists(docx_path):
-            print(f"Debug: Extracting captions from DOCX file: {docx_path}")
-            result = caption_extractor.extract_captions(docx_path, result)
-            captions_found = any(fig.figure_caption != "Figure caption not found." for fig in result.figures)
-        
-        if not captions_found and pdf_path and os.path.exists(pdf_path):
-            print(f"Debug: Captions not found in DOCX. Extracting from PDF file: {pdf_path}")
-            result = caption_extractor.extract_captions(pdf_path, result)
-        
-        print("Debug: Captions extraction process completed")
+        logger.info(f"Using DOCX file: {docx_path}")
+        logger.info("Extracting captions")
+        result = caption_extractor.extract_captions(docx_path, result)
+        logger.info("Captions extraction process completed")
         print(json.dumps(result, indent=2, cls=CustomJSONEncoder))
     else:
-        print("Error: Failed to process ZIP structure")
+        logger.error("Failed to process ZIP structure")
         sys.exit(1)
 
     # Clean up extracted files
-    print(f"Debug: Cleaning up extracted files")
+    logger.info("Cleaning up extracted files")
     for root, dirs, files in os.walk(extract_dir, topdown=False):
         for name in files:
             os.remove(os.path.join(root, name))

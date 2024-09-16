@@ -2,7 +2,7 @@ import json
 import os
 import re
 import shutil
-import traceback
+import logging
 from typing import Dict, Any
 from anthropic import Anthropic
 from docx import Document
@@ -10,6 +10,8 @@ from docx.opc.exceptions import PackageNotFoundError
 from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import get_extract_captions_prompt
 from ..zip_structure.zip_structure_base import ZipStructure
+
+logger = logging.getLogger(__name__)
 
 class FigureCaptionExtractorClaude(FigureCaptionExtractor):
     """
@@ -38,23 +40,23 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             ZipStructure: Updated ZIP structure with extracted captions.
         """
         try:
-            print(f"Debug: Processing file: {docx_path}")
+            logger.info(f"Processing file: {docx_path}")
             
             # Copy file to a non-temporary location
             home_dir = os.path.expanduser("~")
             file_name = os.path.basename(docx_path)
             new_file_path = os.path.join(home_dir, file_name)
             shutil.copy2(docx_path, new_file_path)
-            print(f"Copied file to: {new_file_path}")
+            logger.debug(f"Copied file to: {new_file_path}")
 
             file_content = self._extract_docx_content(new_file_path)
             if not file_content:
-                print(f"No content extracted from {new_file_path}")
+                logger.warning(f"No content extracted from {new_file_path}")
                 return zip_structure
 
             prompt = get_extract_captions_prompt(file_content)
             
-            print("Debug: Sending request to Anthropic API")
+            logger.debug("Sending request to Anthropic API")
             response = self.client.messages.create(
                 model=self.config['model'],
                 max_tokens=self.config['max_tokens_to_sample'],
@@ -64,40 +66,21 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             )
             
             extracted_text = response.content
-            print(f"Debug: Full response from Anthropic API:\n{extracted_text}")
+            logger.debug(f"Full response from Anthropic API:\n{extracted_text}")
             
             captions = self._parse_response(extracted_text)
             if not captions:
-                print("Debug: Failed to extract captions from Claude's response")
+                logger.warning("Failed to extract captions from Claude's response")
                 return self._update_zip_structure(zip_structure, {})
             
             updated_structure = self._update_zip_structure(zip_structure, captions)
-            print(f"Debug: Updated ZIP structure: {updated_structure}")
+            logger.info(f"Updated ZIP structure: {updated_structure}")
             
             return updated_structure
         
         except Exception as e:
-            print(f"Error in caption extraction: {str(e)}")
-            print(traceback.format_exc())
+            logger.exception(f"Error in caption extraction: {str(e)}")
             return self._update_zip_structure(zip_structure, {})
-
-    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
-        """
-        Update the ZipStructure with extracted captions.
-
-        Args:
-            zip_structure (ZipStructure): The current ZIP structure.
-            captions (Dict[str, str]): Dictionary of figure labels and their captions.
-
-        Returns:
-            ZipStructure: Updated ZIP structure.
-        """
-        for figure in zip_structure.figures:
-            if figure.figure_label in captions:
-                figure.figure_caption = captions[figure.figure_label]
-            elif figure.figure_caption == "TO BE ADDED IN LATER STEP":
-                figure.figure_caption = "Figure caption not found."
-        return zip_structure
 
     def _extract_docx_content(self, file_path: str) -> str:
         """
@@ -127,12 +110,11 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             # Join paragraphs for each figure
             return "\n\n".join([f"{fig}\n" + "\n".join(paras) for fig, paras in figure_contents.items()])
         except PackageNotFoundError as e:
-            print(f"Error: Unable to open DOCX file. It may be corrupted or not a valid DOCX file: {file_path}")
-            print(f"Detailed error: {str(e)}")
+            logger.error(f"Unable to open DOCX file. It may be corrupted or not a valid DOCX file: {file_path}")
+            logger.error(f"Detailed error: {str(e)}")
             return ""
         except Exception as e:
-            print(f"Error reading DOCX file {file_path}: {str(e)}")
-            print(traceback.format_exc())
+            logger.exception(f"Error reading DOCX file {file_path}: {str(e)}")
             return ""
 
     def _parse_response(self, response_text: str) -> Dict[str, str]:
@@ -151,7 +133,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             if isinstance(captions, dict):
                 return captions
         except json.JSONDecodeError:
-            print("Failed to parse entire response as JSON. Attempting to extract JSON object.")
+            logger.warning("Failed to parse entire response as JSON. Attempting to extract JSON object.")
         
         # If parsing the entire response fails, try to extract a JSON object from the text
         match = re.search(r'\{.*\}', response_text, re.DOTALL)
@@ -161,7 +143,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
                 if isinstance(captions, dict):
                     return captions
             except json.JSONDecodeError:
-                print("Failed to parse extracted JSON object. Falling back to regex parsing.")
+                logger.warning("Failed to parse extracted JSON object. Falling back to regex parsing.")
         
         # If JSON parsing fails, fall back to regex parsing
         return self._parse_figure_captions(response_text)
@@ -182,4 +164,6 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             figure_label = match.group(1).strip().rstrip('.').rstrip(':')
             caption = match.group(2).strip()
             captions[figure_label] = caption
+        logger.debug(f"Parsed {len(captions)} captions using regex")
         return captions
+
