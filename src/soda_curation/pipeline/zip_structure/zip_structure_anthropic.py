@@ -1,5 +1,6 @@
 from anthropic import Anthropic
 import logging
+import sys
 from typing import List, Dict, Union
 from .zip_structure_base import StructureZipFile, ZipStructure
 from .zip_structure_prompts import get_structure_zip_prompt
@@ -62,7 +63,9 @@ class StructureZipFileClaude(StructureZipFile):
             logger.debug(f"AI response: {json_str}")
             return self._json_to_zip_structure(json_str)
         except Exception as e:
-            logger.exception(f"Error in AI processing: {str(e)}")
+            error_message = f"Error in AI processing: {str(e)}"
+            logger.error(error_message)
+            print(error_message, file=sys.stderr)  # Print to stderr
             return None
 
     def _extract_json(self, response: Union[str, List]) -> str:

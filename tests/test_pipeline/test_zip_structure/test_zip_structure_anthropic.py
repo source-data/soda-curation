@@ -195,4 +195,4 @@ def test_process_zip_structure_anthropic_error(mock_anthropic_client, sample_con
 
     assert result is None
     captured = capsys.readouterr()
-    assert "Error in AI processing: Anthropic API Error" in captured.out
+    assert "Error in AI processing: Anthropic API Error" in captured.err  # Check stderr instead of stdout
