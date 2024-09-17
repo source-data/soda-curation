@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import Mock, patch
 from soda_curation.pipeline.zip_structure.zip_structure_openai import StructureZipFileGPT
 from soda_curation.pipeline.zip_structure.zip_structure_base import StructureZipFile, ZipStructure, Figure
+import logging
 
 @pytest.fixture
 def mock_openai_client():
@@ -227,26 +228,27 @@ def test_custom_prompt_instructions(mock_openai_client, sample_config):
     update_call = mock_openai_client.return_value.beta.assistants.update.call_args
     assert "Custom instructions here" in update_call[1]['instructions']
 
-@pytest.mark.usefixtures("capsys")
-def test_process_zip_structure_openai_error(mock_openai_client, sample_config, sample_file_list, capsys):
+@pytest.mark.usefixtures("caplog")
+def test_process_zip_structure_openai_error(mock_openai_client, sample_config, sample_file_list, caplog):
     """
     Test ZIP structure processing when a specific OpenAI API error occurs.
 
     This test simulates a scenario where the OpenAI API call raises a specific
     OpenAI API error. It verifies that the process_zip_structure method correctly
-    handles the error, prints an appropriate error message, and returns None.
+    handles the error, logs an appropriate error message, and returns None.
 
     Args:
         mock_openai_client (Mock): Mocked OpenAI client.
         sample_config (dict): Sample configuration dictionary.
         sample_file_list (list): Sample list of files in the ZIP.
-        capsys: Pytest fixture to capture stdout and stderr.
+        caplog: Pytest fixture to capture log messages.
     """
     mock_openai_client.return_value.beta.threads.runs.create_and_poll.side_effect = Exception("OpenAI API Error")
+
+    caplog.set_level(logging.ERROR)
 
     gpt = StructureZipFileGPT(sample_config)
     result = gpt.process_zip_structure(sample_file_list)
 
     assert result is None
-    captured = capsys.readouterr()
-    assert "Error in AI processing: OpenAI API Error" in captured.out
+    assert "Error in AI processing: OpenAI API Error" in caplog.text
