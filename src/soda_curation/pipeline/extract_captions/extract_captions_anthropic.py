@@ -10,6 +10,22 @@ import re
 
 logger = logging.getLogger(__name__)
 
+from ..zip_structure.zip_structure_base import CustomJSONEncoder
+
+class CustomJSONDecoder(json.JSONDecoder):
+    def decode(self, s):
+        result = super().decode(s)
+        return self._decode(result)
+
+    def _decode(self, obj):
+        if isinstance(obj, dict):
+            return {key: self._decode(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [self._decode(item) for item in obj]
+        elif isinstance(obj, str):
+            return CustomJSONEncoder.unescape_string(obj)
+        return obj
+
 class FigureCaptionExtractorClaude(FigureCaptionExtractor):
     def __init__(self, config: Dict[str, Any]):
         self.config = config
@@ -81,33 +97,28 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         Returns:
             Dict[str, str]: A dictionary of figure labels and their captions.
         """
-        logger.debug(f"Raw response from Claude: {response_text}...")  # Log first 1000 characters
+        logger.debug(f"Raw response from Claude: {response_text[:1000]}...")  # Log first 1000 characters
 
-        def unescape_json(s):
-            """Unescape a JSON string, handling nested JSON strings."""
+        def extract_json(s):
+            """Extract JSON object from a string that may contain other text."""
+            json_match = re.search(r'\{[\s\S]*\}', s)
+            return json_match.group(0) if json_match else None
+
+        def parse_json(s):
+            """Parse JSON string using custom decoder."""
             try:
-                # Remove any leading/trailing quotation marks and spaces
-                s = s.strip().strip('"').strip()
-                # Unescape the string
-                s_unescaped = bytes(s, "utf-8").decode("unicode_escape")
-                # Parse the unescaped string as JSON
-                parsed = json.loads(s_unescaped)
-                return parsed
-            except Exception as e:
-                logger.warning(f"Failed to unescape and parse JSON: {str(e)}")
+                return json.loads(s, cls=CustomJSONDecoder)
+            except json.JSONDecodeError:
+                logger.warning(f"Failed to parse JSON: {s}")
                 return {}
 
-        # First, try to parse the entire response as JSON
-        captions = unescape_json(response_text)
-
-        # If JSON parsing fails, fall back to regex parsing
-        if not captions:
-            try:
-                captions = self._parse_figure_captions(response_text)
-                if captions:
-                    logger.info(f"Extracted {len(captions)} captions using regex parsing")
-            except Exception as e:
-                logger.error(f"Error during regex parsing: {str(e)}")
+        # Extract JSON object from the response
+        json_str = extract_json(response_text)
+        if json_str:
+            captions = parse_json(json_str)
+        else:
+            logger.error("No JSON object found in the response")
+            return {}
 
         if captions:
             logger.info(f"Successfully extracted {len(captions)} captions")
