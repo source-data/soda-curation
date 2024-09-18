@@ -70,8 +70,19 @@ class CustomJSONEncoder(json.JSONEncoder):
             Any: The default serialization for other types.
         """
         if isinstance(obj, (Panel, Figure, ZipStructure)):
-            return asdict(obj)
+            return self.serialize_dataclass(obj)
         return super().default(obj)
+
+    def serialize_dataclass(self, obj):
+        dict_repr = asdict(obj)
+        for key, value in dict_repr.items():
+            if isinstance(value, str):
+                dict_repr[key] = self.unescape_string(value)
+        return dict_repr
+
+    @staticmethod
+    def unescape_string(s):
+        return s.encode('utf-8').decode('unicode_escape')
 
 class StructureZipFile(ABC):
     """

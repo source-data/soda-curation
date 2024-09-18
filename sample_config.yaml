@@ -6,6 +6,7 @@ openai:
   top_p: 1.0
   temperature: 1.0
   structure_zip_assistant_id: "asst_ID"
+  caption_extraction_assistant_id: "asst_ID"
 
 anthropic:
   api_key: "your_anthropic_id"

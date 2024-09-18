@@ -107,7 +107,8 @@ def main():
                 else:
                     logger.warning(f"Image file not found: {img_path}")
 
-        print(json.dumps(result, indent=2, cls=CustomJSONEncoder))
+        print(json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2).encode('utf-8').decode())
+        print(result)
     else:
         logger.error("Failed to process ZIP structure")
         sys.exit(1)
