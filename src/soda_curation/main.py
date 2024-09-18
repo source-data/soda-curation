@@ -63,29 +63,31 @@ def main():
     if result:
         logger.info("ZIP structure processed successfully")
         
-        # Get the DOCX file path from the ZIP structure result
+        # Try to extract captions from DOCX first
         docx_file = result.docx
-        if not docx_file:
-            logger.error("No DOCX file found in the ZIP structure")
-            sys.exit(1)
-        
-        docx_path = os.path.join(extract_dir, docx_file)
-        if not os.path.exists(docx_path):
-            logger.error(f"DOCX file not found at expected path: {docx_path}")
-            sys.exit(1)
-        
-        logger.info(f"Using DOCX file: {docx_path}")
-        logger.info("Extracting captions from DOCX")
-        result = caption_extractor.extract_captions(docx_path, result)
-        
-        # Check if captions were successfully extracted from DOCX
+        if docx_file:
+            docx_path = os.path.join(extract_dir, docx_file)
+            if os.path.exists(docx_path):
+                logger.info(f"Extracting captions from DOCX: {docx_path}")
+                result = caption_extractor.extract_captions(docx_path, result)
+            else:
+                logger.warning(f"DOCX file not found at expected path: {docx_path}")
+        else:
+            logger.warning("No DOCX file found in the ZIP structure")
+
+        # If no captions were found in DOCX or DOCX doesn't exist, try PDF
         if all(figure.figure_caption == "Figure caption not found." for figure in result.figures):
             logger.info("No captions found in DOCX. Attempting to extract from PDF.")
-            pdf_path = os.path.join(extract_dir, result.pdf)
-            if os.path.exists(pdf_path):
-                result = caption_extractor.extract_captions(pdf_path, result)
+            pdf_file = result.pdf
+            if pdf_file:
+                pdf_path = os.path.join(extract_dir, pdf_file)
+                if os.path.exists(pdf_path):
+                    logger.info(f"Extracting captions from PDF: {pdf_path}")
+                    result = caption_extractor.extract_captions(pdf_path, result)
+                else:
+                    logger.warning(f"PDF file not found at expected path: {pdf_path}")
             else:
-                logger.warning(f"PDF file not found at expected path: {pdf_path}")
+                logger.warning("No PDF file found in the ZIP structure")
         
         logger.info("Captions extraction process completed")
 
