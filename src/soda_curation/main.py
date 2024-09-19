@@ -18,6 +18,8 @@ def main():
     parser = argparse.ArgumentParser(description="Process a ZIP file using soda-curation")
     parser.add_argument("--zip", help="Path to the input ZIP file")
     parser.add_argument("--config", help="Path to the configuration file")
+    parser.add_argument('-o', '--output', type=str, help='Path to the output file.')
+    
     args = parser.parse_args()
 
     if not args.zip or not args.config:
@@ -109,6 +111,9 @@ def main():
 
         print(json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2).encode('utf-8').decode())
         print(result)
+        
+        if args.output:
+            print(f"Add here some code to write the JSON file to {args.output}")
     else:
         logger.error("Failed to process ZIP structure")
         sys.exit(1)

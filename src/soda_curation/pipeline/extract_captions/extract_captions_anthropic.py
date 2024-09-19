@@ -78,7 +78,10 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
                 extracted_text = ' '.join(item.text for item in extracted_text if hasattr(item, 'text'))
             elif not isinstance(extracted_text, str):
                 extracted_text = str(extracted_text)
-            
+                
+            # Add this line to properly decode the response
+            extracted_text = extracted_text.encode('utf-8').decode('utf-8', 'ignore')
+
             logger.debug(f"Extracted text: {extracted_text}")
             
             captions = self._parse_response(extracted_text)
@@ -136,7 +139,8 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         def parse_json(s):
             """Parse JSON string."""
             try:
-                return json.loads(s)
+                # Ensure the JSON string is properly encoded
+                return json.loads(s.encode('utf-8').decode('utf-8', 'ignore'))
             except json.JSONDecodeError:
                 logger.warning(f"Failed to parse JSON: {s}")
                 return {}
@@ -171,7 +175,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         """
         for figure in zip_structure.figures:
             if figure.figure_label in captions:
-                figure.figure_caption = captions[figure.figure_label]
+                figure.figure_caption = captions[figure.figure_label].encode('utf-8').decode('utf-8', 'ignore')
             else:
                 figure.figure_caption = "Figure caption not found."
         return zip_structure
