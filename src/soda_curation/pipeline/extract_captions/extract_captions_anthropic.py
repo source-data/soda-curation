@@ -146,3 +146,11 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             captions[figure_label] = caption
         logger.debug(f"Parsed {len(captions)} captions using regex")
         return captions
+    
+    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
+        for figure in zip_structure.figures:
+            if figure.figure_label in captions:
+                figure.figure_caption = captions[figure.figure_label]
+            else:
+                figure.figure_caption = "Figure caption not found."
+        return zip_structure

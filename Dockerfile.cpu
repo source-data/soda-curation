@@ -73,8 +73,23 @@ RUN poetry run python -c "from ultralytics import YOLO; print(YOLO)"
 RUN poetry run python -c "import fitz; print(fitz.__file__)"
 RUN poetry run python -c "import pdf2image; print(pdf2image.__file__)"
 
+# Development stage
+FROM base as development
+
 # Set the entrypoint to use Poetry to run the script
 ENTRYPOINT ["poetry", "run", "python", "-m", "soda_curation.main"]
 
 # Set default command (can be overridden)
-CMD ["--zip", "/app/input/sample.zip", "--config", "/app/config.yaml" ]
+CMD ["--zip", "/app/input/sample.zip", "--config", "/app/config.yaml"]
+
+# Testing stage
+FROM base as testing
+
+# Copy test files
+COPY tests ./tests
+
+# Install test dependencies
+RUN poetry install --with dev
+
+# Run tests
+CMD ["poetry", "run", "pytest", "-v", "--cov=soda_curation", "--cov-report=term-missing"]
