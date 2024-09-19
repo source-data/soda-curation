@@ -18,7 +18,7 @@ def main():
     parser = argparse.ArgumentParser(description="Process a ZIP file using soda-curation")
     parser.add_argument("--zip", help="Path to the input ZIP file")
     parser.add_argument("--config", help="Path to the configuration file")
-    parser.add_argument('-o', '--output', type=str, help='Path to the output file.')
+    parser.add_argument('-o', '--output', type=str, required=False, help='Path to the output file.')
     
     args = parser.parse_args()
 
@@ -113,7 +113,21 @@ def main():
         print(result)
         
         if args.output:
-            print(f"Add here some code to write the JSON file to {args.output}")
+            output_dir = os.path.dirname(args.output)
+            if output_dir and not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+                logger.info(f"Created directory: {output_dir}")
+            # Check if the output file exists
+            if os.path.exists(args.output):
+                logger.warning(f"File {args.output} already exists and will be overwritten.")
+            
+            # Write JSON data to the output file with pretty formatting
+            try:
+                with open(args.output, 'w') as outfile:
+                    json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=4).encode('utf-8').decode()
+                logger.info(f"JSON data has been written to {args.output}")
+            except Exception as e:
+                logger.error(f"An error occurred while writing to the file: {e}")
     else:
         logger.error("Failed to process ZIP structure")
         sys.exit(1)
