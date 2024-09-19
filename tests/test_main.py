@@ -129,6 +129,18 @@ def mock_processors():
          patch('soda_curation.main.create_object_detection') as mock_object_detection:
         yield mock_gpt, mock_caption_extractor, mock_object_detection
 
+@pytest.fixture
+def mock_extract_captions():
+    """
+    Fixture to mock the caption extraction classes.
+    
+    This fixture provides mock objects for both OpenAI and Anthropic
+    caption extraction classes.
+    """
+    with patch('soda_curation.main.FigureCaptionExtractorGpt') as mock_gpt, \
+         patch('soda_curation.main.FigureCaptionExtractorClaude') as mock_claude:
+        yield mock_gpt, mock_claude
+
 def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json, mock_openai_client, mock_os):
     """
     Test the successful execution of the main function.

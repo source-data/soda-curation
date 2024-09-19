@@ -175,17 +175,18 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 logger.info(f"Updated ZIP structure: {updated_structure}")
             else:
                 logger.error(f"Assistant run failed with status: {run.status}")
-                return zip_structure
+                return self._update_zip_structure(zip_structure, {})  # Return structure with "Figure caption not found."
 
             self.client.files.delete(file_object.id)
             
             return updated_structure
         
-        except FileNotFoundError as e:
-            logger.error(f"File not found: {str(e)}")
-            return zip_structure
         except Exception as e:
             logger.exception(f"Error in caption extraction: {str(e)}")
+            return self._update_zip_structure(zip_structure, {})  # Return structure with "Figure caption not found."
+        
+        except FileNotFoundError as e:
+            logger.error(f"File not found: {str(e)}")
             return zip_structure
 
     def _parse_response(self, response_text: str) -> Dict[str, str]:
@@ -235,3 +236,11 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             caption = match.group(2).replace('\\n', '\n').strip()
             captions[figure_label] = caption
         return captions
+
+    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
+        for figure in zip_structure.figures:
+            if figure.figure_label in captions:
+                figure.figure_caption = captions[figure.figure_label]
+            else:
+                figure.figure_caption = "Figure caption not found."
+        return zip_structure
