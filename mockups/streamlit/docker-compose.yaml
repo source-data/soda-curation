@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  pdf-analysis-app:
+    build: .
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+    restart: on-failure
+    # working dir
+    working_dir: /app
+    # command to run the app
+    command: python -m streamlit run src/app.py
