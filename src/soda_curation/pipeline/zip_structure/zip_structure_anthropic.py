@@ -1,3 +1,10 @@
+"""
+This module provides functionality for processing ZIP file structures using Anthropic's Claude model.
+
+It includes a class that interacts with the Anthropic API to parse and structure
+the contents of a ZIP file containing manuscript data.
+"""
+
 from anthropic import Anthropic
 import logging
 import sys

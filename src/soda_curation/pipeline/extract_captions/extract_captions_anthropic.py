@@ -1,3 +1,11 @@
+"""
+This module provides functionality for extracting figure captions from scientific documents
+using the Anthropic API (Claude model).
+
+It includes a class that interacts with the Anthropic API to process document content and extract
+figure captions, which are then integrated into a ZipStructure object.
+"""
+
 import json
 import logging
 from typing import Dict, Any, Union
@@ -10,28 +18,42 @@ import re
 
 logger = logging.getLogger(__name__)
 
-from ..zip_structure.zip_structure_base import CustomJSONEncoder
-
-class CustomJSONDecoder(json.JSONDecoder):
-    def decode(self, s):
-        result = super().decode(s)
-        return self._decode(result)
-
-    def _decode(self, obj):
-        if isinstance(obj, dict):
-            return {key: self._decode(value) for key, value in obj.items()}
-        elif isinstance(obj, list):
-            return [self._decode(item) for item in obj]
-        elif isinstance(obj, str):
-            return CustomJSONEncoder.unescape_string(obj)
-        return obj
-
 class FigureCaptionExtractorClaude(FigureCaptionExtractor):
+    """
+    A class to extract figure captions using Anthropic's Claude model.
+
+    This class provides methods to interact with the Anthropic API, process DOCX files,
+    and extract figure captions using the Claude model.
+
+    Attributes:
+        config (Dict[str, Any]): Configuration dictionary for Anthropic API.
+        client (Anthropic): Anthropic API client.
+    """
+
     def __init__(self, config: Dict[str, Any]):
+        """
+        Initialize the FigureCaptionExtractorClaude instance.
+
+        Args:
+            config (Dict[str, Any]): Configuration dictionary for Anthropic API.
+        """
         self.config = config
         self.client = Anthropic(api_key=self.config['api_key'])
 
     def extract_captions(self, docx_path: str, zip_structure: ZipStructure) -> ZipStructure:
+        """
+        Extract figure captions from the given DOCX file using Anthropic's Claude model.
+
+        This method processes the DOCX file, sends its content to the Anthropic API,
+        and updates the ZipStructure with the extracted captions.
+
+        Args:
+            docx_path (str): Path to the DOCX file.
+            zip_structure (ZipStructure): The current ZIP structure.
+
+        Returns:
+            ZipStructure: Updated ZIP structure with extracted captions.
+        """
         try:
             logger.info(f"Processing file: {docx_path}")
             
@@ -51,18 +73,13 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
                 ]
             )
             
-            logger.debug(f"Response object type: {type(response)}")
-            logger.debug(f"Response object attributes: {dir(response)}")
-            
-            # Extract only the content from the response
             extracted_text = response.content
             if isinstance(extracted_text, list):
                 extracted_text = ' '.join(item.text for item in extracted_text if hasattr(item, 'text'))
             elif not isinstance(extracted_text, str):
                 extracted_text = str(extracted_text)
             
-            logger.debug(f"Extracted text type: {type(extracted_text)}")
-            logger.debug(f"Full extracted text: {extracted_text}")
+            logger.debug(f"Extracted text: {extracted_text}")
             
             captions = self._parse_response(extracted_text)
             if not captions:
@@ -79,6 +96,15 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             return self._update_zip_structure(zip_structure, {})
 
     def _extract_docx_content(self, file_path: str) -> str:
+        """
+        Extract text content from a DOCX file.
+
+        Args:
+            file_path (str): Path to the DOCX file.
+
+        Returns:
+            str: Extracted text content from the DOCX file.
+        """
         try:
             doc = Document(file_path)
             paragraphs = [para.text for para in doc.paragraphs if para.text.strip()]
@@ -91,13 +117,16 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         """
         Parse the response from Claude to extract figure captions.
 
+        This method attempts to extract a JSON object from the response text and parse it.
+        If successful, it returns a dictionary of figure labels and their captions.
+
         Args:
             response_text (str): The response text from Claude.
 
         Returns:
             Dict[str, str]: A dictionary of figure labels and their captions.
         """
-        logger.debug(f"Raw response from Claude: {response_text[:1000]}...")  # Log first 1000 characters
+        logger.debug(f"Raw response from Claude: {response_text[:1000]}...")
 
         def extract_json(s):
             """Extract JSON object from a string that may contain other text."""
@@ -105,14 +134,13 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             return json_match.group(0) if json_match else None
 
         def parse_json(s):
-            """Parse JSON string using custom decoder."""
+            """Parse JSON string."""
             try:
-                return json.loads(s, cls=CustomJSONDecoder)
+                return json.loads(s)
             except json.JSONDecodeError:
                 logger.warning(f"Failed to parse JSON: {s}")
                 return {}
 
-        # Extract JSON object from the response
         json_str = extract_json(response_text)
         if json_str:
             captions = parse_json(json_str)
@@ -127,27 +155,20 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             logger.error("Failed to extract any captions from Claude's response")
             return {}
 
-    def _parse_figure_captions(self, text: str) -> Dict[str, str]:
+    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
         """
-        Parse figure captions using regex.
+        Update the ZipStructure with extracted captions.
+
+        This method updates the figure captions in the ZipStructure based on the extracted captions.
+        If a caption is not found for a figure, it sets the caption to "Figure caption not found."
 
         Args:
-            text (str): The text to parse for figure captions.
+            zip_structure (ZipStructure): The current ZIP structure.
+            captions (Dict[str, str]): Dictionary of figure labels and their captions.
 
         Returns:
-            Dict[str, str]: A dictionary of figure labels and their captions.
+            ZipStructure: Updated ZIP structure with new captions.
         """
-        captions = {}
-        # Look for patterns like "Figure 1:", "Figure 1.", or just "Figure 1" followed by text
-        matches = re.finditer(r'(Figure \d+[.:]?)(.+?)(?=(Figure \d+[.:]?)|\Z)', text, re.DOTALL | re.IGNORECASE)
-        for match in matches:
-            figure_label = match.group(1).strip().rstrip('.').rstrip(':')
-            caption = match.group(2).strip()
-            captions[figure_label] = caption
-        logger.debug(f"Parsed {len(captions)} captions using regex")
-        return captions
-    
-    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
         for figure in zip_structure.figures:
             if figure.figure_label in captions:
                 figure.figure_caption = captions[figure.figure_label]

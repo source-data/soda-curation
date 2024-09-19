@@ -1,5 +1,6 @@
 """
-This module provides functionality for extracting figure captions from DOCX files using OpenAI's GPT model.
+This module provides functionality for extracting figure captions from scientific documents
+using the OpenAI API (GPT model).
 
 It includes a class that interacts with the OpenAI API to process document content and extract
 figure captions, which are then integrated into a ZipStructure object.
@@ -20,6 +21,7 @@ import re
 import logging
 
 logger = logging.getLogger(__name__)
+
 class FigureCaptionExtractorGpt(FigureCaptionExtractor):
     """
     A class to extract figure captions using OpenAI's GPT model and an assistant.
@@ -136,6 +138,9 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         """
         Extract figure captions from the given DOCX file using OpenAI's GPT model.
 
+        This method processes the DOCX file, sends its content to the OpenAI API,
+        and updates the ZipStructure with the extracted captions.
+
         Args:
             docx_path (str): Path to the DOCX file.
             zip_structure (ZipStructure): The current ZIP structure.
@@ -149,10 +154,8 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             if not os.path.exists(docx_path):
                 raise FileNotFoundError(f"File not found: {docx_path}")
 
-            # Prepare the query
             thread, file_object = self._prepare_query(docx_path)
 
-            # Run the assistant
             run = self.client.beta.threads.runs.create_and_poll(
                 thread_id=thread.id,
                 assistant_id=self.assistant.id,
@@ -174,7 +177,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 logger.error(f"Assistant run failed with status: {run.status}")
                 return zip_structure
 
-            # Clean up the file
             self.client.files.delete(file_object.id)
             
             return updated_structure
@@ -190,13 +192,15 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         """
         Parse the response from GPT to extract figure captions.
 
+        This method attempts to extract a JSON object from the response text and parse it.
+        If JSON parsing fails, it falls back to regex-based parsing.
+
         Args:
             response_text (str): The response text from GPT.
 
         Returns:
             Dict[str, str]: A dictionary of figure labels and their captions.
         """
-        # First, try to extract JSON from code block
         json_match = re.search(r'```json\n(.*?)```', response_text, re.DOTALL)
         if json_match:
             json_str = json_match.group(1)
@@ -205,7 +209,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             except json.JSONDecodeError:
                 logger.warning("Failed to parse JSON from code block. Attempting to parse entire response.")
         
-        # If no code block or parsing failed, try to parse the entire response
         try:
             return json.loads(response_text)
         except json.JSONDecodeError:
@@ -215,6 +218,9 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
     def _parse_figure_captions(self, text: str) -> Dict[str, str]:
         """
         Parse figure captions using regex if JSON parsing fails.
+
+        This method uses regular expressions to extract figure labels and captions
+        from the text response.
 
         Args:
             text (str): The text to parse for figure captions.
@@ -229,21 +235,3 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             caption = match.group(2).replace('\\n', '\n').strip()
             captions[figure_label] = caption
         return captions
-
-    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
-        """
-        Update the ZipStructure with extracted captions.
-
-        Args:
-            zip_structure (ZipStructure): The current ZIP structure.
-            captions (Dict[str, str]): Dictionary of figure labels and their captions.
-
-        Returns:
-            ZipStructure: Updated ZIP structure.
-        """
-        for figure in zip_structure.figures:
-            if figure.figure_label in captions:
-                figure.figure_caption = captions[figure.figure_label]
-            else:
-                figure.figure_caption = "Figure caption not found."
-        return zip_structure

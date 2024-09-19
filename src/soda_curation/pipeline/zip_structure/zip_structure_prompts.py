@@ -1,3 +1,10 @@
+"""
+This module provides prompt templates for ZIP structure analysis tasks.
+
+It contains predefined prompts that can be used with various AI models to analyze
+the structure of ZIP files containing manuscript data.
+"""
+
 from string import Template
 
 STRUCTURE_ZIP_PROMPT = Template("""
@@ -81,7 +88,7 @@ Output:
 }
 """
 
-def get_structure_zip_prompt(file_list, custom_instructions=None):
+def get_structure_zip_prompt(file_list: str, custom_instructions: str = None) -> str:
     """
     Generate a prompt for ZIP structure parsing.
 

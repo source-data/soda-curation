@@ -1,3 +1,10 @@
+"""
+This module provides prompt templates for figure caption extraction tasks.
+
+It contains predefined prompts that can be used with various AI models to extract
+figure captions from scientific documents.
+"""
+
 from string import Template
 
 EXTRACT_CAPTIONS_PROMPT = Template("""You are an AI assistant specialized in analyzing scientific manuscripts. Your task is to extract complete figure captions from the given text, which is from a scientific paper. Please follow these guidelines carefully:
@@ -42,4 +49,18 @@ $file_content
 """)
 
 def get_extract_captions_prompt(file_content: str) -> str:
+    """
+    Generate a prompt for extracting figure captions from a scientific document.
+
+    This function creates a prompt string that instructs an AI model to extract
+    figure captions from the given file content. The prompt includes detailed
+    guidelines on how to identify and format the captions.
+
+    Args:
+        file_content (str): The content of the scientific document from which
+                            captions should be extracted.
+
+    Returns:
+        str: A formatted prompt string for AI models to extract figure captions.
+    """
     return EXTRACT_CAPTIONS_PROMPT.substitute(file_content=file_content)

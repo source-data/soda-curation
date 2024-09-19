@@ -1,3 +1,10 @@
+"""
+This module provides functionality for processing ZIP file structures using OpenAI's GPT model.
+
+It includes a class that interacts with the OpenAI API to parse and structure
+the contents of a ZIP file containing manuscript data.
+"""
+
 import openai
 import logging
 from typing import List, Dict
@@ -49,6 +56,8 @@ class StructureZipFileGPT(StructureZipFile):
     def _prepare_query(self, file_list: List[str]) -> Thread:
         """
         Prepare a query thread for the OpenAI assistant.
+
+        This method creates a new thread with the file list as the initial message.
 
         Args:
             file_list (List[str]): List of files in the ZIP archive.

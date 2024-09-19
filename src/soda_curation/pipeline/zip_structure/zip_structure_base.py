@@ -1,3 +1,11 @@
+"""
+This module defines the base classes and data structures for representing and processing
+the structure of ZIP files containing manuscript data.
+
+It includes dataclasses for representing panels, figures, and the overall ZIP structure,
+as well as an abstract base class for ZIP structure processors and a custom JSON encoder.
+"""
+
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 from dataclasses import dataclass, asdict, field
@@ -8,6 +16,14 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Panel:
+    """
+    Represents a panel within a figure.
+
+    Attributes:
+        panel_label (str): The label of the panel (e.g., "A", "B", "C").
+        panel_caption (str): The caption specific to this panel.
+        panel_bbox (List[float]): Bounding box coordinates of the panel [x1, y1, x2, y2].
+    """
     panel_label: str
     panel_caption: str
     panel_bbox: List[float]
@@ -22,7 +38,8 @@ class Figure:
         img_files (List[str]): List of image file paths associated with the figure.
         sd_files (List[str]): List of source data file paths associated with the figure.
         figure_caption (str): The caption of the figure. Defaults to an empty string.
-        figure_panels (List[str]): List of panel descriptions for the figure. Defaults to an empty tuple.
+        figure_panels (List[str]): List of panel descriptions for the figure. Defaults to an empty list.
+        panels (List[Panel]): List of Panel objects representing individual panels in the figure.
     """
     figure_label: str
     img_files: List[str]
@@ -55,18 +72,18 @@ class CustomJSONEncoder(json.JSONEncoder):
     """
     Custom JSON encoder for ZipStructure and Figure objects.
 
-    This encoder extends the default JSONEncoder to handle ZipStructure and Figure objects,
+    This encoder extends the default JSONEncoder to handle ZipStructure, Figure, and Panel objects,
     converting them to dictionaries for JSON serialization.
     """
     def default(self, obj):
         """
-        Converts ZipStructure and Figure objects to dictionaries.
+        Converts ZipStructure, Figure, and Panel objects to dictionaries.
 
         Args:
             obj: The object to be serialized.
 
         Returns:
-            dict: A dictionary representation of the object if it's a ZipStructure or Figure instance.
+            dict: A dictionary representation of the object if it's a ZipStructure, Figure, or Panel instance.
             Any: The default serialization for other types.
         """
         if isinstance(obj, (Panel, Figure, ZipStructure)):
@@ -74,6 +91,15 @@ class CustomJSONEncoder(json.JSONEncoder):
         return super().default(obj)
 
     def serialize_dataclass(self, obj):
+        """
+        Serialize a dataclass object to a dictionary.
+
+        Args:
+            obj: The dataclass object to serialize.
+
+        Returns:
+            dict: A dictionary representation of the dataclass object.
+        """
         dict_repr = asdict(obj)
         for key, value in dict_repr.items():
             if isinstance(value, str):
@@ -82,6 +108,15 @@ class CustomJSONEncoder(json.JSONEncoder):
 
     @staticmethod
     def unescape_string(s):
+        """
+        Unescape a string that may contain escaped characters.
+
+        Args:
+            s (str): The string to unescape.
+
+        Returns:
+            str: The unescaped string.
+        """
         return s.encode('utf-8').decode('unicode_escape')
 
 class StructureZipFile(ABC):

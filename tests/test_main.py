@@ -1,10 +1,17 @@
+"""
+This module contains unit tests for the main functionality of the soda_curation package.
+
+It tests various aspects of the main application, including command-line argument parsing,
+configuration loading, ZIP file processing, and integration with different AI providers
+(OpenAI and Anthropic) for caption extraction and structure analysis.
+"""
+
 import pytest
-from unittest.mock import patch, Mock, MagicMock, ANY
+from unittest.mock import Mock, patch, MagicMock, ANY
 import zipfile
 from soda_curation.main import main
 import json
 from soda_curation.pipeline.zip_structure.zip_structure_base import ZipStructure, Figure
-
 
 @pytest.fixture
 def mock_argparse():
@@ -40,7 +47,6 @@ def mock_load_config():
         }
         yield mock_config
 
-
 @pytest.fixture
 def mock_zipfile():
     """
@@ -66,6 +72,11 @@ def mock_json():
 
 @pytest.fixture
 def mock_openai_client():
+    """
+    Fixture to mock the OpenAI client.
+    
+    This allows us to simulate interactions with the OpenAI API without making actual API calls.
+    """
     with patch('soda_curation.pipeline.extract_captions.extract_captions_openai.openai.OpenAI') as mock_client:
         mock_client.return_value.beta.assistants.update.return_value = MagicMock()
         mock_client.return_value.beta.assistants.create.return_value = MagicMock()
@@ -73,24 +84,46 @@ def mock_openai_client():
 
 @pytest.fixture
 def mock_anthropic_client():
+    """
+    Fixture to mock the Anthropic client.
+    
+    This allows us to simulate interactions with the Anthropic API without making actual API calls.
+    """
     with patch('soda_curation.pipeline.extract_captions.extract_captions_anthropic.Anthropic') as mock_client:
         mock_client.return_value.messages.create.return_value = MagicMock()
         yield mock_client
 
 @pytest.fixture
 def mock_os():
+    """
+    Fixture to mock various os module functions.
+    
+    This allows us to simulate file system operations without affecting the actual file system.
+    """
     with patch('os.path.exists', return_value=True), \
          patch('os.remove'), \
          patch('os.rmdir'), \
          patch('os.walk', return_value=[]):
         yield
+
 @pytest.fixture
 def mock_setup_logging():
+    """
+    Fixture to mock the setup_logging function.
+    
+    This allows us to test logging setup without actually configuring the logger.
+    """
     with patch('soda_curation.main.setup_logging') as mock_logging:
         yield mock_logging
 
 @pytest.fixture
 def mock_processors():
+    """
+    Fixture to mock various processor classes used in the main module.
+    
+    This allows us to simulate the behavior of different processing components
+    without instantiating them or running their actual logic.
+    """
     with patch('soda_curation.main.StructureZipFileGPT') as mock_gpt, \
          patch('soda_curation.main.FigureCaptionExtractorGpt') as mock_caption_extractor, \
          patch('soda_curation.main.create_object_detection') as mock_object_detection:
@@ -98,7 +131,7 @@ def mock_processors():
 
 def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json, mock_openai_client, mock_os):
     """
-    Test the main function's successful execution path.
+    Test the successful execution of the main function.
 
     This test verifies that when given valid inputs and configurations,
     the main function correctly processes a ZIP file and outputs the result.
@@ -255,13 +288,13 @@ def test_main_processing_failure(mock_argparse, mock_load_config, mock_zipfile, 
             with pytest.raises(SystemExit):
                 main()
 
-@pytest.fixture
-def mock_extract_captions():
-    with patch('soda_curation.main.FigureCaptionExtractorGpt') as mock_gpt:
-        with patch('soda_curation.main.FigureCaptionExtractorClaude') as mock_claude:
-            yield mock_gpt, mock_claude
-
 def test_main_with_caption_extraction_docx_success(mock_argparse, mock_load_config, mock_zipfile, mock_extract_captions, mock_json, mock_openai_client, mock_os):
+    """
+    Test successful caption extraction from a DOCX file in the main function.
+
+    This test verifies that when processing a ZIP file with a DOCX document,
+    the main function correctly extracts captions using the OpenAI model and updates the ZipStructure.
+    """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
     mock_load_config.return_value = {
         'ai': 'openai', 
@@ -299,6 +332,23 @@ def test_main_with_caption_extraction_docx_success(mock_argparse, mock_load_conf
         assert mock_gpt.return_value.extract_captions.call_args[0][0].endswith('test.docx')
 
 def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_config, mock_zipfile, mock_processors, mock_setup_logging):
+    """
+    Test caption extraction fallback to PDF when DOCX extraction fails.
+
+    This test verifies that when caption extraction from a DOCX file fails or produces no results,
+    the main function falls back to extracting captions from the PDF file. It ensures that:
+    1. The system attempts to extract captions from the DOCX file first.
+    2. If DOCX extraction fails, it proceeds to extract captions from the PDF.
+    3. The final ZipStructure contains captions extracted from the PDF.
+    4. Proper cleanup operations are performed after extraction.
+
+    Args:
+        mock_argparse: Mocked command-line argument parser.
+        mock_load_config: Mocked configuration loader.
+        mock_zipfile: Mocked ZIP file handler.
+        mock_processors: Mocked processing components (GPT, caption extractor, object detection).
+        mock_setup_logging: Mocked logging setup.
+    """
     mock_gpt, mock_caption_extractor, mock_object_detection = mock_processors
     
     # Mock the zip structure
@@ -374,8 +424,26 @@ def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_conf
     assert mock_remove.call_count == 4  # 4 files in our mock directory structure
     assert mock_rmdir.call_count == 3  # 3 directories (including the root) in our mock structure
 
-
 def test_main_with_caption_extraction_docx_only(mock_argparse, mock_load_config, mock_zipfile, mock_extract_captions, mock_json, mock_openai_client, mock_os):
+    """
+    Test caption extraction when only a DOCX file is available.
+
+    This test verifies that the main function correctly handles caption extraction
+    when only a DOCX file is present in the ZIP structure (no PDF fallback).
+    It ensures that:
+    1. The system attempts to extract captions from the DOCX file.
+    2. The extraction process is called only once (no fallback to PDF).
+    3. The final ZipStructure contains captions extracted from the DOCX file.
+
+    Args:
+        mock_argparse: Mocked command-line argument parser.
+        mock_load_config: Mocked configuration loader.
+        mock_zipfile: Mocked ZIP file handler.
+        mock_extract_captions: Mocked caption extraction function.
+        mock_json: Mocked JSON operations.
+        mock_openai_client: Mocked OpenAI client.
+        mock_os: Mocked OS operations.
+    """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
     mock_load_config.return_value = {
         'ai': 'openai', 
@@ -411,6 +479,3 @@ def test_main_with_caption_extraction_docx_only(mock_argparse, mock_load_config,
         mock_structure_gpt.assert_called_once()
         mock_gpt.return_value.extract_captions.assert_called_once()
         assert mock_gpt.return_value.extract_captions.call_args[0][0].endswith('test.docx')
-
-
-

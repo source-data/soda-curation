@@ -1,3 +1,11 @@
+"""
+This module contains unit tests for the OpenAI-based figure caption extraction functionality
+in the soda_curation package.
+
+It tests various scenarios of caption extraction using OpenAI's GPT models, including
+successful extractions, error handling, and edge cases specific to the OpenAI implementation.
+"""
+
 import pytest
 from unittest.mock import Mock, patch
 import json
@@ -6,11 +14,26 @@ from soda_curation.pipeline.zip_structure.zip_structure_base import ZipStructure
 
 @pytest.fixture
 def mock_openai_client():
+    """
+    Fixture to mock the OpenAI client.
+
+    This fixture patches the OpenAI class to allow controlled testing
+    of OpenAI API interactions without making actual API calls.
+
+    Yields:
+        Mock: A mock object representing the OpenAI client.
+    """
     with patch('soda_curation.pipeline.extract_captions.extract_captions_openai.openai.OpenAI') as mock_client:
         yield mock_client
 
 @pytest.fixture
 def sample_zip_structure():
+    """
+    Fixture to provide a sample ZipStructure for testing.
+
+    Returns:
+        ZipStructure: A sample ZipStructure object with predefined attributes and figures.
+    """
     return ZipStructure(
         manuscript_id="test_manuscript",
         xml="test.xml",
@@ -25,6 +48,12 @@ def sample_zip_structure():
 
 @pytest.fixture
 def sample_config():
+    """
+    Fixture to provide a sample configuration for FigureCaptionExtractorGpt.
+
+    Returns:
+        dict: A dictionary containing sample configuration values for OpenAI API.
+    """
     return {
         'api_key': 'test_key',
         'model': 'gpt-4',
@@ -32,6 +61,18 @@ def sample_config():
     }
 
 def test_gpt_extract_captions_success(mock_openai_client, sample_zip_structure, sample_config):
+    """
+    Test successful caption extraction using OpenAI's GPT model.
+
+    This test verifies that when given a valid response from the OpenAI API,
+    the extractor correctly processes the response and updates the ZipStructure
+    with the extracted captions.
+
+    Args:
+        mock_openai_client (Mock): Mocked OpenAI client.
+        sample_zip_structure (ZipStructure): Sample ZIP structure for testing.
+        sample_config (dict): Sample configuration for the extractor.
+    """
     mock_openai_client.return_value.beta.threads.runs.create_and_poll.return_value = Mock(status='completed')
     mock_openai_client.return_value.beta.threads.messages.list.return_value = Mock(data=[
         Mock(content=[Mock(text=Mock(value=json.dumps({
@@ -51,6 +92,17 @@ def test_gpt_extract_captions_success(mock_openai_client, sample_zip_structure, 
     assert result.figures[1].figure_caption == "This is caption for Figure 2"
 
 def test_gpt_extract_captions_api_error(mock_openai_client, sample_zip_structure, sample_config):
+    """
+    Test caption extraction when an API error occurs.
+
+    This test verifies that the extractor handles API errors gracefully,
+    returning the original ZipStructure when the OpenAI API call fails.
+
+    Args:
+        mock_openai_client (Mock): Mocked OpenAI client.
+        sample_zip_structure (ZipStructure): Sample ZIP structure for testing.
+        sample_config (dict): Sample configuration for the extractor.
+    """
     mock_openai_client.return_value.beta.threads.runs.create_and_poll.side_effect = Exception("API Error")
 
     extractor = FigureCaptionExtractorGpt(sample_config)
@@ -62,6 +114,17 @@ def test_gpt_extract_captions_api_error(mock_openai_client, sample_zip_structure
     assert result == sample_zip_structure  # Should return original structure on error
 
 def test_gpt_extract_captions_invalid_json(mock_openai_client, sample_zip_structure, sample_config):
+    """
+    Test caption extraction when the API returns invalid JSON.
+
+    This test checks if the extractor correctly handles cases where the OpenAI API
+    returns a response that cannot be parsed as JSON.
+
+    Args:
+        mock_openai_client (Mock): Mocked OpenAI client.
+        sample_zip_structure (ZipStructure): Sample ZIP structure for testing.
+        sample_config (dict): Sample configuration for the extractor.
+    """
     mock_run = Mock()
     mock_run.status = 'completed'
     mock_message = Mock()
@@ -79,6 +142,17 @@ def test_gpt_extract_captions_invalid_json(mock_openai_client, sample_zip_struct
     assert result.figures[1].figure_caption == "Figure caption not found."
 
 def test_gpt_extract_captions_missing_figures(mock_openai_client, sample_zip_structure, sample_config):
+    """
+    Test caption extraction when some figures are missing from the API response.
+
+    This test verifies that the extractor correctly handles cases where the API response
+    doesn't contain captions for all figures in the ZipStructure.
+
+    Args:
+        mock_openai_client (Mock): Mocked OpenAI client.
+        sample_zip_structure (ZipStructure): Sample ZIP structure for testing.
+        sample_config (dict): Sample configuration for the extractor.
+    """
     mock_run = Mock()
     mock_run.status = 'completed'
     mock_message = Mock()
@@ -98,6 +172,17 @@ def test_gpt_extract_captions_missing_figures(mock_openai_client, sample_zip_str
     assert result.figures[1].figure_caption == "Figure caption not found."
 
 def test_gpt_extract_captions_pdf_fallback(mock_openai_client, sample_zip_structure, sample_config):
+    """
+    Test caption extraction fallback to PDF when DOCX extraction fails.
+
+    This test verifies that the extractor attempts to extract captions from a PDF file
+    when DOCX extraction fails or is not available.
+
+    Args:
+        mock_openai_client (Mock): Mocked OpenAI client.
+        sample_zip_structure (ZipStructure): Sample ZIP structure for testing.
+        sample_config (dict): Sample configuration for the extractor.
+    """
     mock_run = Mock()
     mock_run.status = 'completed'
     mock_message = Mock()
