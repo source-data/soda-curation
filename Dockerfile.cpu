@@ -72,6 +72,7 @@ RUN poetry run python -c "import cv2; print(cv2.__file__)"
 RUN poetry run python -c "from ultralytics import YOLO; print(YOLO)"
 RUN poetry run python -c "import fitz; print(fitz.__file__)"
 RUN poetry run python -c "import pdf2image; print(pdf2image.__file__)"
+RUN mkdir -p /app/input /app/output
 
 # Development stage
 FROM base as development

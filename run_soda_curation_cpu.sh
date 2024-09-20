@@ -31,17 +31,19 @@ OUTPUT_ARGS=""
 # Check if output file is provided
 if [ "$#" -eq 2 ]; then
     OUTPUT_FILE="$2"
+    OUTPUT_DIRNAME=$(dirname "$OUTPUT_FILE")
     OUTPUT_FILENAME=$(basename "$OUTPUT_FILE")
-    ABSOLUTE_OUTPUT_PATH=$(realpath "$OUTPUT_FILE")
+    ABSOLUTE_OUTPUT_DIR=$(realpath "$OUTPUT_DIRNAME")
     OUTPUT_ARGS="--output /app/output/$OUTPUT_FILENAME"
     
     # Create output directory if it doesn't exist
-    mkdir -p "$(dirname "$OUTPUT_FILE")"
+    mkdir -p "$OUTPUT_DIRNAME"
     
-    # Add output file volume mount
-    OUTPUT_VOLUME="-v $ABSOLUTE_OUTPUT_PATH:/app/output/$OUTPUT_FILENAME"
+    # Add output directory volume mount
+    OUTPUT_VOLUME="-v $ABSOLUTE_OUTPUT_DIR:/app/output"
 else
     OUTPUT_VOLUME=""
+    OUTPUT_ARGS=""
 fi
 
 # Use a CPU-only base image
@@ -53,3 +55,4 @@ docker run -it \
     --zip "/app/input/$ZIP_FILENAME" \
     --config "/app/config.yaml" \
     $OUTPUT_ARGS
+

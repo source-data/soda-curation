@@ -168,21 +168,27 @@ def main():
         logger.info(json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2).encode('utf-8').decode())
     
         if args.output:
-            output_dir = os.path.dirname(args.output)
-            if output_dir and not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-                logger.info(f"Created directory: {output_dir}")
+            # Ensure we're working with an absolute path inside the container
+            output_path = args.output if args.output.startswith('/app/') else f'/app/output/{os.path.basename(args.output)}'
+            output_dir = os.path.dirname(output_path)
+            
+            # Ensure the output directory exists
+            os.makedirs(output_dir, exist_ok=True)
+            logger.info(f"Ensuring output directory exists: {output_dir}")
+            
             # Check if the output file exists
-            if os.path.exists(args.output):
-                logger.warning(f"File {args.output} already exists and will be overwritten.")
+            if os.path.exists(output_path):
+                logger.warning(f"File {output_path} already exists and will be overwritten.")
             
             # Write JSON data to the output file with pretty formatting
             try:
-                with open(args.output, 'w') as outfile:
-                    json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=4).encode('utf-8').decode()
-                logger.info(f"JSON data has been written to {args.output}")
+                with open(output_path, 'w', encoding='utf-8') as outfile:
+                    json.dump(result, outfile, cls=CustomJSONEncoder, ensure_ascii=False, indent=4)
+                logger.info(f"JSON data has been written to {output_path}")
             except Exception as e:
                 logger.error(f"An error occurred while writing to the file: {e}")
+                logger.error(f"Current working directory: {os.getcwd()}")
+                logger.error(f"Directory contents: {os.listdir(output_dir)}")
     else:
         logger.error("Failed to process ZIP structure")
         sys.exit(1)
