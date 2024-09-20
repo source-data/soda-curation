@@ -13,6 +13,7 @@ from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtr
 from .pipeline.extract_captions.extract_captions_anthropic import FigureCaptionExtractorClaude
 from .pipeline.object_detection.object_detection import create_object_detection
 from .pipeline.match_caption_panel.match_caption_panel_openai import MatchPanelCaptionOpenAI
+from .pipeline.match_caption_panel.match_caption_panel_anthropic import MatchPanelCaptionClaude
 from .pipeline.zip_structure.zip_structure_base import CustomJSONEncoder
 
 def main():
@@ -82,7 +83,7 @@ def main():
         zip_processor = StructureZipFileClaude(config['anthropic'])
         caption_extractor = FigureCaptionExtractorClaude(config['anthropic'])
         # TODO: Implement Anthropic version of panel caption matcher
-        panel_caption_matcher = None
+        panel_caption_matcher = MatchPanelCaptionClaude(config)
     else:
         logger.error(f"Unknown AI provider: {config['ai']}")
         sys.exit(1)
