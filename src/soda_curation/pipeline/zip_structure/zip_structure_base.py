@@ -38,15 +38,16 @@ class Figure:
         img_files (List[str]): List of image file paths associated with the figure.
         sd_files (List[str]): List of source data file paths associated with the figure.
         figure_caption (str): The caption of the figure. Defaults to an empty string.
-        figure_panels (List[str]): List of panel descriptions for the figure. Defaults to an empty list.
-        panels (List[Panel]): List of Panel objects representing individual panels in the figure.
+        panels (List[Dict[str, Any]]): List of panel objects representing individual panels in the figure.
+        flag (str): Flag indicating if the figure has duplicate panels. Defaults to "none".
     """
     figure_label: str
     img_files: List[str]
     sd_files: List[str]
     figure_caption: str = ""
-    figure_panels: List[str] = field(default_factory=list)
-    panels: List[Panel] = field(default_factory=list)
+    panels: List[Dict[str, Any]] = field(default_factory=list)
+    duplicated_panels: str = "false"
+
 
 @dataclass
 class ZipStructure:
@@ -176,7 +177,7 @@ class StructureZipFile(ABC):
                         img_files=fig['img_files'],
                         sd_files=fig['sd_files'],
                         figure_caption=fig.get('figure_caption', ''),
-                        figure_panels=fig.get('figure_panels', [])
+                        panels=fig.get('panels', [])
                     ))
                 except KeyError as e:
                     logger.error(f"Missing key in figure data: {str(e)}")

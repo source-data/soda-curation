@@ -14,7 +14,20 @@ from .pipeline.extract_captions.extract_captions_anthropic import FigureCaptionE
 from .pipeline.object_detection.object_detection import create_object_detection
 from .pipeline.match_caption_panel.match_caption_panel_openai import MatchPanelCaptionOpenAI
 from .pipeline.match_caption_panel.match_caption_panel_anthropic import MatchPanelCaptionClaude
-from .pipeline.zip_structure.zip_structure_base import CustomJSONEncoder
+from .pipeline.zip_structure.zip_structure_base import CustomJSONEncoder, Figure
+
+def check_duplicate_panels(figure: Figure) -> str:
+    """
+    Check if a figure contains panels with duplicate labels.
+
+    Args:
+        figure (Figure): The figure to check for duplicate panel labels.
+
+    Returns:
+        str: 'duplicated panels' if duplicates are found, 'none' otherwise.
+    """
+    panel_labels = [panel.get('panel_label', '') for panel in figure.panels]
+    return 'true' if len(panel_labels) != len(set(panel_labels)) else 'false'
 
 def main():
     parser = argparse.ArgumentParser(description="Process a ZIP file using soda-curation")
@@ -147,8 +160,13 @@ def main():
         else:
             logger.warning("Panel caption matching not available for the selected AI provider")
 
+        # Check for duplicate panels and add flag
+        for figure in result.figures:
+            figure.duplicated_panels = check_duplicate_panels(figure)
+            logger.info(f"Figure {figure.figure_label} flag: {figure.duplicated_panels}")
+
         logger.info(json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2).encode('utf-8').decode())
-        
+    
         if args.output:
             output_dir = os.path.dirname(args.output)
             if output_dir and not os.path.exists(output_dir):
