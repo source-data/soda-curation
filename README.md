@@ -332,7 +332,9 @@ When adding new features or modifying existing ones, please ensure to write corr
 To build the Docker image for soda-curation:
 
 ```bash
-docker build -t soda-curation .
+docker build -t soda-curation . # For GPU support
+
+docker build -t soda-curation-cpu . -f Dockerfile.cpu --target development # For CPU-only
 ```
 
 ### Running with Docker
