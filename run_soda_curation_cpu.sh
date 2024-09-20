@@ -1,7 +1,15 @@
 #!/bin/bash
 
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <path_to_zip_file>"
+# Function to print usage
+print_usage() {
+    echo "Usage: $0 <path_to_zip_file> [path_to_output_file]"
+    echo "  <path_to_zip_file>: Path to the input ZIP file (required)"
+    echo "  [path_to_output_file]: Path to the output file (optional)"
+}
+
+# Check if at least one argument is provided
+if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+    print_usage
     exit 1
 fi
 
@@ -17,10 +25,31 @@ fi
 ABSOLUTE_ZIP_PATH=$(realpath "$ZIP_FILE")
 ABSOLUTE_CONFIG_PATH=$(realpath "config.yaml")
 
+# Initialize OUTPUT_ARGS
+OUTPUT_ARGS=""
+
+# Check if output file is provided
+if [ "$#" -eq 2 ]; then
+    OUTPUT_FILE="$2"
+    OUTPUT_FILENAME=$(basename "$OUTPUT_FILE")
+    ABSOLUTE_OUTPUT_PATH=$(realpath "$OUTPUT_FILE")
+    OUTPUT_ARGS="--output /app/output/$OUTPUT_FILENAME"
+    
+    # Create output directory if it doesn't exist
+    mkdir -p "$(dirname "$OUTPUT_FILE")"
+    
+    # Add output file volume mount
+    OUTPUT_VOLUME="-v $ABSOLUTE_OUTPUT_PATH:/app/output/$OUTPUT_FILENAME"
+else
+    OUTPUT_VOLUME=""
+fi
+
 # Use a CPU-only base image
 docker run -it \
     -v "$ABSOLUTE_CONFIG_PATH:/app/config.yaml" \
     -v "$ABSOLUTE_ZIP_PATH:/app/input/$ZIP_FILENAME" \
+    $OUTPUT_VOLUME \
     soda-curation-cpu \
     --zip "/app/input/$ZIP_FILENAME" \
-    --config "/app/config.yaml"
+    --config "/app/config.yaml" \
+    $OUTPUT_ARGS
