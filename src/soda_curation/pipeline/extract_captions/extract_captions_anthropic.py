@@ -72,7 +72,8 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
                     {"role": "user", "content": prompt}
                 ]
             )
-            
+            logger.debug(f"Answer from Anthropic: {response}")
+
             extracted_text = response.content
             if isinstance(extracted_text, list):
                 extracted_text = ' '.join(item.text for item in extracted_text if hasattr(item, 'text'))

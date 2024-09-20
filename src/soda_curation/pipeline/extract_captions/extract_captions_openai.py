@@ -166,6 +166,9 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                     thread_id=thread.id
                 )
                 result = messages.data[0].content[0].text.value
+                print(result)
+                logger.debug(f"Answer from GPT: {result}")
+
                 captions = self._parse_response(result)
                 
                 if not captions:

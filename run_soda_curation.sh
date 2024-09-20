@@ -22,4 +22,5 @@ docker run --gpus all \
     -v "$ABSOLUTE_ZIP_PATH:/app/input/$ZIP_FILENAME" \
     soda-curation \
     --zip "/app/input/$ZIP_FILENAME" \
-    --config "/app/config.yaml"
+    --config "/app/config.yaml" \
+    --output "/app/data/output/example.json"

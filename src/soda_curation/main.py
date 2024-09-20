@@ -12,6 +12,7 @@ from .pipeline.zip_structure.zip_structure_anthropic import StructureZipFileClau
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
 from .pipeline.extract_captions.extract_captions_anthropic import FigureCaptionExtractorClaude
 from .pipeline.object_detection.object_detection import create_object_detection
+from .pipeline.match_caption_panel.match_caption_panel_openai import MatchPanelCaptionOpenAI
 from .pipeline.zip_structure.zip_structure_base import CustomJSONEncoder
 
 def main():
@@ -31,6 +32,28 @@ def main():
     
     logger = logging.getLogger(__name__)
     
+    # Check OpenAI configuration
+    if 'openai' not in config:
+        logger.error("OpenAI configuration is missing from the config file")
+        sys.exit(1)
+    
+    if 'api_key' not in config['openai']:
+        logger.error("API key is missing from the OpenAI configuration")
+        sys.exit(1)
+    
+    # Set up debug directory
+    if config.get('debug', {}).get('enabled', False):
+        debug_dir = Path(config['debug']['debug_dir'])
+        debug_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Debug directory created at: {debug_dir}")
+        config['debug']['debug_dir'] = str(debug_dir)
+    else:
+        config['debug'] = {'enabled': False, 'debug_dir': None}
+    
+    # Log configuration (be careful not to log sensitive information like API keys)
+    logger.debug(f"Configuration loaded: {json.dumps({k: v for k, v in config.items() if k != 'openai'}, indent=2)}")
+    logger.debug(f"OpenAI config keys: {', '.join(config['openai'].keys())}")
+
     zip_path = Path(args.zip)
     
     if not zip_path.is_file():
@@ -47,12 +70,19 @@ def main():
         logger.error(f"Invalid ZIP file: {args.zip}")
         sys.exit(1)
 
+    # Add extract_dir to config for use in other components
+    config['extract_dir'] = str(extract_dir)
+
     if config['ai'] == 'openai':
         zip_processor = StructureZipFileGPT(config['openai'])
         caption_extractor = FigureCaptionExtractorGpt(config['openai'])
+        # Pass the entire config including extract_dir
+        panel_caption_matcher = MatchPanelCaptionOpenAI(config)
     elif config['ai'] == 'anthropic':
         zip_processor = StructureZipFileClaude(config['anthropic'])
         caption_extractor = FigureCaptionExtractorClaude(config['anthropic'])
+        # TODO: Implement Anthropic version of panel caption matcher
+        panel_caption_matcher = None
     else:
         logger.error(f"Unknown AI provider: {config['ai']}")
         sys.exit(1)
@@ -109,8 +139,14 @@ def main():
                 else:
                     logger.warning(f"Image file not found: {img_path}")
 
-        print(json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2).encode('utf-8').decode())
-        print(result)
+        # Match panel captions
+        if panel_caption_matcher:
+            logger.info("Matching panel captions")
+            result = panel_caption_matcher.match_captions(result)
+        else:
+            logger.warning("Panel caption matching not available for the selected AI provider")
+
+        logger.info(json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2).encode('utf-8').decode())
         
         if args.output:
             output_dir = os.path.dirname(args.output)
@@ -131,6 +167,8 @@ def main():
     else:
         logger.error("Failed to process ZIP structure")
         sys.exit(1)
+
+
 
     # Clean up extracted files
     logger.info("Cleaning up extracted files")

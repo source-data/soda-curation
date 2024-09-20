@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List
-from ..zip_structure.zip_structure_base import ZipStructure, Panel
+from ..zip_structure.zip_structure_base import ZipStructure, Panel, Figure
+from PIL import Image
+import io
+import base64
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,35 +16,27 @@ class MatchPanelCaption(ABC):
     @abstractmethod
     def match_captions(self, zip_structure: ZipStructure) -> ZipStructure:
         """
-        Match panel captions with their corresponding images.
+        Abstract method to match captions to panels in a ZipStructure.
 
         Args:
-            zip_structure (ZipStructure): The current ZIP structure with figures and panels.
+            zip_structure (ZipStructure): The ZipStructure containing figures and panels.
 
         Returns:
-            ZipStructure: Updated ZIP structure with matched panel captions.
+            ZipStructure: The updated ZipStructure with matched captions.
         """
         pass
 
-    def _update_zip_structure(self, zip_structure: ZipStructure, matched_captions: Dict[str, List[Panel]]) -> ZipStructure:
+    def _extract_panel_image(self, figure_path: str, bbox: List[float]) -> str:
         """
-        Update the ZipStructure with matched panel captions.
+        Extract a panel image from a figure based on bounding box coordinates.
 
         Args:
-            zip_structure (ZipStructure): The current ZIP structure.
-            matched_captions (Dict[str, List[Panel]]): Dictionary of figure labels and their updated panels.
+            figure_path (str): Path to the figure image file.
+            bbox (List[float]): Bounding box coordinates [x1, y1, x2, y2] in relative format.
 
         Returns:
-            ZipStructure: Updated ZIP structure.
+            str: Base64 encoded string of the panel image.
         """
-        for figure in zip_structure.figures:
-            if figure.figure_label in matched_captions:
-                figure.panels = matched_captions[figure.figure_label]
-            else:
-                logger.warning(f"No matched captions found for {figure.figure_label}")
-        return zip_structure
-
-    def _extract_panel_image(self, figure_path: str, bbox: List[float]) -> str:
         try:
             with Image.open(figure_path) as img:
                 width, height = img.size

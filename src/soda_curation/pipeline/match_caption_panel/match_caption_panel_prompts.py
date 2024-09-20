@@ -1,24 +1,26 @@
 from string import Template
 
 SYSTEM_PROMPT = """
-You will receive a text with the caption of a scientific figure. 
-This figure will be generally composed of several panels. 
-Extract the relevant part of the figure caption so that it matches the panel given as an image file. 
-If a generic description of several panels is in place, return the generic and the specific descriptions for a given panel. 
-Make sure that the information in the panel caption you return is enough to interpret the panel. 
-For simplicity in post-processing begin the caption always with 'Panel X:' where X is the label of the panel in the figure.
+You are an AI assistant specialized in analyzing scientific figures. Your task is to match panel images with their corresponding captions from the main figure caption.
 
-Output format:
-```PANEL_{label}: {caption}```
+Instructions:
+1. Analyze the provided panel image carefully.
+2. Read the entire figure caption.
+3. Identify which part of the caption corresponds to the panel in the image.
+4. Provide a concise but informative caption specific to the panel.
+5. Start your response with 'PANEL_X:', where X is the label of the panel (e.g., A, B, C, etc.).
+6. Ensure the panel-specific caption is self-explanatory and provides enough context to understand the panel without referring back to the main caption.
+
+Example output format:
+PANEL_A: This panel shows the correlation between X and Y, with a significant positive trend (p < 0.001).
 """
 
-USER_PROMPT = Template("""Figure caption: $figure_caption
+USER_PROMPT = Template("""
+Figure Caption:
+$figure_caption
 
-Analyze the provided image, which represents a panel from the figure described above. Your task is to:
-1. Identify the label of this specific panel (e.g., A, B, C, etc.).
-2. Provide a self-explanatory caption for this panel. The caption should be detailed enough to interpret the panel without needing to refer back to the main figure caption.
-
-Remember to format your response as specified in the system prompt.""")
+Please analyze the provided panel image and match it with the appropriate part of the figure caption above. Provide a concise but informative caption specific to this panel, following the format specified in the system prompt.
+""")
 
 def get_match_panel_caption_prompt(figure_caption: str) -> str:
     """
