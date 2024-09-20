@@ -60,6 +60,7 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
         self.debug_enabled = config.get('debug', {}).get('enabled', False)
         self.debug_dir = config.get('debug', {}).get('debug_dir')
         self.extract_dir = config.get('extract_dir')
+        self.process_first_figure_only = config.get('debug', {}).get('process_first_figure_only', False)
         
         if not self.extract_dir:
             raise ValueError("extract_dir is not set in the configuration")
@@ -68,6 +69,7 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
         logger.debug(f"Debug enabled: {self.debug_enabled}")
         logger.debug(f"Debug directory: {self.debug_dir}")
         logger.debug(f"Extract directory: {self.extract_dir}")
+        logger.info(f"Process first figure only: {self.process_first_figure_only}")
 
     def match_captions(self, zip_structure: ZipStructure) -> ZipStructure:
         """
@@ -85,10 +87,15 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
         logger.info("Starting panel caption matching process")
         
         if zip_structure.figures:
-            figure = zip_structure.figures[0]  # Process only the first figure
-            logger.info(f"Processing figure: {figure.figure_label}")
-            matched_panels = self._process_figure(figure)
-            figure.panels = matched_panels
+            figures_to_process = zip_structure.figures[:1] if self.process_first_figure_only else zip_structure.figures
+            for figure in figures_to_process:
+                logger.info(f"Processing figure: {figure.figure_label}")
+                matched_panels = self._process_figure(figure)
+                figure.panels = matched_panels
+                
+                if self.process_first_figure_only:
+                    logger.info("Processed first figure only as per debug configuration")
+                    break
         else:
             logger.warning("No figures found in the ZIP structure")
         
@@ -270,11 +277,13 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
             encoded_image (str): Base64 encoded string of the image.
             filename (str): The filename to use when saving the debug image.
         """
-        try:
-            image_data = base64.b64decode(encoded_image)
-            image = Image.open(io.BytesIO(image_data))
-            debug_image_path = os.path.join(self.debug_dir, filename)
-            image.save(debug_image_path)
-            logger.debug(f"Saved debug image: {debug_image_path}")
-        except Exception as e:
-            logger.error(f"Error saving debug image: {str(e)}")
+        if self.debug_enabled and self.debug_dir:
+            try:
+                image_data = base64.b64decode(encoded_image)
+                image = Image.open(io.BytesIO(image_data))
+                debug_image_path = os.path.join(self.debug_dir, filename)
+                os.makedirs(os.path.dirname(debug_image_path), exist_ok=True)
+                image.save(debug_image_path)
+                logger.debug(f"Saved debug image: {debug_image_path}")
+            except Exception as e:
+                logger.error(f"Error saving debug image: {str(e)}")
