@@ -89,14 +89,16 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         
         if zip_structure.figures:
             figures_to_process = zip_structure.figures[:1] if self.process_first_figure_only else zip_structure.figures
-            for figure in figures_to_process:
-                logger.info(f"Processing figure: {figure.figure_label}")
-                matched_panels = self._process_figure(figure)
-                figure.panels = matched_panels
+            for i, figure in enumerate(zip_structure.figures):
+                if i < len(figures_to_process):
+                    logger.info(f"Processing figure: {figure.figure_label}")
+                    matched_panels = self._process_figure(figure)
+                    figure.panels = matched_panels
+                else:
+                    figure.panels = []  # Clear panels for figures not processed in debug mode
                 
-                if self.process_first_figure_only:
-                    logger.info("Processed first figure only as per debug configuration")
-                    break
+            if self.process_first_figure_only:
+                logger.info("Processed first figure only as per debug configuration")
         else:
             logger.warning("No figures found in the ZIP structure")
         
