@@ -60,7 +60,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             file_content = self._extract_docx_content(docx_path)
             if not file_content:
                 logger.warning(f"No content extracted from {docx_path}")
-                return self._update_zip_structure(zip_structure, {})
+                return self._update_zip_structure(zip_structure, {}, "No content extracted")
 
             prompt = get_extract_captions_prompt(file_content)
             
@@ -80,7 +80,6 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             elif not isinstance(extracted_text, str):
                 extracted_text = str(extracted_text)
                 
-            # Add this line to properly decode the response
             extracted_text = extracted_text.encode('utf-8').decode('utf-8', 'ignore')
 
             logger.debug(f"Extracted text: {extracted_text}")
@@ -88,16 +87,15 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             captions = self._parse_response(extracted_text)
             if not captions:
                 logger.warning("Failed to extract captions from Claude's response")
-                return self._update_zip_structure(zip_structure, {})
             
-            updated_structure = self._update_zip_structure(zip_structure, captions)
+            updated_structure = self._update_zip_structure(zip_structure, captions, extracted_text)
             logger.info(f"Updated ZIP structure: {updated_structure}")
             
             return updated_structure
         
         except Exception as e:
             logger.exception(f"Error in caption extraction: {str(e)}")
-            return self._update_zip_structure(zip_structure, {})
+            return self._update_zip_structure(zip_structure, {}, str(e))
 
     def _extract_docx_content(self, file_path: str) -> str:
         """
@@ -160,7 +158,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             logger.error("Failed to extract any captions from Claude's response")
             return {}
 
-    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
+    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str], ai_response: str) -> ZipStructure:
         """
         Update the ZipStructure with extracted captions.
 
@@ -170,6 +168,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         Args:
             zip_structure (ZipStructure): The current ZIP structure.
             captions (Dict[str, str]): Dictionary of figure labels and their captions.
+            ai_response (str): The raw response from the AI model.
 
         Returns:
             ZipStructure: Updated ZIP structure with new captions.
@@ -179,4 +178,5 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
                 figure.figure_caption = captions[figure.figure_label].encode('utf-8').decode('utf-8', 'ignore')
             else:
                 figure.figure_caption = "Figure caption not found."
+            figure.ai_response = ai_response
         return zip_structure

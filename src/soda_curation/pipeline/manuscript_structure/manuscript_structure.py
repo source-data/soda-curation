@@ -6,11 +6,11 @@ It includes dataclasses for representing panels, figures, and the overall ZIP st
 as well as an abstract base class for ZIP structure processors and a custom JSON encoder.
 """
 
-from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, asdict, field
 import json
 import logging
+from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +23,12 @@ class Panel:
         panel_label (str): The label of the panel (e.g., "A", "B", "C").
         panel_caption (str): The caption specific to this panel.
         panel_bbox (List[float]): Bounding box coordinates of the panel [x1, y1, x2, y2].
+        ai_response (Optional[Any]): The raw AI response for this panel.
     """
     panel_label: str
     panel_caption: str
     panel_bbox: List[float]
+    ai_response: Optional[Any] = None
 
 @dataclass
 class Figure:
@@ -38,16 +40,17 @@ class Figure:
         img_files (List[str]): List of image file paths associated with the figure.
         sd_files (List[str]): List of source data file paths associated with the figure.
         figure_caption (str): The caption of the figure. Defaults to an empty string.
-        panels (List[Dict[str, Any]]): List of panel objects representing individual panels in the figure.
-        flag (str): Flag indicating if the figure has duplicate panels. Defaults to "none".
+        panels (List[Panel]): List of Panel objects representing individual panels in the figure.
+        duplicated_panels (str): Flag indicating if the figure has duplicate panels. Defaults to "false".
+        ai_response (Optional[Any]): The raw AI response for this figure.
     """
     figure_label: str
     img_files: List[str]
     sd_files: List[str]
     figure_caption: str = ""
-    panels: List[Dict[str, Any]] = field(default_factory=list)
+    panels: List[Panel] = field(default_factory=list)
     duplicated_panels: str = "false"
-
+    ai_response: Optional[Any] = None
 
 @dataclass
 class ZipStructure:

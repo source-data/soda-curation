@@ -16,7 +16,7 @@ from openai.types.beta.thread import Thread
 from openai.types.file_object import FileObject
 from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import get_extract_captions_prompt
-from ..manuscript_structure.manuscript_structure import ZipStructure
+from ..manuscript_structure.manuscript_structure import ZipStructure, Figure
 import re
 import logging
 
@@ -166,7 +166,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                     thread_id=thread.id
                 )
                 result = messages.data[0].content[0].text.value
-                print(result)
                 logger.debug(f"Answer from GPT: {result}")
 
                 captions = self._parse_response(result)
@@ -174,15 +173,19 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 if not captions:
                     logger.warning("Failed to extract captions from GPT's response")
                 
-                updated_structure = self._update_zip_structure(zip_structure, captions)
+                updated_structure = self._update_zip_structure(zip_structure, captions, result)
                 logger.info(f"Updated ZIP structure: {updated_structure}")
             else:
                 logger.error(f"Assistant run failed with status: {run.status}")
-                return self._update_zip_structure(zip_structure, {})  # Return structure with "Figure caption not found."
+                return self._update_zip_structure(zip_structure, {}, run.status)
 
             self.client.files.delete(file_object.id)
             
             return updated_structure
+        
+        except Exception as e:
+            logger.exception(f"Error in caption extraction: {str(e)}")
+            return self._update_zip_structure(zip_structure, {}, str(e))
         
         except Exception as e:
             logger.exception(f"Error in caption extraction: {str(e)}")
@@ -240,10 +243,25 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             captions[figure_label] = caption
         return captions
 
-    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
+    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str], ai_response: str) -> ZipStructure:
+        """
+        Update the ZipStructure with extracted captions.
+
+        This method updates the figure captions in the ZipStructure based on the extracted captions.
+        If a caption is not found for a figure, it sets the caption to "Figure caption not found."
+
+        Args:
+            zip_structure (ZipStructure): The current ZIP structure.
+            captions (Dict[str, str]): Dictionary of figure labels and their captions.
+            ai_response (str): The raw response from the AI model.
+
+        Returns:
+            ZipStructure: Updated ZIP structure with new captions.
+        """
         for figure in zip_structure.figures:
             if figure.figure_label in captions:
                 figure.figure_caption = captions[figure.figure_label]
             else:
                 figure.figure_caption = "Figure caption not found."
+            figure.ai_response = ai_response
         return zip_structure

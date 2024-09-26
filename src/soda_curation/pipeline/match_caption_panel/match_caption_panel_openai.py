@@ -9,7 +9,7 @@ matching them based on the visual content and the full figure caption.
 import openai
 from typing import Dict, Any, List, Tuple, Optional
 from .match_caption_panel_base import MatchPanelCaption
-from ..manuscript_structure.manuscript_structure import ZipStructure, Figure
+from ..manuscript_structure.manuscript_structure import ZipStructure, Figure, Panel
 from .match_caption_panel_prompts import SYSTEM_PROMPT, get_match_panel_caption_prompt
 import logging
 import os
@@ -105,7 +105,7 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         logger.info("Panel caption matching process completed")
         return zip_structure
 
-    def _process_figure(self, figure: Figure) -> List[Dict[str, Any]]:
+    def _process_figure(self, figure: Figure) -> List[Panel]:
         """
         Process a single figure, matching panel captions with their corresponding images.
 
@@ -118,18 +118,15 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         Returns:
             List[Dict[str, Any]]: A list of dictionaries containing matched panel information.
         """
+    def _process_figure(self, figure: Figure) -> List[Panel]:
         matched_panels = []
         figure_path = os.path.join(self.extract_dir, figure.img_files[0])
         
         for i, panel in enumerate(figure.panels):
             logger.info(f"Processing panel {i+1} of figure {figure.figure_label}")
             
-            if 'panel_bbox' not in panel:
-                logger.warning(f"No bounding box found for panel {i+1} of figure {figure.figure_label}")
-                continue
-            
             try:
-                encoded_image = self._extract_panel_image(figure_path, panel['panel_bbox'])
+                encoded_image = self._extract_panel_image(figure_path, panel.panel_bbox)
                 
                 if not encoded_image:
                     logger.warning(f"Failed to extract panel image for panel {i+1} of figure {figure.figure_label}")
@@ -141,11 +138,12 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
                 response = self._call_openai_api(encoded_image, figure.figure_caption)
                 panel_label, panel_caption = self._parse_response(response)
                 
-                matched_panel = panel.copy()
-                matched_panel.update({
-                    'panel_label': panel_label,
-                    'panel_caption': panel_caption
-                })
+                matched_panel = Panel(
+                    panel_label=panel_label,
+                    panel_caption=panel_caption,
+                    panel_bbox=panel.panel_bbox,
+                    ai_response=response
+                )
                 matched_panels.append(matched_panel)
                 logger.info(f"Matched panel: Label={panel_label}, Caption={panel_caption[:50]}...")
             

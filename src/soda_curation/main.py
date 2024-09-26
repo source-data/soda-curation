@@ -9,14 +9,14 @@ from .config import load_config
 from .logging_config import setup_logging
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
 from .pipeline.extract_captions.extract_captions_anthropic import FigureCaptionExtractorClaude
-from .pipeline.object_detection.object_detection import create_object_detection
+from .pipeline.object_detection.object_detection import create_object_detection, convert_to_pil_image
 from .pipeline.match_caption_panel.match_caption_panel_openai import MatchPanelCaptionOpenAI
 from .pipeline.match_caption_panel.match_caption_panel_anthropic import MatchPanelCaptionClaude
-from .pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure, CustomJSONEncoder
+from .pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure, Panel, CustomJSONEncoder
 from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
 
 def check_duplicate_panels(figure: Figure) -> str:
-    panel_labels = [panel.get('panel_label', '') for panel in figure.panels]
+    panel_labels = [panel.panel_label for panel in figure.panels]
     return 'true' if len(panel_labels) != len(set(panel_labels)) else 'false'
 
 def main():
@@ -108,33 +108,35 @@ def main():
     if result.docx and os.path.exists(result.docx):
         logger.info(f"Extracting captions from DOCX: {result.docx}")
         result = caption_extractor.extract_captions(result.docx, result)
-        if all(figure.figure_caption == "Figure caption not found." for figure in result.figures):
-            logger.info("No captions found in DOCX, falling back to PDF")
-            if result.pdf and os.path.exists(result.pdf):
-                logger.info(f"Extracting captions from PDF: {result.pdf}")
-                result = caption_extractor.extract_captions(result.pdf, result)
     elif result.pdf and os.path.exists(result.pdf):
         logger.info(f"Extracting captions from PDF: {result.pdf}")
         result = caption_extractor.extract_captions(result.pdf, result)
     else:
         logger.warning("No DOCX or PDF file found for caption extraction")
 
+    # Update file paths
+    input_dir = str(extract_dir)
+    for figure in result.figures:
+        figure.img_files = [os.path.relpath(img, input_dir) for img in figure.img_files]
+        figure.sd_files = [os.path.relpath(sd, input_dir) for sd in figure.sd_files]
+
     # Perform object detection
     logger.info("Performing object detection on figure images")
     for figure in result.figures:
         if figure.img_files:
-            img_path = figure.img_files[0]
-            if os.path.exists(img_path):
+            original_img_path = os.path.join(input_dir, figure.img_files[0])
+            if os.path.exists(original_img_path):
                 try:
-                    panels = object_detector.detect_panels(img_path)
-                    figure.panels = panels
-                    logger.info(f"Detected {len(panels)} panels in {img_path}")
+                    pil_image, new_img_path = convert_to_pil_image(original_img_path)
+                    panels = object_detector.detect_panels(pil_image)
+                    figure.panels = [Panel(panel_label=p['panel_label'], panel_caption=p['panel_caption'], panel_bbox=p['panel_bbox']) for p in panels]
+                    logger.info(f"Detected {len(panels)} panels in {figure.img_files[0]}")
                 except Exception as e:
-                    logger.error(f"Error during panel detection for {img_path}: {str(e)}")
+                    logger.error(f"Error during panel detection for {figure.img_files[0]}: {str(e)}")
             else:
-                logger.warning(f"Image file not found: {img_path}")
+                logger.warning(f"Image file not found: {figure.img_files[0]}")
                 logger.debug(f"Current working directory: {os.getcwd()}")
-                logger.debug(f"Contents of {os.path.dirname(img_path)}: {os.listdir(os.path.dirname(img_path))}")
+                logger.debug(f"Contents of {os.path.dirname(original_img_path)}: {os.listdir(os.path.dirname(original_img_path))}")
 
     # Match panel captions
     logger.info("Matching panel captions")
