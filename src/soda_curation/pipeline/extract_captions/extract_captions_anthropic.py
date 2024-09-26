@@ -13,7 +13,7 @@ from anthropic import Anthropic
 from docx import Document
 from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import get_extract_captions_prompt
-from ..zip_structure.zip_structure_base import ZipStructure
+from ..manuscript_structure.manuscript_structure import ZipStructure
 import re
 
 logger = logging.getLogger(__name__)

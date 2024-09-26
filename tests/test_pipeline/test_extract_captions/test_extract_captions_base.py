@@ -8,7 +8,7 @@ across different AI implementations, focusing on the base FigureCaptionExtractor
 
 import pytest
 from soda_curation.pipeline.extract_captions.extract_captions_base import FigureCaptionExtractor
-from soda_curation.pipeline.zip_structure.zip_structure_base import ZipStructure, Figure
+from soda_curation.pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure
 
 class TestFigureCaptionExtractor(FigureCaptionExtractor):
     """

@@ -12,8 +12,8 @@ from .pipeline.extract_captions.extract_captions_anthropic import FigureCaptionE
 from .pipeline.object_detection.object_detection import create_object_detection
 from .pipeline.match_caption_panel.match_caption_panel_openai import MatchPanelCaptionOpenAI
 from .pipeline.match_caption_panel.match_caption_panel_anthropic import MatchPanelCaptionClaude
-from .pipeline.zip_structure.zip_structure_base import CustomJSONEncoder, Figure
-from .pipeline.zip_structure.xml_structure_extractor import XMLStructureExtractor
+from .pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure, CustomJSONEncoder
+from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
 
 def check_duplicate_panels(figure: Figure) -> str:
     panel_labels = [panel.get('panel_label', '') for panel in figure.panels]
@@ -108,6 +108,11 @@ def main():
     if result.docx and os.path.exists(result.docx):
         logger.info(f"Extracting captions from DOCX: {result.docx}")
         result = caption_extractor.extract_captions(result.docx, result)
+        if all(figure.figure_caption == "Figure caption not found." for figure in result.figures):
+            logger.info("No captions found in DOCX, falling back to PDF")
+            if result.pdf and os.path.exists(result.pdf):
+                logger.info(f"Extracting captions from PDF: {result.pdf}")
+                result = caption_extractor.extract_captions(result.pdf, result)
     elif result.pdf and os.path.exists(result.pdf):
         logger.info(f"Extracting captions from PDF: {result.pdf}")
         result = caption_extractor.extract_captions(result.pdf, result)

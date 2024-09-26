@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List
-from ..zip_structure.zip_structure_base import ZipStructure, Panel, Figure
+from ..manuscript_structure.manuscript_structure import ZipStructure, Panel, Figure
 from PIL import Image
 import io
 import base64

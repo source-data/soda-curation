@@ -120,7 +120,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         """
         return s.encode('utf-8').decode('unicode_escape')
 
-class StructureZipFile(ABC):
+class XMLStructureExtractor(ABC):
     """
     Abstract base class for processing ZIP file structures.
 

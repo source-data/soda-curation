@@ -9,7 +9,7 @@ matching them based on the visual content and the full figure caption.
 from anthropic import Anthropic
 from typing import Dict, Any, List, Tuple, Optional
 from .match_caption_panel_base import MatchPanelCaption
-from ..zip_structure.zip_structure_base import ZipStructure, Figure
+from ..manuscript_structure.manuscript_structure import ZipStructure, Figure
 from .match_caption_panel_prompts import SYSTEM_PROMPT, get_match_panel_caption_prompt
 import logging
 import os

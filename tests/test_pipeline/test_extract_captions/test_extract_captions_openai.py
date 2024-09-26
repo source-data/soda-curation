@@ -10,7 +10,7 @@ import pytest
 from unittest.mock import Mock, patch
 import json
 from soda_curation.pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
-from soda_curation.pipeline.zip_structure.zip_structure_base import ZipStructure, Figure
+from soda_curation.pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure
 
 @pytest.fixture
 def mock_openai_client():

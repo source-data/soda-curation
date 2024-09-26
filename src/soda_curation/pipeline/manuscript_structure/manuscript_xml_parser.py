@@ -1,7 +1,7 @@
 import os
 from lxml import etree
 from typing import List, Dict, Any
-from ..zip_structure.zip_structure_base import ZipStructure, Figure
+from ..manuscript_structure.manuscript_structure import ZipStructure, Figure
 import logging
 
 logger = logging.getLogger(__name__)
