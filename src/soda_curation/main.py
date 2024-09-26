@@ -7,25 +7,15 @@ import logging
 from pathlib import Path
 from .config import load_config
 from .logging_config import setup_logging
-from .pipeline.zip_structure.zip_structure_openai import StructureZipFileGPT
-from .pipeline.zip_structure.zip_structure_anthropic import StructureZipFileClaude
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
 from .pipeline.extract_captions.extract_captions_anthropic import FigureCaptionExtractorClaude
 from .pipeline.object_detection.object_detection import create_object_detection
 from .pipeline.match_caption_panel.match_caption_panel_openai import MatchPanelCaptionOpenAI
 from .pipeline.match_caption_panel.match_caption_panel_anthropic import MatchPanelCaptionClaude
-from .pipeline.zip_structure.zip_structure_base import CustomJSONEncoder, Figure
+from .pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure, CustomJSONEncoder
+from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
 
 def check_duplicate_panels(figure: Figure) -> str:
-    """
-    Check if a figure contains panels with duplicate labels.
-
-    Args:
-        figure (Figure): The figure to check for duplicate panel labels.
-
-    Returns:
-        str: 'duplicated panels' if duplicates are found, 'none' otherwise.
-    """
     panel_labels = [panel.get('panel_label', '') for panel in figure.panels]
     return 'true' if len(panel_labels) != len(set(panel_labels)) else 'false'
 
@@ -47,12 +37,8 @@ def main():
     logger = logging.getLogger(__name__)
     
     # Check OpenAI configuration
-    if 'openai' not in config:
-        logger.error("OpenAI configuration is missing from the config file")
-        sys.exit(1)
-    
-    if 'api_key' not in config['openai']:
-        logger.error("API key is missing from the OpenAI configuration")
+    if 'openai' not in config or 'api_key' not in config['openai']:
+        logger.error("OpenAI configuration is missing or incomplete in the config file")
         sys.exit(1)
     
     # Set up debug directory
@@ -64,12 +50,7 @@ def main():
     else:
         config['debug'] = {'enabled': False, 'debug_dir': None}
     
-    # Log configuration (be careful not to log sensitive information like API keys)
-    logger.debug(f"Configuration loaded: {json.dumps({k: v for k, v in config.items() if k != 'openai'}, indent=2)}")
-    logger.debug(f"OpenAI config keys: {', '.join(config['openai'].keys())}")
-
     zip_path = Path(args.zip)
-    
     if not zip_path.is_file():
         logger.error(f"ZIP file not found: {args.zip}")
         sys.exit(1)
@@ -77,123 +58,107 @@ def main():
     extract_dir = zip_path.parent / zip_path.stem
     try:
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            file_list = zip_ref.namelist()
             zip_ref.extractall(extract_dir)
         logger.info(f"Extracted ZIP contents to: {extract_dir}")
+        logger.debug(f"Contents of extracted directory: {os.listdir(extract_dir)}")
     except zipfile.BadZipFile:
         logger.error(f"Invalid ZIP file: {args.zip}")
         sys.exit(1)
 
-    # Add extract_dir to config for use in other components
     config['extract_dir'] = str(extract_dir)
 
+    # Initialize components
     if config['ai'] == 'openai':
-        zip_processor = StructureZipFileGPT(config['openai'])
         caption_extractor = FigureCaptionExtractorGpt(config['openai'])
-        # Pass the entire config including extract_dir
         panel_caption_matcher = MatchPanelCaptionOpenAI(config)
     elif config['ai'] == 'anthropic':
-        zip_processor = StructureZipFileClaude(config['anthropic'])
         caption_extractor = FigureCaptionExtractorClaude(config['anthropic'])
-        # TODO: Implement Anthropic version of panel caption matcher
         panel_caption_matcher = MatchPanelCaptionClaude(config)
     else:
         logger.error(f"Unknown AI provider: {config['ai']}")
         sys.exit(1)
 
-    # Initialize object detection
     object_detector = create_object_detection(config)
 
+    # Process ZIP structure
     logger.info("Processing ZIP structure")
-    result = zip_processor.process_zip_structure(file_list)
-    if result:
+    try:
+        xml_extractor = XMLStructureExtractor(str(zip_path), str(extract_dir))
+        result = xml_extractor.extract_structure()
         logger.info("ZIP structure processed successfully")
-        
-        # Try to extract captions from DOCX first
-        docx_file = result.docx
-        if docx_file:
-            docx_path = os.path.join(extract_dir, docx_file)
-            if os.path.exists(docx_path):
-                logger.info(f"Extracting captions from DOCX: {docx_path}")
-                result = caption_extractor.extract_captions(docx_path, result)
-            else:
-                logger.warning(f"DOCX file not found at expected path: {docx_path}")
-        else:
-            logger.warning("No DOCX file found in the ZIP structure")
-
-        # If no captions were found in DOCX or DOCX doesn't exist, try PDF
-        if all(figure.figure_caption == "Figure caption not found." for figure in result.figures):
-            logger.info("No captions found in DOCX. Attempting to extract from PDF.")
-            pdf_file = result.pdf
-            if pdf_file:
-                pdf_path = os.path.join(extract_dir, pdf_file)
-                if os.path.exists(pdf_path):
-                    logger.info(f"Extracting captions from PDF: {pdf_path}")
-                    result = caption_extractor.extract_captions(pdf_path, result)
-                else:
-                    logger.warning(f"PDF file not found at expected path: {pdf_path}")
-            else:
-                logger.warning("No PDF file found in the ZIP structure")
-        
-        logger.info("Captions extraction process completed")
-
-        # Perform object detection on figure images
-        logger.info("Performing object detection on figure images")
-        for figure in result.figures:
-            if figure.img_files:
-                img_path = os.path.join(extract_dir, figure.img_files[0])
-                if os.path.exists(img_path):
-                    try:
-                        panels = object_detector.detect_panels(img_path)
-                        figure.panels = panels
-                        logger.info(f"Detected {len(panels)} panels in {img_path}")
-                    except Exception as e:
-                        logger.error(f"Error during panel detection for {img_path}: {str(e)}")
-                        figure.panels = []
-                else:
-                    logger.warning(f"Image file not found: {img_path}")
-
-        # Match panel captions
-        if panel_caption_matcher:
-            logger.info("Matching panel captions")
-            result = panel_caption_matcher.match_captions(result)
-        else:
-            logger.warning("Panel caption matching not available for the selected AI provider")
-
-        # Check for duplicate panels and add flag
-        for figure in result.figures:
-            figure.duplicated_panels = check_duplicate_panels(figure)
-            logger.info(f"Figure {figure.figure_label} flag: {figure.duplicated_panels}")
-
-        logger.info(json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2).encode('utf-8').decode())
-    
-        if args.output:
-            # Ensure we're working with an absolute path inside the container
-            output_path = args.output if args.output.startswith('/app/') else f'/app/output/{os.path.basename(args.output)}'
-            output_dir = os.path.dirname(output_path)
-            
-            # Ensure the output directory exists
-            os.makedirs(output_dir, exist_ok=True)
-            logger.info(f"Ensuring output directory exists: {output_dir}")
-            
-            # Check if the output file exists
-            if os.path.exists(output_path):
-                logger.warning(f"File {output_path} already exists and will be overwritten.")
-            
-            # Write JSON data to the output file with pretty formatting
-            try:
-                with open(output_path, 'w', encoding='utf-8') as outfile:
-                    json.dump(result, outfile, cls=CustomJSONEncoder, ensure_ascii=False, indent=4)
-                logger.info(f"JSON data has been written to {output_path}")
-            except Exception as e:
-                logger.error(f"An error occurred while writing to the file: {e}")
-                logger.error(f"Current working directory: {os.getcwd()}")
-                logger.error(f"Directory contents: {os.listdir(output_dir)}")
-    else:
-        logger.error("Failed to process ZIP structure")
+        logger.debug(f"Extracted structure: {json.dumps(result, cls=CustomJSONEncoder, indent=2)}")
+    except Exception as e:
+        logger.error(f"Failed to process ZIP structure: {str(e)}")
         sys.exit(1)
 
+    # Update file paths
+    result.docx = os.path.join(extract_dir, result.docx) if result.docx else None
+    result.pdf = os.path.join(extract_dir, result.pdf) if result.pdf else None
+    for figure in result.figures:
+        figure.img_files = [os.path.join(extract_dir, img) for img in figure.img_files]
+        figure.sd_files = [os.path.join(extract_dir, sd) for sd in figure.sd_files]
 
+    # Log file paths for debugging
+    logger.debug(f"DOCX path: {result.docx}")
+    logger.debug(f"PDF path: {result.pdf}")
+    for figure in result.figures:
+        logger.debug(f"Figure {figure.figure_label} image files: {figure.img_files}")
+
+    # Extract captions
+    if result.docx and os.path.exists(result.docx):
+        logger.info(f"Extracting captions from DOCX: {result.docx}")
+        result = caption_extractor.extract_captions(result.docx, result)
+        if all(figure.figure_caption == "Figure caption not found." for figure in result.figures):
+            logger.info("No captions found in DOCX, falling back to PDF")
+            if result.pdf and os.path.exists(result.pdf):
+                logger.info(f"Extracting captions from PDF: {result.pdf}")
+                result = caption_extractor.extract_captions(result.pdf, result)
+    elif result.pdf and os.path.exists(result.pdf):
+        logger.info(f"Extracting captions from PDF: {result.pdf}")
+        result = caption_extractor.extract_captions(result.pdf, result)
+    else:
+        logger.warning("No DOCX or PDF file found for caption extraction")
+
+    # Perform object detection
+    logger.info("Performing object detection on figure images")
+    for figure in result.figures:
+        if figure.img_files:
+            img_path = figure.img_files[0]
+            if os.path.exists(img_path):
+                try:
+                    panels = object_detector.detect_panels(img_path)
+                    figure.panels = panels
+                    logger.info(f"Detected {len(panels)} panels in {img_path}")
+                except Exception as e:
+                    logger.error(f"Error during panel detection for {img_path}: {str(e)}")
+            else:
+                logger.warning(f"Image file not found: {img_path}")
+                logger.debug(f"Current working directory: {os.getcwd()}")
+                logger.debug(f"Contents of {os.path.dirname(img_path)}: {os.listdir(os.path.dirname(img_path))}")
+
+    # Match panel captions
+    logger.info("Matching panel captions")
+    result = panel_caption_matcher.match_captions(result)
+
+    # Check for duplicate panels
+    for figure in result.figures:
+        figure.duplicated_panels = check_duplicate_panels(figure)
+        logger.info(f"Figure {figure.figure_label} flag: {figure.duplicated_panels}")
+
+    # Output results
+    output_json = json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2)
+    logger.info(output_json)
+
+    if args.output:
+        output_path = args.output if args.output.startswith('/app/') else f'/app/output/{os.path.basename(args.output)}'
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        
+        try:
+            with open(output_path, 'w', encoding='utf-8') as outfile:
+                json.dump(result, outfile, cls=CustomJSONEncoder, ensure_ascii=False, indent=4)
+            logger.info(f"JSON data has been written to {output_path}")
+        except Exception as e:
+            logger.error(f"An error occurred while writing to the file: {e}")
 
     # Clean up extracted files
     logger.info("Cleaning up extracted files")

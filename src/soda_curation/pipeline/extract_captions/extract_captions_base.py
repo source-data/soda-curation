@@ -8,7 +8,7 @@ should inherit from, ensuring a consistent interface across different extraction
 from abc import ABC, abstractmethod
 import logging
 from typing import Dict
-from ..zip_structure.zip_structure_base import ZipStructure
+from ..manuscript_structure.manuscript_structure import ZipStructure
 
 logger = logging.getLogger(__name__)
 

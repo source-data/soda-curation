@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch, MagicMock
 from soda_curation.pipeline.match_caption_panel.match_caption_panel_base import MatchPanelCaption
 from soda_curation.pipeline.match_caption_panel.match_caption_panel_openai import MatchPanelCaptionOpenAI
 from soda_curation.pipeline.match_caption_panel.match_caption_panel_anthropic import MatchPanelCaptionClaude
-from soda_curation.pipeline.zip_structure.zip_structure_base import ZipStructure, Figure
+from soda_curation.pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure
 
 class TestMatchPanelCaptionBase:
     def test_extract_panel_image(self):
