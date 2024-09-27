@@ -8,12 +8,15 @@ as well as an abstract base class for ZIP structure processors and a custom JSON
 
 import json
 import logging
+import os
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from typing import Any, List, Optional
 
 logger = logging.getLogger(__name__)
 
+def full_path(extract_dir: str, file_path: str) -> str:
+    return os.path.join(extract_dir, file_path)
 
 @dataclass
 class Panel:
@@ -27,13 +30,11 @@ class Panel:
         confidence (float): Confidence of the object detection algorithm.
         ai_response (Optional[Any]): The raw AI response for this panel.
     """
-
     panel_label: str
     panel_caption: str
     panel_bbox: List[float]
     confidence: float
     ai_response: Optional[Any] = None
-
 
 @dataclass
 class Figure:
@@ -57,6 +58,9 @@ class Figure:
     panels: List[Panel] = field(default_factory=list)
     duplicated_panels: str = "false"
     ai_response: Optional[Any] = None
+    # New fields for full paths
+    _full_img_files: List[str] = field(default_factory=list)
+    _full_sd_files: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -71,15 +75,20 @@ class ZipStructure:
         pdf (str): Path to the PDF file.
         appendix (List[str]): List of paths to appendix files.
         figures (List[Figure]): List of Figure objects representing the figures in the manuscript.
+        errors (List[str]): List of errors encountered during processing. Defaults to an empty list.
     """
 
-    manuscript_id: str
-    xml: str
-    docx: str
-    pdf: str
-    appendix: List[str]
-    figures: List[Figure]
-
+    manuscript_id: str = ""
+    xml: str = ""
+    docx: str = ""
+    pdf: str = ""
+    appendix: List[str] = field(default_factory=list)
+    figures: List[Figure] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
+    # New fields for full paths
+    _full_docx: str = ""
+    _full_pdf: str = ""
+    _full_appendix: List[str] = field(default_factory=list)
 
 class CustomJSONEncoder(json.JSONEncoder):
     """
@@ -100,8 +109,8 @@ class CustomJSONEncoder(json.JSONEncoder):
             dict: A dictionary representation of the object if it's a ZipStructure, Figure, or Panel instance.
             Any: The default serialization for other types.
         """
-        if isinstance(obj, (Panel, Figure, ZipStructure)):
-            return self.serialize_dataclass(obj)
+        if isinstance(obj, (ZipStructure, Figure, Panel)):
+            return {k: v for k, v in asdict(obj).items() if not k.startswith('_')}
         return super().default(obj)
 
     def serialize_dataclass(self, obj):
@@ -114,11 +123,11 @@ class CustomJSONEncoder(json.JSONEncoder):
         Returns:
             dict: A dictionary representation of the dataclass object.
         """
-        dict_repr = asdict(obj)
-        for key, value in dict_repr.items():
-            if isinstance(value, str):
-                dict_repr[key] = self.unescape_string(value)
-        return dict_repr
+        if isinstance(obj, ZipStructure):
+            return {k: v for k, v in obj.__dict__.items() if not k.startswith('_')}
+        elif isinstance(obj, Figure):
+            return {k: v for k, v in obj.__dict__.items() if not k.startswith('_')}
+        return super().default(obj)
 
     @staticmethod
     def unescape_string(s):

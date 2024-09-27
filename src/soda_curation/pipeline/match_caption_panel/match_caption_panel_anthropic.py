@@ -16,6 +16,7 @@ from anthropic import Anthropic
 from PIL import Image
 
 from ..manuscript_structure.manuscript_structure import Figure, Panel, ZipStructure
+from ..object_detection.object_detection import convert_to_pil_image
 from .match_caption_panel_base import MatchPanelCaption
 from .match_caption_panel_prompts import SYSTEM_PROMPT, get_match_panel_caption_prompt
 
@@ -118,23 +119,28 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
         """
         Process a single figure, matching panel captions with their corresponding images.
 
-        This method extracts panel images, calls the Anthropic API for caption matching,
+        This method extracts panel images, calls the OpenAI API for caption matching,
         and compiles the results for each panel in the figure.
 
         Args:
             figure (Figure): The figure object to process.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing matched panel information.
+            List[Panel]: A list of Panel objects containing matched panel information.
         """
         matched_panels = []
-        figure_path = os.path.join(self.extract_dir, figure.img_files[0])
 
         for i, panel in enumerate(figure.panels):
             logger.info(f"Processing panel {i+1} of figure {figure.figure_label}")
 
             try:
-                encoded_image = self._extract_panel_image(figure_path, panel.panel_bbox)
+                if hasattr(figure, '_pil_image'):
+                    pil_image = figure._pil_image
+                else:
+                    figure_path = os.path.join(self.extract_dir, figure.img_files[0])
+                    pil_image, _ = convert_to_pil_image(figure_path)
+
+                encoded_image = self._extract_panel_image(pil_image, panel.panel_bbox)
 
                 if not encoded_image:
                     logger.warning(
@@ -147,15 +153,14 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
                         encoded_image, f"{figure.figure_label}_panel_{i+1}.png"
                     )
 
-                response = self._call_anthropic_api(
-                    encoded_image, figure.figure_caption
-                )
+                response = self._call_anthropic_api(encoded_image, figure.figure_caption)
                 panel_label, panel_caption = self._parse_response(response)
 
                 matched_panel = Panel(
                     panel_label=panel_label,
                     panel_caption=panel_caption,
                     panel_bbox=panel.panel_bbox,
+                    confidence=panel.confidence,
                     ai_response=response,
                 )
                 matched_panels.append(matched_panel)

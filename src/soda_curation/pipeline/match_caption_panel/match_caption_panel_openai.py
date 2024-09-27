@@ -16,6 +16,7 @@ import openai
 from PIL import Image
 
 from ..manuscript_structure.manuscript_structure import Figure, Panel, ZipStructure
+from ..object_detection.object_detection import convert_to_pil_image
 from .match_caption_panel_base import MatchPanelCaption
 from .match_caption_panel_prompts import SYSTEM_PROMPT, get_match_panel_caption_prompt
 
@@ -128,16 +129,21 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             figure (Figure): The figure object to process.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing matched panel information.
+            List[Panel]: A list of Panel objects containing matched panel information.
         """
         matched_panels = []
-        figure_path = os.path.join(self.extract_dir, figure.img_files[0])
 
         for i, panel in enumerate(figure.panels):
             logger.info(f"Processing panel {i+1} of figure {figure.figure_label}")
 
             try:
-                encoded_image = self._extract_panel_image(figure_path, panel.panel_bbox)
+                if hasattr(figure, '_pil_image'):
+                    pil_image = figure._pil_image
+                else:
+                    figure_path = os.path.join(self.extract_dir, figure.img_files[0])
+                    pil_image, _ = convert_to_pil_image(figure_path)
+
+                encoded_image = self._extract_panel_image(pil_image, panel.panel_bbox)
 
                 if not encoded_image:
                     logger.warning(
@@ -157,6 +163,7 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
                     panel_label=panel_label,
                     panel_caption=panel_caption,
                     panel_bbox=panel.panel_bbox,
+                    confidence=panel.confidence,
                     ai_response=response,
                 )
                 matched_panels.append(matched_panel)
@@ -171,38 +178,31 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
 
         return matched_panels
 
-    def _extract_panel_image(
-        self, figure_path: str, bbox: List[float]
-    ) -> Optional[str]:
+    def _extract_panel_image(self, pil_image: Image.Image, bbox: List[float]) -> Optional[str]:
         """
         Extract a panel image from a figure based on bounding box coordinates.
 
-        This method opens the figure image, crops it according to the bounding box,
+        This method crops the PIL Image according to the bounding box,
         and returns the panel image as a base64 encoded string.
 
         Args:
-            figure_path (str): Path to the figure image file.
+            pil_image (Image.Image): The PIL Image object of the entire figure.
             bbox (List[float]): Bounding box coordinates [x1, y1, x2, y2] in relative format.
 
         Returns:
             Optional[str]: Base64 encoded string of the panel image, or None if extraction fails.
         """
         try:
-            with Image.open(figure_path) as img:
-                # Convert to RGB if the image is in CMYK mode
-                if img.mode == "CMYK":
-                    img = img.convert("RGB")
+            width, height = pil_image.size
+            left, top, right, bottom = [
+                int(coord * width if i % 2 == 0 else coord * height)
+                for i, coord in enumerate(bbox)
+            ]
+            panel = pil_image.crop((left, top, right, bottom))
 
-                width, height = img.size
-                left, top, right, bottom = [
-                    int(coord * width if i % 2 == 0 else coord * height)
-                    for i, coord in enumerate(bbox)
-                ]
-                panel = img.crop((left, top, right, bottom))
-
-                buffered = io.BytesIO()
-                panel.save(buffered, format="PNG")
-                return base64.b64encode(buffered.getvalue()).decode("utf-8")
+            buffered = io.BytesIO()
+            panel.save(buffered, format="PNG")
+            return base64.b64encode(buffered.getvalue()).decode("utf-8")
         except Exception as e:
             logger.error(f"Error extracting panel image: {str(e)}")
             return None
