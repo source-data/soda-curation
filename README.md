@@ -1,6 +1,6 @@
 # soda-curation
 
-soda-curation is a professional Python package for data curation with AI capabilities, specifically designed for processing and structuring ZIP files containing manuscript data.
+soda-curation is a professional Python package for automated data curation of scientific manuscripts using AI capabilities. It specializes in processing and structuring ZIP files containing manuscript data, extracting figure captions, and matching them with corresponding images and panels.
 
 ## Table of Contents
 
@@ -19,19 +19,20 @@ soda-curation is a professional Python package for data curation with AI capabil
 
 ## Features
 
-- Process ZIP files containing manuscript data
-- Extract and structure manuscript information using AI (OpenAI or Anthropic)
-- Identify and categorize figures, appendices, and supplementary data
-- Extract figure captions from DOCX or PDF files
-- Detect and analyze figure panels using object detection
-- Match panel captions with their corresponding images
-- Flexible configuration options for AI providers and models
+- Automated processing of scientific manuscript ZIP files
+- AI-powered extraction and structuring of manuscript information
+- Figure and panel detection using advanced object detection models
+- Intelligent caption extraction and matching for figures and panels
+- Support for multiple AI providers (OpenAI and Anthropic)
+- Flexible configuration options for fine-tuning the curation process
 - Debug mode for development and troubleshooting
 
-## Requirements
+## System Requirements
 
 - Python 3.8+
-- Docker (optional, for containerized usage)
+- CUDA-compatible GPU (recommended for optimal performance)
+- 8GB+ RAM
+- 50GB+ free disk space
 
 ## Installation
 
@@ -54,9 +55,27 @@ soda-curation is a professional Python package for data curation with AI capabil
    pip install -e .
    ```
 
+3. Set up environment variables:
+
+   Using environment variables is the recommended way to store sensitive information like API keys:
+
+   ```
+   export OPENAI_API_KEY=your_openai_key
+   export ANTHROPIC_API_KEY=your_anthropic_key
+   ```
+
+   Replace `your_openai_key` and `your_anthropic_key` in the `config.yaml` file. Not recommended for production use.
+
 ## Configuration
 
-The soda-curation package uses a YAML configuration file to control its behavior. The configuration file allows you to specify AI providers, model parameters, and debug options.
+The `config.yaml` file controls the behavior of soda-curation. Key configuration options include:
+
+- `ai`: Choose between "openai" or "anthropic" as the AI provider
+- `openai.model`: Specify the OpenAI model (e.g., "gpt-4-1106-preview")
+- `anthropic.model`: Specify the Anthropic model (e.g., "claude-3-sonnet-20240229")
+- `object_detection.model_path`: Path to the YOLOv10 model for panel detection
+
+For a complete list of configuration options, refer to the [Configuration](#configuration) section in the full documentation.
 
 ### Configuration File Structure
 
@@ -206,6 +225,17 @@ main()
 
 Two shell scripts are provided for easy execution of the soda-curation package in a Docker environment:
 
+First you need to build the Docker image:
+
+```bash
+# For CPU only
+docker build -t soda-curation-cpu . -f Dockerfile.cpu --target development
+# For GPU support
+docker build -t soda-curation .
+```
+
+Then you can run the following scripts:
+
 1. `run_soda_curation.sh`: For systems with GPU support
 2. `run_soda_curation_cpu.sh`: For CPU-only systems
 
@@ -250,6 +280,7 @@ The soda-curation pipeline consists of several steps to process and analyze manu
    - Analyzes the contents of the input ZIP file
    - Identifies key components such as XML, DOCX, PDF, and figure files
    - Creates a structured representation of the manuscript
+   - The needed information is extracted from the `<notes>` tag in the XML file.
 
 2. **Figure Caption Extraction**
 
@@ -297,6 +328,7 @@ The soda-curation pipeline generates a JSON output that represents the structure
         {
           "panel_label": "string",
           "panel_caption": "string",
+          "confidence": float,
           "panel_bbox": [float, float, float, float]
         }
       ]
@@ -318,10 +350,12 @@ The soda-curation pipeline generates a JSON output that represents the structure
   - `sd_files`: List of paths to source data files for this figure
   - `figure_caption`: Full caption of the figure
   - `duplicated_panels`: Boolean flag indicating if the figure contains duplicate panels
+  - `ai_response`: Raw response from the AI agent
   - `panels`: Array of panel objects, each containing:
     - `panel_label`: Label of the panel (e.g., "A", "B", "C")
     - `panel_caption`: Caption specific to this panel
     - `panel_bbox`: Bounding box coordinates of the panel [x1, y1, x2, y2] in relative format
+    - `ai_response`: Raw response from the AI agent
 
 This schema provides a comprehensive representation of the manuscript structure, including all figures, their captions, and individual panels with their specific captions and locations within the figure image.
 
@@ -372,6 +406,9 @@ Make sure to update the `config.yaml` file with your API keys before running the
 To format and lint your code, run the following command:
 
 ```bash
+# Build the docker-compose image
+docker-compose build format
+# Run the formatting and linting checks
 docker-compose run --rm format
 ```
 
@@ -401,3 +438,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
+
+## Changelog
+
+### v0.1.0 (2024-10-01)
+
+- Initial release
+- Support for OpenAI and Anthropic AI providers
+- Implemented figure and panel detection
+- Added caption extraction and matching functionality
