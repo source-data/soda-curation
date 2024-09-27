@@ -1,3 +1,10 @@
+"""
+This module provides functionality for object detection in scientific figures,
+particularly for identifying panels within figure images.
+
+It includes utilities for image conversion and resizing, as well as a class for
+performing object detection using the YOLOv10 model.
+"""
 import logging
 import os
 import subprocess
