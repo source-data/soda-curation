@@ -6,13 +6,14 @@ It includes dataclasses for representing panels, figures, and the overall ZIP st
 as well as an abstract base class for ZIP structure processors and a custom JSON encoder.
 """
 
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass, asdict, field
 import json
 import logging
 from abc import ABC, abstractmethod
+from dataclasses import asdict, dataclass, field
+from typing import Any, List, Optional
 
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class Panel:
@@ -23,12 +24,16 @@ class Panel:
         panel_label (str): The label of the panel (e.g., "A", "B", "C").
         panel_caption (str): The caption specific to this panel.
         panel_bbox (List[float]): Bounding box coordinates of the panel [x1, y1, x2, y2].
+        confidence (float): Confidence of the object detection algorithm.
         ai_response (Optional[Any]): The raw AI response for this panel.
     """
+
     panel_label: str
     panel_caption: str
     panel_bbox: List[float]
+    confidence: float
     ai_response: Optional[Any] = None
+
 
 @dataclass
 class Figure:
@@ -44,6 +49,7 @@ class Figure:
         duplicated_panels (str): Flag indicating if the figure has duplicate panels. Defaults to "false".
         ai_response (Optional[Any]): The raw AI response for this figure.
     """
+
     figure_label: str
     img_files: List[str]
     sd_files: List[str]
@@ -51,6 +57,7 @@ class Figure:
     panels: List[Panel] = field(default_factory=list)
     duplicated_panels: str = "false"
     ai_response: Optional[Any] = None
+
 
 @dataclass
 class ZipStructure:
@@ -65,12 +72,14 @@ class ZipStructure:
         appendix (List[str]): List of paths to appendix files.
         figures (List[Figure]): List of Figure objects representing the figures in the manuscript.
     """
+
     manuscript_id: str
     xml: str
     docx: str
     pdf: str
     appendix: List[str]
     figures: List[Figure]
+
 
 class CustomJSONEncoder(json.JSONEncoder):
     """
@@ -79,6 +88,7 @@ class CustomJSONEncoder(json.JSONEncoder):
     This encoder extends the default JSONEncoder to handle ZipStructure, Figure, and Panel objects,
     converting them to dictionaries for JSON serialization.
     """
+
     def default(self, obj):
         """
         Converts ZipStructure, Figure, and Panel objects to dictionaries.
@@ -121,7 +131,8 @@ class CustomJSONEncoder(json.JSONEncoder):
         Returns:
             str: The unescaped string.
         """
-        return s.encode('utf-8').decode('unicode_escape')
+        return s.encode("utf-8").decode("unicode_escape")
+
 
 class XMLStructureExtractor(ABC):
     """
@@ -130,6 +141,7 @@ class XMLStructureExtractor(ABC):
     This class defines the interface for classes that process ZIP file structures
     and convert them into ZipStructure objects.
     """
+
     @abstractmethod
     def process_zip_structure(self, file_list: List[str]) -> ZipStructure:
         """
@@ -167,38 +179,47 @@ class XMLStructureExtractor(ABC):
         """
         try:
             data = json.loads(json_str)
-            required_fields = ['manuscript_id', 'xml', 'docx', 'pdf', 'appendix', 'figures']
+            required_fields = [
+                "manuscript_id",
+                "xml",
+                "docx",
+                "pdf",
+                "appendix",
+                "figures",
+            ]
             if not all(field in data for field in required_fields):
                 logger.error("Missing required fields in JSON response")
                 return None
 
             figures = []
-            for fig in data.get('figures', []):
+            for fig in data.get("figures", []):
                 try:
-                    figures.append(Figure(
-                        figure_label=fig['figure_label'],
-                        img_files=fig['img_files'],
-                        sd_files=fig['sd_files'],
-                        figure_caption=fig.get('figure_caption', ''),
-                        panels=fig.get('panels', [])
-                    ))
+                    figures.append(
+                        Figure(
+                            figure_label=fig["figure_label"],
+                            img_files=fig["img_files"],
+                            sd_files=fig["sd_files"],
+                            figure_caption=fig.get("figure_caption", ""),
+                            panels=fig.get("panels", []),
+                        )
+                    )
                 except KeyError as e:
                     logger.error(f"Missing key in figure data: {str(e)}")
                     return None
-            
-            appendix = data.get('appendix', [])
+
+            appendix = data.get("appendix", [])
             if appendix is None:
                 appendix = []
             elif isinstance(appendix, str):
                 appendix = [appendix]
-            
+
             return ZipStructure(
-                manuscript_id=data.get('manuscript_id', ''),
-                xml=data.get('xml', ''),
-                docx=data.get('docx', ''),
-                pdf=data.get('pdf', ''),
+                manuscript_id=data.get("manuscript_id", ""),
+                xml=data.get("xml", ""),
+                docx=data.get("docx", ""),
+                pdf=data.get("pdf", ""),
                 appendix=appendix,
-                figures=figures
+                figures=figures,
             )
         except json.JSONDecodeError:
             logger.error("Invalid JSON response from AI")

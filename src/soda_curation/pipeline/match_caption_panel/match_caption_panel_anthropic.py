@@ -6,19 +6,21 @@ It includes a class that interacts with the Anthropic API to process figure pane
 matching them based on the visual content and the full figure caption.
 """
 
-from anthropic import Anthropic
-from typing import Dict, Any, List, Tuple, Optional
-from .match_caption_panel_base import MatchPanelCaption
-from ..manuscript_structure.manuscript_structure import ZipStructure, Figure, Panel
-from .match_caption_panel_prompts import SYSTEM_PROMPT, get_match_panel_caption_prompt
+import base64
+import io
 import logging
 import os
-import json
-import base64
+from typing import Any, Dict, List, Optional, Tuple
+
+from anthropic import Anthropic
 from PIL import Image
-import io
+
+from ..manuscript_structure.manuscript_structure import Figure, Panel, ZipStructure
+from .match_caption_panel_base import MatchPanelCaption
+from .match_caption_panel_prompts import SYSTEM_PROMPT, get_match_panel_caption_prompt
 
 logger = logging.getLogger(__name__)
+
 
 class MatchPanelCaptionClaude(MatchPanelCaption):
     """
@@ -46,25 +48,29 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
             ValueError: If required configuration parameters are missing.
         """
         self.config = config
-        self.anthropic_config = config.get('anthropic', {})
-        
+        self.anthropic_config = config.get("anthropic", {})
+
         if not self.anthropic_config:
-            raise ValueError("Anthropic configuration is missing from the main configuration")
-        
-        api_key = self.anthropic_config.get('api_key')
+            raise ValueError(
+                "Anthropic configuration is missing from the main configuration"
+            )
+
+        api_key = self.anthropic_config.get("api_key")
         if not api_key:
             raise ValueError("API key is missing from the Anthropic configuration")
-        
+
         self.client = Anthropic(api_key=api_key)
-        
-        self.debug_enabled = config.get('debug', {}).get('enabled', False)
-        self.debug_dir = config.get('debug', {}).get('debug_dir')
-        self.extract_dir = config.get('extract_dir')
-        self.process_first_figure_only = config.get('debug', {}).get('process_first_figure_only', False)
-        
+
+        self.debug_enabled = config.get("debug", {}).get("enabled", False)
+        self.debug_dir = config.get("debug", {}).get("debug_dir")
+        self.extract_dir = config.get("extract_dir")
+        self.process_first_figure_only = config.get("debug", {}).get(
+            "process_first_figure_only", False
+        )
+
         if not self.extract_dir:
             raise ValueError("extract_dir is not set in the configuration")
-        
+
         logger.info("MatchPanelCaptionAnthropic initialized successfully")
         logger.debug(f"Debug enabled: {self.debug_enabled}")
         logger.debug(f"Debug directory: {self.debug_dir}")
@@ -85,20 +91,26 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
             ZipStructure: Updated ZIP structure with matched panel captions for the first figure.
         """
         logger.info("Starting panel caption matching process")
-        
+
         if zip_structure.figures:
-            figures_to_process = zip_structure.figures[:1] if self.process_first_figure_only else zip_structure.figures
+            figures_to_process = (
+                zip_structure.figures[:1]
+                if self.process_first_figure_only
+                else zip_structure.figures
+            )
             for figure in figures_to_process:
                 logger.info(f"Processing figure: {figure.figure_label}")
                 matched_panels = self._process_figure(figure)
                 figure.panels = matched_panels
-                
+
                 if self.process_first_figure_only:
-                    logger.info("Processed first figure only as per debug configuration")
+                    logger.info(
+                        "Processed first figure only as per debug configuration"
+                    )
                     break
         else:
             logger.warning("No figures found in the ZIP structure")
-        
+
         logger.info("Panel caption matching process completed")
         return zip_structure
 
@@ -117,38 +129,50 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
         """
         matched_panels = []
         figure_path = os.path.join(self.extract_dir, figure.img_files[0])
-        
+
         for i, panel in enumerate(figure.panels):
             logger.info(f"Processing panel {i+1} of figure {figure.figure_label}")
-            
+
             try:
                 encoded_image = self._extract_panel_image(figure_path, panel.panel_bbox)
-                
+
                 if not encoded_image:
-                    logger.warning(f"Failed to extract panel image for panel {i+1} of figure {figure.figure_label}")
+                    logger.warning(
+                        f"Failed to extract panel image for panel {i+1} of figure {figure.figure_label}"
+                    )
                     continue
-                
+
                 if self.debug_enabled and self.debug_dir:
-                    self._save_debug_image(encoded_image, f"{figure.figure_label}_panel_{i+1}.png")
-                
-                response = self._call_anthropic_api(encoded_image, figure.figure_caption)
+                    self._save_debug_image(
+                        encoded_image, f"{figure.figure_label}_panel_{i+1}.png"
+                    )
+
+                response = self._call_anthropic_api(
+                    encoded_image, figure.figure_caption
+                )
                 panel_label, panel_caption = self._parse_response(response)
-                
+
                 matched_panel = Panel(
                     panel_label=panel_label,
                     panel_caption=panel_caption,
                     panel_bbox=panel.panel_bbox,
-                    ai_response=response
+                    ai_response=response,
                 )
                 matched_panels.append(matched_panel)
-                logger.info(f"Matched panel: Label={panel_label}, Caption={panel_caption[:50]}...")
-            
+                logger.info(
+                    f"Matched panel: Label={panel_label}, Caption={panel_caption[:50]}..."
+                )
+
             except Exception as e:
-                logger.error(f"Error processing panel {i+1} of figure {figure.figure_label}: {str(e)}")
-        
+                logger.error(
+                    f"Error processing panel {i+1} of figure {figure.figure_label}: {str(e)}"
+                )
+
         return matched_panels
 
-    def _extract_panel_image(self, figure_path: str, bbox: List[float]) -> Optional[str]:
+    def _extract_panel_image(
+        self, figure_path: str, bbox: List[float]
+    ) -> Optional[str]:
         """
         Extract a panel image from a figure based on bounding box coordinates.
 
@@ -165,16 +189,16 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
         try:
             with Image.open(figure_path) as img:
                 # Convert to RGB if the image is in CMYK mode
-                if img.mode == 'CMYK':
-                    img = img.convert('RGB')
-                
+                if img.mode == "CMYK":
+                    img = img.convert("RGB")
+
                 width, height = img.size
                 left, top, right, bottom = [
                     int(coord * width if i % 2 == 0 else coord * height)
                     for i, coord in enumerate(bbox)
                 ]
                 panel = img.crop((left, top, right, bottom))
-                
+
                 buffered = io.BytesIO()
                 panel.save(buffered, format="PNG")
                 return base64.b64encode(buffered.getvalue()).decode("utf-8")
@@ -199,33 +223,43 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
         if not encoded_image:
             logger.error("Encoded image is empty, skipping API call")
             return ""
-        
+
         try:
             logger.info("Calling Anthropic API for panel caption matching")
             logger.info(f"Figure caption: {figure_caption[:100]}...")
-            
-            model = self.anthropic_config.get('model', 'claude-3-opus-20240229')
+
+            model = self.anthropic_config.get("model", "claude-3-opus-20240229")
             logger.info(f"Using Anthropic model: {model}")
-            
+
             prompt = get_match_panel_caption_prompt(figure_caption)
-            
+
             response = self.client.messages.create(
                 model=model,
-                max_tokens=self.anthropic_config.get('max_tokens_to_sample', 1000),
-                temperature=self.anthropic_config.get('temperature', 0.7),
+                max_tokens=self.anthropic_config.get("max_tokens_to_sample", 1000),
+                temperature=self.anthropic_config.get("temperature", 0.7),
                 system=SYSTEM_PROMPT,
                 messages=[
-                    {"role": "user", "content": [
-                        {"type": "text", "text": prompt},
-                        {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": encoded_image}}
-                    ]}
-                ]
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image",
+                                "source": {
+                                    "type": "base64",
+                                    "media_type": "image/png",
+                                    "data": encoded_image,
+                                },
+                            },
+                        ],
+                    }
+                ],
             )
-            
+
             ai_response = response.content[0].text
             logger.info("Received response from Anthropic API")
             logger.info(f"AI response: {ai_response}")
-            
+
             return ai_response
         except Exception as e:
             logger.error(f"Error in Anthropic API call: {str(e)}")
@@ -247,21 +281,23 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
         try:
             logger.info("Parsing AI response")
             logger.debug(f"Raw response: {response}")
-            
+
             # Assuming the response is in the format: ```PANEL_{label}: {caption}```
-            parts = response.strip('`').split(': ', 1)
+            parts = response.strip("`").split(": ", 1)
             if len(parts) == 2:
-                label = parts[0].split('_')[1]
+                label = parts[0].split("_")[1]
                 caption = parts[1]
                 logger.info(f"Successfully parsed response. Label: {label}")
-                logger.debug(f"Parsed caption: {caption[:50]}...")  # Log first 50 chars of parsed caption
+                logger.debug(
+                    f"Parsed caption: {caption[:50]}..."
+                )  # Log first 50 chars of parsed caption
                 return label, caption
             else:
                 logger.error(f"Unexpected response format: {response}")
-                return '', ''
+                return "", ""
         except Exception as e:
             logger.error(f"Error parsing response: {str(e)}")
-            return '', ''
+            return "", ""
 
     def _save_debug_image(self, encoded_image: str, filename: str):
         """

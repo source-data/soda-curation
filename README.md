@@ -36,17 +36,20 @@ soda-curation is a professional Python package for data curation with AI capabil
 ## Installation
 
 1. Clone the repository:
+
    ```
    git clone https://github.com/source-data/soda-curation.git
    cd soda-curation
    ```
 
 2. Install the package using Poetry:
+
    ```
    poetry install
    ```
 
    Or, if you prefer to use pip:
+
    ```
    pip install -e .
    ```
@@ -60,7 +63,7 @@ The soda-curation package uses a YAML configuration file to control its behavior
 The configuration file (`config.yaml`) has the following structure:
 
 ```yaml
-ai: "openai"  # or "anthropic"
+ai: "openai" # or "anthropic"
 
 openai:
   api_key: "your_openai_key"
@@ -95,9 +98,11 @@ debug:
 ### Configuration Options
 
 1. **AI Provider**
+
    - `ai`: Specify the AI provider to use ("openai" or "anthropic")
 
 2. **OpenAI Configuration**
+
    - `api_key`: Your OpenAI API key
    - `model`: The GPT model to use (e.g., "gpt-4-1106-preview")
    - `temperature`: Controls randomness in output (0.0 to 1.0)
@@ -105,6 +110,7 @@ debug:
    - `structure_zip_assistant_id`: ID of the OpenAI assistant for ZIP structure analysis
 
 3. **Anthropic Configuration**
+
    - `api_key`: Your Anthropic API key
    - `model`: The Claude model to use (e.g., "claude-3-sonnet-20240229")
    - `temperature`: Controls randomness in output (0.0 to 1.0)
@@ -112,9 +118,11 @@ debug:
    - `top_p` and `top_k`: Control diversity of output
 
 4. **Object Detection**
+
    - `model_path`: Path to the YOLOv10 model for panel detection
 
 5. **Logging**
+
    - `level`: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
    - `file`: Path to the log file
    - `format`: Log message format
@@ -155,6 +163,7 @@ To modify a prompt:
 There's an important distinction in how prompts are handled between OpenAI and Anthropic implementations:
 
 1. **OpenAI**:
+
    - For OpenAI, prompts are typically stored in the AI assistant and updated when the script runs.
    - Changes to the prompt files will be reflected the next time you run the pipeline.
    - The `structure_zip_assistant_id` in the configuration is used to identify and update the assistant with the new prompt.
@@ -176,6 +185,7 @@ Let's say you want to modify the ZIP structure analysis prompt. You would:
 For OpenAI, these changes will be applied to the assistant the next time you run the pipeline. For Anthropic, they will be used in the next API call.
 
 Remember to test your changes thoroughly, as modifications to prompts can significantly impact the pipeline's performance and output quality.
+
 ## Usage
 
 The soda-curation package can be used both as a Python module and through provided shell scripts for Docker-based execution.
@@ -236,20 +246,24 @@ This command processes `manuscript.zip` and saves the results to `results.json`.
 The soda-curation pipeline consists of several steps to process and analyze manuscript data:
 
 1. **ZIP Structure Analysis**
+
    - Analyzes the contents of the input ZIP file
    - Identifies key components such as XML, DOCX, PDF, and figure files
    - Creates a structured representation of the manuscript
 
 2. **Figure Caption Extraction**
+
    - Extracts figure captions from the DOCX or PDF file
    - Uses AI (OpenAI or Anthropic) to process and structure the captions
    - Matches captions to the corresponding figures identified in step 1
 
 3. **Object Detection**
+
    - Uses a YOLOv10 model to detect panels within figure images
    - Identifies bounding boxes for individual panels in each figure
 
 4. **Panel Caption Matching**
+
    - Matches detected panels with their specific captions
    - Uses AI to analyze the visual content of each panel and match it with the appropriate part of the figure caption
 
@@ -340,16 +354,26 @@ docker build -t soda-curation-cpu . -f Dockerfile.cpu --target development # For
 ### Running with Docker
 
 For GPU support:
+
 ```bash
 ./run_soda_curation.sh /path/to/your/manuscript.zip
 ```
 
 For CPU-only:
+
 ```bash
 ./run_soda_curation_cpu.sh /path/to/your/manuscript.zip
 ```
 
 Make sure to update the `config.yaml` file with your API keys before running the Docker container.
+
+### Code Formatting and Linting
+
+To format and lint your code, run the following command:
+
+```bash
+docker-compose run --rm format
+```
 
 ## Contributing
 

@@ -1,5 +1,7 @@
+from typing import Any, Dict
+
 import yaml
-from typing import Dict, Any
+
 
 def load_config(config_path: str) -> Dict[str, Any]:
     """
@@ -19,7 +21,7 @@ def load_config(config_path: str) -> Dict[str, Any]:
         yaml.YAMLError: If there's an error parsing the YAML file.
     """
     try:
-        with open(config_path, 'r') as config_file:
+        with open(config_path, "r") as config_file:
             documents = yaml.safe_load_all(config_file)
             config = {}
             for doc in documents:

@@ -8,15 +8,18 @@ figure captions, which are then integrated into a ZipStructure object.
 
 import json
 import logging
-from typing import Dict, Any, Union
+import re
+from typing import Any, Dict
+
 from anthropic import Anthropic
 from docx import Document
+
+from ..manuscript_structure.manuscript_structure import ZipStructure
 from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import get_extract_captions_prompt
-from ..manuscript_structure.manuscript_structure import ZipStructure
-import re
 
 logger = logging.getLogger(__name__)
+
 
 class FigureCaptionExtractorClaude(FigureCaptionExtractor):
     """
@@ -38,9 +41,11 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             config (Dict[str, Any]): Configuration dictionary for Anthropic API.
         """
         self.config = config
-        self.client = Anthropic(api_key=self.config['api_key'])
+        self.client = Anthropic(api_key=self.config["api_key"])
 
-    def extract_captions(self, docx_path: str, zip_structure: ZipStructure) -> ZipStructure:
+    def extract_captions(
+        self, docx_path: str, zip_structure: ZipStructure
+    ) -> ZipStructure:
         """
         Extract figure captions from the given DOCX file using Anthropic's Claude model.
 
@@ -56,43 +61,47 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         """
         try:
             logger.info(f"Processing file: {docx_path}")
-            
+
             file_content = self._extract_docx_content(docx_path)
             if not file_content:
                 logger.warning(f"No content extracted from {docx_path}")
-                return self._update_zip_structure(zip_structure, {}, "No content extracted")
+                return self._update_zip_structure(
+                    zip_structure, {}, "No content extracted"
+                )
 
             prompt = get_extract_captions_prompt(file_content)
-            
+
             logger.debug("Sending request to Anthropic API")
             response = self.client.messages.create(
-                model=self.config['model'],
-                max_tokens=self.config['max_tokens_to_sample'],
-                messages=[
-                    {"role": "user", "content": prompt}
-                ]
+                model=self.config["model"],
+                max_tokens=self.config["max_tokens_to_sample"],
+                messages=[{"role": "user", "content": prompt}],
             )
             logger.debug(f"Answer from Anthropic: {response}")
 
             extracted_text = response.content
             if isinstance(extracted_text, list):
-                extracted_text = ' '.join(item.text for item in extracted_text if hasattr(item, 'text'))
+                extracted_text = " ".join(
+                    item.text for item in extracted_text if hasattr(item, "text")
+                )
             elif not isinstance(extracted_text, str):
                 extracted_text = str(extracted_text)
-                
-            extracted_text = extracted_text.encode('utf-8').decode('utf-8', 'ignore')
+
+            extracted_text = extracted_text.encode("utf-8").decode("utf-8", "ignore")
 
             logger.debug(f"Extracted text: {extracted_text}")
-            
+
             captions = self._parse_response(extracted_text)
             if not captions:
                 logger.warning("Failed to extract captions from Claude's response")
-            
-            updated_structure = self._update_zip_structure(zip_structure, captions, extracted_text)
+
+            updated_structure = self._update_zip_structure(
+                zip_structure, captions, extracted_text
+            )
             logger.info(f"Updated ZIP structure: {updated_structure}")
-            
+
             return updated_structure
-        
+
         except Exception as e:
             logger.exception(f"Error in caption extraction: {str(e)}")
             return self._update_zip_structure(zip_structure, {}, str(e))
@@ -132,14 +141,14 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
 
         def extract_json(s):
             """Extract JSON object from a string that may contain other text."""
-            json_match = re.search(r'\{[\s\S]*\}', s)
+            json_match = re.search(r"\{[\s\S]*\}", s)
             return json_match.group(0) if json_match else None
 
         def parse_json(s):
             """Parse JSON string."""
             try:
                 # Ensure the JSON string is properly encoded
-                return json.loads(s.encode('utf-8').decode('utf-8', 'ignore'))
+                return json.loads(s.encode("utf-8").decode("utf-8", "ignore"))
             except json.JSONDecodeError:
                 logger.warning(f"Failed to parse JSON: {s}")
                 return {}
@@ -158,7 +167,9 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             logger.error("Failed to extract any captions from Claude's response")
             return {}
 
-    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str], ai_response: str) -> ZipStructure:
+    def _update_zip_structure(
+        self, zip_structure: ZipStructure, captions: Dict[str, str], ai_response: str
+    ) -> ZipStructure:
         """
         Update the ZipStructure with extracted captions.
 
@@ -175,7 +186,11 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         """
         for figure in zip_structure.figures:
             if figure.figure_label in captions:
-                figure.figure_caption = captions[figure.figure_label].encode('utf-8').decode('utf-8', 'ignore')
+                figure.figure_caption = (
+                    captions[figure.figure_label]
+                    .encode("utf-8")
+                    .decode("utf-8", "ignore")
+                )
             else:
                 figure.figure_caption = "Figure caption not found."
             figure.ai_response = ai_response

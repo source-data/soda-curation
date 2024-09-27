@@ -83,6 +83,20 @@ ENTRYPOINT ["poetry", "run", "python", "-m", "soda_curation.main"]
 # Set default command (can be overridden)
 CMD ["--zip", "/app/input/sample.zip", "--config", "/app/config.yaml"]
 
+# Formatting and linting stage
+FROM base as formatting
+
+# Install development dependencies (including formatting tools)
+RUN poetry install --with dev
+
+# Copy the formatting script and flake8 config
+COPY format_and_lint.sh /app/format_and_lint.sh
+COPY .flake8 /app/.flake8
+RUN chmod +x /app/format_and_lint.sh
+
+# Set the entrypoint to the formatting script
+ENTRYPOINT ["/app/format_and_lint.sh"]
+
 # Testing stage
 FROM base as testing
 
@@ -94,3 +108,4 @@ RUN poetry install --with dev
 
 # Run tests
 CMD ["poetry", "run", "pytest", "-v", "--cov=soda_curation", "--cov-report=term-missing"]
+

@@ -1,12 +1,15 @@
-from abc import ABC, abstractmethod
-from typing import Dict, Any, List
-from ..manuscript_structure.manuscript_structure import ZipStructure, Panel, Figure
-from PIL import Image
-import io
 import base64
+import io
 import logging
+from abc import ABC, abstractmethod
+from typing import List
+
+from PIL import Image
+
+from ..manuscript_structure.manuscript_structure import ZipStructure
 
 logger = logging.getLogger(__name__)
+
 
 class MatchPanelCaption(ABC):
     """
@@ -45,7 +48,7 @@ class MatchPanelCaption(ABC):
                     for i, coord in enumerate(bbox)
                 ]
                 panel = img.crop((left, top, right, bottom))
-                
+
                 buffered = io.BytesIO()
                 panel.save(buffered, format="PNG")
                 return base64.b64encode(buffered.getvalue()).decode("utf-8")

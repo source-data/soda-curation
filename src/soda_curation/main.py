@@ -1,55 +1,77 @@
 import argparse
 import json
-import zipfile
-import sys
-import os
 import logging
+import os
+import sys
+import zipfile
 from pathlib import Path
+
 from .config import load_config
 from .logging_config import setup_logging
+from .pipeline.extract_captions.extract_captions_anthropic import (
+    FigureCaptionExtractorClaude,
+)
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
-from .pipeline.extract_captions.extract_captions_anthropic import FigureCaptionExtractorClaude
-from .pipeline.object_detection.object_detection import create_object_detection, convert_to_pil_image
-from .pipeline.match_caption_panel.match_caption_panel_openai import MatchPanelCaptionOpenAI
-from .pipeline.match_caption_panel.match_caption_panel_anthropic import MatchPanelCaptionClaude
-from .pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure, Panel, CustomJSONEncoder
+from .pipeline.manuscript_structure.manuscript_structure import (
+    CustomJSONEncoder,
+    Figure,
+    Panel,
+)
 from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
+from .pipeline.match_caption_panel.match_caption_panel_anthropic import (
+    MatchPanelCaptionClaude,
+)
+from .pipeline.match_caption_panel.match_caption_panel_openai import (
+    MatchPanelCaptionOpenAI,
+)
+from .pipeline.object_detection.object_detection import (
+    convert_to_pil_image,
+    create_object_detection,
+)
+
 
 def check_duplicate_panels(figure: Figure) -> str:
     panel_labels = [panel.panel_label for panel in figure.panels]
-    return 'true' if len(panel_labels) != len(set(panel_labels)) else 'false'
+    return "true" if len(panel_labels) != len(set(panel_labels)) else "false"
+
 
 def main():
-    parser = argparse.ArgumentParser(description="Process a ZIP file using soda-curation")
+    parser = argparse.ArgumentParser(
+        description="Process a ZIP file using soda-curation"
+    )
     parser.add_argument("--zip", help="Path to the input ZIP file")
     parser.add_argument("--config", help="Path to the configuration file")
-    parser.add_argument('-o', '--output', type=str, required=False, help='Path to the output file.')
-    
+    parser.add_argument(
+        "-o", "--output", type=str, required=False, help="Path to the output file."
+    )
+
     args = parser.parse_args()
 
     if not args.zip or not args.config:
-        print("Usage: python -m soda_curation.main --zip <path_to_zip_file> --config <path_to_config_file>")
+        print(
+            "Usage: python -m soda_curation.main --zip <path_to_zip_file> --config <path_to_config_file>"
+        )
         sys.exit(1)
 
     config = load_config(args.config)
     setup_logging(config)
-    
+
     logger = logging.getLogger(__name__)
-    
+
     # Check OpenAI configuration
-    if 'openai' not in config or 'api_key' not in config['openai']:
+    if "openai" not in config or "api_key" not in config["openai"]:
         logger.error("OpenAI configuration is missing or incomplete in the config file")
         sys.exit(1)
-    
+
     # Set up debug directory
-    if config.get('debug', {}).get('enabled', False):
-        debug_dir = Path(config['debug']['debug_dir'])
+    if config.get("debug", {}).get("enabled", False):
+        debug_dir = Path(config["debug"]["debug_dir"])
         debug_dir.mkdir(parents=True, exist_ok=True)
         logger.info(f"Debug directory created at: {debug_dir}")
-        config['debug']['debug_dir'] = str(debug_dir)
+        config["debug"]["debug_dir"] = str(debug_dir)
     else:
-        config['debug'] = {'enabled': False, 'debug_dir': None}
-    
+        config["debug"] = {"enabled": False, "debug_dir": None}
+
     zip_path = Path(args.zip)
     if not zip_path.is_file():
         logger.error(f"ZIP file not found: {args.zip}")
@@ -57,7 +79,7 @@ def main():
 
     extract_dir = zip_path.parent / zip_path.stem
     try:
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_dir)
         logger.info(f"Extracted ZIP contents to: {extract_dir}")
         logger.debug(f"Contents of extracted directory: {os.listdir(extract_dir)}")
@@ -65,14 +87,14 @@ def main():
         logger.error(f"Invalid ZIP file: {args.zip}")
         sys.exit(1)
 
-    config['extract_dir'] = str(extract_dir)
+    config["extract_dir"] = str(extract_dir)
 
     # Initialize components
-    if config['ai'] == 'openai':
-        caption_extractor = FigureCaptionExtractorGpt(config['openai'])
+    if config["ai"] == "openai":
+        caption_extractor = FigureCaptionExtractorGpt(config["openai"])
         panel_caption_matcher = MatchPanelCaptionOpenAI(config)
-    elif config['ai'] == 'anthropic':
-        caption_extractor = FigureCaptionExtractorClaude(config['anthropic'])
+    elif config["ai"] == "anthropic":
+        caption_extractor = FigureCaptionExtractorClaude(config["anthropic"])
         panel_caption_matcher = MatchPanelCaptionClaude(config)
     else:
         logger.error(f"Unknown AI provider: {config['ai']}")
@@ -86,7 +108,9 @@ def main():
         xml_extractor = XMLStructureExtractor(str(zip_path), str(extract_dir))
         result = xml_extractor.extract_structure()
         logger.info("ZIP structure processed successfully")
-        logger.debug(f"Extracted structure: {json.dumps(result, cls=CustomJSONEncoder, indent=2)}")
+        logger.debug(
+            f"Extracted structure: {json.dumps(result, cls=CustomJSONEncoder, indent=2)}"
+        )
     except Exception as e:
         logger.error(f"Failed to process ZIP structure: {str(e)}")
         sys.exit(1)
@@ -129,14 +153,27 @@ def main():
                 try:
                     pil_image, new_img_path = convert_to_pil_image(original_img_path)
                     panels = object_detector.detect_panels(pil_image)
-                    figure.panels = [Panel(panel_label=p['panel_label'], panel_caption=p['panel_caption'], panel_bbox=p['panel_bbox']) for p in panels]
-                    logger.info(f"Detected {len(panels)} panels in {figure.img_files[0]}")
+                    figure.panels = [
+                        Panel(
+                            panel_label=p["panel_label"],
+                            panel_caption=p["panel_caption"],
+                            panel_bbox=p["panel_bbox"],
+                        )
+                        for p in panels
+                    ]
+                    logger.info(
+                        f"Detected {len(panels)} panels in {figure.img_files[0]}"
+                    )
                 except Exception as e:
-                    logger.error(f"Error during panel detection for {figure.img_files[0]}: {str(e)}")
+                    logger.error(
+                        f"Error during panel detection for {figure.img_files[0]}: {str(e)}"
+                    )
             else:
                 logger.warning(f"Image file not found: {figure.img_files[0]}")
                 logger.debug(f"Current working directory: {os.getcwd()}")
-                logger.debug(f"Contents of {os.path.dirname(original_img_path)}: {os.listdir(os.path.dirname(original_img_path))}")
+                logger.debug(
+                    f"Contents of {os.path.dirname(original_img_path)}: {os.listdir(os.path.dirname(original_img_path))}"
+                )
 
     # Match panel captions
     logger.info("Matching panel captions")
@@ -148,16 +185,24 @@ def main():
         logger.info(f"Figure {figure.figure_label} flag: {figure.duplicated_panels}")
 
     # Output results
-    output_json = json.dumps(result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2)
+    output_json = json.dumps(
+        result, cls=CustomJSONEncoder, ensure_ascii=False, indent=2
+    )
     logger.info(output_json)
 
     if args.output:
-        output_path = args.output if args.output.startswith('/app/') else f'/app/output/{os.path.basename(args.output)}'
+        output_path = (
+            args.output
+            if args.output.startswith("/app/")
+            else f"/app/output/{os.path.basename(args.output)}"
+        )
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        
+
         try:
-            with open(output_path, 'w', encoding='utf-8') as outfile:
-                json.dump(result, outfile, cls=CustomJSONEncoder, ensure_ascii=False, indent=4)
+            with open(output_path, "w", encoding="utf-8") as outfile:
+                json.dump(
+                    result, outfile, cls=CustomJSONEncoder, ensure_ascii=False, indent=4
+                )
             logger.info(f"JSON data has been written to {output_path}")
         except Exception as e:
             logger.error(f"An error occurred while writing to the file: {e}")
@@ -170,6 +215,7 @@ def main():
         for name in dirs:
             os.rmdir(os.path.join(root, name))
     os.rmdir(extract_dir)
+
 
 if __name__ == "__main__":
     main()

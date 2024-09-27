@@ -27,12 +27,15 @@ PANEL_A: Immunofluorescence staining of protein X (green) and protein Y (red) in
 Remember, your goal is to create a panel-specific caption that could stand alone if necessary, while remaining as faithful as possible to the original figure caption's wording and content.
 """
 
-USER_PROMPT = Template("""
+USER_PROMPT = Template(
+    """
 Figure Caption:
 $figure_caption
 
 Please analyze the provided panel image and match it with the appropriate part of the figure caption above. Provide a caption specific to this panel, following the format and guidelines specified in the system prompt. Remember to stay as close as possible to the original wording while ensuring the panel caption can be understood independently.
-""")
+"""
+)
+
 
 def get_match_panel_caption_prompt(figure_caption: str) -> str:
     """

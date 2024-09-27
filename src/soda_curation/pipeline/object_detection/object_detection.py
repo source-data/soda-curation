@@ -1,19 +1,16 @@
 import logging
-from typing import List, Tuple, Dict, Any
-from pathlib import Path
 import os
-import base64
-import io
 import subprocess
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from PIL import Image
-import cv2
-from ultralytics import YOLOv10
-import fitz  # PyMuPDF
 import pdf2image
+from PIL import Image
+from ultralytics import YOLOv10
 
 logger = logging.getLogger(__name__)
+
 
 def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, str]:
     """
@@ -41,28 +38,28 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
 
     new_file_path = file_path
 
-    if file_ext == '.pdf':
+    if file_ext == ".pdf":
         # Convert PDF to PNG
         pages = pdf2image.convert_from_path(file_path, dpi=dpi)
         if pages:
-            new_file_path = file_path.replace('.pdf', '.png')
-            pages[0].save(new_file_path, 'PNG')
+            new_file_path = file_path.replace(".pdf", ".png")
+            pages[0].save(new_file_path, "PNG")
             image = pages[0]
         else:
             raise ValueError("PDF conversion failed: no pages found")
-    elif file_ext in ['.jpg', '.jpeg', '.png', '.tif', '.tiff']:
+    elif file_ext in [".jpg", ".jpeg", ".png", ".tif", ".tiff"]:
         image = Image.open(file_path)
-    elif file_ext == '.eps':
+    elif file_ext == ".eps":
         # Convert EPS to PNG
-        new_file_path = file_path.replace('.eps', '.png')
+        new_file_path = file_path.replace(".eps", ".png")
         command = [
-            'gs',
-            '-dNOPAUSE',
-            '-dBATCH',
-            '-sDEVICE=pngalpha',
-            f'-r{dpi}',
-            f'-sOutputFile={new_file_path}',
-            file_path
+            "gs",
+            "-dNOPAUSE",
+            "-dBATCH",
+            "-sDEVICE=pngalpha",
+            f"-r{dpi}",
+            f"-sOutputFile={new_file_path}",
+            file_path,
         ]
         subprocess.run(command, check=True)
         image = Image.open(new_file_path)
@@ -71,6 +68,7 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
 
     image = convert_and_resize_image(image)
     return image, new_file_path
+
 
 def convert_and_resize_image(image: Image.Image, max_size: int = 1024) -> Image.Image:
     """
@@ -86,12 +84,13 @@ def convert_and_resize_image(image: Image.Image, max_size: int = 1024) -> Image.
     Returns:
         PIL.Image: The converted and resized PIL image.
     """
-    if image.mode != 'RGB':
-        image = image.convert('RGB')
-    
+    if image.mode != "RGB":
+        image = image.convert("RGB")
+
     # Resize image to maintain aspect ratio
     image.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
     return image
+
 
 class ObjectDetection:
     """
@@ -116,7 +115,14 @@ class ObjectDetection:
         self.model = YOLOv10(self.model_path)
         logger.info(f"Initialized ObjectDetection with model: {self.model_path}")
 
-    def detect_panels(self, image: Image.Image, conf: float = 0.25, iou: float = 0.1, imgsz: int = 512, max_det: int = 30) -> List[Dict[str, Any]]:
+    def detect_panels(
+        self,
+        image: Image.Image,
+        conf: float = 0.25,
+        iou: float = 0.1,
+        imgsz: int = 512,
+        max_det: int = 30,
+    ) -> List[Dict[str, Any]]:
         """
         Detect panels in the given image using YOLOv10.
 
@@ -138,31 +144,35 @@ class ObjectDetection:
             Exception: If there's an error during the detection process.
         """
         logger.info("Detecting panels in image")
-        
+
         try:
             # Convert PIL Image to numpy array
             np_image = np.array(image)
-            
-            results = self.model(np_image, conf=conf, iou=iou, imgsz=imgsz, max_det=max_det)
-            
+
+            results = self.model(
+                np_image, conf=conf, iou=iou, imgsz=imgsz, max_det=max_det
+            )
+
             panels = []
             for i, box in enumerate(results[0].boxes.xyxyn.tolist()):
                 x1, y1, x2, y2 = box
                 confidence = float(results[0].boxes.conf[i])
-                
+
                 panel_info = {
                     "panel_label": chr(65 + i),
                     "panel_caption": "TO BE ADDED IN LATER STEP",
-                    "panel_bbox": [x1, y1, x2, y2]
+                    "panel_bbox": [x1, y1, x2, y2],
+                    "confidence": confidence,
                 }
                 panels.append(panel_info)
-            
+
             logger.info(f"Detected {len(panels)} panels")
             return panels
-        
+
         except Exception as e:
             logger.error(f"Error detecting panels: {str(e)}")
             return []
+
 
 def create_object_detection(config: Dict[str, Any]) -> ObjectDetection:
     """
@@ -180,14 +190,16 @@ def create_object_detection(config: Dict[str, Any]) -> ObjectDetection:
     Raises:
         FileNotFoundError: If the specified model file is not found.
     """
-    relative_model_path = config.get('object_detection', {}).get('model_path', 'data/models/panel_detection_model_no_labels.pt')
-    
+    relative_model_path = config.get("object_detection", {}).get(
+        "model_path", "data/models/panel_detection_model_no_labels.pt"
+    )
+
     # Construct the absolute path to the model
-    absolute_model_path = Path('/app') / relative_model_path
-    
+    absolute_model_path = Path("/app") / relative_model_path
+
     logger.info(f"Loading model from: {absolute_model_path}")
-    
+
     if not absolute_model_path.exists():
         raise FileNotFoundError(f"Model file not found at {absolute_model_path}")
-    
+
     return ObjectDetection(str(absolute_model_path))
