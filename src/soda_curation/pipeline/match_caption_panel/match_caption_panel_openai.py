@@ -137,7 +137,7 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             logger.info(f"Processing panel {i+1} of figure {figure.figure_label}")
 
             try:
-                if hasattr(figure, '_pil_image'):
+                if hasattr(figure, "_pil_image"):
                     pil_image = figure._pil_image
                 else:
                     figure_path = os.path.join(self.extract_dir, figure.img_files[0])
@@ -178,7 +178,9 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
 
         return matched_panels
 
-    def _extract_panel_image(self, pil_image: Image.Image, bbox: List[float]) -> Optional[str]:
+    def _extract_panel_image(
+        self, pil_image: Image.Image, bbox: List[float]
+    ) -> Optional[str]:
         """
         Extract a panel image from a figure based on bounding box coordinates.
 

@@ -15,8 +15,10 @@ from typing import Any, List, Optional
 
 logger = logging.getLogger(__name__)
 
+
 def full_path(extract_dir: str, file_path: str) -> str:
     return os.path.join(extract_dir, file_path)
+
 
 @dataclass
 class Panel:
@@ -30,11 +32,13 @@ class Panel:
         confidence (float): Confidence of the object detection algorithm.
         ai_response (Optional[Any]): The raw AI response for this panel.
     """
+
     panel_label: str
     panel_caption: str
     panel_bbox: List[float]
     confidence: float
     ai_response: Optional[Any] = None
+
 
 @dataclass
 class Figure:
@@ -90,6 +94,7 @@ class ZipStructure:
     _full_pdf: str = ""
     _full_appendix: List[str] = field(default_factory=list)
 
+
 class CustomJSONEncoder(json.JSONEncoder):
     """
     Custom JSON encoder for ZipStructure and Figure objects.
@@ -110,7 +115,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             Any: The default serialization for other types.
         """
         if isinstance(obj, (ZipStructure, Figure, Panel)):
-            return {k: v for k, v in asdict(obj).items() if not k.startswith('_')}
+            return {k: v for k, v in asdict(obj).items() if not k.startswith("_")}
         return super().default(obj)
 
     def serialize_dataclass(self, obj):
@@ -124,9 +129,9 @@ class CustomJSONEncoder(json.JSONEncoder):
             dict: A dictionary representation of the dataclass object.
         """
         if isinstance(obj, ZipStructure):
-            return {k: v for k, v in obj.__dict__.items() if not k.startswith('_')}
+            return {k: v for k, v in obj.__dict__.items() if not k.startswith("_")}
         elif isinstance(obj, Figure):
-            return {k: v for k, v in obj.__dict__.items() if not k.startswith('_')}
+            return {k: v for k, v in obj.__dict__.items() if not k.startswith("_")}
         return super().default(obj)
 
     @staticmethod

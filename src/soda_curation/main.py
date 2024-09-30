@@ -3,7 +3,6 @@ import json
 import logging
 import os
 import shutil
-import sys
 import zipfile
 from pathlib import Path
 from typing import Any, Dict
@@ -35,6 +34,7 @@ from .pipeline.object_detection.object_detection import (
 
 logger = logging.getLogger(__name__)
 
+
 def check_duplicate_panels(figure: Figure) -> str:
     """
     Check if a figure contains duplicate panel labels.
@@ -47,6 +47,7 @@ def check_duplicate_panels(figure: Figure) -> str:
     """
     panel_labels = [panel.panel_label for panel in figure.panels]
     return "true" if len(panel_labels) != len(set(panel_labels)) else "false"
+
 
 def get_manuscript_structure(zip_path: str, extract_dir: str) -> ZipStructure:
     """
@@ -63,23 +64,36 @@ def get_manuscript_structure(zip_path: str, extract_dir: str) -> ZipStructure:
         logger.info("Processing ZIP structure")
         xml_extractor = XMLStructureExtractor(str(zip_path), extract_dir)
         structure = xml_extractor.extract_structure()
-        
+
         # Update file paths
-        structure._full_docx = full_path(extract_dir, structure.docx) if structure.docx else None
-        structure._full_pdf = full_path(extract_dir, structure.pdf) if structure.pdf else None
-        structure._full_appendix = [full_path(extract_dir, app) for app in structure.appendix]
-        
+        structure._full_docx = (
+            full_path(extract_dir, structure.docx) if structure.docx else None
+        )
+        structure._full_pdf = (
+            full_path(extract_dir, structure.pdf) if structure.pdf else None
+        )
+        structure._full_appendix = [
+            full_path(extract_dir, app) for app in structure.appendix
+        ]
+
         for figure in structure.figures:
-            figure._full_img_files = [full_path(extract_dir, img) for img in figure.img_files]
-            figure._full_sd_files = [full_path(extract_dir, sd) for sd in figure.sd_files]
-        
+            figure._full_img_files = [
+                full_path(extract_dir, img) for img in figure.img_files
+            ]
+            figure._full_sd_files = [
+                full_path(extract_dir, sd) for sd in figure.sd_files
+            ]
+
         logger.info("ZIP structure processed successfully")
         return structure
     except Exception as e:
         logger.error(f"Failed to process ZIP structure: {str(e)}")
         return ZipStructure(errors=[f"Manuscript structure extraction error: {str(e)}"])
 
-def extract_figure_captions(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
+
+def extract_figure_captions(
+    zip_structure: ZipStructure, config: Dict[str, Any]
+) -> ZipStructure:
     """
     Extract figure captions from the manuscript.
 
@@ -91,19 +105,23 @@ def extract_figure_captions(zip_structure: ZipStructure, config: Dict[str, Any])
         ZipStructure: Updated structure with extracted figure captions.
     """
     try:
-        if config['ai'] == 'openai':
-            caption_extractor = FigureCaptionExtractorGpt(config['openai'])
-        elif config['ai'] == 'anthropic':
-            caption_extractor = FigureCaptionExtractorClaude(config['anthropic'])
+        if config["ai"] == "openai":
+            caption_extractor = FigureCaptionExtractorGpt(config["openai"])
+        elif config["ai"] == "anthropic":
+            caption_extractor = FigureCaptionExtractorClaude(config["anthropic"])
         else:
             raise ValueError(f"Unknown AI provider: {config['ai']}")
 
         if zip_structure._full_docx and os.path.exists(zip_structure._full_docx):
             logger.info(f"Extracting captions from DOCX: {zip_structure._full_docx}")
-            result = caption_extractor.extract_captions(zip_structure._full_docx, zip_structure)
+            result = caption_extractor.extract_captions(
+                zip_structure._full_docx, zip_structure
+            )
         elif zip_structure._full_pdf and os.path.exists(zip_structure._full_pdf):
             logger.info(f"Extracting captions from PDF: {zip_structure._full_pdf}")
-            result = caption_extractor.extract_captions(zip_structure._full_pdf, zip_structure)
+            result = caption_extractor.extract_captions(
+                zip_structure._full_pdf, zip_structure
+            )
         else:
             logger.warning("No DOCX or PDF file found for caption extraction")
             raise FileNotFoundError("No DOCX or PDF file found for caption extraction")
@@ -113,6 +131,7 @@ def extract_figure_captions(zip_structure: ZipStructure, config: Dict[str, Any])
         logger.error(f"Failed to extract figure captions: {str(e)}")
         zip_structure.errors.append(f"Figure caption extraction error: {str(e)}")
         return zip_structure
+
 
 def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
     """
@@ -141,13 +160,17 @@ def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipSt
                                 panel_caption=p["panel_caption"],
                                 panel_bbox=p["panel_bbox"],
                                 confidence=p["confidence"],
-                                ai_response=None  # or p.get("ai_response") if it exists
+                                ai_response=None,  # or p.get("ai_response") if it exists
                             )
                             for p in panels
                         ]
-                        logger.info(f"Detected {len(panels)} panels in {figure.img_files[0]}")
+                        logger.info(
+                            f"Detected {len(panels)} panels in {figure.img_files[0]}"
+                        )
                     except Exception as e:
-                        logger.error(f"Error during panel detection for {figure.img_files[0]}: {str(e)}")
+                        logger.error(
+                            f"Error during panel detection for {figure.img_files[0]}: {str(e)}"
+                        )
                 else:
                     logger.warning(f"Image file not found: {figure.img_files[0]}")
         return zip_structure
@@ -156,7 +179,10 @@ def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipSt
         zip_structure.errors.append(f"Panel extraction error: {str(e)}")
         return zip_structure
 
-def match_panel_caption(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
+
+def match_panel_caption(
+    zip_structure: ZipStructure, config: Dict[str, Any]
+) -> ZipStructure:
     """
     Match extracted panel captions with their corresponding panels.
 
@@ -169,9 +195,9 @@ def match_panel_caption(zip_structure: ZipStructure, config: Dict[str, Any]) -> 
     """
     try:
         logger.info("Matching panel captions")
-        if config['ai'] == 'openai':
+        if config["ai"] == "openai":
             panel_caption_matcher = MatchPanelCaptionOpenAI(config)
-        elif config['ai'] == 'anthropic':
+        elif config["ai"] == "anthropic":
             panel_caption_matcher = MatchPanelCaptionClaude(config)
         else:
             raise ValueError(f"Unknown AI provider: {config['ai']}")
@@ -181,21 +207,26 @@ def match_panel_caption(zip_structure: ZipStructure, config: Dict[str, Any]) -> 
                 original_img_path = figure._full_img_files[0]
                 if os.path.exists(original_img_path):
                     pil_image, _ = convert_to_pil_image(original_img_path)
-                    figure._pil_image = pil_image  # Store the PIL image in the figure object
+                    figure._pil_image = (
+                        pil_image  # Store the PIL image in the figure object
+                    )
 
         result = panel_caption_matcher.match_captions(zip_structure)
-        
+
         for figure in result.figures:
             figure.duplicated_panels = check_duplicate_panels(figure)
-            logger.info(f"Figure {figure.figure_label} flag: {figure.duplicated_panels}")
-            if hasattr(figure, '_pil_image'):
+            logger.info(
+                f"Figure {figure.figure_label} flag: {figure.duplicated_panels}"
+            )
+            if hasattr(figure, "_pil_image"):
                 del figure._pil_image  # Remove the temporary PIL image
-        
+
         return result
     except Exception as e:
         logger.error(f"Failed to match panel captions: {str(e)}")
         zip_structure.errors.append(f"Panel caption matching error: {str(e)}")
         return zip_structure
+
 
 def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     if not zip_path or not config_path:
@@ -204,12 +235,12 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     config = load_config(config_path)
     setup_logging(config)
 
-    if config['ai'] not in ['openai', 'anthropic']:
+    if config["ai"] not in ["openai", "anthropic"]:
         raise ValueError(f"Invalid AI provider: {config['ai']}")
 
     zip_file = Path(zip_path)
     extract_dir = zip_file.parent / zip_file.stem
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(extract_dir)
     logger.info(f"Extracted ZIP contents to: {extract_dir}")
 
@@ -217,39 +248,54 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     zip_file = Path(zip_path)
     extract_dir = zip_file.parent / zip_file.stem
     try:
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_dir)
         logger.info(f"Extracted ZIP contents to: {extract_dir}")
     except zipfile.BadZipFile:
         logger.error(f"Invalid ZIP file: {zip_path}")
-        return json.dumps(ZipStructure(errors=[f"Invalid ZIP file: {zip_path}"]), cls=CustomJSONEncoder)
+        return json.dumps(
+            ZipStructure(errors=[f"Invalid ZIP file: {zip_path}"]),
+            cls=CustomJSONEncoder,
+        )
     except Exception as e:
         logger.error(f"Error extracting ZIP file: {str(e)}")
-        return json.dumps(ZipStructure(errors=[f"Error extracting ZIP file: {str(e)}"]), cls=CustomJSONEncoder)
+        return json.dumps(
+            ZipStructure(errors=[f"Error extracting ZIP file: {str(e)}"]),
+            cls=CustomJSONEncoder,
+        )
 
     zip_structure = get_manuscript_structure(zip_path, str(extract_dir))
-    
+
     # Update config['extract_dir'] to the full path including the manuscript ID
-    config['extract_dir'] = str(extract_dir)
-    
+    config["extract_dir"] = str(extract_dir)
+
     # Try DOCX extraction first
     logger.info("Attempting DOCX caption extraction")
     zip_structure = extract_figure_captions(zip_structure, config)
-    
+
     # If no captions were extracted from DOCX, try PDF
-    if all(figure.figure_caption == "Figure caption not found." for figure in zip_structure.figures):
+    if all(
+        figure.figure_caption == "Figure caption not found."
+        for figure in zip_structure.figures
+    ):
         logger.info("No captions found in DOCX, attempting extraction from PDF")
         zip_structure.docx = None  # Set docx to None when falling back to PDF
         zip_structure._full_docx = None
         zip_structure = extract_figure_captions(zip_structure, config)
-    
-    logger.info(f"After PDF extraction: docx={zip_structure.docx}, pdf={zip_structure.pdf}")
-    logger.info(f"Final captions: {[figure.figure_caption for figure in zip_structure.figures]}")
-    
+
+    logger.info(
+        f"After PDF extraction: docx={zip_structure.docx}, pdf={zip_structure.pdf}"
+    )
+    logger.info(
+        f"Final captions: {[figure.figure_caption for figure in zip_structure.figures]}"
+    )
+
     zip_structure = extract_panels(zip_structure, config)
     zip_structure = match_panel_caption(zip_structure, config)
 
-    output_json = json.dumps(zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2)
+    output_json = json.dumps(
+        zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2
+    )
 
     if output_path:
         output_path = (
@@ -259,7 +305,7 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
         )
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         try:
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 f.write(output_json)
             logger.info(f"Output written to {output_path}")
         except Exception as e:
@@ -274,10 +320,15 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
 
     return output_json
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process a ZIP file using soda-curation")
+    parser = argparse.ArgumentParser(
+        description="Process a ZIP file using soda-curation"
+    )
     parser.add_argument("--zip", required=True, help="Path to the input ZIP file")
-    parser.add_argument("--config", required=True, help="Path to the configuration file")
+    parser.add_argument(
+        "--config", required=True, help="Path to the configuration file"
+    )
     parser.add_argument("--output", help="Path to the output JSON file")
     args = parser.parse_args()
 

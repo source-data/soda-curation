@@ -134,7 +134,7 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
             logger.info(f"Processing panel {i+1} of figure {figure.figure_label}")
 
             try:
-                if hasattr(figure, '_pil_image'):
+                if hasattr(figure, "_pil_image"):
                     pil_image = figure._pil_image
                 else:
                     figure_path = os.path.join(self.extract_dir, figure.img_files[0])
@@ -153,7 +153,9 @@ class MatchPanelCaptionClaude(MatchPanelCaption):
                         encoded_image, f"{figure.figure_label}_panel_{i+1}.png"
                     )
 
-                response = self._call_anthropic_api(encoded_image, figure.figure_caption)
+                response = self._call_anthropic_api(
+                    encoded_image, figure.figure_caption
+                )
                 panel_label, panel_caption = self._parse_response(response)
 
                 matched_panel = Panel(
