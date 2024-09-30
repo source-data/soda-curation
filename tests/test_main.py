@@ -6,15 +6,23 @@ configuration loading, ZIP file processing, and integration with different AI pr
 (OpenAI and Anthropic) for caption extraction and structure analysis.
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock, ANY, mock_open, call
-import zipfile
-from soda_curation.main import main
-import json
-from soda_curation.pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure
-from soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
 import builtins
+import json
+import zipfile
 from pathlib import Path
+from unittest.mock import ANY, MagicMock, Mock, call, mock_open, patch
+
+import pytest
+
+from soda_curation.main import main
+from soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    Figure,
+    ZipStructure,
+)
+from soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
+    XMLStructureExtractor,
+)
+
 
 @pytest.fixture
 def mock_argparse():
@@ -163,7 +171,7 @@ def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json, 
     """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml', output='test_output.json')
     mock_load_config.return_value = {
-        'ai': 'openai', 
+        'ai': 'openai',
         'openai': {
             'api_key': 'test',
             'model': 'gpt-4',
@@ -175,6 +183,9 @@ def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json, 
     }
     mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
 
+    expected_json = '{"test": "data"}'
+    mock_json.return_value = expected_json
+
     with patch('soda_curation.main.Path.is_file', return_value=True), \
          patch('soda_curation.main.XMLStructureExtractor') as mock_extractor, \
          patch('os.listdir', return_value=['file1', 'file2']), \
@@ -183,9 +194,9 @@ def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json, 
          patch('soda_curation.pipeline.object_detection.object_detection.YOLOv10') as mock_yolo, \
          patch.object(Path, 'exists', return_value=True), \
          patch('openai._base_client.platform_headers', return_value={}):
-        
+
         mock_translation.return_value.gettext = lambda x: x
-        
+
         mock_extractor.return_value.extract_structure.return_value = ZipStructure(
             manuscript_id="test",
             xml="test.xml",
@@ -196,15 +207,17 @@ def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json, 
         )
         mock_yolo.return_value = MagicMock()
 
-        main()
+        result = main('test.zip', 'config.yaml')
 
+        assert result == expected_json
         mock_extractor.assert_called_once()
         mock_extractor.return_value.extract_structure.assert_called_once()
+        mock_json.assert_called_once()
 
 def test_main_anthropic(mock_argparse, mock_load_config, mock_zipfile, mock_json, mock_anthropic_client, mock_os):
     """
     Test the main function when using the Anthropic AI provider.
-    
+
     This test verifies that when the configuration specifies Anthropic as the AI provider,
     the main function correctly uses the StructureZipFileClaude processor.
     It checks that:
@@ -214,7 +227,7 @@ def test_main_anthropic(mock_argparse, mock_load_config, mock_zipfile, mock_json
     """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml', output='test_output.json')
     mock_load_config.return_value = {
-        'ai': 'anthropic', 
+        'ai': 'anthropic',
         'anthropic': {
             'api_key': 'test',
             'model': 'claude-v1'
@@ -228,6 +241,9 @@ def test_main_anthropic(mock_argparse, mock_load_config, mock_zipfile, mock_json
     }
     mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
 
+    expected_json = '{"test": "data"}'
+    mock_json.return_value = expected_json
+
     with patch('soda_curation.main.Path.is_file', return_value=True), \
          patch('soda_curation.main.XMLStructureExtractor') as mock_extractor, \
          patch('os.listdir', return_value=['file1', 'file2']), \
@@ -236,9 +252,9 @@ def test_main_anthropic(mock_argparse, mock_load_config, mock_zipfile, mock_json
          patch('soda_curation.pipeline.object_detection.object_detection.YOLOv10') as mock_yolo, \
          patch.object(Path, 'exists', return_value=True), \
          patch('soda_curation.main.FigureCaptionExtractorClaude') as mock_claude:
-        
+
         mock_translation.return_value.gettext = lambda x: x
-        
+
         mock_extractor.return_value.extract_structure.return_value = ZipStructure(
             manuscript_id="test",
             xml="test.xml",
@@ -250,83 +266,80 @@ def test_main_anthropic(mock_argparse, mock_load_config, mock_zipfile, mock_json
         mock_yolo.return_value = MagicMock()
         mock_claude.return_value.extract_captions.return_value = mock_extractor.return_value.extract_structure.return_value
 
-        main()
+        result = main('test.zip', 'config.yaml')
 
+        assert result == expected_json
         mock_extractor.assert_called_once()
-        mock_extractor.return_value.extract_structure.assert_called_once()
         mock_claude.assert_called_once()
+        mock_json.assert_called_once()
 
-
+# In test_main.py
 def test_main_invalid_ai_provider(mock_argparse, mock_load_config, mock_zipfile):
     """
     Test the main function's behavior with an invalid AI provider.
-    
+
     This test verifies that when given an invalid AI provider in the configuration,
-    the main function exits with a system error.
+    the main function raises a ValueError.
     """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
     mock_load_config.return_value = {'ai': 'invalid_provider'}
     mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
 
     with patch('soda_curation.main.Path.is_file', return_value=True):
-        with pytest.raises(SystemExit):
-            with patch('os.listdir', return_value=['file1', 'file2']):
-                main()
+        with pytest.raises(ValueError, match="Invalid AI provider: invalid_provider"):
+            main('test.zip', 'config.yaml')
 
 def test_main_missing_arguments(mock_argparse):
     """
-    Test the main function's behavior when required command-line arguments are missing.
-    
-    This test verifies that when the required --zip and --config arguments are not provided,
-    the main function exits with a system error.
-    """
-    mock_argparse.return_value = Mock(zip=None, config=None)
+    Test the argument parsing when required command-line arguments are missing.
 
-    with pytest.raises(SystemExit):
-        with patch('os.listdir', return_value=['file1', 'file2']):
-            main()
+    This test verifies that when the required --zip and --config arguments are not provided,
+    the main function raises a ValueError.
+    """
+    with pytest.raises(ValueError, match="ZIP path and config path must be provided"):
+        main('', '')  # Pass empty strings to simulate missing arguments
 
 def test_main_zip_file_not_found(mock_argparse, mock_load_config):
     """
     Test the main function's behavior when the specified ZIP file is not found.
-    
+
     This test verifies that when the ZIP file specified in the command-line arguments
-    does not exist, the main function exits with a system error.
+    does not exist, the main function raises a FileNotFoundError.
     """
     mock_argparse.return_value = Mock(zip='nonexistent.zip', config='config.yaml')
     mock_load_config.return_value = {'ai': 'openai', 'openai': {'api_key': 'test'}}
 
-    with patch('soda_curation.main.Path.is_file', return_value=False):
-        with pytest.raises(SystemExit):
-            with patch('os.listdir', return_value=['file1', 'file2']):
-                main()
+    with patch('soda_curation.main.Path.is_file', return_value=False), \
+         patch('zipfile.ZipFile', side_effect=FileNotFoundError("No such file or directory: 'nonexistent.zip'")):
+        with pytest.raises(FileNotFoundError):
+            main('nonexistent.zip', 'config.yaml')
+
 
 def test_main_invalid_zip_file(mock_argparse, mock_load_config, mock_zipfile):
     """
     Test the main function's behavior when the specified ZIP file is invalid.
-    
+
     This test verifies that when the ZIP file specified in the command-line arguments
-    is not a valid ZIP archive, the main function exits with a system error.
+    is not a valid ZIP archive, the main function raises a zipfile.BadZipFile exception.
     """
     mock_argparse.return_value = Mock(zip='invalid.zip', config='config.yaml')
     mock_load_config.return_value = {'ai': 'openai', 'openai': {'api_key': 'test'}}
     mock_zipfile.side_effect = zipfile.BadZipFile()
 
     with patch('soda_curation.main.Path.is_file', return_value=True):
-        with pytest.raises(SystemExit):
-            with patch('os.listdir', return_value=['file1', 'file2']):
-                main()
+        with pytest.raises(zipfile.BadZipFile):
+            main('invalid.zip', 'config.yaml')
 
 def test_main_processing_failure(mock_argparse, mock_load_config, mock_zipfile, mock_openai_client, mock_os):
     """
     Test the main function's behavior when ZIP file processing fails.
-    
+
     This test verifies that when the AI processor fails to process the ZIP file structure
-    (returning None), the main function exits with a system error.
+    (returning None), the main function raises a ValueError.
     """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml')
     mock_load_config.return_value = {
-        'ai': 'openai', 
+        'ai': 'openai',
         'openai': {
             'api_key': 'test',
             'model': 'gpt-4'
@@ -334,13 +347,12 @@ def test_main_processing_failure(mock_argparse, mock_load_config, mock_zipfile, 
     }
     mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
 
-    with patch('soda_curation.main.Path.is_file', return_value=True):
-        with patch('soda_curation.main.XMLStructureExtractor') as mock_gpt:
-            mock_gpt.return_value.process_zip_structure.return_value = None
+    with patch('soda_curation.main.Path.is_file', return_value=True), \
+         patch('soda_curation.main.get_manuscript_structure') as mock_get_structure:
+        mock_get_structure.return_value = ZipStructure(errors=["Failed to process ZIP structure"])
 
-            with pytest.raises(SystemExit):
-                with patch('os.listdir', return_value=['file1', 'file2']):
-                    main()
+        result = main('test.zip', 'config.yaml')
+        assert "Failed to process ZIP structure" in result
 
 def test_main_with_caption_extraction_docx_success(mock_argparse, mock_load_config, mock_zipfile, mock_extract_captions, mock_json, mock_openai_client, mock_os, mock_torch_load):
     """
@@ -352,7 +364,7 @@ def test_main_with_caption_extraction_docx_success(mock_argparse, mock_load_conf
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml', output='test_output.json')
 
     mock_load_config.return_value = {
-        'ai': 'openai', 
+        'ai': 'openai',
         'openai': {
             'api_key': 'test',
             'model': 'gpt-4'
@@ -373,10 +385,10 @@ def test_main_with_caption_extraction_docx_success(mock_argparse, mock_load_conf
     with patch('soda_curation.main.Path.is_file', return_value=True):
         with patch('soda_curation.main.XMLStructureExtractor') as mock_structure_gpt:
             with patch('builtins.open', mock_open(read_data=b"test content")), \
-                patch('os.path.exists', return_value=True), \
-                patch('os.path.join', return_value='/mock/path/test.docx'):
+                 patch('os.path.exists', return_value=True), \
+                 patch('os.path.join', return_value='/mock/path/test.docx'):
 
-                mock_structure_gpt.return_value.process_zip_structure.return_value = ZipStructure(
+                mock_structure_gpt.return_value.extract_structure.return_value = ZipStructure(
                     manuscript_id="test",
                     xml="test.xml",
                     docx="test.docx",
@@ -387,34 +399,51 @@ def test_main_with_caption_extraction_docx_success(mock_argparse, mock_load_conf
                 with patch('soda_curation.pipeline.object_detection.object_detection.YOLOv10') as mock_yolo:
                     mock_yolo.return_value = MagicMock()
                     with patch('os.listdir', return_value=['file1', 'file2']):
-                        main()
-
-        mock_structure_gpt.assert_called_once()
-        mock_gpt.return_value.extract_captions.assert_called_once()
-        assert mock_gpt.return_value.extract_captions.call_args[0][0].endswith('test.docx')
+                        result = main('test.zip', 'config.yaml')
+                        assert isinstance(result, MagicMock)
+                        mock_json.assert_called_once()
+                        # Check if the mock was called with the expected arguments
+                        expected_structure = ZipStructure(
+                            manuscript_id="test",
+                            xml="test.xml",
+                            docx="test.docx",
+                            pdf="test.pdf",
+                            appendix=[],
+                            figures=[Figure("Figure 1", ["image1.png"], [], "Extracted caption from DOCX", [])]
+                        )
+                        mock_json.assert_called_with(expected_structure, cls=ANY, ensure_ascii=False, indent=2)
 
 def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_config, mock_zipfile, mock_processors, mock_setup_logging):
     """
-    Test caption extraction fallback to PDF when DOCX extraction fails.
+    Test the PDF fallback mechanism in the main function for figure caption extraction.
 
     This test verifies that when caption extraction from a DOCX file fails or produces no results,
-    the main function falls back to extracting captions from the PDF file. It ensures that:
-    1. The system attempts to extract captions from the DOCX file first.
-    2. If DOCX extraction fails, it proceeds to extract captions from the PDF.
-    3. The final ZipStructure contains captions extracted from the PDF.
-    4. Proper cleanup operations are performed after extraction.
+    the main function correctly falls back to extracting captions from the PDF file. It ensures that:
+
+    1. The extract_figure_captions function is called twice (once for DOCX, once for PDF).
+    2. The final result is a valid JSON string.
+    3. The resulting structure has the correct manuscript ID, XML file, and PDF file.
+    4. The DOCX field is set to None after the fallback to PDF.
+    5. The figure caption is correctly extracted from the PDF.
+
+    The test uses extensive mocking to simulate file operations, API calls, and the caption
+    extraction process without relying on actual files or external services.
 
     Args:
-        mock_argparse: Mocked command-line argument parser.
-        mock_load_config: Mocked configuration loader.
-        mock_zipfile: Mocked ZIP file handler.
-        mock_processors: Mocked processing components (GPT, caption extractor, object detection).
-        mock_setup_logging: Mocked logging setup.
+        mock_argparse (MagicMock): Mock for argument parsing.
+        mock_load_config (MagicMock): Mock for configuration loading.
+        mock_zipfile (MagicMock): Mock for ZIP file operations.
+        mock_processors (tuple): Mocks for various processing components.
+        mock_setup_logging (MagicMock): Mock for logging setup.
+
+    Raises:
+        AssertionError: If any of the test conditions are not met, indicating a failure
+                        in the PDF fallback mechanism or the overall caption extraction process.
     """
-    # Set up mock return values
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml', output='test_output.json')
-    mock_gpt, mock_caption_extractor, mock_object_detection = mock_processors
     
+    mock_gpt, mock_caption_extractor, mock_object_detection = mock_processors
+
     mock_load_config.return_value = {
         'ai': 'openai',
         'openai': {
@@ -426,8 +455,7 @@ def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_conf
         }
     }
 
-    # Create mock ZipStructure
-    mock_zip_structure = ZipStructure(
+    initial_structure = ZipStructure(
         manuscript_id="test",
         xml="test.xml",
         docx="test.docx",
@@ -436,30 +464,7 @@ def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_conf
         figures=[Figure("Figure 1", ["image1.png"], [], "TO BE ADDED IN LATER STEP", [])]
     )
 
-    # Set up mock return values for caption extraction
-    mock_caption_extractor.return_value.extract_captions.side_effect = [
-        ZipStructure(  # DOCX extraction result (no captions found)
-            manuscript_id="test",
-            xml="test.xml",
-            docx="test.docx",
-            pdf="test.pdf",
-            appendix=[],
-            figures=[Figure("Figure 1", ["image1.png"], [], "Figure caption not found.", [])]
-        ),
-        ZipStructure(  # PDF extraction result
-            manuscript_id="test",
-            xml="test.xml",
-            docx="test.docx",
-            pdf="test.pdf",
-            appendix=[],
-            figures=[Figure("Figure 1", ["image1.png"], [], "Extracted caption from PDF", [])]
-        )
-    ]
-
-    # Mock object detection
-    mock_object_detection.return_value.detect_panels.return_value = []
-
-    # Define a custom mock for Path
+    # Define MockPath class
     class MockPath:
         def __init__(self, path):
             self.path = path
@@ -481,40 +486,57 @@ def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_conf
         def __str__(self):
             return self.path
 
-    # Apply patches
-    with patch('soda_curation.main.Path', MockPath), \
-         patch('os.path.exists', return_value=True), \
-         patch('os.path.join', side_effect=lambda *args: '/'.join(str(arg) for arg in args)), \
-         patch('json.dumps') as mock_json_dumps, \
-         patch('os.walk', return_value=[('/mock/extract_dir', [], ['file1', 'file2'])]), \
-         patch('os.remove') as mock_remove, \
-         patch('os.rmdir') as mock_rmdir, \
-         patch('builtins.open', mock_open(read_data=b"test content")), \
-         patch('os.listdir', return_value=['file1', 'file2']), \
-         patch('soda_curation.main.XMLStructureExtractor') as mock_extractor, \
-         patch('zipfile.ZipFile'):
+    with patch('soda_curation.main.extract_figure_captions') as mock_extract_captions:
+        mock_extract_captions.side_effect = [
+            ZipStructure(
+                manuscript_id="test",
+                xml="test.xml",
+                docx="test.docx",
+                pdf="test.pdf",
+                appendix=[],
+                figures=[Figure("Figure 1", ["image1.png"], [], "Figure caption not found.", [])]
+            ),
+            ZipStructure(
+                manuscript_id="test",
+                xml="test.xml",
+                docx=None,
+                pdf="test.pdf",
+                appendix=[],
+                figures=[Figure("Figure 1", ["image1.png"], [], "Extracted caption from PDF", [])]
+            )
+        ]
 
-        # Set up XML extractor mock
-        mock_extractor.return_value.extract_structure.return_value = mock_zip_structure
+        with patch('soda_curation.main.Path', MockPath), \
+             patch('os.path.exists', return_value=True), \
+             patch('os.path.join', side_effect=lambda *args: '/'.join(str(arg) for arg in args)), \
+             patch('os.walk', return_value=[('/mock/extract_dir', [], ['file1', 'file2'])]), \
+             patch('os.remove'), \
+             patch('os.rmdir'), \
+             patch('builtins.open', mock_open(read_data=b"test content")), \
+             patch('os.listdir', return_value=['file1', 'file2']), \
+             patch('soda_curation.main.XMLStructureExtractor') as mock_extractor, \
+             patch('zipfile.ZipFile'), \
+             patch('soda_curation.main.get_manuscript_structure', return_value=initial_structure):
 
-        # Run the main function
-        main()
+            mock_extractor.return_value.extract_structure.return_value = initial_structure
 
-    # Assertions
-    assert mock_caption_extractor.return_value.extract_captions.call_count == 2
-    
-    calls = mock_caption_extractor.return_value.extract_captions.call_args_list
-    assert 'test.docx' in str(calls[0][0][0])
-    assert 'test.pdf' in str(calls[1][0][0])
+            result = main('test.zip', 'config.yaml')
 
-    # Verify that the final result includes the PDF caption
-    final_structure = mock_json_dumps.call_args[0][0]
-    assert isinstance(final_structure, ZipStructure)
-    assert final_structure.figures[0].figure_caption == "Extracted caption from PDF"
+        assert mock_extract_captions.call_count == 2, f"extract_figure_captions was called {mock_extract_captions.call_count} times, expected 2"
 
-    # Verify cleanup operations
-    assert mock_remove.call_count == 2  # Expecting two files to be removed
-    assert mock_rmdir.call_count == 1  # Expecting the directory to be removed
+        assert isinstance(result, str)
+        parsed_result = json.loads(result)
+        assert parsed_result['manuscript_id'] == "test"
+        assert parsed_result['docx'] is None, f"Expected docx to be None, but got {parsed_result['docx']}"
+        assert parsed_result['pdf'] == "test.pdf"
+        assert parsed_result['figures'][0]['figure_caption'] == "Extracted caption from PDF"
+
+    assert parsed_result['manuscript_id'] == "test"
+    assert parsed_result['xml'] == "test.xml"
+    assert parsed_result['docx'] is None, f"Expected docx to be None, but got {parsed_result['docx']}"
+    assert parsed_result['pdf'] == "test.pdf"
+    assert len(parsed_result['figures']) == 1
+    assert parsed_result['figures'][0]['figure_caption'] == "Extracted caption from PDF"
     
 def test_main_with_caption_extraction_docx_only(mock_argparse, mock_load_config, mock_zipfile, mock_extract_captions, mock_json, mock_openai_client, mock_os, mock_torch_load):
     """
@@ -526,19 +548,10 @@ def test_main_with_caption_extraction_docx_only(mock_argparse, mock_load_config,
     1. The system attempts to extract captions from the DOCX file.
     2. The extraction process is called only once (no fallback to PDF).
     3. The final ZipStructure contains captions extracted from the DOCX file.
-
-    Args:
-        mock_argparse: Mocked command-line argument parser.
-        mock_load_config: Mocked configuration loader.
-        mock_zipfile: Mocked ZIP file handler.
-        mock_extract_captions: Mocked caption extraction function.
-        mock_json: Mocked JSON operations.
-        mock_openai_client: Mocked OpenAI client.
-        mock_os: Mocked OS operations.
     """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml', output='test_output.json')
     mock_load_config.return_value = {
-        'ai': 'openai', 
+        'ai': 'openai',
         'openai': {
             'api_key': 'test',
             'model': 'gpt-4'
@@ -559,10 +572,10 @@ def test_main_with_caption_extraction_docx_only(mock_argparse, mock_load_config,
     with patch('soda_curation.main.Path.is_file', return_value=True):
         with patch('soda_curation.main.XMLStructureExtractor') as mock_structure_gpt:
             with patch('builtins.open', mock_open(read_data=b"test content")), \
-                patch('os.path.exists', return_value=True), \
-                patch('os.path.join', return_value='/mock/path/test.docx'):
+                 patch('os.path.exists', return_value=True), \
+                 patch('os.path.join', return_value='/mock/path/test.docx'):
 
-                mock_structure_gpt.return_value.process_zip_structure.return_value = ZipStructure(
+                mock_structure_gpt.return_value.extract_structure.return_value = ZipStructure(
                     manuscript_id="test",
                     xml="test.xml",
                     docx="test.docx",
@@ -573,9 +586,16 @@ def test_main_with_caption_extraction_docx_only(mock_argparse, mock_load_config,
                 with patch('soda_curation.pipeline.object_detection.object_detection.YOLOv10') as mock_yolo:
                     mock_yolo.return_value = MagicMock()
                     with patch('os.listdir', return_value=['file1', 'file2']):
-                        main()
-
-
-        mock_structure_gpt.assert_called_once()
-        mock_gpt.return_value.extract_captions.assert_called_once()
-        assert mock_gpt.return_value.extract_captions.call_args[0][0].endswith('test.docx')
+                        result = main('test.zip', 'config.yaml')
+                        assert isinstance(result, MagicMock)
+                        mock_json.assert_called_once()
+                        # Check if the mock was called with the expected arguments
+                        expected_structure = ZipStructure(
+                            manuscript_id="test",
+                            xml="test.xml",
+                            docx="test.docx",
+                            pdf=None,
+                            appendix=[],
+                            figures=[Figure("Figure 1", ["image1.png"], [], "Extracted caption from DOCX", [])]
+                        )
+                        mock_json.assert_called_with(expected_structure, cls=ANY, ensure_ascii=False, indent=2)

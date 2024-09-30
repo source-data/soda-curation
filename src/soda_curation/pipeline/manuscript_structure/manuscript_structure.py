@@ -6,13 +6,17 @@ It includes dataclasses for representing panels, figures, and the overall ZIP st
 as well as an abstract base class for ZIP structure processors and a custom JSON encoder.
 """
 
-from abc import ABC, abstractmethod
-from typing import List, Dict, Any
-from dataclasses import dataclass, asdict, field
 import json
 import logging
+import os
+from abc import ABC, abstractmethod
+from dataclasses import asdict, dataclass, field
+from typing import Any, List, Optional
 
 logger = logging.getLogger(__name__)
+
+def full_path(extract_dir: str, file_path: str) -> str:
+    return os.path.join(extract_dir, file_path)
 
 @dataclass
 class Panel:
@@ -23,10 +27,14 @@ class Panel:
         panel_label (str): The label of the panel (e.g., "A", "B", "C").
         panel_caption (str): The caption specific to this panel.
         panel_bbox (List[float]): Bounding box coordinates of the panel [x1, y1, x2, y2].
+        confidence (float): Confidence of the object detection algorithm.
+        ai_response (Optional[Any]): The raw AI response for this panel.
     """
     panel_label: str
     panel_caption: str
     panel_bbox: List[float]
+    confidence: float
+    ai_response: Optional[Any] = None
 
 @dataclass
 class Figure:
@@ -38,15 +46,21 @@ class Figure:
         img_files (List[str]): List of image file paths associated with the figure.
         sd_files (List[str]): List of source data file paths associated with the figure.
         figure_caption (str): The caption of the figure. Defaults to an empty string.
-        panels (List[Dict[str, Any]]): List of panel objects representing individual panels in the figure.
-        flag (str): Flag indicating if the figure has duplicate panels. Defaults to "none".
+        panels (List[Panel]): List of Panel objects representing individual panels in the figure.
+        duplicated_panels (str): Flag indicating if the figure has duplicate panels. Defaults to "false".
+        ai_response (Optional[Any]): The raw AI response for this figure.
     """
+
     figure_label: str
     img_files: List[str]
     sd_files: List[str]
     figure_caption: str = ""
-    panels: List[Dict[str, Any]] = field(default_factory=list)
+    panels: List[Panel] = field(default_factory=list)
     duplicated_panels: str = "false"
+    ai_response: Optional[Any] = None
+    # New fields for full paths
+    _full_img_files: List[str] = field(default_factory=list)
+    _full_sd_files: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -61,13 +75,20 @@ class ZipStructure:
         pdf (str): Path to the PDF file.
         appendix (List[str]): List of paths to appendix files.
         figures (List[Figure]): List of Figure objects representing the figures in the manuscript.
+        errors (List[str]): List of errors encountered during processing. Defaults to an empty list.
     """
-    manuscript_id: str
-    xml: str
-    docx: str
-    pdf: str
-    appendix: List[str]
-    figures: List[Figure]
+
+    manuscript_id: str = ""
+    xml: str = ""
+    docx: str = ""
+    pdf: str = ""
+    appendix: List[str] = field(default_factory=list)
+    figures: List[Figure] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
+    # New fields for full paths
+    _full_docx: str = ""
+    _full_pdf: str = ""
+    _full_appendix: List[str] = field(default_factory=list)
 
 class CustomJSONEncoder(json.JSONEncoder):
     """
@@ -76,6 +97,7 @@ class CustomJSONEncoder(json.JSONEncoder):
     This encoder extends the default JSONEncoder to handle ZipStructure, Figure, and Panel objects,
     converting them to dictionaries for JSON serialization.
     """
+
     def default(self, obj):
         """
         Converts ZipStructure, Figure, and Panel objects to dictionaries.
@@ -87,8 +109,8 @@ class CustomJSONEncoder(json.JSONEncoder):
             dict: A dictionary representation of the object if it's a ZipStructure, Figure, or Panel instance.
             Any: The default serialization for other types.
         """
-        if isinstance(obj, (Panel, Figure, ZipStructure)):
-            return self.serialize_dataclass(obj)
+        if isinstance(obj, (ZipStructure, Figure, Panel)):
+            return {k: v for k, v in asdict(obj).items() if not k.startswith('_')}
         return super().default(obj)
 
     def serialize_dataclass(self, obj):
@@ -101,11 +123,11 @@ class CustomJSONEncoder(json.JSONEncoder):
         Returns:
             dict: A dictionary representation of the dataclass object.
         """
-        dict_repr = asdict(obj)
-        for key, value in dict_repr.items():
-            if isinstance(value, str):
-                dict_repr[key] = self.unescape_string(value)
-        return dict_repr
+        if isinstance(obj, ZipStructure):
+            return {k: v for k, v in obj.__dict__.items() if not k.startswith('_')}
+        elif isinstance(obj, Figure):
+            return {k: v for k, v in obj.__dict__.items() if not k.startswith('_')}
+        return super().default(obj)
 
     @staticmethod
     def unescape_string(s):
@@ -118,7 +140,8 @@ class CustomJSONEncoder(json.JSONEncoder):
         Returns:
             str: The unescaped string.
         """
-        return s.encode('utf-8').decode('unicode_escape')
+        return s.encode("utf-8").decode("unicode_escape")
+
 
 class XMLStructureExtractor(ABC):
     """
@@ -127,6 +150,7 @@ class XMLStructureExtractor(ABC):
     This class defines the interface for classes that process ZIP file structures
     and convert them into ZipStructure objects.
     """
+
     @abstractmethod
     def process_zip_structure(self, file_list: List[str]) -> ZipStructure:
         """
@@ -164,38 +188,47 @@ class XMLStructureExtractor(ABC):
         """
         try:
             data = json.loads(json_str)
-            required_fields = ['manuscript_id', 'xml', 'docx', 'pdf', 'appendix', 'figures']
+            required_fields = [
+                "manuscript_id",
+                "xml",
+                "docx",
+                "pdf",
+                "appendix",
+                "figures",
+            ]
             if not all(field in data for field in required_fields):
                 logger.error("Missing required fields in JSON response")
                 return None
 
             figures = []
-            for fig in data.get('figures', []):
+            for fig in data.get("figures", []):
                 try:
-                    figures.append(Figure(
-                        figure_label=fig['figure_label'],
-                        img_files=fig['img_files'],
-                        sd_files=fig['sd_files'],
-                        figure_caption=fig.get('figure_caption', ''),
-                        panels=fig.get('panels', [])
-                    ))
+                    figures.append(
+                        Figure(
+                            figure_label=fig["figure_label"],
+                            img_files=fig["img_files"],
+                            sd_files=fig["sd_files"],
+                            figure_caption=fig.get("figure_caption", ""),
+                            panels=fig.get("panels", []),
+                        )
+                    )
                 except KeyError as e:
                     logger.error(f"Missing key in figure data: {str(e)}")
                     return None
-            
-            appendix = data.get('appendix', [])
+
+            appendix = data.get("appendix", [])
             if appendix is None:
                 appendix = []
             elif isinstance(appendix, str):
                 appendix = [appendix]
-            
+
             return ZipStructure(
-                manuscript_id=data.get('manuscript_id', ''),
-                xml=data.get('xml', ''),
-                docx=data.get('docx', ''),
-                pdf=data.get('pdf', ''),
+                manuscript_id=data.get("manuscript_id", ""),
+                xml=data.get("xml", ""),
+                docx=data.get("docx", ""),
+                pdf=data.get("pdf", ""),
                 appendix=appendix,
-                figures=figures
+                figures=figures,
             )
         except json.JSONDecodeError:
             logger.error("Invalid JSON response from AI")

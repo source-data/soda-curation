@@ -7,7 +7,8 @@ figure captions from scientific documents.
 
 from string import Template
 
-EXTRACT_CAPTIONS_PROMPT = Template("""You are an AI assistant specialized in analyzing scientific manuscripts. Your task is to extract complete figure captions from the given text, which is from a scientific paper. Please follow these guidelines carefully:
+EXTRACT_CAPTIONS_PROMPT = Template(
+    """You are an AI assistant specialized in analyzing scientific manuscripts. Your task is to extract complete figure captions from the given text, which is from a scientific paper. Please follow these guidelines carefully:
 
 1. Identify all figure captions in the text. These usually start with "Figure X" or "Fig. X", where X is a number.
 
@@ -46,7 +47,9 @@ Example of expected output format:
 Please process the given text and return ONLY the JSON object with the extracted figure captions:
 
 $file_content
-""")
+"""
+)
+
 
 def get_extract_captions_prompt(file_content: str) -> str:
     """

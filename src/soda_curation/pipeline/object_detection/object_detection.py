@@ -1,42 +1,37 @@
 """
-This module provides functionality for detecting figure panels in scientific images.
+This module provides functionality for object detection in scientific figures,
+particularly for identifying panels within figure images.
 
-It includes utilities for converting various image formats to PIL images,
-as well as a class for performing object detection using the YOLOv10 model.
-The module can handle different image formats including JPG, PNG, PDF, and EPS.
+It includes utilities for image conversion and resizing, as well as a class for
+performing object detection using the YOLOv10 model.
 """
-
 import logging
-from typing import List, Tuple, Dict, Any
-from pathlib import Path
 import os
-import base64
-import io
 import subprocess
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from PIL import Image
-import cv2
-from ultralytics import YOLOv10
-import fitz  # PyMuPDF
 import pdf2image
+from PIL import Image
+from ultralytics import YOLOv10
 
 logger = logging.getLogger(__name__)
 
-def convert_to_pil_image(file_path: str, dpi: int = 300) -> Image.Image:
+
+def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, str]:
     """
     Convert various image formats (PDF, EPS, TIFF, JPG, PNG) to a PIL image.
 
     This function handles different file formats and converts them to a PIL Image object.
-    For PDF files, it converts the first page to an image. For EPS files, it uses
-    Ghostscript for conversion.
+    For PDF files, it converts the first page to a PNG image and saves it.
 
     Args:
         file_path (str): The path to the image file.
-        dpi (int): Dots per inch for high-resolution EPS conversion. Default is 300.
+        dpi (int): Dots per inch for high-resolution conversion. Default is 300.
 
     Returns:
-        PIL.Image: The converted PIL image.
+        Tuple[PIL.Image, str]: The converted PIL image and the path to the new image file (if converted from PDF).
 
     Raises:
         FileNotFoundError: If the specified file does not exist.
@@ -48,35 +43,39 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Image.Image:
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
 
-    if file_ext in ['.jpg', '.jpeg', '.png', '.tif', '.tiff']:
-        image = Image.open(file_path)
-        image = convert_and_resize_image(image)
-        return image
-    elif file_ext == '.pdf':
+    new_file_path = file_path
+
+    if file_ext == ".pdf":
+        # Convert PDF to PNG
         pages = pdf2image.convert_from_path(file_path, dpi=dpi)
         if pages:
-            image = convert_and_resize_image(pages[0])
-            return image
+            new_file_path = file_path.replace(".pdf", ".png")
+            pages[0].save(new_file_path, "PNG")
+            image = pages[0]
         else:
             raise ValueError("PDF conversion failed: no pages found")
-    elif file_ext == '.eps':
-        output_path = file_path.replace('.eps', '.png')
+    elif file_ext in [".jpg", ".jpeg", ".png", ".tif", ".tiff"]:
+        image = Image.open(file_path)
+    elif file_ext == ".eps":
+        # Convert EPS to PNG
+        new_file_path = file_path.replace(".eps", ".png")
         command = [
-            'gs',
-            '-dNOPAUSE',
-            '-dBATCH',
-            '-sDEVICE=pngalpha',
-            f'-r{dpi}',
-            f'-sOutputFile={output_path}',
-            file_path
+            "gs",
+            "-dNOPAUSE",
+            "-dBATCH",
+            "-sDEVICE=pngalpha",
+            f"-r{dpi}",
+            f"-sOutputFile={new_file_path}",
+            file_path,
         ]
         subprocess.run(command, check=True)
-        image = Image.open(output_path)
-        image = convert_and_resize_image(image)
-        os.remove(output_path)  # Clean up the temporary PNG file
-        return image
+        image = Image.open(new_file_path)
     else:
         raise ValueError(f"Unsupported file format: {file_ext}")
+
+    image = convert_and_resize_image(image)
+    return image, new_file_path
+
 
 def convert_and_resize_image(image: Image.Image, max_size: int = 1024) -> Image.Image:
     """
@@ -92,12 +91,13 @@ def convert_and_resize_image(image: Image.Image, max_size: int = 1024) -> Image.
     Returns:
         PIL.Image: The converted and resized PIL image.
     """
-    if image.mode != 'RGB':
-        image = image.convert('RGB')
-    
+    if image.mode != "RGB":
+        image = image.convert("RGB")
+
     # Resize image to maintain aspect ratio
     image.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
     return image
+
 
 class ObjectDetection:
     """
@@ -122,15 +122,22 @@ class ObjectDetection:
         self.model = YOLOv10(self.model_path)
         logger.info(f"Initialized ObjectDetection with model: {self.model_path}")
 
-    def detect_panels(self, image_path: str, conf: float = 0.25, iou: float = 0.1, imgsz: int = 512, max_det: int = 30) -> List[Dict[str, Any]]:
+    def detect_panels(
+        self,
+        image: Image.Image,
+        conf: float = 0.25,
+        iou: float = 0.1,
+        imgsz: int = 512,
+        max_det: int = 30,
+    ) -> List[Dict[str, Any]]:
         """
         Detect panels in the given image using YOLOv10.
 
-        This method processes an image file, detects panels within it using the YOLOv10 model,
+        This method processes an image, detects panels within it using the YOLOv10 model,
         and returns a list of detected panels with their properties.
 
         Args:
-            image_path (str): Path to the input image file.
+            image (Image.Image): The input PIL Image object.
             conf (float): Confidence threshold for detection. Default is 0.25.
             iou (float): IoU threshold for non-max suppression. Default is 0.1.
             imgsz (int): Inference size for the model. Default is 512.
@@ -143,33 +150,36 @@ class ObjectDetection:
         Raises:
             Exception: If there's an error during the detection process.
         """
-        logger.info(f"Detecting panels in image: {image_path}")
-        
+        logger.info("Detecting panels in image")
+
         try:
-            pil_image = convert_to_pil_image(image_path)
             # Convert PIL Image to numpy array
-            np_image = np.array(pil_image)
-            
-            results = self.model(np_image, conf=conf, iou=iou, imgsz=imgsz, max_det=max_det)
-            
+            np_image = np.array(image)
+
+            results = self.model(
+                np_image, conf=conf, iou=iou, imgsz=imgsz, max_det=max_det
+            )
+
             panels = []
             for i, box in enumerate(results[0].boxes.xyxyn.tolist()):
                 x1, y1, x2, y2 = box
                 confidence = float(results[0].boxes.conf[i])
-                
+
                 panel_info = {
                     "panel_label": chr(65 + i),
                     "panel_caption": "TO BE ADDED IN LATER STEP",
-                    "panel_bbox": [x1, y1, x2, y2]
+                    "panel_bbox": [x1, y1, x2, y2],
+                    "confidence": confidence,
                 }
                 panels.append(panel_info)
-            
-            logger.info(f"Detected {len(panels)} panels in {image_path}")
+
+            logger.info(f"Detected {len(panels)} panels")
             return panels
-        
+
         except Exception as e:
-            logger.error(f"Error detecting panels in {image_path}: {str(e)}")
+            logger.error(f"Error detecting panels: {str(e)}")
             return []
+
 
 def create_object_detection(config: Dict[str, Any]) -> ObjectDetection:
     """
@@ -187,14 +197,16 @@ def create_object_detection(config: Dict[str, Any]) -> ObjectDetection:
     Raises:
         FileNotFoundError: If the specified model file is not found.
     """
-    relative_model_path = config.get('object_detection', {}).get('model_path', 'data/models/panel_detection_model_no_labels.pt')
-    
+    relative_model_path = config.get("object_detection", {}).get(
+        "model_path", "data/models/panel_detection_model_no_labels.pt"
+    )
+
     # Construct the absolute path to the model
-    absolute_model_path = Path('/app') / relative_model_path
-    
+    absolute_model_path = Path("/app") / relative_model_path
+
     logger.info(f"Loading model from: {absolute_model_path}")
-    
+
     if not absolute_model_path.exists():
         raise FileNotFoundError(f"Model file not found at {absolute_model_path}")
-    
+
     return ObjectDetection(str(absolute_model_path))

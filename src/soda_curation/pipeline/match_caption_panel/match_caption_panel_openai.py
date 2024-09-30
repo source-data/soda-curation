@@ -6,19 +6,22 @@ It includes a class that interacts with the OpenAI API to process figure panels 
 matching them based on the visual content and the full figure caption.
 """
 
-import openai
-from typing import Dict, Any, List, Tuple, Optional
-from .match_caption_panel_base import MatchPanelCaption
-from ..manuscript_structure.manuscript_structure import ZipStructure, Figure
-from .match_caption_panel_prompts import SYSTEM_PROMPT, get_match_panel_caption_prompt
+import base64
+import io
 import logging
 import os
-import json
-import base64
+from typing import Any, Dict, List, Optional, Tuple
+
+import openai
 from PIL import Image
-import io
+
+from ..manuscript_structure.manuscript_structure import Figure, Panel, ZipStructure
+from ..object_detection.object_detection import convert_to_pil_image
+from .match_caption_panel_base import MatchPanelCaption
+from .match_caption_panel_prompts import SYSTEM_PROMPT, get_match_panel_caption_prompt
 
 logger = logging.getLogger(__name__)
+
 
 class MatchPanelCaptionOpenAI(MatchPanelCaption):
     """
@@ -47,25 +50,29 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             ValueError: If required configuration parameters are missing.
         """
         self.config = config
-        self.openai_config = config.get('openai', {})
-        
+        self.openai_config = config.get("openai", {})
+
         if not self.openai_config:
-            raise ValueError("OpenAI configuration is missing from the main configuration")
-        
-        api_key = self.openai_config.get('api_key')
+            raise ValueError(
+                "OpenAI configuration is missing from the main configuration"
+            )
+
+        api_key = self.openai_config.get("api_key")
         if not api_key:
             raise ValueError("API key is missing from the OpenAI configuration")
-        
+
         self.client = openai.OpenAI(api_key=api_key)
-        
-        self.debug_enabled = config.get('debug', {}).get('enabled', False)
-        self.debug_dir = config.get('debug', {}).get('debug_dir')
-        self.extract_dir = config.get('extract_dir')
-        self.process_first_figure_only = config.get('debug', {}).get('process_first_figure_only', False)
-        
+
+        self.debug_enabled = config.get("debug", {}).get("enabled", False)
+        self.debug_dir = config.get("debug", {}).get("debug_dir")
+        self.extract_dir = config.get("extract_dir")
+        self.process_first_figure_only = config.get("debug", {}).get(
+            "process_first_figure_only", False
+        )
+
         if not self.extract_dir:
             raise ValueError("extract_dir is not set in the configuration")
-        
+
         logger.info("MatchPanelCaptionOpenAI initialized successfully")
         logger.debug(f"Debug enabled: {self.debug_enabled}")
         logger.debug(f"Debug directory: {self.debug_dir}")
@@ -86,26 +93,32 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             ZipStructure: Updated ZIP structure with matched panel captions for all figures.
         """
         logger.info("Starting panel caption matching process")
-        
+
         if zip_structure.figures:
-            figures_to_process = zip_structure.figures[:1] if self.process_first_figure_only else zip_structure.figures
+            figures_to_process = (
+                zip_structure.figures[:1]
+                if self.process_first_figure_only
+                else zip_structure.figures
+            )
             for i, figure in enumerate(zip_structure.figures):
                 if i < len(figures_to_process):
                     logger.info(f"Processing figure: {figure.figure_label}")
                     matched_panels = self._process_figure(figure)
                     figure.panels = matched_panels
                 else:
-                    figure.panels = []  # Clear panels for figures not processed in debug mode
-                
+                    figure.panels = (
+                        []
+                    )  # Clear panels for figures not processed in debug mode
+
             if self.process_first_figure_only:
                 logger.info("Processed first figure only as per debug configuration")
         else:
             logger.warning("No figures found in the ZIP structure")
-        
+
         logger.info("Panel caption matching process completed")
         return zip_structure
 
-    def _process_figure(self, figure: Figure) -> List[Dict[str, Any]]:
+    def _process_figure(self, figure: Figure) -> List[Panel]:
         """
         Process a single figure, matching panel captions with their corresponding images.
 
@@ -116,74 +129,80 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             figure (Figure): The figure object to process.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing matched panel information.
+            List[Panel]: A list of Panel objects containing matched panel information.
         """
         matched_panels = []
-        figure_path = os.path.join(self.extract_dir, figure.img_files[0])
-        
+
         for i, panel in enumerate(figure.panels):
             logger.info(f"Processing panel {i+1} of figure {figure.figure_label}")
-            
-            if 'panel_bbox' not in panel:
-                logger.warning(f"No bounding box found for panel {i+1} of figure {figure.figure_label}")
-                continue
-            
+
             try:
-                encoded_image = self._extract_panel_image(figure_path, panel['panel_bbox'])
-                
+                if hasattr(figure, '_pil_image'):
+                    pil_image = figure._pil_image
+                else:
+                    figure_path = os.path.join(self.extract_dir, figure.img_files[0])
+                    pil_image, _ = convert_to_pil_image(figure_path)
+
+                encoded_image = self._extract_panel_image(pil_image, panel.panel_bbox)
+
                 if not encoded_image:
-                    logger.warning(f"Failed to extract panel image for panel {i+1} of figure {figure.figure_label}")
+                    logger.warning(
+                        f"Failed to extract panel image for panel {i+1} of figure {figure.figure_label}"
+                    )
                     continue
-                
+
                 if self.debug_enabled and self.debug_dir:
-                    self._save_debug_image(encoded_image, f"{figure.figure_label}_panel_{i+1}.png")
-                
+                    self._save_debug_image(
+                        encoded_image, f"{figure.figure_label}_panel_{i+1}.png"
+                    )
+
                 response = self._call_openai_api(encoded_image, figure.figure_caption)
                 panel_label, panel_caption = self._parse_response(response)
-                
-                matched_panel = panel.copy()
-                matched_panel.update({
-                    'panel_label': panel_label,
-                    'panel_caption': panel_caption
-                })
+
+                matched_panel = Panel(
+                    panel_label=panel_label,
+                    panel_caption=panel_caption,
+                    panel_bbox=panel.panel_bbox,
+                    confidence=panel.confidence,
+                    ai_response=response,
+                )
                 matched_panels.append(matched_panel)
-                logger.info(f"Matched panel: Label={panel_label}, Caption={panel_caption[:50]}...")
-            
+                logger.info(
+                    f"Matched panel: Label={panel_label}, Caption={panel_caption[:50]}..."
+                )
+
             except Exception as e:
-                logger.error(f"Error processing panel {i+1} of figure {figure.figure_label}: {str(e)}")
-        
+                logger.error(
+                    f"Error processing panel {i+1} of figure {figure.figure_label}: {str(e)}"
+                )
+
         return matched_panels
 
-    def _extract_panel_image(self, figure_path: str, bbox: List[float]) -> Optional[str]:
+    def _extract_panel_image(self, pil_image: Image.Image, bbox: List[float]) -> Optional[str]:
         """
         Extract a panel image from a figure based on bounding box coordinates.
 
-        This method opens the figure image, crops it according to the bounding box,
+        This method crops the PIL Image according to the bounding box,
         and returns the panel image as a base64 encoded string.
 
         Args:
-            figure_path (str): Path to the figure image file.
+            pil_image (Image.Image): The PIL Image object of the entire figure.
             bbox (List[float]): Bounding box coordinates [x1, y1, x2, y2] in relative format.
 
         Returns:
             Optional[str]: Base64 encoded string of the panel image, or None if extraction fails.
         """
         try:
-            with Image.open(figure_path) as img:
-                # Convert to RGB if the image is in CMYK mode
-                if img.mode == 'CMYK':
-                    img = img.convert('RGB')
-                
-                width, height = img.size
-                left, top, right, bottom = [
-                    int(coord * width if i % 2 == 0 else coord * height)
-                    for i, coord in enumerate(bbox)
-                ]
-                panel = img.crop((left, top, right, bottom))
-                
-                buffered = io.BytesIO()
-                panel.save(buffered, format="PNG")
-                return base64.b64encode(buffered.getvalue()).decode("utf-8")
+            width, height = pil_image.size
+            left, top, right, bottom = [
+                int(coord * width if i % 2 == 0 else coord * height)
+                for i, coord in enumerate(bbox)
+            ]
+            panel = pil_image.crop((left, top, right, bottom))
+
+            buffered = io.BytesIO()
+            panel.save(buffered, format="PNG")
+            return base64.b64encode(buffered.getvalue()).decode("utf-8")
         except Exception as e:
             logger.error(f"Error extracting panel image: {str(e)}")
             return None
@@ -205,32 +224,40 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         if not encoded_image:
             logger.error("Encoded image is empty, skipping API call")
             return ""
-        
+
         try:
             logger.info("Calling OpenAI API for panel caption matching")
             logger.info(f"Figure caption: {figure_caption[:100]}...")
-            
-            model = self.openai_config.get('model', 'gpt-4-vision-preview')
+
+            model = self.openai_config.get("model", "gpt-4-vision-preview")
             logger.info(f"Using OpenAI model: {model}")
-            
+
             prompt = get_match_panel_caption_prompt(figure_caption)
-            
+
             response = self.client.chat.completions.create(
                 model=model,
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": [
-                        {"type": "text", "text": prompt},
-                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{encoded_image}"}}
-                    ]}
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/png;base64,{encoded_image}"
+                                },
+                            },
+                        ],
+                    },
                 ],
-                max_tokens=1024
+                max_tokens=1024,
             )
-            
+
             ai_response = response.choices[0].message.content
             logger.info("Received response from OpenAI API")
             logger.info(f"AI response: {ai_response}")
-            
+
             return ai_response
         except Exception as e:
             logger.error(f"Error in OpenAI API call: {str(e)}")
@@ -252,21 +279,23 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         try:
             logger.info("Parsing AI response")
             logger.debug(f"Raw response: {response}")
-            
+
             # Assuming the response is in the format: ```PANEL_{label}: {caption}```
-            parts = response.strip('`').split(': ', 1)
+            parts = response.strip("`").split(": ", 1)
             if len(parts) == 2:
-                label = parts[0].split('_')[1]
+                label = parts[0].split("_")[1]
                 caption = parts[1]
                 logger.info(f"Successfully parsed response. Label: {label}")
-                logger.debug(f"Parsed caption: {caption[:50]}...")  # Log first 50 chars of parsed caption
+                logger.debug(
+                    f"Parsed caption: {caption[:50]}..."
+                )  # Log first 50 chars of parsed caption
                 return label, caption
             else:
                 logger.error(f"Unexpected response format: {response}")
-                return '', ''
+                return "", ""
         except Exception as e:
             logger.error(f"Error parsing response: {str(e)}")
-            return '', ''
+            return "", ""
 
     def _save_debug_image(self, encoded_image: str, filename: str):
         """

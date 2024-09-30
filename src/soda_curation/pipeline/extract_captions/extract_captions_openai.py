@@ -7,20 +7,22 @@ figure captions, which are then integrated into a ZipStructure object.
 """
 
 import json
+import logging
 import os
-from io import BytesIO
+import re
 from typing import Dict
+
 import openai
 from openai.types.beta.assistant import Assistant
 from openai.types.beta.thread import Thread
 from openai.types.file_object import FileObject
+
+from ..manuscript_structure.manuscript_structure import ZipStructure
 from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import get_extract_captions_prompt
-from ..manuscript_structure.manuscript_structure import ZipStructure
-import re
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 class FigureCaptionExtractorGpt(FigureCaptionExtractor):
     """
@@ -46,7 +48,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             openai.OpenAIError: If there's an issue initializing the OpenAI client or assistant.
         """
         self.config = config
-        self.client = openai.OpenAI(api_key=self.config['api_key'])
+        self.client = openai.OpenAI(api_key=self.config["api_key"])
         self.assistant = self._setup_assistant()
 
     def _setup_assistant(self) -> Assistant:
@@ -67,15 +69,13 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
         if assistant_id:
             return self.client.beta.assistants.update(
-                assistant_id,
-                model=self.config['model'],
-                instructions=self.prompt
+                assistant_id, model=self.config["model"], instructions=self.prompt
             )
         else:
             return self.client.beta.assistants.create(
                 name="Figure Caption Extractor",
                 instructions=self.prompt,
-                model=self.config['model']
+                model=self.config["model"],
             )
 
     def _upload_file(self, file_path: str) -> FileObject:
@@ -92,13 +92,10 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             FileNotFoundError: If the specified file does not exist.
             openai.OpenAIError: If there's an issue uploading the file to OpenAI.
         """
-        with open(file_path, "rb") as file:        
-            file_object = self.client.files.create(
-                file=file,
-                purpose="assistants"
-            )
+        with open(file_path, "rb") as file:
+            file_object = self.client.files.create(file=file, purpose="assistants")
         return file_object
-    
+
     def _prepare_query(self, file_path: str) -> Thread:
         """
         Prepare the query to be sent to the OpenAI assistant.
@@ -124,17 +121,17 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                     "attachments": [
                         {
                             "file_id": file_on_client.id,
-                            "tools": [
-                                {"type": "file_search"}
-                            ]
+                            "tools": [{"type": "file_search"}],
                         }
-                    ]
+                    ],
                 }
             ]
         )
         return thread, file_on_client
 
-    def extract_captions(self, docx_path: str, zip_structure: ZipStructure) -> ZipStructure:
+    def extract_captions(
+        self, docx_path: str, zip_structure: ZipStructure
+    ) -> ZipStructure:
         """
         Extract figure captions from the given DOCX file using OpenAI's GPT model.
 
@@ -150,7 +147,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         """
         try:
             logger.info(f"Processing file: {docx_path}")
-            
+
             if not os.path.exists(docx_path):
                 raise FileNotFoundError(f"File not found: {docx_path}")
 
@@ -161,33 +158,38 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 assistant_id=self.assistant.id,
             )
 
-            if run.status == 'completed':
-                messages = self.client.beta.threads.messages.list(
-                    thread_id=thread.id
-                )
+            if run.status == "completed":
+                messages = self.client.beta.threads.messages.list(thread_id=thread.id)
                 result = messages.data[0].content[0].text.value
-                print(result)
                 logger.debug(f"Answer from GPT: {result}")
 
                 captions = self._parse_response(result)
-                
+
                 if not captions:
                     logger.warning("Failed to extract captions from GPT's response")
-                
-                updated_structure = self._update_zip_structure(zip_structure, captions)
+
+                updated_structure = self._update_zip_structure(
+                    zip_structure, captions, result
+                )
                 logger.info(f"Updated ZIP structure: {updated_structure}")
             else:
                 logger.error(f"Assistant run failed with status: {run.status}")
-                return self._update_zip_structure(zip_structure, {})  # Return structure with "Figure caption not found."
+                return self._update_zip_structure(zip_structure, {}, run.status)
 
             self.client.files.delete(file_object.id)
-            
+
             return updated_structure
-        
+
         except Exception as e:
             logger.exception(f"Error in caption extraction: {str(e)}")
-            return self._update_zip_structure(zip_structure, {})  # Return structure with "Figure caption not found."
-        
+            return self._update_zip_structure(zip_structure, {}, str(e))
+
+        except Exception as e:
+            logger.exception(f"Error in caption extraction: {str(e)}")
+            return self._update_zip_structure(
+                zip_structure, {}
+            )  # Return structure with "Figure caption not found."
+
         except FileNotFoundError as e:
             logger.error(f"File not found: {str(e)}")
             return zip_structure
@@ -205,18 +207,22 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         Returns:
             Dict[str, str]: A dictionary of figure labels and their captions.
         """
-        json_match = re.search(r'```json\n(.*?)```', response_text, re.DOTALL)
+        json_match = re.search(r"```json\n(.*?)```", response_text, re.DOTALL)
         if json_match:
             json_str = json_match.group(1)
             try:
                 return json.loads(json_str)
             except json.JSONDecodeError:
-                logger.warning("Failed to parse JSON from code block. Attempting to parse entire response.")
-        
+                logger.warning(
+                    "Failed to parse JSON from code block. Attempting to parse entire response."
+                )
+
         try:
             return json.loads(response_text)
         except json.JSONDecodeError:
-            logger.warning("Failed to parse JSON from GPT's response. Attempting regex parsing.")
+            logger.warning(
+                "Failed to parse JSON from GPT's response. Attempting regex parsing."
+            )
             return self._parse_figure_captions(response_text)
 
     def _parse_figure_captions(self, text: str) -> Dict[str, str]:
@@ -236,14 +242,31 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         matches = re.finditer(r'"(Figure \d+)":\s*"(.*?)"', text, re.DOTALL)
         for match in matches:
             figure_label = match.group(1)
-            caption = match.group(2).replace('\\n', '\n').strip()
+            caption = match.group(2).replace("\\n", "\n").strip()
             captions[figure_label] = caption
         return captions
 
-    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
+    def _update_zip_structure(
+        self, zip_structure: ZipStructure, captions: Dict[str, str], ai_response: str
+    ) -> ZipStructure:
+        """
+        Update the ZipStructure with extracted captions.
+
+        This method updates the figure captions in the ZipStructure based on the extracted captions.
+        If a caption is not found for a figure, it sets the caption to "Figure caption not found."
+
+        Args:
+            zip_structure (ZipStructure): The current ZIP structure.
+            captions (Dict[str, str]): Dictionary of figure labels and their captions.
+            ai_response (str): The raw response from the AI model.
+
+        Returns:
+            ZipStructure: Updated ZIP structure with new captions.
+        """
         for figure in zip_structure.figures:
             if figure.figure_label in captions:
                 figure.figure_caption = captions[figure.figure_label]
             else:
                 figure.figure_caption = "Figure caption not found."
+            figure.ai_response = ai_response
         return zip_structure

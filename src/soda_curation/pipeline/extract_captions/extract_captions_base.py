@@ -5,12 +5,14 @@ It defines the abstract base class that all specific caption extractor implement
 should inherit from, ensuring a consistent interface across different extraction methods.
 """
 
-from abc import ABC, abstractmethod
 import logging
+from abc import ABC, abstractmethod
 from typing import Dict
+
 from ..manuscript_structure.manuscript_structure import ZipStructure
 
 logger = logging.getLogger(__name__)
+
 
 class FigureCaptionExtractor(ABC):
     """
@@ -21,7 +23,9 @@ class FigureCaptionExtractor(ABC):
     """
 
     @abstractmethod
-    def extract_captions(self, docx_path: str, zip_structure: ZipStructure) -> ZipStructure:
+    def extract_captions(
+        self, docx_path: str, zip_structure: ZipStructure
+    ) -> ZipStructure:
         """
         Extract figure captions from the given DOCX file and update the ZipStructure.
 
@@ -37,7 +41,9 @@ class FigureCaptionExtractor(ABC):
         """
         pass
 
-    def _update_zip_structure(self, zip_structure: ZipStructure, captions: Dict[str, str]) -> ZipStructure:
+    def _update_zip_structure(
+        self, zip_structure: ZipStructure, captions: Dict[str, str]
+    ) -> ZipStructure:
         """
         Update the ZipStructure with extracted captions.
 
