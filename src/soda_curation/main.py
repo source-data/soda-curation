@@ -198,8 +198,20 @@ def match_panel_caption(zip_structure: ZipStructure, config: Dict[str, Any]) -> 
         return zip_structure
 
 def main(zip_path: str, config_path: str, output_path: str = None) -> str:
+    if not zip_path or not config_path:
+        raise ValueError("ZIP path and config path must be provided")
+
     config = load_config(config_path)
     setup_logging(config)
+
+    if config['ai'] not in ['openai', 'anthropic']:
+        raise ValueError(f"Invalid AI provider: {config['ai']}")
+
+    zip_file = Path(zip_path)
+    extract_dir = zip_file.parent / zip_file.stem
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_dir)
+    logger.info(f"Extracted ZIP contents to: {extract_dir}")
 
     # Extract ZIP contents
     zip_file = Path(zip_path)
@@ -220,7 +232,20 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     # Update config['extract_dir'] to the full path including the manuscript ID
     config['extract_dir'] = str(extract_dir)
     
+    # Try DOCX extraction first
+    logger.info("Attempting DOCX caption extraction")
     zip_structure = extract_figure_captions(zip_structure, config)
+    
+    # If no captions were extracted from DOCX, try PDF
+    if all(figure.figure_caption == "Figure caption not found." for figure in zip_structure.figures):
+        logger.info("No captions found in DOCX, attempting extraction from PDF")
+        zip_structure.docx = None  # Set docx to None when falling back to PDF
+        zip_structure._full_docx = None
+        zip_structure = extract_figure_captions(zip_structure, config)
+    
+    logger.info(f"After PDF extraction: docx={zip_structure.docx}, pdf={zip_structure.pdf}")
+    logger.info(f"Final captions: {[figure.figure_caption for figure in zip_structure.figures]}")
+    
     zip_structure = extract_panels(zip_structure, config)
     zip_structure = match_panel_caption(zip_structure, config)
 
