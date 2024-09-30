@@ -107,5 +107,5 @@ COPY tests ./tests
 RUN poetry install --with dev
 
 # Run tests
-CMD ["poetry", "run", "pytest", "-v", "--cov=soda_curation", "--cov-report=term-missing", "tests/test_pipeline/test_object_detection.py"]
+CMD ["poetry", "run", "pytest", "-v", "--cov=soda_curation", "--cov-report=term-missing"]
 
