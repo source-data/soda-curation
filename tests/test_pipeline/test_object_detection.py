@@ -5,18 +5,20 @@ It tests various aspects of image conversion, resizing, and panel detection usin
 The tests use mock objects to simulate file operations and model predictions.
 """
 
-import pytest
-from unittest.mock import Mock, patch, mock_open
-import numpy as np
-from PIL import Image
 from pathlib import Path
+from unittest.mock import Mock, mock_open, patch
+
+import numpy as np
+import pytest
+from PIL import Image
 
 from soda_curation.pipeline.object_detection.object_detection import (
     ObjectDetection,
-    convert_to_pil_image,
     convert_and_resize_image,
-    create_object_detection
+    convert_to_pil_image,
+    create_object_detection,
 )
+
 
 @pytest.fixture
 def mock_yolov10():
@@ -84,7 +86,7 @@ def test_convert_to_pil_image_jpg(mock_image, mock_os):
     This test verifies that the convert_to_pil_image function correctly handles JPG files
     by opening them with PIL and returning the resulting Image object.
     """
-    result = convert_to_pil_image('test.jpg')
+    result, _ = convert_to_pil_image('test.jpg')
     mock_image.open.assert_called_once_with('/app/test.jpg')
     assert isinstance(result, mock_image.open.return_value.__class__)
 
@@ -99,11 +101,12 @@ def test_convert_to_pil_image_pdf(mock_pdf2image, mock_image, mock_os):
     mock_pdf2image.convert_from_path.return_value = [mock_page]
     
     with patch('soda_curation.pipeline.object_detection.object_detection.convert_and_resize_image', return_value=mock_page) as mock_convert:
-        result = convert_to_pil_image('test.pdf')
+        result, new_file_path = convert_to_pil_image('test.pdf')
     
     mock_pdf2image.convert_from_path.assert_called_once_with('/app/test.pdf', dpi=300)
     mock_convert.assert_called_once_with(mock_page)
     assert result == mock_page
+    assert new_file_path == '/app/test.png'
 
 def test_convert_to_pil_image_eps(mock_subprocess, mock_image, mock_os):
     """
@@ -112,7 +115,7 @@ def test_convert_to_pil_image_eps(mock_subprocess, mock_image, mock_os):
     This test verifies that the convert_to_pil_image function correctly handles EPS files
     by using subprocess to convert them to PNG and then opening the result with PIL.
     """
-    result = convert_to_pil_image('test.eps')
+    result, _ = convert_to_pil_image('test.eps')
     mock_subprocess.run.assert_called_once()
     mock_image.open.assert_called_once()
     assert isinstance(result, mock_image.open.return_value.__class__)
