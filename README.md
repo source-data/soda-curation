@@ -5,17 +5,16 @@ soda-curation is a professional Python package for automated data curation of sc
 ## Table of Contents
 
 1. [Features](#features)
-2. [Requirements](#requirements)
-3. [Installation](#installation)
-4. [Configuration](#configuration)
-5. [Prompts](#prompts)
-6. [Usage](#usage)
-7. [Pipeline Steps](#pipeline-steps)
-8. [Output Schema](#output-schema)
-9. [Testing](#testing)
-10. [Docker](#docker)
-11. [Contributing](#contributing)
-12. [License](#license)
+2. [Installation](#installation)
+3. [Configuration](#configuration)
+4. [Prompts](#prompts)
+5. [Usage](#usage)
+6. [Pipeline Steps](#pipeline-steps)
+7. [Output Schema](#output-schema)
+8. [Testing](#testing)
+9. [Docker](#docker)
+10. [Contributing](#contributing)
+11. [License](#license)
 
 ## Features
 
@@ -26,13 +25,6 @@ soda-curation is a professional Python package for automated data curation of sc
 - Support for multiple AI providers (OpenAI and Anthropic)
 - Flexible configuration options for fine-tuning the curation process
 - Debug mode for development and troubleshooting
-
-## System Requirements
-
-- Python 3.8+
-- CUDA-compatible GPU (recommended for optimal performance)
-- 8GB+ RAM
-- 50GB+ free disk space
 
 ## Installation
 
