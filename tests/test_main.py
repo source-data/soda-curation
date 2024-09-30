@@ -414,6 +414,32 @@ def test_main_with_caption_extraction_docx_success(mock_argparse, mock_load_conf
                         mock_json.assert_called_with(expected_structure, cls=ANY, ensure_ascii=False, indent=2)
 
 def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_config, mock_zipfile, mock_processors, mock_setup_logging):
+    """
+    Test the PDF fallback mechanism in the main function for figure caption extraction.
+
+    This test verifies that when caption extraction from a DOCX file fails or produces no results,
+    the main function correctly falls back to extracting captions from the PDF file. It ensures that:
+
+    1. The extract_figure_captions function is called twice (once for DOCX, once for PDF).
+    2. The final result is a valid JSON string.
+    3. The resulting structure has the correct manuscript ID, XML file, and PDF file.
+    4. The DOCX field is set to None after the fallback to PDF.
+    5. The figure caption is correctly extracted from the PDF.
+
+    The test uses extensive mocking to simulate file operations, API calls, and the caption
+    extraction process without relying on actual files or external services.
+
+    Args:
+        mock_argparse (MagicMock): Mock for argument parsing.
+        mock_load_config (MagicMock): Mock for configuration loading.
+        mock_zipfile (MagicMock): Mock for ZIP file operations.
+        mock_processors (tuple): Mocks for various processing components.
+        mock_setup_logging (MagicMock): Mock for logging setup.
+
+    Raises:
+        AssertionError: If any of the test conditions are not met, indicating a failure
+                        in the PDF fallback mechanism or the overall caption extraction process.
+    """
     mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml', output='test_output.json')
     
     mock_gpt, mock_caption_extractor, mock_object_detection = mock_processors
@@ -483,7 +509,6 @@ def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_conf
         with patch('soda_curation.main.Path', MockPath), \
              patch('os.path.exists', return_value=True), \
              patch('os.path.join', side_effect=lambda *args: '/'.join(str(arg) for arg in args)), \
-             patch('json.dumps') as mock_json_dumps, \
              patch('os.walk', return_value=[('/mock/extract_dir', [], ['file1', 'file2'])]), \
              patch('os.remove'), \
              patch('os.rmdir'), \
@@ -506,15 +531,12 @@ def test_main_with_caption_extraction_pdf_fallback(mock_argparse, mock_load_conf
         assert parsed_result['pdf'] == "test.pdf"
         assert parsed_result['figures'][0]['figure_caption'] == "Extracted caption from PDF"
 
-    mock_json_dumps.assert_called_with(ANY, cls=ANY, ensure_ascii=False, indent=2)
-    
-    actual_structure = mock_json_dumps.call_args[0][0]
-    assert actual_structure.manuscript_id == "test"
-    assert actual_structure.xml == "test.xml"
-    assert actual_structure.docx is None, f"Expected docx to be None, but got {actual_structure.docx}"
-    assert actual_structure.pdf == "test.pdf"
-    assert len(actual_structure.figures) == 1
-    assert actual_structure.figures[0].figure_caption == "Extracted caption from PDF"
+    assert parsed_result['manuscript_id'] == "test"
+    assert parsed_result['xml'] == "test.xml"
+    assert parsed_result['docx'] is None, f"Expected docx to be None, but got {parsed_result['docx']}"
+    assert parsed_result['pdf'] == "test.pdf"
+    assert len(parsed_result['figures']) == 1
+    assert parsed_result['figures'][0]['figure_caption'] == "Extracted caption from PDF"
     
 def test_main_with_caption_extraction_docx_only(mock_argparse, mock_load_config, mock_zipfile, mock_extract_captions, mock_json, mock_openai_client, mock_os, mock_torch_load):
     """
