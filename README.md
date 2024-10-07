@@ -309,6 +309,7 @@ The soda-curation pipeline generates a JSON output that represents the structure
   "docx": "string",
   "pdf": "string",
   "appendix": ["string"],
+  "ai_response": "string",
   "figures": [
     {
       "figure_label": "string",
@@ -321,7 +322,8 @@ The soda-curation pipeline generates a JSON output that represents the structure
           "panel_label": "string",
           "panel_caption": "string",
           "confidence": float,
-          "panel_bbox": [float, float, float, float]
+          "panel_bbox": [float, float, float, float],
+          "ai_response": "string"
         }
       ]
     }
