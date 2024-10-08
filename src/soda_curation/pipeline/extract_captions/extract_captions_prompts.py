@@ -34,7 +34,10 @@ EXTRACT_CAPTIONS_PROMPT = Template(
 
 6. If there are no figures or captions in the text, return an empty JSON object.
 
-7. Your response should ONLY contain the JSON object, without any additional explanations or text.
+7. Note that the figures will be always monotically increasing continuous numbers. If you have a figure 1 and figure 7, 
+then, you should have figures 2, 3, 4, 5, 6 in between. Please make sure of this as it is of extreme importance.
+
+8. Your response should ONLY contain the JSON object, without any additional explanations or text.
 
 Example of expected output format:
 
