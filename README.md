@@ -323,7 +323,8 @@ The soda-curation pipeline generates a JSON output that represents the structure
           "panel_caption": "string",
           "confidence": float,
           "panel_bbox": [float, float, float, float],
-          "ai_response": "string"
+          "ai_response": "string",
+          "sd_files": ["string"]
         }
       ]
     }

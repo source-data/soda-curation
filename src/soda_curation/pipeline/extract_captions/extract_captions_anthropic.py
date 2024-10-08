@@ -95,9 +95,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             if not captions:
                 logger.warning("Failed to extract captions from Claude's response")
 
-            updated_structure = self._update_zip_structure(
-                zip_structure, captions, extracted_text
-            )
+            updated_structure = self._update_zip_structure(zip_structure, captions, extracted_text)
             logger.info(f"Updated ZIP structure: {updated_structure}")
 
             return updated_structure
@@ -186,12 +184,8 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         """
         for figure in zip_structure.figures:
             if figure.figure_label in captions:
-                figure.figure_caption = (
-                    captions[figure.figure_label]
-                    .encode("utf-8")
-                    .decode("utf-8", "ignore")
-                )
+                figure.figure_caption = captions[figure.figure_label].encode("utf-8").decode("utf-8", "ignore")
             else:
                 figure.figure_caption = "Figure caption not found."
-            figure.ai_response = ai_response
+        zip_structure.ai_response = ai_response  # Set AI response at ZipStructure level
         return zip_structure

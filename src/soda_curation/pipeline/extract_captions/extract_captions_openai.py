@@ -168,9 +168,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 if not captions:
                     logger.warning("Failed to extract captions from GPT's response")
 
-                updated_structure = self._update_zip_structure(
-                    zip_structure, captions, result
-                )
+                updated_structure = self._update_zip_structure(zip_structure, captions, result)
                 logger.info(f"Updated ZIP structure: {updated_structure}")
             else:
                 logger.error(f"Assistant run failed with status: {run.status}")
@@ -183,12 +181,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         except Exception as e:
             logger.exception(f"Error in caption extraction: {str(e)}")
             return self._update_zip_structure(zip_structure, {}, str(e))
-
-        except Exception as e:
-            logger.exception(f"Error in caption extraction: {str(e)}")
-            return self._update_zip_structure(
-                zip_structure, {}
-            )  # Return structure with "Figure caption not found."
 
         except FileNotFoundError as e:
             logger.error(f"File not found: {str(e)}")
@@ -268,5 +260,5 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 figure.figure_caption = captions[figure.figure_label]
             else:
                 figure.figure_caption = "Figure caption not found."
-            figure.ai_response = ai_response
+        zip_structure.ai_response = ai_response  # Set AI response at ZipStructure level
         return zip_structure
