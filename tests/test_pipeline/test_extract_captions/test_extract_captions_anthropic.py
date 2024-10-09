@@ -6,11 +6,19 @@ It tests various scenarios of caption extraction using the Anthropic AI model, i
 successful extractions, error handling, and edge cases.
 """
 
-import pytest
-from unittest.mock import Mock, patch, mock_open
 import json
-from soda_curation.pipeline.extract_captions.extract_captions_anthropic import FigureCaptionExtractorClaude
-from soda_curation.pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure
+from unittest.mock import Mock, mock_open, patch
+
+import pytest
+
+from soda_curation.pipeline.extract_captions.extract_captions_anthropic import (
+    FigureCaptionExtractorClaude,
+)
+from soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    Figure,
+    ZipStructure,
+)
+
 
 @pytest.fixture
 def mock_anthropic_client():
@@ -102,6 +110,9 @@ def test_claude_extract_captions_success(mock_anthropic_client, sample_zip_struc
 
     assert result.figures[0].figure_caption == "This is caption for Figure 1"
     assert result.figures[1].figure_caption == "This is caption for Figure 2"
+    assert result.ai_response is not None
+    assert not hasattr(result.figures[0], 'ai_response')
+    assert not hasattr(result.figures[1], 'ai_response')
 
 def test_claude_extract_captions_api_error(mock_anthropic_client, sample_zip_structure, sample_config, mock_file_operations):
     """
@@ -123,6 +134,7 @@ def test_claude_extract_captions_api_error(mock_anthropic_client, sample_zip_str
 
     assert result.figures[0].figure_caption == "Figure caption not found."
     assert result.figures[1].figure_caption == "Figure caption not found."
+    assert result.ai_response == "API Error"
 
 def test_claude_extract_captions_invalid_json(mock_anthropic_client, sample_zip_structure, sample_config, mock_file_operations):
     """

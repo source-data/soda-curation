@@ -6,11 +6,19 @@ It tests various scenarios of caption extraction using OpenAI's GPT models, incl
 successful extractions, error handling, and edge cases specific to the OpenAI implementation.
 """
 
-import pytest
-from unittest.mock import Mock, patch
 import json
-from soda_curation.pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
-from soda_curation.pipeline.manuscript_structure.manuscript_structure import ZipStructure, Figure
+from unittest.mock import Mock, patch
+
+import pytest
+
+from soda_curation.pipeline.extract_captions.extract_captions_openai import (
+    FigureCaptionExtractorGpt,
+)
+from soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    Figure,
+    ZipStructure,
+)
+
 
 @pytest.fixture
 def mock_openai_client():
@@ -90,6 +98,10 @@ def test_gpt_extract_captions_success(mock_openai_client, sample_zip_structure, 
 
     assert result.figures[0].figure_caption == "This is caption for Figure 1"
     assert result.figures[1].figure_caption == "This is caption for Figure 2"
+    assert result.ai_response is not None
+    assert not hasattr(result.figures[0], 'ai_response')
+    assert not hasattr(result.figures[1], 'ai_response')
+
 
 def test_gpt_extract_captions_api_error(mock_openai_client, sample_zip_structure, sample_config):
     """
@@ -111,7 +123,9 @@ def test_gpt_extract_captions_api_error(mock_openai_client, sample_zip_structure
             with patch.object(extractor, '_upload_file', return_value=Mock(id='test_file_id')):
                 result = extractor.extract_captions("test.docx", sample_zip_structure)
 
-    assert result == sample_zip_structure  # Should return original structure on error
+    assert result.figures[0].figure_caption == "Figure caption not found."
+    assert result.figures[1].figure_caption == "Figure caption not found."
+    assert result.ai_response == "API Error"
 
 def test_gpt_extract_captions_invalid_json(mock_openai_client, sample_zip_structure, sample_config):
     """

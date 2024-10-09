@@ -53,7 +53,7 @@ def test_zip_structure_creation():
     Test the creation of a ZipStructure object.
 
     This test verifies that a ZipStructure object is correctly instantiated with all its attributes,
-    including a list of Figure objects.
+    including a list of Figure objects and the new ai_response field.
     """
     zip_structure = ZipStructure(
         manuscript_id="test_manuscript",
@@ -61,7 +61,8 @@ def test_zip_structure_creation():
         docx="test.docx",
         pdf="test.pdf",
         appendix=["appendix1.pdf"],
-        figures=[Figure("Figure 1", ["image1.png"], ["data1.xlsx"], "This is Figure 1")]
+        figures=[Figure("Figure 1", ["image1.png"], ["data1.xlsx"], "This is Figure 1")],
+        ai_response="Test AI response"
     )
     assert zip_structure.manuscript_id == "test_manuscript"
     assert zip_structure.xml == "test.xml"
@@ -70,6 +71,7 @@ def test_zip_structure_creation():
     assert zip_structure.appendix == ["appendix1.pdf"]
     assert len(zip_structure.figures) == 1
     assert zip_structure.figures[0].figure_label == "Figure 1"
+    assert zip_structure.ai_response == "Test AI response"
 
 def test_custom_json_encoder():
     """
@@ -86,7 +88,8 @@ def test_custom_json_encoder():
         docx="test.docx",
         pdf="test.pdf",
         appendix=["appendix1.pdf"],
-        figures=[figure]
+        figures=[figure],
+        ai_response="Test AI response"
     )
     
     encoded = json.dumps(zip_structure, cls=CustomJSONEncoder)
@@ -96,6 +99,8 @@ def test_custom_json_encoder():
     assert decoded["figures"][0]["figure_label"] == "Figure 1"
     assert decoded["figures"][0]["panels"][0]["panel_label"] == "A"
     assert decoded["figures"][0]["panels"][0]["confidence"] == 0.95
+    assert decoded["ai_response"] == "Test AI response"
+    assert "ai_response" not in decoded["figures"][0]
 
 def test_custom_json_encoder_unescape():
     """
