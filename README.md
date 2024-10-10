@@ -280,35 +280,71 @@ In debug mode, the pipeline can be configured to process only the first figure, 
 
 The soda-curation pipeline generates a JSON output that represents the structured manuscript data. Here's an example of the output schema:
 
-```json
+````json
 {
-  "manuscript_id": "string",
-  "xml": "string",
-  "docx": "string",
-  "pdf": "string",
-  "appendix": ["string"],
-  "ai_response": "string",
-  "figures": [
-    {
-      "figure_label": "string",
-      "img_files": ["string"],
-      "sd_files": ["string"],
-      "figure_caption": "string",
-      "duplicated_panels": "boolean",
-      "panels": [
-        {
-          "panel_label": "string",
-          "panel_caption": "string",
-          "confidence": float,
-          "panel_bbox": [float, float, float, float],
-          "ai_response": "string",
-          "sd_files": ["string"]
+  "type": "object",
+  "properties": {
+    "manuscript_id": { "type": "string" },
+    "xml": { "type": "string" },
+    "docx": { "type": "string" },
+    "pdf": { "type": "string" },
+    "appendix": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "figures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "figure_label": { "type": "string" },
+          "img_files": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "sd_files": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "figure_caption": { "type": "string" },
+          "panels": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "panel_label": { "type": "string" },
+                "panel_caption": { "type": "string" },
+                "panel_bbox": {
+                  "type": "array",
+                  "items": { "type": "number" },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "confidence": { "type": "number" },
+                "ai_response": { "type": "string" },
+                "sd_files": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          },
+          "duplicated_panels": { "type": "string" },
+          "ai_response_panel_source_assign": { "type": "string" }
         }
-      ]
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "ai_response": { "type": "string" },
+    "non_associated_sd_files": {
+      "type": "array",
+      "items": { "type": "string" }
     }
-  ]
-}
-```
+  }
+}```
 
 ### Schema Explanation
 
@@ -322,15 +358,18 @@ The soda-curation pipeline generates a JSON output that represents the structure
   - `img_files`: List of paths to image files for this figure
   - `sd_files`: List of paths to source data files for this figure
   - `figure_caption`: Full caption of the figure
-  - `duplicated_panels`: Boolean flag indicating if the figure contains duplicate panels
-  - `ai_response`: Raw response from the AI agent
   - `panels`: Array of panel objects, each containing:
     - `panel_label`: Label of the panel (e.g., "A", "B", "C")
     - `panel_caption`: Caption specific to this panel
     - `panel_bbox`: Bounding box coordinates of the panel [x1, y1, x2, y2] in relative format
-    - `ai_response`: Raw response from the AI agent
-
-This schema provides a comprehensive representation of the manuscript structure, including all figures, their captions, and individual panels with their specific captions and locations within the figure image.
+    - `confidence`: Confidence score of the panel detection
+    - `ai_response`: Raw AI response for this panel
+    - `sd_files`: List of source data files specific to this panel
+  - `duplicated_panels`: Indicates if the figure contains duplicate panels ("true" or "false")
+  - `ai_response_panel_source_assign`: AI response for panel source assignment
+- `errors`: List of error messages encountered during processing
+- `ai_response`: Overall AI response for the manuscript
+- `non_associated_sd_files`: List of source data files not associated with any specific figure or panel
 
 ## Testing
 
@@ -338,7 +377,7 @@ To run the test suite with coverage:
 
 ```bash
 ./run_tests.sh
-```
+````
 
 This script builds a Docker image with the testing stage and runs the tests within a container. It uses pytest for running tests and generates a coverage report.
 
