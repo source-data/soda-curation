@@ -15,7 +15,6 @@ repository = "https://github.com/source-data/soda-curation"
 [tool.poetry.dependencies]
 python = ">=3.8.1,<3.11"
 openai = "^1.43.0"
-anthropic = "^0.34.0"
 pyyaml = "^6.0.2"
 python-docx = "^0.8.11"
 PyPDF2 = "^3.0.0"

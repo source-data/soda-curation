@@ -1,27 +1,25 @@
-ai: "openai"  # or "anthropic"
+ai: "openai" # "openai" or "anthropic"
 
 openai:
-  api_key: "your_openai_key"
-  model: "gpt-4o-2024-08-06"  
+  api_key: "your_openai_api_key"
+  model: "gpt-4o-2024-08-06" # "gpt-4-turbo-2024-04-09", "gpt-4o-2024-08-06"
+  max_tokens: 8000
   top_p: 1.0
-  temperature: 1.0
-  structure_zip_assistant_id: "asst_ID"
-  caption_extraction_assistant_id: "asst_ID"
-
-anthropic:
-  api_key: "your_anthropic_id"
-  model: "claude-3-5-sonnet-20240620"  # or "claude-instant-1", etc.
-  temperature: 0.7
-  max_tokens_to_sample: 8000
-  top_p: 1.0
-  top_k: 5
+  temperature: 0.5
+  structure_zip_assistant_id: "asst_"
+  caption_extraction_assistant_id: "asst_" # ID for caption extraction assistant
+  panel_source_data_assistant_id: "asst_" # ID for caption extraction assistant
 
 object_detection:
   model_path: "data/models/panel_detection_model_no_labels.pt"
-  
+
 logging:
-  level: "INFO"  # Can be DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO" # Can be DEBUG, INFO, WARNING, ERROR, CRITICAL
   file: "soda_curation.log"
   format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   date_format: "%Y-%m-%d %H:%M:%S"
 
+debug:
+  enabled: false
+  debug_dir: "data/output_debug"
+  process_first_figure_only: false

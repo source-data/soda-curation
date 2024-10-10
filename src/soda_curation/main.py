@@ -11,9 +11,6 @@ from typing import Any, Dict
 from .config import load_config
 from .logging_config import setup_logging
 from .pipeline.assign_panel_source.assign_panel_source import PanelSourceAssigner
-from .pipeline.extract_captions.extract_captions_anthropic import (
-    FigureCaptionExtractorClaude,
-)
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
 from .pipeline.manuscript_structure.manuscript_structure import (
     CustomJSONEncoder,
@@ -23,9 +20,6 @@ from .pipeline.manuscript_structure.manuscript_structure import (
     full_path,
 )
 from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
-from .pipeline.match_caption_panel.match_caption_panel_anthropic import (
-    MatchPanelCaptionClaude,
-)
 from .pipeline.match_caption_panel.match_caption_panel_openai import (
     MatchPanelCaptionOpenAI,
 )
@@ -144,8 +138,6 @@ def extract_figure_captions(
     try:
         if config["ai"] == "openai":
             caption_extractor = FigureCaptionExtractorGpt(config["openai"])
-        elif config["ai"] == "anthropic":
-            caption_extractor = FigureCaptionExtractorClaude(config["anthropic"])
         else:
             raise ValueError(f"Unknown AI provider: {config['ai']}")
 
@@ -229,8 +221,6 @@ def match_panel_caption(
         logger.info("Matching panel captions")
         if config["ai"] == "openai":
             panel_caption_matcher = MatchPanelCaptionOpenAI(config)
-        elif config["ai"] == "anthropic":
-            panel_caption_matcher = MatchPanelCaptionClaude(config)
         else:
             raise ValueError(f"Unknown AI provider: {config['ai']}")
 
@@ -267,7 +257,7 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     config = load_config(config_path)
     setup_logging(config)
 
-    if config["ai"] not in ["openai", "anthropic"]:
+    if config["ai"] not in ["openai"]:
         raise ValueError(f"Invalid AI provider: {config['ai']}")
 
     zip_file = Path(zip_path)

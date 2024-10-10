@@ -3,7 +3,7 @@ This module contains unit tests for the main functionality of the soda_curation 
 
 It tests various aspects of the main application, including command-line argument parsing,
 configuration loading, ZIP file processing, and integration with different AI providers
-(OpenAI and Anthropic) for caption extraction and structure analysis.
+(OpenAI) for caption extraction and structure analysis.
 """
 
 import builtins
@@ -94,17 +94,6 @@ def mock_openai_client():
         yield mock_client
 
 @pytest.fixture
-def mock_anthropic_client():
-    """
-    Fixture to mock the Anthropic client.
-    
-    This allows us to simulate interactions with the Anthropic API without making actual API calls.
-    """
-    with patch('soda_curation.pipeline.extract_captions.extract_captions_anthropic.Anthropic') as mock_client:
-        mock_client.return_value.messages.create.return_value = MagicMock()
-        yield mock_client
-
-@pytest.fixture
 def mock_os():
     """
     Fixture to mock various os module functions.
@@ -145,12 +134,11 @@ def mock_extract_captions():
     """
     Fixture to mock the caption extraction classes.
     
-    This fixture provides mock objects for both OpenAI and Anthropic
+    This fixture provides mock objects for OpenAI
     caption extraction classes.
     """
-    with patch('soda_curation.main.FigureCaptionExtractorGpt') as mock_gpt, \
-         patch('soda_curation.main.FigureCaptionExtractorClaude') as mock_claude:
-        yield mock_gpt, mock_claude
+    with patch('soda_curation.main.FigureCaptionExtractorGpt') as mock_gpt:
+        yield mock_gpt
 
 @pytest.fixture
 def mock_torch_load():
@@ -212,65 +200,6 @@ def test_main_success(mock_argparse, mock_load_config, mock_zipfile, mock_json, 
         assert result == expected_json
         mock_extractor.assert_called_once()
         mock_extractor.return_value.extract_structure.assert_called_once()
-        mock_json.assert_called_once()
-
-def test_main_anthropic(mock_argparse, mock_load_config, mock_zipfile, mock_json, mock_anthropic_client, mock_os):
-    """
-    Test the main function when using the Anthropic AI provider.
-
-    This test verifies that when the configuration specifies Anthropic as the AI provider,
-    the main function correctly uses the StructureZipFileClaude processor.
-    It checks that:
-    1. The correct AI processor (Anthropic Claude in this case) is instantiated.
-    2. The ZIP file is correctly processed.
-    3. The result is properly serialized to JSON.
-    """
-    mock_argparse.return_value = Mock(zip='test.zip', config='config.yaml', output='test_output.json')
-    mock_load_config.return_value = {
-        'ai': 'anthropic',
-        'anthropic': {
-            'api_key': 'test',
-            'model': 'claude-v1'
-        },
-        'object_detection': {
-            'model_path': 'test_model_path'
-        },
-        'openai': {
-            'api_key': 'dummy_key'
-        }
-    }
-    mock_zipfile.return_value.__enter__.return_value.namelist.return_value = ['file1', 'file2']
-
-    expected_json = '{"test": "data"}'
-    mock_json.return_value = expected_json
-
-    with patch('soda_curation.main.Path.is_file', return_value=True), \
-         patch('soda_curation.main.XMLStructureExtractor') as mock_extractor, \
-         patch('os.listdir', return_value=['file1', 'file2']), \
-         patch('builtins.open', mock_open(read_data=b"test content")), \
-         patch('gettext.translation') as mock_translation, \
-         patch('soda_curation.pipeline.object_detection.object_detection.YOLOv10') as mock_yolo, \
-         patch.object(Path, 'exists', return_value=True), \
-         patch('soda_curation.main.FigureCaptionExtractorClaude') as mock_claude:
-
-        mock_translation.return_value.gettext = lambda x: x
-
-        mock_extractor.return_value.extract_structure.return_value = ZipStructure(
-            manuscript_id="test",
-            xml="test.xml",
-            docx="test.docx",
-            pdf="test.pdf",
-            appendix=[],
-            figures=[Figure("Figure 1", ["image1.png"], [], "TO BE ADDED IN LATER STEP", [])]
-        )
-        mock_yolo.return_value = MagicMock()
-        mock_claude.return_value.extract_captions.return_value = mock_extractor.return_value.extract_structure.return_value
-
-        result = main('test.zip', 'config.yaml')
-
-        assert result == expected_json
-        mock_extractor.assert_called_once()
-        mock_claude.assert_called_once()
         mock_json.assert_called_once()
 
 # In test_main.py
