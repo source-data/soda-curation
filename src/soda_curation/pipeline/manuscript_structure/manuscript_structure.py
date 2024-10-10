@@ -31,6 +31,7 @@ class Panel:
         panel_bbox (List[float]): Bounding box coordinates of the panel [x1, y1, x2, y2].
         confidence (float): Confidence of the object detection algorithm.
         ai_response (Optional[Any]): The raw AI response for this panel.
+        sd_files (List[str]): Source data files for the panel.
     """
 
     panel_label: str
@@ -38,6 +39,7 @@ class Panel:
     panel_bbox: List[float]
     confidence: float
     ai_response: Optional[Any] = None
+    sd_files: List[str] = field(default_factory=list)  
 
 
 @dataclass
@@ -52,6 +54,7 @@ class Figure:
         figure_caption (str): The caption of the figure. Defaults to an empty string.
         panels (List[Panel]): List of Panel objects representing individual panels in the figure.
         duplicated_panels (str): Flag indicating if the figure has duplicate panels. Defaults to "false".
+        ai_response_panel_source_assign (Optional[str]): The raw AI response for panel source assignment.
     """
 
     figure_label: str
@@ -60,6 +63,7 @@ class Figure:
     figure_caption: str = ""
     panels: List[Panel] = field(default_factory=list)
     duplicated_panels: str = "false"
+    ai_response_panel_source_assign: Optional[str] = None  # New field for AI response
     # New fields for full paths
     _full_img_files: List[str] = field(default_factory=list)
     _full_sd_files: List[str] = field(default_factory=list)
@@ -79,6 +83,7 @@ class ZipStructure:
         figures (List[Figure]): List of Figure objects representing the figures in the manuscript.
         errors (List[str]): List of errors encountered during processing. Defaults to an empty list.
         ai_response (Optional[Any]): The raw AI response for figure extraction.
+        non_associated_sd_files (List[str]): List of non-associated source data files.
     """
 
     manuscript_id: str = ""
@@ -88,12 +93,12 @@ class ZipStructure:
     appendix: List[str] = field(default_factory=list)
     figures: List[Figure] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
-    ai_response: Optional[Any] = None  # New field for AI response
+    ai_response: Optional[Any] = None
+    non_associated_sd_files: List[str] = field(default_factory=list)
     # New fields for full paths
     _full_docx: str = ""
     _full_pdf: str = ""
     _full_appendix: List[str] = field(default_factory=list)
-
 
 class CustomJSONEncoder(json.JSONEncoder):
     """
