@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import re
+import time
 from typing import Dict
 
 import openai
@@ -65,7 +66,9 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             openai.OpenAIError: If there's an issue creating or updating the assistant.
         """
         assistant_id = self.config.get("caption_extraction_assistant_id")
-        self.prompt = get_extract_captions_prompt("")
+        
+        # We'll use a placeholder for expected_figure_count
+        self.prompt = get_extract_captions_prompt("", "{expected_figure_count}")
 
         if assistant_id:
             return self.client.beta.assistants.update(
@@ -77,6 +80,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 instructions=self.prompt,
                 model=self.config["model"],
             )
+
 
     def _upload_file(self, file_path: str) -> FileObject:
         """
@@ -96,7 +100,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             file_object = self.client.files.create(file=file, purpose="assistants")
         return file_object
 
-    def _prepare_query(self, file_path: str) -> Thread:
+    def _prepare_query(self, file_path: str, expected_figure_count: int) -> Thread:
         """
         Prepare the query to be sent to the OpenAI assistant.
 
@@ -104,6 +108,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
         Args:
             file_path (str): The file path to the DOCX or PDF file.
+            expected_figure_count (int): The expected number of figures in the document.
 
         Returns:
             Thread: The thread containing the user prompt and file.
@@ -113,11 +118,12 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             openai.OpenAIError: If there's an issue creating the thread or uploading the file.
         """
         file_on_client = self._upload_file(file_path)
+        prompt = get_extract_captions_prompt("", expected_figure_count)  # Pass empty string as file_content will be uploaded
         thread = self.client.beta.threads.create(
             messages=[
                 {
                     "role": "user",
-                    "content": self.prompt,
+                    "content": prompt,
                     "attachments": [
                         {
                             "file_id": file_on_client.id,
@@ -129,9 +135,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         )
         return thread, file_on_client
 
-    def extract_captions(
-        self, docx_path: str, zip_structure: ZipStructure
-    ) -> ZipStructure:
+    def extract_captions(self, docx_path: str, zip_structure: ZipStructure, expected_figure_count: int) -> ZipStructure:
         """
         Extract figure captions from the given DOCX file using OpenAI's GPT model.
 
@@ -141,6 +145,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         Args:
             docx_path (str): Path to the DOCX file.
             zip_structure (ZipStructure): The current ZIP structure.
+            expected_figure_count (int): The expected number of figures in the document.
 
         Returns:
             ZipStructure: Updated ZIP structure with extracted captions.
@@ -151,28 +156,47 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             if not os.path.exists(docx_path):
                 raise FileNotFoundError(f"File not found: {docx_path}")
 
-            thread, file_object = self._prepare_query(docx_path)
+            thread, file_object = self._prepare_query(docx_path, expected_figure_count)
 
-            run = self.client.beta.threads.runs.create_and_poll(
+            run = self.client.beta.threads.runs.create(
                 thread_id=thread.id,
                 assistant_id=self.assistant.id,
             )
 
-            if run.status == "completed":
-                messages = self.client.beta.threads.messages.list(thread_id=thread.id)
-                result = messages.data[0].content[0].text.value
-                logger.debug(f"Answer from GPT: {result}")
+            while run.status != "completed":
+                run = self.client.beta.threads.runs.retrieve(
+                    thread_id=thread.id,
+                    run_id=run.id
+                )
+                time.sleep(1)
 
+            messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+            
+            # Debug logging
+            logger.debug(f"Messages data type: {type(messages)}")
+            logger.debug(f"Messages content: {messages}")
+
+            if messages.data:
+                # Ensure we're getting a string from the message content
+                result = messages.data[0].content[0].text if isinstance(messages.data[0].content[0].text, str) else str(messages.data[0].content[0].text)
+            else:
+                logger.warning("No messages found in the thread")
+                result = ""
+
+            logger.debug(f"Result data type: {type(result)}")
+            logger.debug(f"Result content: {result[:500]}...")  # Log first 500 characters
+
+            if result:
                 captions = self._parse_response(result)
 
                 if not captions:
                     logger.warning("Failed to extract captions from GPT's response")
-
-                updated_structure = self._update_zip_structure(zip_structure, captions, result)
-                logger.info(f"Updated ZIP structure: {updated_structure}")
             else:
-                logger.error(f"Assistant run failed with status: {run.status}")
-                return self._update_zip_structure(zip_structure, {}, run.status)
+                logger.warning("No result to parse")
+                captions = {}
+
+            updated_structure = self._update_zip_structure(zip_structure, captions, result)
+            logger.info(f"Updated ZIP structure: {updated_structure}")
 
             self.client.files.delete(file_object.id)
 
@@ -181,10 +205,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         except Exception as e:
             logger.exception(f"Error in caption extraction: {str(e)}")
             return self._update_zip_structure(zip_structure, {}, str(e))
-
-        except FileNotFoundError as e:
-            logger.error(f"File not found: {str(e)}")
-            return zip_structure
 
     def _parse_response(self, response_text: str) -> Dict[str, str]:
         """
@@ -199,6 +219,10 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         Returns:
             Dict[str, str]: A dictionary of figure labels and their captions.
         """
+        if not isinstance(response_text, str):
+            logger.warning(f"Unexpected response type: {type(response_text)}")
+            response_text = str(response_text)
+
         json_match = re.search(r"```json\n(.*?)```", response_text, re.DOTALL)
         if json_match:
             json_str = json_match.group(1)
@@ -257,8 +281,9 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         """
         for figure in zip_structure.figures:
             if figure.figure_label in captions:
-                figure.figure_caption = captions[figure.figure_label]
+                figure.figure_caption = captions[figure.figure_label].encode("utf-8").decode("utf-8", "ignore")
             else:
                 figure.figure_caption = "Figure caption not found."
         zip_structure.ai_response = ai_response  # Set AI response at ZipStructure level
         return zip_structure
+

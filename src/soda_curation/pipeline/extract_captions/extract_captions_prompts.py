@@ -35,16 +35,20 @@ EXTRACT_CAPTIONS_PROMPT = Template(
 6. If there are no figures or captions in the text, return an empty JSON object.
 
 7. Note that the figures will be always monotically increasing continuous numbers. If you have a figure 1 and figure 7, 
-then, you should have figures 2, 3, 4, 5, 6 in between. Please make sure of this as it is of extreme importance.
+then, you should have figures 2, 3, 4, 5, 6 in between. Please make sure of this as it is of extreme importance. Similarly, if you have 
+figures 5, 7, 8, then you MUST have figures 1, 2, 3, 4, and 6 in between.
 
 8. Your response should ONLY contain the JSON object, without any additional explanations or text.
+
+9. IMPORTANT: You MUST extract exactly $expected_figure_count figure captions. If you find fewer or more captions, double-check your work and ensure you've captured all figures.
+
+10. DO NOT extract captions for figures labeled with "EV" (e.g., "Figure EV1", "Fig. EV2"). These are Extended View figures and should be ignored for this task.
 
 Example of expected output format:
 
 {
   "Figure 1": "Title of Figure 1. A) Description of panel A. B) Description of panel B. Statistical analysis: p < 0.05.",
-  "Figure 2": "Title of Figure 2. Detailed description of the figure, including multiple paragraphs if necessary.",
-  "Figure EV1": "Title of Extended View Figure 1. Description of the extended view figure."
+  "Figure 2": "Title of Figure 2. Detailed description of the figure, including multiple paragraphs if necessary."
 }
 
 Please process the given text and return ONLY the JSON object with the extracted figure captions:
@@ -54,7 +58,7 @@ $file_content
 )
 
 
-def get_extract_captions_prompt(file_content: str) -> str:
+def get_extract_captions_prompt(file_content: str, expected_figure_count: int) -> str:
     """
     Generate a prompt for extracting figure captions from a scientific document.
 
@@ -65,8 +69,9 @@ def get_extract_captions_prompt(file_content: str) -> str:
     Args:
         file_content (str): The content of the scientific document from which
                             captions should be extracted.
+        expected_figure_count (int): The expected number of figure captions to extract.
 
     Returns:
         str: A formatted prompt string for AI models to extract figure captions.
     """
-    return EXTRACT_CAPTIONS_PROMPT.substitute(file_content=file_content)
+    return EXTRACT_CAPTIONS_PROMPT.substitute(file_content=file_content, expected_figure_count=expected_figure_count)

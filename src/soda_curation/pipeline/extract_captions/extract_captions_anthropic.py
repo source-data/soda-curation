@@ -43,9 +43,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         self.config = config
         self.client = Anthropic(api_key=self.config["api_key"])
 
-    def extract_captions(
-        self, docx_path: str, zip_structure: ZipStructure
-    ) -> ZipStructure:
+    def extract_captions(self, docx_path: str, zip_structure: ZipStructure, expected_figure_count: int) -> ZipStructure:
         """
         Extract figure captions from the given DOCX file using Anthropic's Claude model.
 
@@ -55,6 +53,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         Args:
             docx_path (str): Path to the DOCX file.
             zip_structure (ZipStructure): The current ZIP structure.
+            expected_figure_count (int): The expected number of figures in the document.
 
         Returns:
             ZipStructure: Updated ZIP structure with extracted captions.
@@ -65,11 +64,9 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             file_content = self._extract_docx_content(docx_path)
             if not file_content:
                 logger.warning(f"No content extracted from {docx_path}")
-                return self._update_zip_structure(
-                    zip_structure, {}, "No content extracted"
-                )
+                return self._update_zip_structure(zip_structure, {}, "No content extracted")
 
-            prompt = get_extract_captions_prompt(file_content)
+            prompt = get_extract_captions_prompt(file_content, expected_figure_count)
 
             logger.debug("Sending request to Anthropic API")
             response = self.client.messages.create(
@@ -189,3 +186,4 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
                 figure.figure_caption = "Figure caption not found."
         zip_structure.ai_response = ai_response  # Set AI response at ZipStructure level
         return zip_structure
+
