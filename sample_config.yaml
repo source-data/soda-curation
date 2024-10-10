@@ -1,4 +1,4 @@
-ai: "openai" # "openai" or "anthropic"
+ai: "openai" # "openai"
 
 openai:
   api_key: "your_openai_api_key"

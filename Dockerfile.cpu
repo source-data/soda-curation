@@ -67,7 +67,6 @@ RUN mkdir /app/input
 # Verify key package installations
 RUN poetry run python -c "import yaml; print(yaml.__file__)"
 RUN poetry run python -c "import openai; print(openai.__file__)"
-RUN poetry run python -c "import anthropic; print(anthropic.__file__)"
 RUN poetry run python -c "import cv2; print(cv2.__file__)"
 RUN poetry run python -c "from ultralytics import YOLO; print(YOLO)"
 RUN poetry run python -c "import fitz; print(fitz.__file__)"
