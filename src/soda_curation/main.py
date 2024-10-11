@@ -30,6 +30,34 @@ from .pipeline.object_detection.object_detection import (
 
 logger = logging.getLogger(__name__)
 
+def update_sd_files(zip_structure: ZipStructure) -> ZipStructure:
+    """
+    Update the sd_files field in the ZipStructure object to exclude redundant files.
+    
+    Args:
+        zip_structure (ZipStructure): The ZipStructure object to update.
+        
+    Returns:
+        ZipStructure: The updated ZipStructure object.
+    """
+    for figure in zip_structure.figures:
+        # Update figure level sd_files
+        if figure._full_sd_files:
+            # Extract the ZIP file name and create the correct path
+            zip_file = os.path.basename(figure._full_sd_files[0])
+            figure.sd_files = [f"{zip_structure.manuscript_id}/suppl_data/{zip_file}"]
+        else:
+            figure.sd_files = []
+        
+        # Filter out redundant files from panel level sd_files
+        for panel in figure.panels:
+            panel.sd_files = [
+                file for file in panel.sd_files
+                if "__MACOSX" not in file and ".DS_Store" not in file
+            ]
+    
+    return zip_structure
+
 def get_file_tree(directory: str) -> Dict[str, Any]:
     """
     Recursively generate a file tree from a directory.
@@ -124,38 +152,40 @@ def get_manuscript_structure(zip_path: str, extract_dir: str) -> ZipStructure:
 def extract_figure_captions(
     zip_structure: ZipStructure, config: Dict[str, Any], expected_figure_count: int
 ) -> ZipStructure:
-    """
-    Extract figure captions from the manuscript.
+    def extract_from_file(file_path: str) -> ZipStructure:
+        if not file_path or not os.path.exists(file_path):
+            logger.warning(f"File not found: {file_path}")
+            return zip_structure
+        
+        try:
+            if config["ai"] == "openai":
+                caption_extractor = FigureCaptionExtractorGpt(config["openai"])
+            else:
+                raise ValueError(f"Unknown AI provider: {config['ai']}")
 
-    Args:
-        zip_structure (ZipStructure): The current structure of the manuscript.
-        config (Dict[str, Any]): Configuration dictionary for the extraction process.
-        expected_figure_count (int): The expected number of figures in the manuscript.
+            result = caption_extractor.extract_captions(file_path, zip_structure, expected_figure_count)
+            return result
+        except Exception as e:
+            logger.error(f"Error in caption extraction from {file_path}: {str(e)}")
+            return zip_structure
 
-    Returns:
-        ZipStructure: Updated structure with extracted figure captions.
-    """
-    try:
-        if config["ai"] == "openai":
-            caption_extractor = FigureCaptionExtractorGpt(config["openai"])
-        else:
-            raise ValueError(f"Unknown AI provider: {config['ai']}")
-
-        if zip_structure._full_docx and os.path.exists(zip_structure._full_docx):
-            logger.info(f"Extracting captions from DOCX: {zip_structure._full_docx}")
-            result = caption_extractor.extract_captions(zip_structure._full_docx, zip_structure, expected_figure_count)
-        elif zip_structure._full_pdf and os.path.exists(zip_structure._full_pdf):
-            logger.info(f"Extracting captions from PDF: {zip_structure._full_pdf}")
-            result = caption_extractor.extract_captions(zip_structure._full_pdf, zip_structure, expected_figure_count)
-        else:
-            logger.warning("No DOCX or PDF file found for caption extraction")
-            raise FileNotFoundError("No DOCX or PDF file found for caption extraction")
-
-        return result
-    except Exception as e:
-        logger.error(f"Failed to extract figure captions: {str(e)}")
-        zip_structure.errors.append(f"Figure caption extraction error: {str(e)}")
-        return zip_structure
+    # Try DOCX first
+    result = extract_from_file(zip_structure._full_docx)
+    
+    # Check if all captions were found
+    missing_captions = any(fig.figure_caption == "Figure caption not found." for fig in result.figures)
+    
+    # If captions are missing and PDF exists, try PDF
+    if missing_captions and zip_structure._full_pdf:
+        logger.info("Some captions missing from DOCX, attempting PDF extraction")
+        pdf_result = extract_from_file(zip_structure._full_pdf)
+        
+        # Update captions from PDF result if they were missing in DOCX result
+        for i, figure in enumerate(result.figures):
+            if figure.figure_caption == "Figure caption not found.":
+                result.figures[i].figure_caption = pdf_result.figures[i].figure_caption
+    
+    return result
 
 def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
     """
@@ -249,6 +279,64 @@ def match_panel_caption(
         zip_structure.errors.append(f"Panel caption matching error: {str(e)}")
         return zip_structure
 
+def process_zip_structure(zip_structure):
+    """
+    Process the ZipStructure object before serializing to JSON.
+    
+    Args:
+        zip_structure (ZipStructure): The ZipStructure object to process.
+        
+    Returns:
+        ZipStructure: The processed ZipStructure object.
+    """
+    manuscript_id = zip_structure.manuscript_id
+
+    # Update appendix paths
+    zip_structure.appendix = [f"{manuscript_id}/{path}" for path in zip_structure.appendix]
+
+    non_associated_sd_files = []
+
+    for figure in zip_structure.figures:
+        # Update sd_files to only include the ZIP file
+        if figure._full_sd_files:
+            figure.sd_files = [os.path.relpath(figure._full_sd_files[0], '/app/input/')]
+        else:
+            figure.sd_files = []
+
+        # Update img_files to include the manuscript ID in the path
+        figure.img_files = [os.path.relpath(img_file, '/app/input/') for img_file in figure._full_img_files]
+
+        # Process panels
+        for panel in figure.panels:
+            if figure._full_sd_files:
+                zip_filename = os.path.basename(figure._full_sd_files[0])
+                panel.sd_files = [f"{zip_filename}:Figure {figure.figure_label.split()[-1]}/{file}" for file in panel.sd_files]
+            else:
+                non_associated_sd_files.extend(panel.sd_files)
+                panel.sd_files = []
+
+    # Process non_associated_sd_files
+    for file in zip_structure.non_associated_sd_files:
+        if file.endswith(('.xlsx', '.pdf')):
+            non_associated_sd_files.append(f"{manuscript_id}/suppl_data/{file}")
+        else:
+            # Assume it's from a ZIP file
+            figure_number = next((fig.figure_label.split()[-1] for fig in zip_structure.figures if any(file in sd_file for sd_file in panel.sd_files for panel in fig.panels)), '')
+            if figure_number:
+                non_associated_sd_files.append(f"Figure {figure_number}.zip:Figure {figure_number}/{file}")
+            else:
+                non_associated_sd_files.append(file)
+
+    # Add non-associated files from panels
+    for figure in zip_structure.figures:
+        for panel in figure.panels:
+            for sd_file in panel.sd_files:
+                if isinstance(sd_file, str) and not sd_file.startswith(f"Figure {figure.figure_label.split()[-1]}.zip:Figure {figure.figure_label.split()[-1]}/"):
+                    non_associated_sd_files.append(sd_file)
+
+    zip_structure.non_associated_sd_files = list(set(non_associated_sd_files))  # Remove duplicates
+
+    return zip_structure
 
 def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     if not zip_path or not config_path:
@@ -281,18 +369,23 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     expected_figure_count = len([fig for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)])
     logger.info(f"Expected figure count: {expected_figure_count}")
 
-    if zip_structure.docx:
-        logger.info("Attempting DOCX caption extraction")
-        zip_structure = extract_figure_captions(zip_structure, config, expected_figure_count)
-    elif zip_structure.pdf:
-        logger.info("No DOCX found. Attempting PDF caption extraction")
-        zip_structure = extract_figure_captions(zip_structure, config, expected_figure_count)
-    else:
-        logger.error("Neither DOCX nor PDF file found. Cannot extract captions.")
-        zip_structure.errors.append("No DOCX or PDF file found for caption extraction")
+    logger.info("Starting caption extraction process")
+    zip_structure = extract_figure_captions(zip_structure, config, expected_figure_count)
+    logger.info("Caption extraction process completed")
+
+    logger.info("Updating source data files")
+    zip_structure = update_sd_files(zip_structure)
+    logger.info("Source data files updated")
 
     logger.info(f"After extraction: docx={zip_structure.docx}, pdf={zip_structure.pdf}")
     logger.info(f"Final captions: {[figure.figure_caption for figure in zip_structure.figures]}")
+
+    # Check for any remaining missing captions
+    missing_captions = [fig.figure_label for fig in zip_structure.figures if fig.figure_caption == "Figure caption not found."]
+    if missing_captions:
+        logger.warning(f"Captions still missing for figures: {', '.join(missing_captions)}")
+    else:
+        logger.info("All figure captions successfully extracted")
 
     # Update config['extract_dir'] to the full path including the manuscript ID
     config["extract_dir"] = str(extract_dir)
@@ -395,6 +488,8 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
 
     # Remove duplicate entries from non_associated_sd_files
     zip_structure.non_associated_sd_files = list(dict.fromkeys(zip_structure.non_associated_sd_files))
+    # Use this function before serializing the ZipStructure to JSON
+    zip_structure = process_zip_structure(zip_structure)
 
     output_json = json.dumps(zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2)
 
