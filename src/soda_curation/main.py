@@ -34,12 +34,6 @@ logger = logging.getLogger(__name__)
 def get_file_tree(directory: str) -> Dict[str, Any]:
     """
     Recursively generate a file tree from a directory.
-
-    Args:
-        directory (str): The directory to generate the file tree from.
-
-    Returns:
-        Dict[str, Any]: A nested dictionary representing the file tree.
     """
     file_tree = {}
     for root, dirs, files in os.walk(directory):
@@ -62,14 +56,6 @@ def get_file_tree(directory: str) -> Dict[str, Any]:
 def extract_zip_contents(zip_path: str, extract_dir: Path) -> None:
     """
     Extract the contents of a ZIP file to a directory.
-
-    Args:
-        zip_path (str): Path to the ZIP file.
-        extract_dir (Path): Directory where the ZIP contents will be extracted.
-
-    Raises:
-        zipfile.BadZipFile: If the ZIP file is invalid.
-        Exception: If an error occurs during extraction.
     """
     try:
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
@@ -86,13 +72,6 @@ def extract_zip_contents(zip_path: str, extract_dir: Path) -> None:
 def get_manuscript_structure(zip_path: str, extract_dir: str) -> ZipStructure:
     """
     Extract the manuscript structure from a ZIP file.
-
-    Args:
-        zip_path (str): Path to the ZIP file containing the manuscript data.
-        extract_dir (str): Directory where ZIP contents are extracted.
-
-    Returns:
-        ZipStructure: A structured representation of the manuscript.
     """
     xml_extractor = XMLStructureExtractor(zip_path, extract_dir)
     structure = xml_extractor.extract_structure()
@@ -106,13 +85,6 @@ def get_manuscript_structure(zip_path: str, extract_dir: str) -> ZipStructure:
 def update_file_paths(zip_structure: ZipStructure, extract_dir: str) -> ZipStructure:
     """
     Update the file paths in the ZipStructure object with full paths and adjust relative paths.
-
-    Args:
-        zip_structure (ZipStructure): The ZipStructure object to update.
-        extract_dir (str): The directory where the ZIP contents are extracted.
-
-    Returns:
-        ZipStructure: The updated ZipStructure object.
     """
     # Update DOCX and PDF paths
     if zip_structure.docx:
@@ -157,14 +129,6 @@ def extract_figure_captions(
 ) -> ZipStructure:
     """
     Extract figure captions from the manuscript using an AI model.
-
-    Args:
-        zip_structure (ZipStructure): The structured representation of the manuscript.
-        config (Dict[str, Any]): The configuration settings for the AI model.
-        expected_figure_count (int): The expected number of figures in the manuscript.
-
-    Returns:
-        ZipStructure: The updated ZipStructure object with extracted figure captions.
     """
     caption_extractor = FigureCaptionExtractorGpt(config["openai"])
     result = caption_extractor.extract_captions(
@@ -176,13 +140,6 @@ def extract_figure_captions(
 def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
     """
     Extract panels from the figures using an object detection model.
-
-    Args:
-        zip_structure (ZipStructure): The structured representation of the manuscript.
-        config (Dict[str, Any]): The configuration settings for the object detection model.
-
-    Returns:
-        ZipStructure: The updated ZipStructure object with extracted panels.
     """
     object_detector = create_object_detection(config)
     for figure in zip_structure.figures:
@@ -215,13 +172,6 @@ def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipSt
 def match_panel_caption(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
     """
     Match panel captions to figure captions using an AI model.
-
-    Args:
-        zip_structure (ZipStructure): The structured representation of the manuscript.
-        config (Dict[str, Any]): The configuration settings for the AI model.
-
-    Returns:
-        ZipStructure: The updated ZipStructure object with matched panel captions.
     """
     panel_caption_matcher = MatchPanelCaptionOpenAI(config)
     result = panel_caption_matcher.match_captions(zip_structure)
@@ -231,14 +181,6 @@ def match_panel_caption(zip_structure: ZipStructure, config: Dict[str, Any]) -> 
 def assign_panel_source(zip_structure: ZipStructure, config: Dict[str, Any], extract_dir: str) -> ZipStructure:
     """
     Assign source data files to panels based on the panel captions.
-
-    Args:
-        zip_structure (ZipStructure): The structured representation of the manuscript.
-        config (Dict[str, Any]): The configuration settings for the source assignment model.
-        extract_dir (str): The directory where the ZIP contents are extracted.
-
-    Returns:
-        ZipStructure: The updated ZipStructure object with assigned panel source data files.
     """
     file_tree = get_file_tree(extract_dir)
     logger.info(f"File tree structure: {json.dumps(file_tree, indent=2)}")
@@ -249,37 +191,55 @@ def assign_panel_source(zip_structure: ZipStructure, config: Dict[str, Any], ext
     if not hasattr(zip_structure, 'non_associated_sd_files'):
         zip_structure.non_associated_sd_files = []
 
-    # Update panel.sd_files paths and collect unassigned files
     for figure in zip_structure.figures:
-        # Collect unassigned files from the figure
-        unassigned_files = getattr(figure, 'unassigned_sd_files', [])
-        zip_structure.non_associated_sd_files.extend(unassigned_files)
-
+        assigned_files = set()
         if figure._full_sd_files:
             zip_filename = os.path.basename(figure._full_sd_files[0])
             figure_number = figure.figure_label.split()[-1]
+
+            # Update panel.sd_files paths and collect assigned files
             for panel in figure.panels:
+                # Update panel.sd_files paths
                 panel.sd_files = [
                     f"{zip_filename}:Figure {figure_number}/{os.path.basename(file)}"
                     for file in panel.sd_files
                     if isinstance(file, str) and not ("__MACOSX" in file or file.endswith('.DS_Store'))
                 ]
+                assigned_files.update(panel.sd_files)
         else:
             for panel in figure.panels:
                 panel.sd_files = []
 
-    return zip_structure
+        # Collect unassigned files from the figure's source data ZIP files
+        if figure._full_sd_files:
+            for sd_file in figure._full_sd_files:
+                zip_filename = os.path.basename(sd_file)
+                figure_number = figure.figure_label.split()[-1]
+                with zipfile.ZipFile(sd_file, 'r') as zip_ref:
+                    all_sd_files_in_zip = set(zip_ref.namelist())
 
+                # Remove unwanted files
+                all_sd_files_in_zip = set(
+                    file for file in all_sd_files_in_zip if not ("__MACOSX" in file or file.endswith('.DS_Store'))
+                )
+
+                # Adjust paths to match the format in assigned_files
+                all_sd_files = set(
+                    f"{zip_filename}:Figure {figure_number}/{os.path.basename(file)}"
+                    for file in all_sd_files_in_zip
+                )
+
+                # Determine unassigned files
+                unassigned_files = all_sd_files - assigned_files
+
+                # Add unassigned files to non_associated_sd_files
+                zip_structure.non_associated_sd_files.extend(unassigned_files)
+
+    return zip_structure
 
 def process_ev_materials(zip_structure: ZipStructure) -> ZipStructure:
     """
     Process EV materials in the manuscript and assign them to the appropriate figures.
-
-    Args:
-        zip_structure (ZipStructure): The structured representation of the manuscript.
-
-    Returns:
-        ZipStructure: The updated ZipStructure object with EV materials assigned to figures.
     """
     ev_materials = []
     for figure in zip_structure.figures:
@@ -311,12 +271,6 @@ def process_ev_materials(zip_structure: ZipStructure) -> ZipStructure:
 def process_zip_structure(zip_structure):
     """
     Final processing of the ZipStructure object before serialization.
-
-    Args:
-        zip_structure (ZipStructure): The ZipStructure object to process.
-
-    Returns:
-        ZipStructure: The processed ZipStructure object.
     """
     # All necessary processing has been moved to earlier steps
     # Simply return the zip_structure
