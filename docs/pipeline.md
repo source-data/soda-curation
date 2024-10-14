@@ -7,7 +7,7 @@ This pipeline processes scientific manuscripts, extracting and organizing inform
 ## Workflow
 
 ```mermaid
-graph TD
+flowchart TD
     %% Main Process Flow
     A[Input ZIP File] --> B[1. Extract ZIP Contents]
     B --> C[2. Parse XML Structure]
@@ -20,62 +20,44 @@ graph TD
     I --> J[Output JSON]
 
     %% Subprocesses
-    B --> B1[Unzip files] & B2[Create structured directory]
-    C --> C1[Identify figures & appendices] & C2[Build manuscript structure]
-    D --> D1[Use AI to analyze text] & D2[Extract captions]
-    E --> E1[Use YOLOv10 for detection] & E2[Locate individual panels]
-    F --> F1[Match captions to panels] & F2[AI-driven analysis]
-    G --> G1[Analyze file structures] & G2[Associate data with panels]
-    H --> H1[Identify EV materials] & H2[Assign to figures/appendix]
-    I --> I1[Normalize file paths] & I2[Remove duplicates]
+    B --> B1[Unzip files]
+    B --> B2[Create structured directory]
+    C --> C1[Identify figures & appendices]
+    C --> C2[Build manuscript structure]
+    D --> D1[Use AI to analyze text]
+    D --> D2[Extract captions]
+    E --> E1[Use YOLOv10 for detection]
+    E --> E2[Locate individual panels]
+    F --> F1[Match captions to panels]
+    F --> F2[AI-driven analysis]
+    G --> G1[Analyze file structures]
+    G --> G2[Associate data with panels]
+    H --> H1[Identify EV materials]
+    H --> H2[Assign to figures/appendix]
+    I --> I1[Normalize file paths]
+    I --> I2[Remove duplicates]
 
     %% Error Handling Paths
-    B -.-> BE1[Invalid ZIP file]
-    B -.-> BE2[Extraction failure]
+    B -.- BE1[Invalid ZIP file]
+    B -.- BE2[Extraction failure]
+    C -.- CE1[Missing XML file]
+    C -.- CE2[Malformed XML]
+    D -.- DE1[No caption found]
+    D -.- DE2[AI model error]
+    E -.- EE1[Panel detection failure]
+    F -.- FE1[Matching failure]
+    G -.- GE1[Unassigned files]
+    H -.- HE1[EV processing error]
+    I -.- IE1[Categorize unassigned files]
 
-    C -.-> CE1[Missing XML file]
-    C -.-> CE2[Malformed XML]
+    %% Style Definitions
+    classDef process fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold;
+    classDef subProcess fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold;
+    classDef exception fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
 
-    D -.-> DE1[No caption found]
-    D -.-> DE2[AI model error]
-
-    E -.-> EE1[Panel detection failure]
-
-    F -.-> FE1[Matching failure]
-
-    G -.-> GE1[Unassigned files]
-
-    H -.-> HE1[EV processing error]
-
-    I -.-> IE1[Categorize unassigned files]
-
-    %% Simple Style Definitions
-    classDef process fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px;
-    classDef subProcess fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px;
-    classDef exception fill:#E86236,stroke:#FFFFFF,stroke-width:1px;
     class A,B,C,D,E,F,G,H,I,J process;
     class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2 subProcess;
     class BE1,BE2,CE1,CE2,DE1,DE2,EE1,FE1,GE1,HE1,IE1 exception;
-
-    classDef process fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px;
-    classDef subProcess fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px;
-    classDef exception fill:#E86236,stroke:#FFFFFF,stroke-width:1px;
-    class A,B,C,D,E,F,G,H,I,J process;
-    class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2 subProcess;
-    class BE1,BE2,CE1,CE2,DE1,DE2,EE1,FE1,GE1,HE1,IE1 exception;
-
-    %% Set text color and make it bold
-    style A fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-    style B fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-    style C fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-    style D fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-    style E fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-    style F fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-    style G fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-    style H fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-    style I fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-    style J fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
-
 ```
 
 Detailed Steps
