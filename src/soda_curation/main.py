@@ -164,6 +164,18 @@ def update_sd_files(zip_structure: ZipStructure) -> ZipStructure:
             figure.sd_files = []
     return zip_structure
 
+def is_excel_file(filename):
+    """
+    Check if a file is an Excel file based on the extension.
+    
+    Args:   
+        filename (str): The name of the file.
+        
+    Returns:
+        bool: True if the file is an Excel file, False otherwise.
+    """
+    return filename.lower().endswith('.xlsx')
+
 def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
     """
     Extract panels from the figures using an object detection model.
@@ -339,24 +351,35 @@ def process_zip_structure(zip_structure):
             processed_appendix.append(f"{manuscript_id}/{item}")
     zip_structure.appendix = processed_appendix
 
+    # Create a set of Excel files to exclude from non_associated_sd_files
+    excel_files = set(file for file in zip_structure.appendix if file.endswith('.xlsx'))
+
     non_associated_sd_files = set()
 
+    # Create a set of all figure-level source data files
+    figure_sd_files = set()
+
     for figure in zip_structure.figures:
-        # Update sd_files to only include the ZIP file
+        # Update sd_files to only include ZIP files
         if figure._full_sd_files:
-            figure.sd_files = [os.path.relpath(figure._full_sd_files[0], '/app/input/')]
+            figure.sd_files = [os.path.relpath(file, '/app/input/') for file in figure._full_sd_files if file.endswith('.zip')]
+            figure_sd_files.update(figure.sd_files)
         else:
             figure.sd_files = []
+
+        # Remove Excel files from _full_sd_files
+        figure._full_sd_files = [file for file in figure._full_sd_files if not file.endswith('.xlsx')]
 
         # Update img_files to include the manuscript ID in the path
         figure.img_files = [os.path.relpath(img_file, '/app/input/') for img_file in figure._full_img_files]
 
         # Process panels
         for panel in figure.panels:
-            if figure._full_sd_files:
-                zip_filename = os.path.basename(figure._full_sd_files[0])
+            if figure.sd_files:
+                zip_filename = figure.sd_files[0]
+                panel_label = panel.panel_label
                 panel.sd_files = [
-                    f"{zip_filename}:Figure {figure.figure_label.split()[-1]}/{file.split('/', 1)[-1]}"
+                    f"{zip_filename}:{os.path.dirname(file)}/{panel_label}/{os.path.basename(file)}"
                     for file in panel.sd_files
                     if isinstance(file, str) and not ("__MACOSX" in file or file.endswith('.DS_Store'))
                 ]
@@ -367,24 +390,12 @@ def process_zip_structure(zip_structure):
     # Process non_associated_sd_files
     for file in zip_structure.non_associated_sd_files:
         if isinstance(file, str):
-            if file.endswith(('.xlsx', '.pdf')):
-                non_associated_sd_files.add(f"{manuscript_id}/suppl_data/{os.path.basename(file)}")
-            elif ':' in file:
-                # It's already in a ZIP file format, just clean it up
-                zip_name, internal_path = file.split(':', 1)
-                non_associated_sd_files.add(f"{os.path.basename(zip_name)}:{internal_path.split('/', 1)[-1]}")
-            else:
-                # Assume it's from a ZIP file
-                figure_number = next(
-                    (fig.figure_label.split()[-1] for fig in zip_structure.figures 
-                     for panel in fig.panels
-                     if any(file in sd_file for sd_file in panel.sd_files if isinstance(sd_file, str))),
-                    ''
-                )
-                if figure_number:
-                    non_associated_sd_files.add(f"Figure {figure_number}.zip:Figure {figure_number}/{file}")
-                else:
-                    non_associated_sd_files.add(file)
+            if ':' in file and file.split(':')[0].endswith('.zip'):
+                # It's a file within a ZIP, add it
+                non_associated_sd_files.add(file)
+            elif not any(excel_file in file for excel_file in excel_files):
+                # It's not an Excel file or its component, add it
+                non_associated_sd_files.add(file)
 
     # Remove duplicates, files with __MACOSX or .DS_Store, and files that are properly associated with panels
     all_panel_sd_files = set()
@@ -393,13 +404,19 @@ def process_zip_structure(zip_structure):
             all_panel_sd_files.update(sd_file for sd_file in panel.sd_files if isinstance(sd_file, str))
 
     zip_structure.non_associated_sd_files = list(
-        non_associated_sd_files - all_panel_sd_files
+        non_associated_sd_files - all_panel_sd_files - figure_sd_files
     )
 
     # Remove any files with __MACOSX or .DS_Store
     zip_structure.non_associated_sd_files = [
         file for file in zip_structure.non_associated_sd_files
         if "__MACOSX" not in file and not file.endswith('.DS_Store')
+    ]
+
+    # Post-processing: Remove any entries that aren't files within ZIP files
+    zip_structure.non_associated_sd_files = [
+        file for file in zip_structure.non_associated_sd_files
+        if ':' in file and file.split(':')[0].endswith('.zip') and file.split(':')[1] != '' and not file.split(':')[1].endswith('/')
     ]
 
     return zip_structure
