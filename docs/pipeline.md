@@ -6,7 +6,7 @@ This pipeline processes scientific manuscripts, extracting and organizing inform
 
 ## Workflow
 
-````mermaid
+```mermaid
 graph TD
     A[Input ZIP File] --> B[1. Extract ZIP Contents]
     B --> C[2. Parse XML Structure]
@@ -150,4 +150,3 @@ Comprehensive Processing: Handles various components including figures, panels, 
 Error Resilience: Designed to continue processing even when encountering partial failures, ensuring maximum data extraction.
 
 This pipeline demonstrates a sophisticated approach to scientific manuscript processing, enhancing the accessibility and usability of complex research data.
-````
