@@ -2,7 +2,7 @@
 
 ## Overview
 
-This pipeline processes scientific manuscripts, extracting and organizing information about figures, panels, captions, and associated data files. It employs AI-driven analysis and structured data handling to produce a comprehensive representation of the manuscript's content.
+This pipeline processes scientific manuscripts, extracting and organizing information about figures, panels, captions, and associated data files. It employs AI-driven analysis and structured data handling to produce a comprehensive JSON representation of the manuscript's content.
 
 ## Workflow
 
@@ -72,16 +72,6 @@ flowchart TD
     class BE1,BE2,CE1,CE2,DE1,DE2,EE1,FE1,GE1,HE1,IE1 exception;
     class BE1D,BE2D,CE1D,CE2D,DE1D,DE2D,EE1D,FE1D,GE1D,HE1D,IE1D exceptionDetail;
 ```
-
-Certainly! Here's a detailed explanation of the workflow, including important information for developers who might use this tool in downstream tasks:
-
-# Scientific Manuscript Processing Pipeline
-
-## Overview
-
-This pipeline processes scientific manuscripts, extracting and organizing information about figures, panels, captions, and associated data files. It employs AI-driven analysis and structured data handling to produce a comprehensive JSON representation of the manuscript's content.
-
-## Detailed Workflow
 
 ### 1. Extract ZIP Contents
 
