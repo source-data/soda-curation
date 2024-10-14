@@ -9,14 +9,14 @@ This pipeline processes scientific manuscripts, extracting and organizing inform
 ```mermaid
 flowchart TD
     %% Main Process Flow
-    A[Input ZIP File] --> B[1. Extract ZIP Contents]
-    B --> C[2. Parse XML Structure]
-    C --> D[3. Extract Figure Captions]
-    D --> E[4. Detect Panels in Figures]
-    E --> F[5. Match Panel Captions]
-    F --> G[6. Assign Panel Source Data]
-    G --> H[7. Process EV Materials]
-    H --> I[8. Final Processing and Cleanup]
+    A[Input ZIP File] --> B[Extract ZIP Contents]
+    B --> C[Parse XML Structure]
+    C --> D[Extract Figure Captions]
+    D --> E[Detect Panels in Figures]
+    E --> F[Match Panel Captions]
+    F --> G[Assign Panel Source Data]
+    G --> H[Process EV Materials]
+    H --> I[Final Processing and Cleanup]
     I --> J[Output JSON]
 
     %% Subprocesses
@@ -73,108 +73,137 @@ flowchart TD
     class BE1D,BE2D,CE1D,CE2D,DE1D,DE2D,EE1D,FE1D,GE1D,HE1D,IE1D exceptionDetail;
 ```
 
-Detailed Steps
+Certainly! Here's a detailed explanation of the workflow, including important information for developers who might use this tool in downstream tasks:
 
-1. Extract ZIP Contents
-   Purpose: Extracts the contents of the input ZIP file to a temporary directory.
-   Process:
+# Scientific Manuscript Processing Pipeline
 
-Unzips the input file into a structured directory
-Prepares files for further analysis
+## Overview
 
-Error Handling:
+This pipeline processes scientific manuscripts, extracting and organizing information about figures, panels, captions, and associated data files. It employs AI-driven analysis and structured data handling to produce a comprehensive JSON representation of the manuscript's content.
 
-If the ZIP file is invalid or extraction fails, the process stops and reports the error.
+## Detailed Workflow
 
-2. Parse XML Structure
-   Purpose: Reads the XML file to understand the manuscript structure.
-   Process:
+### 1. Extract ZIP Contents
 
-Identifies figures, appendices, and associated files
-Builds the initial manuscript structure
+- **Input**: ZIP file containing manuscript files
+- **Process**:
+  - Unzip files into a structured directory
+  - Create a temporary working directory
+- **Exception Handling**:
+  - Invalid ZIP file: Log error and stop process
+  - Extraction failure: Log error and stop process
+- **Output**: Structured directory with extracted files
 
-Error Handling:
+### 2. Parse XML Structure
 
-If the XML file is missing or malformed, it logs an error and tries to continue with partial information.
+- **Input**: Extracted files, primarily the XML file
+- **Process**:
+  - Identify figures, appendices, and associated files
+  - Build initial manuscript structure
+- **Exception Handling**:
+  - Missing XML file: Log error, continue with partial information
+  - Malformed XML: Log error, attempt to parse valid sections
+- **Output**: Initial `ZipStructure` object with basic manuscript information
 
-3. Extract Figure Captions
-   Purpose: Uses AI (OpenAI's GPT model) to extract figure captions from the manuscript text.
-   Process:
+### 3. Extract Figure Captions
 
-Analyzes DOCX or PDF content
-Extracts detailed captions for each figure
+- **Input**: DOCX or PDF file from extracted contents
+- **Process**:
+  - Use AI (OpenAI's GPT model) to analyze text and extract captions
+  - Associate captions with corresponding figures
+- **Exception Handling**:
+  - No caption found: Mark as "Figure caption not found", continue processing
+  - AI model error: Log error, retry or use fallback method (e.g., regex-based extraction)
+- **Output**: Updated `ZipStructure` with figure captions
 
-Error Handling:
+### 4. Detect Panels in Figures
 
-If caption extraction fails for a figure, it marks the caption as "Figure caption not found" and continues with the next figure.
+- **Input**: Figure image files
+- **Process**:
+  - Use YOLOv10 object detection to identify individual panels
+  - Locate and record bounding boxes for each panel
+- **Exception Handling**:
+  - Panel detection failure: Log error, proceed with available panels
+- **Output**: `ZipStructure` updated with panel information for each figure
 
-4. Detect Panels in Figures
-   Purpose: Uses object detection (YOLOv10) to identify individual panels within each figure image.
-   Process:
+### 5. Match Panel Captions
 
-Analyzes figure images
-Detects and locates individual panels
+- **Input**: Figures with detected panels and full figure captions
+- **Process**:
+  - Use AI to match specific parts of the caption to individual panels
+- **Exception Handling**:
+  - Matching failure: Leave panel caption empty, continue to next panel
+- **Output**: `ZipStructure` with panel-specific captions
 
-Error Handling:
+### 6. Assign Panel Source Data
 
-If panel detection fails for a figure, it logs an error and moves to the next figure.
+- **Input**: Source data files, figures with panels
+- **Process**:
+  - Analyze file names and structures
+  - Associate source data files with specific panels
+- **Exception Handling**:
+  - Unassigned files: Add to 'non_associated_sd_files' list
+- **Output**: `ZipStructure` with source data assignments
 
-5. Match Panel Captions
-   Purpose: Uses AI to match detected panels with specific parts of the figure caption.
-   Process:
+### 7. Process EV Materials
 
-Analyzes full figure captions
-Assigns relevant caption text to each detected panel
+- **Input**: Extended View (EV) materials identified in earlier steps
+- **Process**:
+  - Identify EV figures, tables, and datasets
+  - Assign EV materials to appropriate figures or appendix
+- **Exception Handling**:
+  - EV processing error: Log error, skip problematic EV item
+- **Output**: `ZipStructure` with processed EV materials
 
-Error Handling:
+### 8. Final Processing and Cleanup
 
-If matching fails for a panel, it leaves the panel caption empty and continues.
+- **Input**: Fully processed `ZipStructure`
+- **Process**:
+  - Normalize file paths relative to the manuscript structure
+  - Remove duplicate entries
+  - Categorize any remaining unassigned files
+  - Clean up temporary extracted files
+- **Exception Handling**:
+  - Unassigned files remain: Add to 'non_associated_sd_files' in final output
+- **Output**: Finalized `ZipStructure` ready for JSON conversion
 
-6. Assign Panel Source Data
-   Purpose: Uses AI to assign source data files to specific panels.
-   Process:
+## Output JSON Structure
 
-Analyzes file names and structures
-Associates raw data with specific figure components
+The final output is a JSON file with the following key components:
 
-Error Handling:
+- `manuscript_id`: Unique identifier for the manuscript
+- `xml`: Path to the XML file
+- `docx`: Path to the DOCX file
+- `pdf`: Path to the PDF file
+- `appendix`: List of appendix files
+- `figures`: Array of figure objects, each containing:
+  - `figure_label`: Label of the figure (e.g., "Figure 1")
+  - `img_files`: List of image files for the figure
+  - `sd_files`: List of source data files associated with the figure
+  - `figure_caption`: Full caption of the figure
+  - `panels`: Array of panel objects, each containing:
+    - `panel_label`: Label of the panel (e.g., "A", "B")
+    - `panel_caption`: Caption specific to the panel
+    - `panel_bbox`: Bounding box coordinates of the panel
+    - `sd_files`: List of source data files associated with the panel
+- `non_associated_sd_files`: List of source data files not associated with any specific figure or panel
 
-If assignment fails, it marks files as unassigned and continues.
+## Important Notes for Developers
 
-7. Process EV Materials
-   Purpose: Identifies and processes Extended View (EV) materials.
-   Process:
+1. **AI Dependencies**: The system relies on OpenAI's GPT for text analysis and YOLOv10 for image processing. Ensure these dependencies are properly set up and API keys are configured.
 
-Recognizes EV content
-Assigns EV materials to appropriate figures or appendix
+2. **Error Handling**: The system is designed to be resilient. Most errors will not halt the entire process but may result in partial or missing data. Always check the logs for warnings or errors.
 
-Error Handling:
+3. **File Paths**: All file paths in the output JSON are relative to the manuscript structure. When using this data, you may need to reconstruct full paths based on your file system.
 
-If EV processing fails, it logs an error and continues with the rest of the process.
+4. **Source Data Association**: The 'non_associated_sd_files' list may contain important data that couldn't be automatically associated. Consider implementing a manual review process for these files.
 
-8. Final Processing and Cleanup
-   Purpose: Ensures consistency and removes redundant information.
-   Process:
+5. **EV Materials**: Extended View materials are processed separately and may require special handling in downstream applications.
 
-Normalizes file paths relative to the manuscript structure
-Removes duplicate entries
-Categorizes unassigned files
-Cleans up temporary extracted files
+6. **Performance Considerations**: Processing large manuscripts with many figures can be time-consuming, especially the AI-driven steps. Consider implementing progress tracking or batch processing for large datasets.
 
-Error Handling:
+7. **Output Validation**: While the system attempts to handle all cases, it's recommended to implement validation checks on the output JSON to ensure all expected data is present and correctly formatted.
 
-Logs any errors during this process but attempts to complete as much as possible.
+8. **Customization**: The pipeline is modular. If you need to modify or extend functionality (e.g., supporting additional file formats or implementing different AI models), you can focus on specific modules without overhauling the entire system.
 
-Key Benefits
-
-Automation: Reduces manual effort in processing complex scientific manuscripts.
-AI-Driven Analysis: Leverages advanced AI models for understanding and extracting information from scientific content.
-Structured Output: Produces a well-organized JSON representation of the manuscript structure.
-Comprehensive Processing: Handles various components including figures, panels, captions, and associated data files.
-Error Resilience: Designed to continue processing even when encountering partial failures, ensuring maximum data extraction.
-
-This pipeline demonstrates a sophisticated approach to scientific manuscript processing, enhancing the accessibility and usability of complex research data.
-
-```
-
-```
+By understanding this workflow and the structure of the output, developers can effectively integrate this tool into larger systems for scientific manuscript analysis, data extraction, or publishing workflows.
