@@ -37,27 +37,40 @@ flowchart TD
     I --> I1[Normalize file paths]
     I --> I2[Remove duplicates]
 
-    %% Error Handling Paths
+    %% Error Handling Paths with Exception Details
     B -.- BE1[Invalid ZIP file]
+    BE1 --> BE1D[Log error, stop process]
     B -.- BE2[Extraction failure]
+    BE2 --> BE2D[Log error, stop process]
     C -.- CE1[Missing XML file]
+    CE1 --> CE1D[Log error, continue with partial info]
     C -.- CE2[Malformed XML]
+    CE2 --> CE2D[Log error, attempt to parse valid sections]
     D -.- DE1[No caption found]
+    DE1 --> DE1D[Mark as 'Caption not found', continue]
     D -.- DE2[AI model error]
+    DE2 --> DE2D[Log error, retry or use fallback method]
     E -.- EE1[Panel detection failure]
+    EE1 --> EE1D[Log error, proceed with available panels]
     F -.- FE1[Matching failure]
+    FE1 --> FE1D[Leave caption empty, continue to next]
     G -.- GE1[Unassigned files]
+    GE1 --> GE1D[Add to 'non_associated_sd_files' list]
     H -.- HE1[EV processing error]
-    I -.- IE1[Categorize unassigned files]
+    HE1 --> HE1D[Log error, skip problematic EV item]
+    I -.- IE1[Unassigned files remain]
+    IE1 --> IE1D[Add to 'non_associated_sd_files' in output]
 
     %% Style Definitions
     classDef process fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold;
     classDef subProcess fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold;
     classDef exception fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold;
+    classDef exceptionDetail fill:#87CEFA,stroke:#000000,stroke-width:1px,color:#000000,font-weight:normal;
 
     class A,B,C,D,E,F,G,H,I,J process;
     class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2 subProcess;
     class BE1,BE2,CE1,CE2,DE1,DE2,EE1,FE1,GE1,HE1,IE1 exception;
+    class BE1D,BE2D,CE1D,CE2D,DE1D,DE2D,EE1D,FE1D,GE1D,HE1D,IE1D exceptionDetail;
 ```
 
 Detailed Steps
