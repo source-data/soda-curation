@@ -6,18 +6,47 @@ This pipeline processes scientific manuscripts, extracting and organizing inform
 
 ## Workflow
 
-```mermaid
+````mermaid
 graph TD
-A[Input ZIP File] --> B[1. Extract ZIP Contents]
-B --> C[2. Parse XML Structure]
-C --> D[3. Extract Figure Captions]
-D --> E[4. Detect Panels in Figures]
-E --> F[5. Match Panel Captions]
-F --> G[6. Assign Panel Source Data]
-G --> H[7. Process EV Materials]
-H --> I[8. Final Processing and Cleanup]
-I --> J[Output JSON]
-```
+    A[Input ZIP File] --> B[1. Extract ZIP Contents]
+    B --> C[2. Parse XML Structure]
+    C --> D[3. Extract Figure Captions]
+    D --> E[4. Detect Panels in Figures]
+    E --> F[5. Match Panel Captions]
+    F --> G[6. Assign Panel Source Data]
+    G --> H[7. Process EV Materials]
+    H --> I[8. Final Processing and Cleanup]
+    I --> J[Output JSON]
+
+    B -.-> B1[Unzip files]
+    B -.-> B2[Handle extraction errors]
+
+    C -.-> C1[Identify figures & appendices]
+    C -.-> C2[Build manuscript structure]
+
+    D -.-> D1[Use AI to analyze text]
+    D -.-> D2[Extract captions]
+
+    E -.-> E1[Use YOLOv10 for detection]
+    E -.-> E2[Locate individual panels]
+
+    F -.-> F1[Match captions to panels]
+    F -.-> F2[AI-driven analysis]
+
+    G -.-> G1[Analyze file structures]
+    G -.-> G2[Associate data with panels]
+
+    H -.-> H1[Identify EV materials]
+    H -.-> H2[Assign to figures/appendix]
+
+    I -.-> I1[Normalize file paths]
+    I -.-> I2[Remove duplicates]
+    I -.-> I3[Categorize unassigned files]
+
+    classDef process fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef subProcess fill:#bbf,stroke:#333,stroke-width:1px;
+    class A,B,C,D,E,F,G,H,I,J process;
+    class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2,I3 subProcess;```
 
 Detailed Steps
 
@@ -120,3 +149,4 @@ Comprehensive Processing: Handles various components including figures, panels, 
 Error Resilience: Designed to continue processing even when encountering partial failures, ensuring maximum data extraction.
 
 This pipeline demonstrates a sophisticated approach to scientific manuscript processing, enhancing the accessibility and usability of complex research data.
+````
