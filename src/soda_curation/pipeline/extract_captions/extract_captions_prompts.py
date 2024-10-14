@@ -6,6 +6,7 @@ figure captions from scientific documents.
 """
 
 from string import Template
+from typing import Dict
 
 EXTRACT_CAPTIONS_PROMPT = Template(
     """You are an AI assistant specialized in analyzing scientific manuscripts. Your task is to extract complete figure captions from the given text, which is from a scientific paper. Please follow these guidelines carefully:
@@ -75,3 +76,56 @@ def get_extract_captions_prompt(file_content: str, expected_figure_count: int) -
         str: A formatted prompt string for AI models to extract figure captions.
     """
     return EXTRACT_CAPTIONS_PROMPT.substitute(file_content=file_content, expected_figure_count=expected_figure_count)
+
+FALLBACK_EXTRACT_CAPTIONS_PROMPT = Template(
+    """You are an AI assistant specialized in analyzing scientific manuscripts. Your task is to find and extract the missing figure captions from the given text. Please follow these guidelines carefully:
+
+1. You have been provided with a list of figure captions that were already extracted. Your job is to find the remaining captions that are missing.
+
+2. The total number of figures in the document is $expected_figure_count. You need to find captions for the figures that are not in the list of already extracted captions.
+
+3. For each missing figure, extract the ENTIRE caption, including:
+   - The main title of the figure
+   - All sub-sections (usually labeled A, B, C, etc.)
+   - Any statistical information (e.g., p-values, correlation coefficients)
+   - Methodological notes or references to other parts of the paper
+   - Descriptions of all elements in the figure (e.g., what different colors or shapes represent)
+   - Any additional explanatory text, no matter how long it is
+
+4. Create a JSON object where:
+   - Keys are the figure labels (e.g., "Figure 1", "Figure 2")
+   - Values are the corresponding complete captions, including ALL text associated with that figure
+
+5. Only include the missing figures in your JSON response. Do not include figures that were already extracted.
+
+6. Ensure that you capture the full context of each caption, even if it spans multiple paragraphs.
+
+7. Your response should ONLY contain the JSON object with the missing figure captions, without any additional explanations or text.
+
+Already extracted captions:
+$extracted_captions
+
+Please process the given text and return ONLY the JSON object with the missing figure captions:
+
+$file_content
+"""
+)
+
+def get_fallback_extract_captions_prompt(file_content: str, expected_figure_count: int, extracted_captions: Dict[str, str]) -> str:
+    """
+    Generate a prompt for extracting missing figure captions from a scientific document.
+
+    Args:
+        file_content (str): The content of the scientific document.
+        expected_figure_count (int): The total number of figure captions expected.
+        extracted_captions (Dict[str, str]): The captions that have already been extracted.
+
+    Returns:
+        str: A formatted prompt string for AI models to extract missing figure captions.
+    """
+    extracted_captions_str = json.dumps(extracted_captions, indent=2)
+    return FALLBACK_EXTRACT_CAPTIONS_PROMPT.substitute(
+        file_content=file_content,
+        expected_figure_count=expected_figure_count,
+        extracted_captions=extracted_captions_str
+    )

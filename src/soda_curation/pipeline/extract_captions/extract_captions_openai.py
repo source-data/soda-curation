@@ -18,9 +18,12 @@ from openai.types.beta.assistant import Assistant
 from openai.types.beta.thread import Thread
 from openai.types.file_object import FileObject
 
-from ..manuscript_structure.manuscript_structure import ZipStructure
+from ..manuscript_structure.manuscript_structure import Figure, ZipStructure
 from .extract_captions_base import FigureCaptionExtractor
-from .extract_captions_prompts import get_extract_captions_prompt
+from .extract_captions_prompts import (
+    get_extract_captions_prompt,
+    get_fallback_extract_captions_prompt,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -172,19 +175,11 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
             
-            # Debug logging
-            logger.debug(f"Messages data type: {type(messages)}")
-            logger.debug(f"Messages content: {messages}")
-
             if messages.data:
-                # Ensure we're getting a string from the message content
                 result = messages.data[0].content[0].text if isinstance(messages.data[0].content[0].text, str) else str(messages.data[0].content[0].text)
             else:
                 logger.warning("No messages found in the thread")
                 result = ""
-
-            logger.debug(f"Result data type: {type(result)}")
-            logger.debug(f"Result content: {result[:500]}...")  # Log first 500 characters
 
             if result:
                 captions = self._parse_response(result)
@@ -196,7 +191,13 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 captions = {}
 
             updated_structure = self._update_zip_structure(zip_structure, captions, result)
-            logger.info(f"Updated ZIP structure: {updated_structure}")
+            
+            # Check if we need to use the fallback method
+            missing_captions_count = len([fig for fig in updated_structure.figures if fig.figure_caption == "Figure caption not found."])
+            if missing_captions_count > 0:
+                logger.info(f"Missing {missing_captions_count} captions. Using fallback method.")
+                fallback_captions = self._fallback_extract_captions(docx_path, updated_structure, expected_figure_count)
+                updated_structure = self._update_zip_structure(updated_structure, fallback_captions, "Fallback extraction")
 
             self.client.files.delete(file_object.id)
 
@@ -205,6 +206,71 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         except Exception as e:
             logger.exception(f"Error in caption extraction: {str(e)}")
             return self._update_zip_structure(zip_structure, {}, str(e))
+
+    def _fallback_extract_captions(self, docx_path: str, zip_structure: ZipStructure, expected_figure_count: int) -> Dict[str, str]:
+        """
+        Extract figure captions using a fallback method.
+        
+        This method uses a fallback method to extract figure captions if the primary method fails to find them.
+        It will send to the OpenAI API a prompt asking for the missing captions, given the previously
+        extracted ones as context.
+        Args:
+            docx_path (str): Path to the DOCX file.
+            zip_structure (ZipStructure): The current ZIP structure.
+            expected_figure_count (int): The expected number of figures in the document.
+            
+        Returns:
+            Dict[str, str]: A dictionary of figure labels and their captions.
+        """
+        try:
+            logger.info("Starting fallback caption extraction")
+            
+            # Get the already extracted captions
+            extracted_captions = {fig.figure_label: fig.figure_caption for fig in zip_structure.figures if fig.figure_caption != "Figure caption not found."}
+            
+            with open(docx_path, 'rb') as file:
+                file_content = file.read()
+
+            prompt = get_fallback_extract_captions_prompt(file_content, expected_figure_count, extracted_captions)
+            
+            thread = self.client.beta.threads.create()
+            self.client.beta.threads.messages.create(
+                thread_id=thread.id,
+                role="user",
+                content=prompt
+            )
+
+            run = self.client.beta.threads.runs.create(
+                thread_id=thread.id,
+                assistant_id=self.assistant.id,
+            )
+
+            while run.status != "completed":
+                run = self.client.beta.threads.runs.retrieve(
+                    thread_id=thread.id,
+                    run_id=run.id
+                )
+                time.sleep(1)
+
+            messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+            
+            if messages.data:
+                result = messages.data[0].content[0].text if isinstance(messages.data[0].content[0].text, str) else str(messages.data[0].content[0].text)
+            else:
+                logger.warning("No messages found in the fallback thread")
+                result = ""
+
+            if result:
+                fallback_captions = self._parse_response(result)
+                logger.info(f"Fallback extraction found {len(fallback_captions)} missing captions")
+                return fallback_captions
+            else:
+                logger.warning("Fallback extraction failed to find missing captions")
+                return {}
+
+        except Exception as e:
+            logger.exception(f"Error in fallback caption extraction: {str(e)}")
+            return {}
 
     def _parse_response(self, response_text: str) -> Dict[str, str]:
         """
