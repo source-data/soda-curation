@@ -30,10 +30,15 @@ from .pipeline.object_detection.object_detection import (
 
 logger = logging.getLogger(__name__)
 
-
 def get_file_tree(directory: str) -> Dict[str, Any]:
     """
     Recursively generate a file tree from a directory.
+    
+    Args:
+        directory (str): The directory to generate the file tree from.
+    
+    Returns:
+        Dict[str, Any]: A nested dictionary representing the file tree.
     """
     file_tree = {}
     for root, dirs, files in os.walk(directory):
@@ -52,10 +57,17 @@ def get_file_tree(directory: str) -> Dict[str, Any]:
     logger.debug(f"Generated file tree: {json.dumps(file_tree, indent=2)}")
     return file_tree
 
-
 def extract_zip_contents(zip_path: str, extract_dir: Path) -> None:
     """
     Extract the contents of a ZIP file to a directory.
+    
+    Args:
+        zip_path (str): Path to the ZIP file.
+        extract_dir (Path): Directory where the ZIP contents will be extracted.
+    
+    Raises:
+        zipfile.BadZipFile: If the ZIP file is invalid.
+        Exception: If an error occurs during extraction.
     """
     try:
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
@@ -68,78 +80,100 @@ def extract_zip_contents(zip_path: str, extract_dir: Path) -> None:
         logger.error(f"Error extracting ZIP file: {str(e)}")
         raise
 
-
 def get_manuscript_structure(zip_path: str, extract_dir: str) -> ZipStructure:
     """
     Extract the manuscript structure from a ZIP file.
+
+    Args:
+        zip_path (str): Path to the ZIP file containing the manuscript data.
+        extract_dir (str): Directory where ZIP contents are extracted.
+
+    Returns:
+        ZipStructure: A structured representation of the manuscript.
     """
     xml_extractor = XMLStructureExtractor(zip_path, extract_dir)
     structure = xml_extractor.extract_structure()
-    logger.info(
-        f"Manuscript structure: id={structure.manuscript_id}, xml={structure.xml}, docx={structure.docx}, pdf={structure.pdf}"
-    )
+    logger.info(f"Manuscript structure: id={structure.manuscript_id}, xml={structure.xml}, docx={structure.docx}, pdf={structure.pdf}")
     logger.info(f"Number of figures: {len(structure.figures)}")
     return structure
 
-
 def update_file_paths(zip_structure: ZipStructure, extract_dir: str) -> ZipStructure:
     """
-    Update the file paths in the ZipStructure object with full paths and adjust relative paths.
+    Update the file paths in the ZipStructure object with full paths.
+    
+    Args:
+        zip_structure (ZipStructure): The ZipStructure object to update.
+        extract_dir (str): The directory where the ZIP contents are extracted.
+        
+    Returns:
+        ZipStructure: The updated ZipStructure object.
     """
-    # Update DOCX and PDF paths
     if zip_structure.docx:
         zip_structure._full_docx = full_path(extract_dir, zip_structure.docx)
         logger.info(f"Full DOCX path: {zip_structure._full_docx}")
     if zip_structure.pdf:
         zip_structure._full_pdf = full_path(extract_dir, zip_structure.pdf)
         logger.info(f"Full PDF path: {zip_structure._full_pdf}")
-
-    # Update appendix paths
-    processed_appendix = []
-    for item in zip_structure.appendix:
-        if isinstance(item, dict):
-            processed_appendix.append(f"{zip_structure.manuscript_id}/{item['object_id']}")
-        elif isinstance(item, str):
-            processed_appendix.append(f"{zip_structure.manuscript_id}/{item}")
+    
+    zip_structure._full_appendix = []
+    for app in zip_structure.appendix:
+        if isinstance(app, str):
+            zip_structure._full_appendix.append(full_path(extract_dir, app))
+        elif isinstance(app, dict):
+            zip_structure._full_appendix.append(app)
         else:
-            logger.warning(f"Unexpected appendix item type: {type(item)}")
-    zip_structure.appendix = processed_appendix
+            logger.warning(f"Unexpected appendix item type: {type(app)}")
 
-    # Update figure image and SD file paths
     for figure in zip_structure.figures:
-        # Update image files
         figure._full_img_files = [full_path(extract_dir, img) for img in figure.img_files]
-        figure.img_files = [
-            os.path.relpath(img_file, '/app/input/') for img_file in figure._full_img_files
-        ]
-
-        # Update source data files
         figure._full_sd_files = [full_path(extract_dir, sd) for sd in figure.sd_files]
+
+    return zip_structure
+
+def extract_figure_captions(zip_structure: ZipStructure, config: Dict[str, Any], expected_figure_count: int) -> ZipStructure:
+    """
+    Extract figure captions from the manuscript using an AI model.
+    
+    Args:
+        zip_structure (ZipStructure): The structured representation of the manuscript.
+        config (Dict[str, Any]): The configuration settings for the AI model.
+        expected_figure_count (int): The expected number of figures in the manuscript.
+        
+    Returns:
+        ZipStructure: The updated ZipStructure object with extracted figure captions.
+    """
+    caption_extractor = FigureCaptionExtractorGpt(config["openai"])
+    result = caption_extractor.extract_captions(zip_structure._full_docx, zip_structure, expected_figure_count)
+    return result
+
+def update_sd_files(zip_structure: ZipStructure) -> ZipStructure:
+    """
+    Update the source data file paths in the ZipStructure object.
+    
+    Args:
+        zip_structure (ZipStructure): The ZipStructure object to update.
+        
+    Returns:
+        ZipStructure: The updated ZipStructure object.
+    """
+    for figure in zip_structure.figures:
         if figure._full_sd_files:
             zip_file = os.path.basename(figure._full_sd_files[0])
             figure.sd_files = [f"{zip_structure.manuscript_id}/suppl_data/{zip_file}"]
         else:
             figure.sd_files = []
-
     return zip_structure
-
-
-def extract_figure_captions(
-    zip_structure: ZipStructure, config: Dict[str, Any], expected_figure_count: int
-) -> ZipStructure:
-    """
-    Extract figure captions from the manuscript using an AI model.
-    """
-    caption_extractor = FigureCaptionExtractorGpt(config["openai"])
-    result = caption_extractor.extract_captions(
-        zip_structure._full_docx, zip_structure, expected_figure_count
-    )
-    return result
-
 
 def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
     """
     Extract panels from the figures using an object detection model.
+    
+    Args:
+        zip_structure (ZipStructure): The structured representation of the manuscript.
+        config (Dict[str, Any]): The configuration settings for the object detection model.
+        
+    Returns:
+        ZipStructure: The updated ZipStructure object with extracted panels.
     """
     object_detector = create_object_detection(config)
     for figure in zip_structure.figures:
@@ -161,26 +195,37 @@ def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipSt
                     ]
                     logger.info(f"Detected {len(panels)} panels in {figure.img_files[0]}")
                 except Exception as e:
-                    logger.error(
-                        f"Error during panel detection for {figure.img_files[0]}: {str(e)}"
-                    )
+                    logger.error(f"Error during panel detection for {figure.img_files[0]}: {str(e)}")
             else:
                 logger.warning(f"Image file not found: {figure.img_files[0]}")
     return zip_structure
 
-
 def match_panel_caption(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
     """
     Match panel captions to figure captions using an AI model.
+    
+    Args:
+        zip_structure (ZipStructure): The structured representation of the manuscript.
+        config (Dict[str, Any]): The configuration settings for the AI model.
+        
+    Returns:
+        ZipStructure: The updated ZipStructure object with matched panel captions.
     """
     panel_caption_matcher = MatchPanelCaptionOpenAI(config)
     result = panel_caption_matcher.match_captions(zip_structure)
     return result
 
-
 def assign_panel_source(zip_structure: ZipStructure, config: Dict[str, Any], extract_dir: str) -> ZipStructure:
     """
     Assign source data files to panels based on the panel captions.
+    
+    Args:
+        zip_structure (ZipStructure): The structured representation of the manuscript.
+        config (Dict[str, Any]): The configuration settings for the source assignment model.
+        extract_dir (str): The directory where the ZIP contents are extracted.
+        
+    Returns:
+        ZipStructure: The updated ZipStructure object with assigned panel source data files.
     """
     file_tree = get_file_tree(extract_dir)
     logger.info(f"File tree structure: {json.dumps(file_tree, indent=2)}")
@@ -240,6 +285,12 @@ def assign_panel_source(zip_structure: ZipStructure, config: Dict[str, Any], ext
 def process_ev_materials(zip_structure: ZipStructure) -> ZipStructure:
     """
     Process EV materials in the manuscript and assign them to the appropriate figures.
+    
+    Args:
+        zip_structure (ZipStructure): The structured representation of the manuscript.
+        
+    Returns:
+        ZipStructure: The updated ZipStructure object with EV materials assigned to figures.
     """
     ev_materials = []
     for figure in zip_structure.figures:
@@ -256,26 +307,102 @@ def process_ev_materials(zip_structure: ZipStructure) -> ZipStructure:
             ev_number = match.group(2)
             ev_figure = next((fig for fig in zip_structure.figures if fig.figure_label == f"{ev_type} EV{ev_number}"), None)
             if ev_figure:
-                ev_figure.sd_files.append(f"{zip_structure.manuscript_id}/suppl_data/{material_name}")
+                ev_figure.sd_files.append(material_name)
                 logger.info(f"Assigned {material_name} to {ev_figure.figure_label}")
             else:
-                zip_structure.non_associated_sd_files.append(f"{zip_structure.manuscript_id}/suppl_data/{material_name}")
+                zip_structure.non_associated_sd_files.append(material_name)
                 logger.info(f"Added {material_name} to non_associated_sd_files (no matching EV figure found)")
         else:
-            zip_structure.non_associated_sd_files.append(f"{zip_structure.manuscript_id}/suppl_data/{material_name}")
+            zip_structure.non_associated_sd_files.append(material_name)
             logger.info(f"Added {material_name} to non_associated_sd_files (not recognized as EV material)")
 
     return zip_structure
 
-
 def process_zip_structure(zip_structure):
     """
-    Final processing of the ZipStructure object before serialization.
+    Process the ZipStructure object before serializing to JSON.
+    
+    Args:
+        zip_structure (ZipStructure): The ZipStructure object to process.
+        
+    Returns:
+        ZipStructure: The processed ZipStructure object.
     """
-    # All necessary processing has been moved to earlier steps
-    # Simply return the zip_structure
-    return zip_structure
+    manuscript_id = zip_structure.manuscript_id
 
+    # Update appendix paths
+    processed_appendix = []
+    for item in zip_structure.appendix:
+        if isinstance(item, dict):
+            processed_appendix.append(f"{manuscript_id}/{item['object_id']}")
+        elif isinstance(item, str):
+            processed_appendix.append(f"{manuscript_id}/{item}")
+    zip_structure.appendix = processed_appendix
+
+    non_associated_sd_files = set()
+
+    for figure in zip_structure.figures:
+        # Update sd_files to only include the ZIP file
+        if figure._full_sd_files:
+            figure.sd_files = [os.path.relpath(figure._full_sd_files[0], '/app/input/')]
+        else:
+            figure.sd_files = []
+
+        # Update img_files to include the manuscript ID in the path
+        figure.img_files = [os.path.relpath(img_file, '/app/input/') for img_file in figure._full_img_files]
+
+        # Process panels
+        for panel in figure.panels:
+            if figure._full_sd_files:
+                zip_filename = os.path.basename(figure._full_sd_files[0])
+                panel.sd_files = [
+                    f"{zip_filename}:Figure {figure.figure_label.split()[-1]}/{file.split('/', 1)[-1]}"
+                    for file in panel.sd_files
+                    if isinstance(file, str) and not ("__MACOSX" in file or file.endswith('.DS_Store'))
+                ]
+            else:
+                non_associated_sd_files.update(file for file in panel.sd_files if isinstance(file, str))
+                panel.sd_files = []
+
+    # Process non_associated_sd_files
+    for file in zip_structure.non_associated_sd_files:
+        if isinstance(file, str):
+            if file.endswith(('.xlsx', '.pdf')):
+                non_associated_sd_files.add(f"{manuscript_id}/suppl_data/{os.path.basename(file)}")
+            elif ':' in file:
+                # It's already in a ZIP file format, just clean it up
+                zip_name, internal_path = file.split(':', 1)
+                non_associated_sd_files.add(f"{os.path.basename(zip_name)}:{internal_path.split('/', 1)[-1]}")
+            else:
+                # Assume it's from a ZIP file
+                figure_number = next(
+                    (fig.figure_label.split()[-1] for fig in zip_structure.figures 
+                     for panel in fig.panels
+                     if any(file in sd_file for sd_file in panel.sd_files if isinstance(sd_file, str))),
+                    ''
+                )
+                if figure_number:
+                    non_associated_sd_files.add(f"Figure {figure_number}.zip:Figure {figure_number}/{file}")
+                else:
+                    non_associated_sd_files.add(file)
+
+    # Remove duplicates, files with __MACOSX or .DS_Store, and files that are properly associated with panels
+    all_panel_sd_files = set()
+    for figure in zip_structure.figures:
+        for panel in figure.panels:
+            all_panel_sd_files.update(sd_file for sd_file in panel.sd_files if isinstance(sd_file, str))
+
+    zip_structure.non_associated_sd_files = list(
+        non_associated_sd_files - all_panel_sd_files
+    )
+
+    # Remove any files with __MACOSX or .DS_Store
+    zip_structure.non_associated_sd_files = [
+        file for file in zip_structure.non_associated_sd_files
+        if "__MACOSX" not in file and not file.endswith('.DS_Store')
+    ]
+
+    return zip_structure
 
 def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     if not zip_path or not config_path:
@@ -295,14 +422,16 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     zip_structure = get_manuscript_structure(zip_path, str(extract_dir))
     zip_structure = update_file_paths(zip_structure, str(extract_dir))
 
-    expected_figure_count = len(
-        [fig for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)]
-    )
+    expected_figure_count = len([fig for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)])
     logger.info(f"Expected figure count: {expected_figure_count}")
 
     logger.info("Starting caption extraction process")
     zip_structure = extract_figure_captions(zip_structure, config, expected_figure_count)
     logger.info("Caption extraction process completed")
+
+    logger.info("Updating source data files")
+    zip_structure = update_sd_files(zip_structure)
+    logger.info("Source data files updated")
 
     missing_captions = [fig.figure_label for fig in zip_structure.figures if fig.figure_caption == "Figure caption not found."]
     if missing_captions:
@@ -325,9 +454,7 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     output_json = json.dumps(zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2)
 
     if output_path:
-        output_path = (
-            output_path if output_path.startswith("/app/") else f"/app/output/{os.path.basename(output_path)}"
-        )
+        output_path = output_path if output_path.startswith("/app/") else f"/app/output/{os.path.basename(output_path)}"
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         try:
             with open(output_path, "w", encoding="utf-8") as f:
@@ -343,7 +470,6 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
         logger.error(f"Error cleaning up extracted files: {str(e)}")
 
     return output_json
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process a ZIP file using soda-curation")
