@@ -43,10 +43,12 @@ graph TD
     I -.-> I2[Remove duplicates]
     I -.-> I3[Categorize unassigned files]
 
-    classDef process fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef subProcess fill:#bbf,stroke:#333,stroke-width:1px;
+    classDef process fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px;
+    classDef subProcess fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px;
+    classDef exception fill:#E86236,stroke:#FFFFFF,stroke-width:1px;
     class A,B,C,D,E,F,G,H,I,J process;
-    class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2,I3 subProcess;
+    class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2 subProcess;
+    class I3 exception;
 ```
 
 Detailed Steps
