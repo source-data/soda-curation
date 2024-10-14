@@ -12,6 +12,10 @@ from .config import load_config
 from .logging_config import setup_logging
 from .pipeline.assign_panel_source.assign_panel_source import PanelSourceAssigner
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
+from .pipeline.manuscript_structure.exceptions import (
+    NoManuscriptFileError,
+    NoXMLFileFoundError,
+)
 from .pipeline.manuscript_structure.manuscript_structure import (
     CustomJSONEncoder,
     Figure,
@@ -422,6 +426,7 @@ def process_zip_structure(zip_structure):
     return zip_structure
 
 def main(zip_path: str, config_path: str, output_path: str = None) -> str:
+    output_json = ""  # Initialize output_json at the beginning
     if not zip_path or not config_path:
         raise ValueError("ZIP path and config path must be provided")
 
@@ -434,57 +439,71 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     zip_file = Path(zip_path)
     extract_dir = zip_file.parent / zip_file.stem
 
-    extract_zip_contents(zip_path, extract_dir)
-
-    zip_structure = get_manuscript_structure(zip_path, str(extract_dir))
-    zip_structure = update_file_paths(zip_structure, str(extract_dir))
-
-    expected_figure_count = len([fig for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)])
-    logger.info(f"Expected figure count: {expected_figure_count}")
-
-    logger.info("Starting caption extraction process")
-    zip_structure = extract_figure_captions(zip_structure, config, expected_figure_count)
-    logger.info("Caption extraction process completed")
-
-    logger.info("Updating source data files")
-    zip_structure = update_sd_files(zip_structure)
-    logger.info("Source data files updated")
-
-    missing_captions = [fig.figure_label for fig in zip_structure.figures if fig.figure_caption == "Figure caption not found."]
-    if missing_captions:
-        logger.warning(f"Captions still missing for figures: {', '.join(missing_captions)}")
-    else:
-        logger.info("All figure captions successfully extracted")
-
-    config["extract_dir"] = str(extract_dir)
-
-    zip_structure = extract_panels(zip_structure, config)
-    zip_structure = match_panel_caption(zip_structure, config)
-
-    logger.info("Starting panel source assignment process")
-    zip_structure = assign_panel_source(zip_structure, config, str(extract_dir))
-    logger.info("Panel source assignment process completed")
-
-    zip_structure = process_ev_materials(zip_structure)
-    zip_structure = process_zip_structure(zip_structure)
-
-    output_json = json.dumps(zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2)
-
-    if output_path:
-        output_path = output_path if output_path.startswith("/app/") else f"/app/output/{os.path.basename(output_path)}"
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        try:
-            with open(output_path, "w", encoding="utf-8") as f:
-                f.write(output_json)
-            logger.info(f"Output written to {output_path}")
-        except Exception as e:
-            logger.error(f"An error occurred while writing to the file: {e}")
-
     try:
-        shutil.rmtree(extract_dir)
-        logger.info(f"Cleaned up extracted files in {extract_dir}")
+        extract_zip_contents(zip_path, extract_dir)
+
+        try:
+            zip_structure = get_manuscript_structure(zip_path, str(extract_dir))
+        except NoXMLFileFoundError as e:
+            logger.error(f"Error: {str(e)}")
+            return json.dumps({"error": str(e)})
+        except NoManuscriptFileError as e:
+            logger.error(f"Error: {str(e)}")
+            return json.dumps({"error": str(e)})
+
+        zip_structure = update_file_paths(zip_structure, str(extract_dir))
+
+        expected_figure_count = len([fig for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)])
+        logger.info(f"Expected figure count: {expected_figure_count}")
+
+        logger.info("Starting caption extraction process")
+        zip_structure = extract_figure_captions(zip_structure, config, expected_figure_count)
+        logger.info("Caption extraction process completed")
+
+        logger.info("Updating source data files")
+        zip_structure = update_sd_files(zip_structure)
+        logger.info("Source data files updated")
+
+        missing_captions = [fig.figure_label for fig in zip_structure.figures if fig.figure_caption == "Figure caption not found."]
+        if missing_captions:
+            logger.warning(f"Captions still missing for figures: {', '.join(missing_captions)}")
+        else:
+            logger.info("All figure captions successfully extracted")
+
+        config["extract_dir"] = str(extract_dir)
+
+        zip_structure = extract_panels(zip_structure, config)
+        zip_structure = match_panel_caption(zip_structure, config)
+
+        logger.info("Starting panel source assignment process")
+        zip_structure = assign_panel_source(zip_structure, config, str(extract_dir))
+        logger.info("Panel source assignment process completed")
+
+        zip_structure = process_ev_materials(zip_structure)
+        zip_structure = process_zip_structure(zip_structure)
+
+        output_json = json.dumps(zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2)
+
+        if output_path:
+            output_path = output_path if output_path.startswith("/app/") else f"/app/output/{os.path.basename(output_path)}"
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            try:
+                with open(output_path, "w", encoding="utf-8") as f:
+                    f.write(output_json)
+                logger.info(f"Output written to {output_path}")
+            except Exception as e:
+                logger.error(f"An error occurred while writing to the file: {e}")
+
     except Exception as e:
-        logger.error(f"Error cleaning up extracted files: {str(e)}")
+        logger.exception(f"An unexpected error occurred: {str(e)}")
+        output_json = json.dumps({"error": str(e)})
+
+    finally:
+        try:
+            shutil.rmtree(extract_dir)
+            logger.info(f"Cleaned up extracted files in {extract_dir}")
+        except Exception as e:
+            logger.error(f"Error cleaning up extracted files: {str(e)}")
 
     return output_json
 

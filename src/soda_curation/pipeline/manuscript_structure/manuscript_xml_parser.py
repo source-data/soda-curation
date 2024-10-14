@@ -14,6 +14,7 @@ from typing import Any, Dict, List
 from lxml import etree
 
 from ..manuscript_structure.manuscript_structure import Figure, ZipStructure
+from .exceptions import NoManuscriptFileError, NoXMLFileFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -55,11 +56,11 @@ class XMLStructureExtractor:
             etree._Element: Parsed XML content.
 
         Raises:
-            ValueError: If no XML file is found in the extracted directory.
+            NoXMLFileFoundError: If no XML file is found in the extracted directory.
         """
         xml_files = [f for f in os.listdir(self.extract_dir) if f.endswith(".xml")]
         if not xml_files:
-            raise ValueError("No XML file found in the root directory of the extracted ZIP")
+            raise NoXMLFileFoundError("No XML file found in the root directory of the extracted ZIP")
         xml_file = xml_files[0]
         xml_path = os.path.join(self.extract_dir, xml_file)
         logger.info(f"Parsing XML file: {xml_path}")
@@ -96,11 +97,18 @@ class XMLStructureExtractor:
 
         Returns:
             ZipStructure: A structured representation of the manuscript.
+
+        Raises:
+            NoManuscriptFileError: If no PDF or DOCX manuscript file is found.
         """
         logger.info("Extracting structure from XML")
         xml_file = self._get_xml_file()
         docx_file = self._get_docx_file()
         pdf_file = self._get_pdf_file()
+
+        if not docx_file and not pdf_file:
+            raise NoManuscriptFileError("No PDF or DOCX manuscript file found")
+
         figures = self._get_figures()
         appendix = self._get_appendix()
 

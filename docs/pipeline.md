@@ -39,13 +39,15 @@ flowchart TD
 
     %% Error Handling Paths with Exception Details
     B -.- BE1[Invalid ZIP file]
-    BE1 --> BE1D[Log error, stop process]
+    BE1 --> BE1D[Log error, Exception, stop process]
     B -.- BE2[Extraction failure]
-    BE2 --> BE2D[Log error, stop process]
+    BE2 --> BE2D[Log error, Exception, stop process]
     C -.- CE1[Missing XML file]
-    CE1 --> CE1D[Log error, continue with partial info]
+    CE1 --> CE1D[Log error, Exception, stop process]
+    C -.- CE3[Missing information in XML]
+    CE3 --> CE3D[If no PDF and DOCX, log error, exception, stop process]
     C -.- CE2[Malformed XML]
-    CE2 --> CE2D[Log error, attempt to parse valid sections]
+    CE2 --> CE2D[Log error, Exception, stop process]
     D -.- DE1[No caption found]
     DE1 --> DE1D[Mark as 'Caption not found', continue]
     D -.- DE2[AI model error]
@@ -69,8 +71,8 @@ flowchart TD
 
     class A,B,C,D,E,F,G,H,I,J process;
     class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2 subProcess;
-    class BE1,BE2,CE1,CE2,DE1,DE2,EE1,FE1,GE1,HE1,IE1 exception;
-    class BE1D,BE2D,CE1D,CE2D,DE1D,DE2D,EE1D,FE1D,GE1D,HE1D,IE1D exceptionDetail;
+    class BE1,BE2,CE1,CE2,DE1,DE2,EE1,FE1,GE1,HE1,IE1,CE3 exception;
+    class BE1D,BE2D,CE1D,CE2D,DE1D,DE2D,EE1D,FE1D,GE1D,HE1D,IE1D,CE3D exceptionDetail;
 ```
 
 ### 1. Extract ZIP Contents
