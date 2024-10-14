@@ -19,36 +19,88 @@ graph TD
     I --> J[Output JSON]
 
     B -.-> B1[Unzip files]
-    B -.-> B2[Handle extraction errors]
+    B -.-> B2[Create structured directory]
+    B -.- BE1[Invalid ZIP file]
+    B -.- BE2[Extraction failure]
 
     C -.-> C1[Identify figures & appendices]
     C -.-> C2[Build manuscript structure]
+    C -.- CE1[Missing XML file]
+    C -.- CE2[Malformed XML]
 
     D -.-> D1[Use AI to analyze text]
     D -.-> D2[Extract captions]
+    D -.- DE1[No caption found]
+    D -.- DE2[AI model error]
 
     E -.-> E1[Use YOLOv10 for detection]
     E -.-> E2[Locate individual panels]
+    E -.- EE1[Panel detection failure]
 
     F -.-> F1[Match captions to panels]
     F -.-> F2[AI-driven analysis]
+    F -.- FE1[Matching failure]
 
     G -.-> G1[Analyze file structures]
     G -.-> G2[Associate data with panels]
+    G -.- GE1[Unassigned files]
 
     H -.-> H1[Identify EV materials]
     H -.-> H2[Assign to figures/appendix]
+    H -.- HE1[EV processing error]
 
     I -.-> I1[Normalize file paths]
     I -.-> I2[Remove duplicates]
-    I -.-> I3[Categorize unassigned files]
+    I -.- IE1[Categorize unassigned files]
 
     classDef process fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px;
     classDef subProcess fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px;
     classDef exception fill:#E86236,stroke:#FFFFFF,stroke-width:1px;
     class A,B,C,D,E,F,G,H,I,J process;
     class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2 subProcess;
-    class I3 exception;
+    class BE1,BE2,CE1,CE2,DE1,DE2,EE1,FE1,GE1,HE1,IE1 exception;
+
+    %% Set text color and make it bold
+    style A fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+    style B fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+    style C fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+    style D fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+    style E fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+    style F fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+    style G fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+    style H fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+    style I fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+    style J fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
+
+    %% Set text color for subprocesses and exceptions
+    style B1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style B2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style C1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style C2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style D1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style D2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style E1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style E2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style F1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style F2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style G1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style G2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style H1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style H2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style I1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+    style I2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
+
+    style BE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style BE2 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style CE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style CE2 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style DE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style DE2 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style EE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style FE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style GE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style HE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
+    style IE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
 ```
 
 Detailed Steps
@@ -152,3 +204,7 @@ Comprehensive Processing: Handles various components including figures, panels, 
 Error Resilience: Designed to continue processing even when encountering partial failures, ensuring maximum data extraction.
 
 This pipeline demonstrates a sophisticated approach to scientific manuscript processing, enhancing the accessibility and usability of complex research data.
+
+```
+
+```
