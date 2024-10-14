@@ -76,36 +76,6 @@ graph TD
     style I fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
     style J fill:#EFA22A,stroke:#FFFFFF,stroke-width:2px,color:#000000,font-weight:bold
 
-    <!-- %% Set text color for subprocesses and exceptions
-    style B1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style B2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style C1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style C2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style D1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style D2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style E1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style E2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style F1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style F2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style G1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style G2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style H1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style H2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style I1 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-    style I2 fill:#BBC33C,stroke:#FFFFFF,stroke-width:1px,color:#000000,font-weight:bold
-
-    style BE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style BE2 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style CE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style CE2 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style DE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style DE2 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style EE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style FE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style GE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style HE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold
-    style IE1 fill:#E86236,stroke:#FFFFFF,stroke-width:1px,color:#FFFFFF,font-weight:bold -->
-
 ```
 
 Detailed Steps
