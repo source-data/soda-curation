@@ -195,5 +195,3 @@ The final output is a JSON file with the following key components:
 7. **Output Validation**: While the system attempts to handle all cases, it's recommended to implement validation checks on the output JSON to ensure all expected data is present and correctly formatted.
 
 8. **Customization**: The pipeline is modular. If you need to modify or extend functionality (e.g., supporting additional file formats or implementing different AI models), you can focus on specific modules without overhauling the entire system.
-
-By understanding this workflow and the structure of the output, developers can effectively integrate this tool into larger systems for scientific manuscript analysis, data extraction, or publishing workflows.
