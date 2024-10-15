@@ -26,6 +26,7 @@ flowchart TD
     C --> C2[Build manuscript structure]
     D --> D1[Use AI to analyze text]
     D --> D2[Extract captions]
+    D2 -.- DF1[Fallback API call with all figures context]
     E --> E1[Use YOLOv10 for detection]
     E --> E2[Locate individual panels]
     F --> F1[Match captions to panels]
@@ -70,7 +71,7 @@ flowchart TD
     classDef exceptionDetail fill:#87CEFA,stroke:#000000,stroke-width:1px,color:#000000,font-weight:normal;
 
     class A,B,C,D,E,F,G,H,I,J process;
-    class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2 subProcess;
+    class B1,B2,C1,C2,D1,D2,E1,E2,F1,F2,G1,G2,H1,H2,I1,I2,DF1 subProcess;
     class BE1,BE2,CE1,CE2,DE1,DE2,EE1,FE1,GE1,HE1,IE1,CE3 exception;
     class BE1D,BE2D,CE1D,CE2D,DE1D,DE2D,EE1D,FE1D,GE1D,HE1D,IE1D,CE3D exceptionDetail;
 ```
