@@ -8,40 +8,31 @@ used to create a structured representation of the manuscript.
 
 import logging
 import os
-import re
-from typing import Any, Dict, List
+from typing import List, Optional
 
 from lxml import etree
 
-from ..manuscript_structure.manuscript_structure import Figure, ZipStructure
 from .exceptions import NoManuscriptFileError, NoXMLFileFoundError
+from .manuscript_structure import Figure, ZipStructure
 
 logger = logging.getLogger(__name__)
-
 
 class XMLStructureExtractor:
     """
     A class for extracting manuscript structure information from XML files.
-
-    This class parses XML files typically found in scientific manuscript submissions,
-    extracting information about figures, appendices, and associated files to create
-    a structured representation of the manuscript.
-
-    Attributes:
-        zip_path (str): Path to the ZIP file containing the manuscript files.
-        extract_dir (str): Directory where the ZIP file contents are extracted.
-        xml_content (etree._Element): Parsed XML content of the manuscript.
-        manuscript_id (str): Unique identifier for the manuscript.
+    
+    Handles multiple XML formats and tag variations for manuscript components.
     """
 
-    def __init__(self, zip_path: str, extract_dir: str):
-        """
-        Initialize the XMLStructureExtractor.
+    # Define constants for XML attributes and tags
+    MANUSCRIPT_TEXT_TYPES = ["Manuscript Text"]
+    FIGURE_TYPES = ["Figure"]
+    EXPANDED_VIEW_TYPES = ["Expanded View Content (was Supplementary Information)"]
+    SOURCE_DATA_TYPES = ["Figure Source Data Files"]
+    DATA_SET_TYPES = ["Data Set"]
 
-        Args:
-            zip_path (str): Path to the ZIP file containing the manuscript files.
-            extract_dir (str): Directory where the ZIP file contents are extracted.
-        """
+    def __init__(self, zip_path: str, extract_dir: str):
+        """Initialize the extractor with paths."""
         self.zip_path = zip_path
         self.extract_dir = extract_dir
         self.xml_content = self._extract_xml_content()
@@ -49,145 +40,62 @@ class XMLStructureExtractor:
         logger.info(f"Initialized XMLStructureExtractor with manuscript_id: {self.manuscript_id}")
 
     def _extract_xml_content(self) -> etree._Element:
-        """
-        Extract and parse the XML content from the manuscript files.
-
-        Returns:
-            etree._Element: Parsed XML content.
-
-        Raises:
-            NoXMLFileFoundError: If no XML file is found in the extracted directory.
-        """
+        """Extract and parse XML content."""
         xml_files = [f for f in os.listdir(self.extract_dir) if f.endswith(".xml")]
         if not xml_files:
-            raise NoXMLFileFoundError("No XML file found in the root directory of the extracted ZIP")
+            raise NoXMLFileFoundError("No XML file found in the root directory")
         xml_file = xml_files[0]
         xml_path = os.path.join(self.extract_dir, xml_file)
         logger.info(f"Parsing XML file: {xml_path}")
         return etree.parse(xml_path).getroot()
 
     def _get_manuscript_id(self) -> str:
-        """
-        Extract the manuscript ID from the XML content.
-
-        Returns:
-            str: The manuscript ID, or an empty string if not found.
-        """
+        """Extract manuscript ID from XML."""
         manuscript_id = self.xml_content.xpath("//article-id[@pub-id-type='manuscript']")
         return manuscript_id[0].text if manuscript_id else ""
 
-    def _clean_path(self, path: str) -> str:
+    def _get_docx_file(self) -> Optional[str]:
         """
-        Clean the file path by removing the manuscript ID prefix if present.
-
-        Args:
-            path (str): The original file path.
-
-        Returns:
-            str: The cleaned file path.
+        Get the DOCX manuscript file path.
+        
+        Checks multiple possible XML structures for manuscript text documents.
         """
-        # Remove the manuscript ID from the beginning of the path if it's there
-        if self.manuscript_id and path.startswith(f"{self.manuscript_id}/"):
-            path = path[len(self.manuscript_id) + 1:]
-        return path
-
-    def extract_structure(self) -> ZipStructure:
-        """
-        Extract the complete structure of the manuscript from the XML content.
-
-        Returns:
-            ZipStructure: A structured representation of the manuscript.
-
-        Raises:
-            NoManuscriptFileError: If no PDF or DOCX manuscript file is found.
-        """
-        logger.info("Extracting structure from XML")
-        xml_file = self._get_xml_file()
-        docx_file = self._get_docx_file()
-        pdf_file = self._get_pdf_file()
-
-        if not docx_file and not pdf_file:
-            raise NoManuscriptFileError("No PDF or DOCX manuscript file found")
-
-        figures = self._get_figures()
-        appendix = self._get_appendix()
-
-        # Separate EV content
-        main_figures = []
-        ev_content = []
-        for fig in figures:
-            if re.search(r'EV', fig.figure_label, re.IGNORECASE):
-                ev_content.extend(fig.img_files)
-            else:
-                main_figures.append(fig)
-
-        # Add EV datasets to ev_content
-        ev_datasets = self._get_ev_datasets()
-        ev_content.extend(ev_datasets)
-
-        # Add all EV content to appendix
-        appendix.extend(ev_content)
-
-        return ZipStructure(
-            manuscript_id=self.manuscript_id,
-            xml=xml_file,
-            docx=docx_file,
-            pdf=pdf_file,
-            appendix=appendix,
-            figures=main_figures,
-        )
-
-    def _get_xml_file(self) -> str:
-        """
-        Get the name of the XML file.
-
-        Returns:
-            str: The name of the XML file.
-        """
-        return os.path.basename(self.xml_content.base)
-
-    def _get_docx_file(self) -> str:
-        """
-        Extract the path to the DOCX file from the XML content.
-
-        Returns:
-            str: The path to the DOCX file, or an empty string if not found.
-        """
-        docx = self.xml_content.xpath("//doc[@object-type='Manuscript Text']")
-        if docx:
-            return self._clean_path(docx[0].xpath(".//object_id")[0].text)
-        logger.warning("No DOCX file found in XML content")
-        return ""
-
-    def _get_pdf_file(self) -> str:
-        """
-        Extract the path to the PDF file from the XML content.
-
-        Returns:
-            str: The path to the PDF file, or an empty string if not found.
-        """
-        pdf = self.xml_content.xpath("//merged_pdf[@object-type='Merged PDF']")
-        if pdf:
-            return self._clean_path(pdf[0].xpath(".//object_id")[0].text)
-        logger.warning("No PDF file found in XML content")
-        return ""
+        # Build XPath to find manuscript text elements of various types
+        xpath_query = " | ".join([
+            f"//doc[@object-type='{type}']" for type in self.MANUSCRIPT_TEXT_TYPES
+        ] + [
+            f"//supplementary-material[@object-type='{type}']" for type in self.MANUSCRIPT_TEXT_TYPES
+        ])
+        
+        manuscript_elements = self.xml_content.xpath(xpath_query)
+        
+        for element in manuscript_elements:
+            # Get object_id element content
+            object_id = element.xpath(".//object_id")
+            if object_id and object_id[0].text.lower().endswith('.docx'):
+                return self._clean_path(object_id[0].text)
+        
+        logger.warning("No DOCX manuscript file found")
+        return None
 
     def _get_figures(self) -> List[Figure]:
-        """
-        Extract information about figures from the XML content.
-
-        This method processes the XML to identify figures, their labels, associated image files,
-        and source data files.
-
-        Returns:
-            List[Figure]: A list of Figure objects representing the figures in the manuscript.
-        """
+        """Get list of figures from XML."""
         figures = []
-        for fig in self.xml_content.xpath("//fig[@object-type='Figure']"):
+        # Build XPath to find figure elements
+        xpath_query = " | ".join([
+            f"//fig[@object-type='{type}']" for type in self.FIGURE_TYPES
+        ])
+        
+        for fig in self.xml_content.xpath(xpath_query):
             label = fig.xpath(".//label")[0].text
+            # Skip EV figures as they go to appendix
+            if "EV" in label:
+                continue
+                
             img_files = [self._clean_path(fig.xpath(".//object_id")[0].text)]
             sd_files = self._get_source_data_files(label)
-            logger.info(f"Processing figure: {label}, Image files: {img_files}, SD files: {sd_files}")
+            
+            logger.info(f"Processing figure: {label}")
             figures.append(
                 Figure(
                     figure_label=label,
@@ -200,62 +108,85 @@ class XMLStructureExtractor:
         return figures
 
     def _get_source_data_files(self, figure_label: str) -> List[str]:
-        """
-        Extract paths to source data files associated with a specific figure.
-
-        Args:
-            figure_label (str): The label of the figure to find source data for.
-
-        Returns:
-            List[str]: A list of file paths to source data files for the given figure.
-        """
-        sd_files = self.xml_content.xpath(
-            f"//form[@object-type='Figure Source Data Files'][label='{figure_label} Source Data']"
-        )
-        dataset_files = self.xml_content.xpath(
-            "//form[@object-type='Data Set'][starts-with(label, 'Dataset')]"
-        )
-
+        """Get source data files for a specific figure."""
+        # Build XPath for source data elements
+        xpath_query = " | ".join([
+            f"//form[@object-type='{type}'][label='{figure_label} Source Data']" 
+            for type in self.SOURCE_DATA_TYPES
+        ])
+        
+        sd_files = self.xml_content.xpath(xpath_query)
+        
+        # Also check for associated datasets
+        dataset_query = " | ".join([
+            f"//form[@object-type='{type}']" for type in self.DATA_SET_TYPES
+        ])
+        dataset_files = self.xml_content.xpath(dataset_query)
+        
         files = []
         if sd_files:
-            files.extend(
-                [self._clean_path(sd.xpath(".//object_id")[0].text) for sd in sd_files]
-            )
+            files.extend([self._clean_path(sd.xpath(".//object_id")[0].text) for sd in sd_files])
         if dataset_files:
-            files.extend(
-                [
-                    self._clean_path(ds.xpath(".//object_id")[0].text)
-                    for ds in dataset_files
-                ]
-            )
+            files.extend([self._clean_path(ds.xpath(".//object_id")[0].text) for ds in dataset_files])
+        
         return files
 
     def _get_appendix(self) -> List[str]:
-        """
-        Extract paths to appendix files from the XML content.
-
-        Returns:
-            List[str]: A list of file paths to appendix files.
-        """
-        appendix = self.xml_content.xpath(
-            "//form[@object-type='Expanded View Content (was Supplementary Information)'][label='Appendix']"
-        )
+        """Get list of appendix files."""
+        # Build XPath for expanded view content
+        xpath_query = " | ".join([
+            f"//form[@object-type='{type}'][label='Appendix']" 
+            for type in self.EXPANDED_VIEW_TYPES
+        ])
+        
+        appendix = self.xml_content.xpath(xpath_query)
         return [self._clean_path(app.xpath(".//object_id")[0].text) for app in appendix]
 
-    def _get_ev_datasets(self) -> List[Dict[str, Any]]:
-        """
-        Extract EV datasets from the XML content.
+    def _clean_path(self, path: str) -> str:
+        """Clean file path by removing manuscript ID prefix if present."""
+        if self.manuscript_id and path.startswith(f"{self.manuscript_id}/"):
+            path = path[len(self.manuscript_id) + 1:]
+        return path
 
+    def extract_structure(self) -> ZipStructure:
+        """
+        Extract complete manuscript structure from XML.
+        
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing EV dataset information.
+            ZipStructure: Structured representation of the manuscript.
+            
+        Raises:
+            NoManuscriptFileError: If no manuscript file (DOCX/PDF) is found.
         """
-        ev_datasets = []
-        for dataset in self.xml_content.xpath("//form[@object-type='Data Set']"):
-            label = dataset.xpath(".//label")[0].text
-            if re.search(r'EV', label, re.IGNORECASE):
-                ev_datasets.append({
-                    "label": label,
-                    "object_id": self._clean_path(dataset.xpath(".//object_id")[0].text)
-                })
-        return ev_datasets
+        logger.info("Extracting structure from XML")
+        
+        xml_file = self._get_xml_file()
+        docx_file = self._get_docx_file()
+        pdf_file = self._get_pdf_file()
 
+        if not docx_file and not pdf_file:
+            raise NoManuscriptFileError("No PDF or DOCX manuscript file found")
+
+        figures = self._get_figures()
+        appendix = self._get_appendix()
+
+        return ZipStructure(
+            manuscript_id=self.manuscript_id,
+            xml=xml_file,
+            docx=docx_file or "",
+            pdf=pdf_file or "",
+            appendix=appendix,
+            figures=figures,
+        )
+
+    def _get_xml_file(self) -> str:
+        """Get name of the XML file."""
+        return os.path.basename(self.xml_content.base)
+
+    def _get_pdf_file(self) -> str:
+        """Get PDF file path from XML."""
+        pdf = self.xml_content.xpath("//merged_pdf[@object-type='Merged PDF']")
+        if pdf:
+            return self._clean_path(pdf[0].xpath(".//object_id")[0].text)
+        logger.warning("No PDF file found")
+        return ""
