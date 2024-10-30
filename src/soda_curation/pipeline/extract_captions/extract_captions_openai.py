@@ -147,10 +147,10 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
     def extract_captions(self, docx_path: str, zip_structure: ZipStructure, expected_figure_count: int) -> ZipStructure:
         """
-        Extract figure captions using a two-step process.
+        Extract figure captions using two-step process with DOCX/PDF fallback.
         
         Args:
-            docx_path (str): Path to the DOCX file
+            docx_path (str): Path to DOCX file
             zip_structure (ZipStructure): Current ZIP structure
             expected_figure_count (int): Expected number of figures
             
@@ -158,9 +158,11 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             ZipStructure: Updated structure with extracted captions
         """
         try:
-            # Step 1: Locate all figure captions
+            # Step 1: Locate all figure captions (with fallback)
             logger.info("Step 1: Locating figure captions section")
-            all_captions = self._locate_figure_captions(docx_path)
+            pdf_path = zip_structure._full_pdf if hasattr(zip_structure, '_full_pdf') else None
+            all_captions = self._locate_figure_captions(docx_path, pdf_path)
+            
             if not all_captions:
                 logger.error("Failed to locate figure captions section")
                 return zip_structure
@@ -177,54 +179,137 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 return zip_structure
             
             # Update structure with extracted captions
-            zip_structure = self._update_structure_with_captions(zip_structure, captions, docx_path)
+            zip_structure = self._update_structure_with_captions(
+                zip_structure, captions, docx_path
+            )
             
             return zip_structure
-            
+                
         except Exception as e:
             logger.error(f"Error in caption extraction: {str(e)}")
             return zip_structure
 
-    def _locate_figure_captions(self, docx_path: str) -> Optional[str]:
+    def _locate_figure_captions(self, docx_path: str, pdf_path: str) -> Optional[str]:
         """
-        Locate and extract all figure captions from the document using OpenAI's file handling.
+        Locate figure captions section from either DOCX or PDF file.
+        
+        Tries DOCX first by extracting text content, falls back to PDF if needed.
         
         Args:
-            docx_path (str): Path to the DOCX file
+            docx_path (str): Path to DOCX file
+            pdf_path (str): Path to PDF file (fallback)
             
         Returns:
             Optional[str]: Text containing all located captions, or None if not found
         """
         try:
-            # Prepare query with file upload
-            thread_id, file_object = self._prepare_query(docx_path, get_locate_captions_prompt())
-            logger.info(f"Created thread {thread_id} for caption location")
+            # Try DOCX first
+            if docx_path and os.path.exists(docx_path):
+                logger.info("Attempting to extract captions from DOCX")
+                doc_content = self._extract_docx_content(docx_path)
+                
+                if doc_content:
+                    # Call API with extracted text content
+                    response = self.client.chat.completions.create(
+                        model=self.config.get("model", "gpt-4-turbo-preview"),
+                        messages=[
+                            {"role": "system", "content": get_locate_captions_prompt()},
+                            {"role": "user", "content": doc_content}
+                        ],
+                        temperature=0.3
+                    )
+                    
+                    if response.choices:
+                        logger.info("Successfully extracted captions from DOCX")
+                        return response.choices[0].message.content.strip()
+                    
+                logger.warning("Failed to extract captions from DOCX")
+                
+            # Fallback to PDF if available
+            if pdf_path and os.path.exists(pdf_path):
+                logger.info("Falling back to PDF file")
+                return self._locate_captions_from_pdf(pdf_path)
+                
+            logger.error("No valid document found for caption extraction")
+            return None
+                
+        except Exception as e:
+            logger.error(f"Error in caption location: {str(e)}")
+            return None
+
+    def _extract_docx_content(self, docx_path: str) -> Optional[str]:
+        """
+        Extract text content from DOCX file.
+        
+        Args:
+            docx_path (str): Path to DOCX file
+            
+        Returns:
+            Optional[str]: Extracted text content or None if failed
+        """
+        try:
+            doc = Document(docx_path)
+            # Join paragraphs with double newlines for better separation
+            content = "\n\n".join(paragraph.text for paragraph in doc.paragraphs if paragraph.text.strip())
+            return content
+        except Exception as e:
+            logger.error(f"Error extracting DOCX content: {str(e)}")
+            return None
+
+    def _locate_captions_from_pdf(self, pdf_path: str) -> Optional[str]:
+        """
+        Locate captions from PDF using file handling approach.
+        
+        Args:
+            pdf_path (str): Path to PDF file
+            
+        Returns:
+            Optional[str]: Located captions text or None if failed
+        """
+        try:
+            # Upload PDF file
+            with open(pdf_path, "rb") as file:
+                file_object = self.client.files.create(
+                    file=file, 
+                    purpose="assistants"
+                )
+            
+            logger.info(f"Uploaded PDF file {file_object.id} for caption location")
             
             try:
+                # Create thread with file
+                thread = self.client.beta.threads.create(
+                    messages=[{
+                        "role": "user",
+                        "content": get_locate_captions_prompt(),
+                        "attachments": [{
+                            "file_id": file_object.id,
+                            "tools": [{"type": "file_search"}]
+                        }]
+                    }]
+                )
+
                 # Run the assistant
                 run = self.client.beta.threads.runs.create(
-                    thread_id=thread_id,
+                    thread_id=thread.id,
                     assistant_id=self.assistant.id
                 )
 
                 # Wait for completion
                 while run.status != "completed":
                     run = self.client.beta.threads.runs.retrieve(
-                        thread_id=thread_id,
+                        thread_id=thread.id,
                         run_id=run.id
                     )
                     time.sleep(1)
                     
-                # Get the response
-                messages = self.client.beta.threads.messages.list(thread_id=thread_id)
+                # Get response
+                messages = self.client.beta.threads.messages.list(thread_id=thread.id)
                 
                 if messages.data:
-                    result = messages.data[0].content[0].text.value
-                    logger.info("Successfully located figure captions section")
-                    return result.strip()
-                else:
-                    logger.warning("No response received for caption location")
-                    return None
+                    logger.info("Successfully extracted captions from PDF")
+                    return messages.data[0].content[0].text.value
+                return None
 
             finally:
                 # Clean up
@@ -235,7 +320,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                     logger.warning(f"Error deleting file {file_object.id}: {del_err}")
                     
         except Exception as e:
-            logger.error(f"Error locating figure captions: {str(e)}")
+            logger.error(f"Error extracting from PDF: {str(e)}")
             return None
 
     def _extract_individual_captions(self, all_captions: str, expected_figure_count: int) -> Dict[str, str]:
