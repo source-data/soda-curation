@@ -44,24 +44,21 @@ class FigureProcessor:
         self.panel_source_assigner = PanelSourceAssigner(config)
 
     def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
-        """Process all figures in the ZIP structure."""
+        """Process figures and their panels."""
         logger.info("Processing figures and panels")
         
         for figure in zip_structure.figures:
-            logger.info(f"Processing figure: {figure.figure_label}")
-            
-            try:
-                if figure._full_img_files:
+            if figure._full_img_files:
+                try:
                     # First detect panels using object detection
                     pil_image, _ = convert_to_pil_image(figure._full_img_files[0])
-                    figure._pil_image = pil_image  # Store for reuse
                     detected_panels = self.object_detector.detect_panels(pil_image)
                     
                     # Create initial panel objects with detection results
                     panels = [
                         Panel(
-                            panel_label="",  # Will be filled by panel_caption_matcher if caption exists
-                            panel_caption="",  # Will be filled by panel_caption_matcher if caption exists
+                            panel_label="",  # Will be filled by panel_caption_matcher
+                            panel_caption="",  # Will be filled by panel_caption_matcher
                             panel_bbox=panel["panel_bbox"],
                             confidence=panel["confidence"],
                             ai_response="",
@@ -70,33 +67,20 @@ class FigureProcessor:
                         for panel in detected_panels
                     ]
                     figure.panels = panels
-                    
-                    # If figure has valid caption, proceed with panel processing
-                    if (figure.figure_caption and 
-                        figure.figure_caption != "Figure caption not found." and 
-                        not figure.possible_hallucination):
-                        logger.info(f"Matching captions for figure {figure.figure_label}")
-                        try:
-                            # Match panel captions
-                            figure = self.panel_caption_matcher.match_captions(figure)
-                            # Assign panel sources
-                            figure = self.panel_source_assigner.assign_panel_source(figure)
-                        except Exception as e:
-                            logger.error(f"Error processing panels for {figure.figure_label}: {str(e)}")
+
+                    # If figure has valid caption, process panel captions and sources
+                    if figure.figure_caption and figure.figure_caption != "Figure caption not found.":
+                        logger.info(f"Processing panels for figure {figure.figure_label}")
+                        # Match panel captions
+                        figure = self.panel_caption_matcher.match_captions(figure)
+                        # Assign panel sources - now process individual figure
+                        figure = self.panel_source_assigner.assign_panel_source(figure)
                     else:
-                        logger.warning(
-                            f"Skipping panel caption matching for {figure.figure_label} - "
-                            f"No valid caption or possible hallucination"
-                        )
+                        logger.warning(f"Skipping panel caption matching for {figure.figure_label} - No valid caption")
                         
-            except Exception as e:
-                logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
-                continue
-                
-            # Clean up stored PIL image
-            if hasattr(figure, '_pil_image'):
-                del figure._pil_image
-                
+                except Exception as e:
+                    logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
+
         return zip_structure
 
     def _process_single_figure(self, figure: Figure) -> Figure:

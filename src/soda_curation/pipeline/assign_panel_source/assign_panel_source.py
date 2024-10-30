@@ -3,7 +3,7 @@ import logging
 import os
 import re
 import zipfile
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 import openai
 from openai._types import NotGiven
@@ -67,7 +67,7 @@ class PanelSourceAssigner:
             logger.error("panel_source_data_assistant_id is not set in the configuration")
             raise ValueError("panel_source_data_assistant_id is not set in the configuration")
 
-    def assign_panel_source(self, zip_structure: ZipStructure) -> ZipStructure:
+    def assign_panel_source(self, input_obj: Union[ZipStructure, Figure]) -> Union[ZipStructure, Figure]:
         """
         Assign source data files to panels for all figures in the ZIP structure.
 
@@ -79,32 +79,78 @@ class PanelSourceAssigner:
         """
         logger.info("Starting panel source assignment process")
         
+        if isinstance(input_obj, ZipStructure):
+            return self._assign_to_zip_structure(input_obj)
+        elif isinstance(input_obj, Figure):
+            return self._assign_to_figure(input_obj)
+        else:
+            raise TypeError(f"Expected ZipStructure or Figure, got {type(input_obj)}")
+        
+    def _assign_to_zip_structure(self, zip_structure: ZipStructure) -> ZipStructure:
+        """Process entire ZipStructure object"""
         ev_materials = []
         for figure in zip_structure.figures:
             if figure._full_sd_files:
-                logger.info(f"Processing figure: {figure.figure_label}")
-                sd_zip_file = None
-                figure.sd_files = []  # Reset sd_files
-                for file in figure._full_sd_files:
-                    if file.endswith('.zip'):
-                        sd_zip_file = file
-                    elif re.search(r'(Figure|Table|Dataset)\s*EV', os.path.basename(file), re.IGNORECASE):
-                        ev_materials.append(file)
-                    else:
-                        figure.sd_files.append(os.path.basename(file))
+                figure = self._assign_to_figure(figure)
                 
-                if sd_zip_file:
-                    self._process_figure_zip(figure, sd_zip_file, zip_structure)
-                else:
-                    logger.warning(f"No ZIP source data file found for figure: {figure.figure_label}")
-            else:
-                logger.warning(f"No source data files found for figure: {figure.figure_label}")
-        
-        # Handle EV materials
+        # Handle EV materials at structure level
         self._assign_ev_materials(zip_structure, ev_materials)
-        
-        logger.info("Panel source assignment process completed")
         return zip_structure
+
+    def _assign_to_figure(self, figure: Figure) -> Figure:
+        """Process single figure"""
+        if not figure._full_sd_files:
+            logger.warning(f"No source data files found for figure: {figure.figure_label}")
+            return figure
+
+        sd_zip_file = None
+        figure.sd_files = []  # Reset sd_files
+        
+        # Find ZIP file among source data files
+        for file in figure._full_sd_files:
+            if file.endswith('.zip'):
+                sd_zip_file = file
+                break
+        
+        if sd_zip_file:
+            try:
+                with zipfile.ZipFile(sd_zip_file, 'r') as zip_ref:
+                    file_list = [
+                        f for f in zip_ref.namelist()
+                        if not f.startswith('__MACOSX')
+                        and not f.endswith('.DS_Store')
+                        and not f == ""
+                        and not f.endswith('/')
+                    ]
+                
+                if not file_list:
+                    logger.warning(f"No valid files found in ZIP for {figure.figure_label}")
+                    return figure
+
+                # Get panel labels
+                panel_labels = [panel.panel_label for panel in figure.panels if panel.panel_label]
+                if not panel_labels:
+                    logger.warning(f"No panel labels found for {figure.figure_label}")
+                    return figure
+                
+                panel_labels_str = ", ".join(panel_labels)
+                prompt = get_assign_panel_source_prompt(figure.figure_label, panel_labels_str, "\n".join(file_list))
+                
+                # Get AI response for file assignments
+                ai_response = self._call_openai_api(prompt)
+                if not ai_response:
+                    return figure
+                    
+                # Parse and update assignments
+                assignments = self._parse_response(ai_response)
+                if assignments:
+                    self._update_figure_with_assignments(figure, assignments)
+                    figure.ai_response_panel_source_assign = ai_response
+                    
+            except Exception as e:
+                logger.error(f"Error processing {figure.figure_label}: {str(e)}")
+        
+        return figure
 
     def _process_figure_zip(self, figure: Figure, zip_file_path: str, zip_structure: ZipStructure):
         """Process a single figure's ZIP file, assigning source data files to its panels.
@@ -176,11 +222,12 @@ class PanelSourceAssigner:
             logger.error(f"Error processing {figure.figure_label}: {str(e)}")
             
     def _update_figure_with_assignments(self, figure: Figure, assignments: Dict[str, List[str]]):
-        """Update the figure and its panels with source data file assignments.
+        """
+        Update the figure with source data file assignments.
 
         Args:
-            figure (Figure): The figure to update.
-            assignments (Dict[str, List[str]]): The assignments from the AI model.
+            figure (Figure): The figure to update
+            assignments (Dict[str, List[str]]): The assignments of files to panels
         """
         logger.info(f"Updating {figure.figure_label} with source data assignments")
         assigned_files = set()
@@ -199,9 +246,10 @@ class PanelSourceAssigner:
         # Handle unassigned files
         if 'unassigned' in assignments:
             unassigned_files = set(assignments['unassigned']) - assigned_files
-            logger.debug(f"Adding {len(unassigned_files)} unassigned files")
-            # Update ZipStructure's non_associated_sd_files here
-            figure.unassigned_sd_files = list(unassigned_files)            
+            logger.debug(f"Found {len(unassigned_files)} unassigned files")
+            if not hasattr(figure, 'unassigned_sd_files'):
+                figure.unassigned_sd_files = []
+            figure.unassigned_sd_files.extend(unassigned_files)
             
     def _process_figure(self, figure: Figure, figure_files: Dict[str, Any], zip_structure: ZipStructure):
         """
@@ -325,25 +373,6 @@ class PanelSourceAssigner:
             logger.error("Failed to parse JSON from OpenAI's response")
             logger.debug(f"Raw response that failed to parse: {response}")
             return {}
-
-    def _update_figure_with_assignments(self, figure: Figure, assignments: Dict[str, List[str]], zip_structure: ZipStructure):
-        """
-        Update the figure and ZIP structure with the source data file assignments.
-
-        Args:
-            figure (Figure): The figure to update.
-            assignments (Dict[str, List[str]]): The assignments of files to panels.
-            zip_structure (ZipStructure): The overall ZIP structure to update.
-        """
-        logger.info(f"Updating figure {figure.figure_label} with assignments")
-        for panel in figure.panels:
-            panel_label = panel.panel_label
-            panel.sd_files = assignments.get(panel_label, [])
-            logger.debug(f"Assigned {len(panel.sd_files)} files to panel {panel_label}")
-        
-        unassigned = assignments.get('unassigned', [])
-        zip_structure.non_associated_sd_files.extend(unassigned)
-        logger.info(f"Added {len(unassigned)} unassigned files to non_associated_sd_files")
 
     def _assign_ev_materials(self, zip_structure: ZipStructure, ev_materials: List[str]):
         """

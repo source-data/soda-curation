@@ -62,17 +62,16 @@ class Figure:
     figure_label: str
     img_files: List[str]
     sd_files: List[str]
-    figure_caption: str = ""
     panels: List[Panel] = field(default_factory=list)
+    unassigned_sd_files: List[str] = field(default_factory=list)
+    _full_img_files: List[str] = field(default_factory=list)
+    _full_sd_files: List[str] = field(default_factory=list)
     duplicated_panels: str = "false"
     ai_response_panel_source_assign: Optional[str] = None
     possible_hallucination: bool = False
     caption_fuzzy_score: float = 0.0
-    # Existing fields
-    _full_img_files: List[str] = field(default_factory=list)
-    _full_sd_files: List[str] = field(default_factory=list)
+    figure_caption: str = ""
 
-@dataclass
 @dataclass
 class ZipStructure:
     """
