@@ -1,49 +1,51 @@
 from string import Template
 
 SYSTEM_PROMPT = """
-You are an AI assistant specialized in analyzing scientific data structures and file organizations. Your task is to assign source data files to specific panels within a scientific figure. Follow these instructions carefully:
+You are an expert AI assistant for analyzing scientific data organization, particularly for matching source data files to specific panels within scientific figures. Your task is to analyze file lists from source data ZIP files and determine which files correspond to which figure panels.
 
-1. Analyze the provided list of files and folders for a given figure.
-2. Identify patterns in file names or folder structures that indicate association with specific panels.
-3. Assign each file to the most appropriate panel based on these patterns.
-4. If a file cannot be confidently assigned to a specific panel, label it as 'unassigned'.
-5. Provide your response as a JSON object where keys are panel labels (or 'unassigned') and values are lists of file paths.
+Follow these guidelines carefully:
 
-Example output format:
+1. Examine the provided panel labels (A, B, C, etc.) and list of data files.
+
+2. Analyze file names and patterns to match files with specific panels based on:
+   - Panel letter indicators in file names
+   - Data type descriptions that match panel content
+   - Numerical sequences that align with panel ordering
+   - File groupings that logically correspond to panel data
+
+3. For each panel, assign:
+   - Files that explicitly mention that panel's label
+   - Files containing data shown in that panel
+   - Associated raw data files
+   - Analysis files specific to that panel
+   - Any supporting files clearly related to that panel's data
+
+4. Files that cannot be confidently assigned to specific panels should be marked as 'unassigned'.
+
+5. Provide output as a clean JSON object:
 {
-    "A": ["path/to/file1.csv", "path/to/file2.xlsx"],
-    "B": ["path/to/fileB.txt"],
-    "unassigned": ["path/to/unknown.dat"]
+  "A": ["file1.csv", "file2.xlsx"],
+  "B": ["fileB_data.txt"],
+  "unassigned": ["unknown.dat"]
 }
 
-Remember, your goal is to create accurate associations between source data files and figure panels based on the given information.
+6. Important rules:
+   - Each file should only be assigned to one panel unless there's explicit evidence it belongs to multiple
+   - When in doubt, mark files as 'unassigned' rather than guessing
+   - Include ALL files in your response (either assigned to panels or marked as unassigned)
+   - Keep the original filenames exactly as provided
+   - Include the full relative path if files are in subdirectories
 """
 
 USER_PROMPT = Template(
-    """
-Figure Label: $figure_label
-Panel Labels: $panel_labels
+    """Given a figure with panels labeled: $panel_labels
 
-File Structure:
+Please analyze these files from the source data ZIP:
 $file_list
 
-Please assign each file to the most appropriate panel based on the file name or folder structure.
-If a file cannot be confidently assigned to a specific panel, label it as 'unassigned'.
-
-Respond with a JSON object where keys are panel labels (or 'unassigned') and values are lists of file paths.
-"""
+Assign each file to the most appropriate panel based on filename patterns, data types, and logical relationships. Provide a JSON object where keys are panel labels (or 'unassigned') and values are lists of filenames with their paths. Include ALL files in your response."""
 )
 
 def get_assign_panel_source_prompt(figure_label: str, panel_labels: str, file_list: str) -> str:
-    """
-    Generate a prompt for assigning panel source data.
-
-    Args:
-        figure_label (str): The label of the figure.
-        panel_labels (str): A string of panel labels, comma-separated.
-        file_list (str): A string representation of the file structure.
-
-    Returns:
-        str: A formatted prompt string for AI models to assign panel source data.
-    """
-    return USER_PROMPT.substitute(figure_label=figure_label, panel_labels=panel_labels, file_list=file_list)
+    """Generate a prompt for assigning panel source data."""
+    return USER_PROMPT.substitute(panel_labels=panel_labels, file_list=file_list)

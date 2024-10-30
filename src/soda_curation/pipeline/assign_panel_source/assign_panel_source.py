@@ -107,8 +107,7 @@ class PanelSourceAssigner:
         return zip_structure
 
     def _process_figure_zip(self, figure: Figure, zip_file_path: str, zip_structure: ZipStructure):
-        """
-        Process a single figure's ZIP file, assigning source data files to its panels.
+        """Process a single figure's ZIP file, assigning source data files to its panels.
 
         Args:
             figure (Figure): The figure object to process.
@@ -116,27 +115,93 @@ class PanelSourceAssigner:
             zip_structure (ZipStructure): The overall ZIP structure.
         """
         try:
+            file_list = []
+            # First extract full file list from ZIP
             with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-                file_list = [f for f in zip_ref.namelist() if not f.startswith('__MACOSX') and not f.endswith('.DS_Store')]
+                file_list = [
+                    f for f in zip_ref.namelist() 
+                    if not f.startswith('__MACOSX') 
+                    and not f.endswith('.DS_Store')
+                    and not f == ""  # Skip empty entries
+                    and not f.endswith('/')  # Skip directory entries
+                ]
             
+            if not file_list:
+                logger.warning(f"No valid files found in ZIP for {figure.figure_label}")
+                return
+
             logger.debug(f"Files in ZIP for {figure.figure_label}: {file_list}")
+
+            # Create panel list with labels
+            panel_labels = []
+            for panel in figure.panels:
+                if panel.panel_label:  # Only include panels with assigned labels
+                    panel_labels.append(panel.panel_label)
             
-            panel_labels = ", ".join([panel.panel_label for panel in figure.panels])
-            prompt = get_assign_panel_source_prompt(figure.figure_label, panel_labels, "\n".join(file_list))
+            if not panel_labels:
+                logger.warning(f"No panel labels found for {figure.figure_label}")
+                return
+                
+            panel_labels_str = ", ".join(panel_labels)
+            prompt = get_assign_panel_source_prompt(figure.figure_label, panel_labels_str, "\n".join(file_list))
             logger.debug(f"Generated prompt for {figure.figure_label}: {prompt}")
 
-            response = self._call_openai_api(prompt)
-            logger.debug(f"Raw API response for {figure.figure_label}: {response}")
-            assignments = self._parse_response(response)
-            logger.debug(f"Parsed assignments for {figure.figure_label}: {json.dumps(assignments, indent=2)}")
-            self._update_figure_with_assignments(figure, assignments, zip_structure)
-            figure.ai_response_panel_source_assign = response
+            # Get AI response
+            ai_response = self._call_openai_api(prompt)
+            if not ai_response:
+                logger.warning(f"No AI response for {figure.figure_label}")
+                return
+                
+            logger.debug(f"Raw API response for {figure.figure_label}: {ai_response}")
+            
+            # Parse response
+            try:
+                assignments = self._parse_response(ai_response)
+                if not assignments:
+                    logger.warning(f"No valid assignments parsed for {figure.figure_label}")
+                    return
+                    
+                logger.debug(f"Parsed assignments for {figure.figure_label}: {json.dumps(assignments, indent=2)}")
+                
+                # Update figure with assignments
+                self._update_figure_with_assignments(figure, assignments)
+                figure.ai_response_panel_source_assign = ai_response
+                
+            except Exception as e:
+                logger.error(f"Error parsing assignments for {figure.figure_label}: {str(e)}")
+                
         except zipfile.BadZipFile:
-            logger.error(f"Error processing ZIP file for {figure.figure_label}: {zip_file_path} is not a valid ZIP file")
-            figure.ai_response_panel_source_assign = f"Error: Invalid ZIP file"
+            logger.error(f"Invalid ZIP file: {zip_file_path}")
         except Exception as e:
-            logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
-            figure.ai_response_panel_source_assign = f"Error: {str(e)}"
+            logger.error(f"Error processing {figure.figure_label}: {str(e)}")
+            
+    def _update_figure_with_assignments(self, figure: Figure, assignments: Dict[str, List[str]]):
+        """Update the figure and its panels with source data file assignments.
+
+        Args:
+            figure (Figure): The figure to update.
+            assignments (Dict[str, List[str]]): The assignments from the AI model.
+        """
+        logger.info(f"Updating {figure.figure_label} with source data assignments")
+        assigned_files = set()
+        
+        # First assign files to panels
+        for panel in figure.panels:
+            if panel.panel_label in assignments:
+                panel_files = assignments[panel.panel_label]
+                logger.debug(f"Assigning {len(panel_files)} files to panel {panel.panel_label}")
+                panel.sd_files = panel_files
+                assigned_files.update(panel_files)
+            else:
+                logger.debug(f"No files assigned to panel {panel.panel_label}")
+                panel.sd_files = []
+                
+        # Handle unassigned files
+        if 'unassigned' in assignments:
+            unassigned_files = set(assignments['unassigned']) - assigned_files
+            logger.debug(f"Adding {len(unassigned_files)} unassigned files")
+            # Update ZipStructure's non_associated_sd_files here
+            figure.unassigned_sd_files = list(unassigned_files)            
             
     def _process_figure(self, figure: Figure, figure_files: Dict[str, Any], zip_structure: ZipStructure):
         """

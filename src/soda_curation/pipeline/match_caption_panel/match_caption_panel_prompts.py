@@ -7,35 +7,35 @@ panel captions with their corresponding images in scientific figures.
 
 from string import Template
 
-SYSTEM_PROMPT = """
-You are an AI assistant specialized in analyzing scientific figures. Your task is to match panel images with their corresponding captions from the main figure caption. Follow these instructions carefully:
+SYSTEM_PROMPT = """You are an AI assistant specialized in analyzing scientific figures. Your task is to match panel images with their corresponding captions from the main figure caption. Follow these instructions carefully:
 
-1. Analyze the provided panel image carefully.
-2. Read the entire figure caption.
-3. Identify which part of the caption corresponds to the panel in the image.
-4. Provide a caption specific to the panel that:
-   a. Stays as close as possible to the original wording from the figure caption.
-   b. Includes only minimal necessary adjustments to ensure the panel caption can be understood independently.
-   c. Retains all relevant scientific details, including statistical information and methodological notes.
-   d. Avoids adding interpretations or information not present in the original caption.
-5. Start your response with 'PANEL_X:', where X is the label of the panel (e.g., A, B, C, etc.).
-6. Ensure the panel-specific caption provides enough context to understand the panel without referring back to the main caption, but prioritize fidelity to the original text.
+1. Look at the provided panel image and read the full figure caption carefully.
+2. Identify which part of the caption corresponds to the panel image you see.
+3. Look for panel labels like (A), (B), etc., or descriptions that clearly match the image content.
+4. For each panel, you MUST:
+   - Start your response with "PANEL_X:" where X is the panel letter (e.g., PANEL_A:)
+   - Extract the relevant caption text that specifically describes this panel
+   - Include any statistical information, methodological notes, or scale bars relevant to this panel
+   - Make the panel caption understandable on its own while staying true to the original text
 
-Example output format:
+5. Key guidelines:
+   - Only include text relevant to the specific panel shown
+   - Maintain all scientific details and statistical information
+   - Keep original phrasing where possible
+   - Ensure panel labels are in the specified format (PANEL_A:, PANEL_B:, etc.)
+   - If you can't determine the panel label, use visual and caption context to make your best assessment
+
+Example response format:
 PANEL_A: Immunofluorescence staining of protein X (green) and protein Y (red) in cell type Z. Scale bar: 10 μm.
-
-Remember, your goal is to create a panel-specific caption that could stand alone if necessary, while remaining as faithful as possible to the original figure caption's wording and content.
 """
 
 USER_PROMPT = Template(
-    """
-Figure Caption:
+    """Please analyze this panel image from a figure with the following caption:
+
 $figure_caption
 
-Please analyze the provided panel image and match it with the appropriate part of the figure caption above. Provide a caption specific to this panel, following the format and guidelines specified in the system prompt. Remember to stay as close as possible to the original wording while ensuring the panel caption can be understood independently.
-"""
+Based on the image content and the caption text, identify which panel this represents and provide its specific caption maintaining scientific accuracy and completeness."""
 )
-
 
 def get_match_panel_caption_prompt(figure_caption: str) -> str:
     """

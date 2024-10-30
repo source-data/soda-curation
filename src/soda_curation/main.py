@@ -6,7 +6,7 @@ import re
 import shutil
 import zipfile
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from .config import load_config
 from .logging_config import setup_logging
@@ -33,6 +33,118 @@ from .pipeline.object_detection.object_detection import (
 )
 
 logger = logging.getLogger(__name__)
+
+class FigureProcessor:
+    """Class to handle figure processing including panel detection, caption matching and source assignment."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+        self.object_detector = create_object_detection(config)
+        self.panel_caption_matcher = MatchPanelCaptionOpenAI(config)
+        self.panel_source_assigner = PanelSourceAssigner(config)
+
+    def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
+        """Process all figures in the ZIP structure."""
+        logger.info("Processing figures and panels")
+        
+        for figure in zip_structure.figures:
+            logger.info(f"Processing figure: {figure.figure_label}")
+            
+            try:
+                if figure._full_img_files:
+                    # First detect panels using object detection
+                    pil_image, _ = convert_to_pil_image(figure._full_img_files[0])
+                    figure._pil_image = pil_image  # Store for reuse
+                    detected_panels = self.object_detector.detect_panels(pil_image)
+                    
+                    # Create initial panel objects with detection results
+                    panels = [
+                        Panel(
+                            panel_label="",  # Will be filled by panel_caption_matcher if caption exists
+                            panel_caption="",  # Will be filled by panel_caption_matcher if caption exists
+                            panel_bbox=panel["panel_bbox"],
+                            confidence=panel["confidence"],
+                            ai_response="",
+                            sd_files=[]
+                        )
+                        for panel in detected_panels
+                    ]
+                    figure.panels = panels
+                    
+                    # If figure has valid caption, proceed with panel processing
+                    if (figure.figure_caption and 
+                        figure.figure_caption != "Figure caption not found." and 
+                        not figure.possible_hallucination):
+                        logger.info(f"Matching captions for figure {figure.figure_label}")
+                        try:
+                            # Match panel captions
+                            figure = self.panel_caption_matcher.match_captions(figure)
+                            # Assign panel sources
+                            figure = self.panel_source_assigner.assign_panel_source(figure)
+                        except Exception as e:
+                            logger.error(f"Error processing panels for {figure.figure_label}: {str(e)}")
+                    else:
+                        logger.warning(
+                            f"Skipping panel caption matching for {figure.figure_label} - "
+                            f"No valid caption or possible hallucination"
+                        )
+                        
+            except Exception as e:
+                logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
+                continue
+                
+            # Clean up stored PIL image
+            if hasattr(figure, '_pil_image'):
+                del figure._pil_image
+                
+        return zip_structure
+
+    def _process_single_figure(self, figure: Figure) -> Figure:
+        """Process a single figure."""
+        if figure._full_img_files:
+            pil_image, _ = convert_to_pil_image(figure._full_img_files[0])
+            detected_panels = self.object_detector.detect_panels(pil_image)
+            
+            # Create panels with basic information from detection
+            figure.panels = [
+                Panel(
+                    panel_label="",
+                    panel_caption="",
+                    panel_bbox=panel["panel_bbox"],
+                    confidence=panel["confidence"],
+                    ai_response="",
+                    sd_files=[]
+                )
+                for panel in detected_panels
+            ]
+            
+            # Only proceed with caption matching and source assignment if figure has valid caption
+            if figure.figure_caption and figure.figure_caption != "Figure caption not found.":
+                figure = self.panel_caption_matcher.match_captions(figure)
+                figure = self.panel_source_assigner.assign_panel_source(figure)
+        
+        return figure
+
+    def _create_empty_panels(self, figure: Figure) -> List[Panel]:
+        """Create empty panel objects for figures without captions."""
+        if not figure._full_img_files:
+            return []
+            
+        pil_image, _ = convert_to_pil_image(figure._full_img_files[0])
+        detected_panels = self.object_detector.detect_panels(pil_image)
+        
+        return [
+            Panel(
+                panel_label="",
+                panel_caption="",
+                panel_bbox=panel["panel_bbox"],
+                confidence=0.0,
+                ai_response="",
+                sd_files=[]
+            )
+            for panel in detected_panels
+        ]
+
 
 def get_file_tree(directory: str) -> Dict[str, Any]:
     """
@@ -298,6 +410,38 @@ def assign_panel_source(zip_structure: ZipStructure, config: Dict[str, Any], ext
 
     return zip_structure
 
+def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
+    """Process figures and their panels."""
+    logger.info("Processing figures and panels")
+    
+    for figure in zip_structure.figures:
+        # First extract panels using object detection
+        if figure._full_img_files:
+            pil_image, _ = convert_to_pil_image(figure._full_img_files[0])
+            detected_panels = self.object_detector.detect_panels(pil_image)
+            
+            # If figure has no valid caption, create basic panel objects
+            if not figure.figure_caption or figure.figure_caption == "Figure caption not found.":
+                figure.panels = [
+                    Panel(
+                        panel_label="",
+                        panel_caption="",
+                        panel_bbox=panel["panel_bbox"],
+                        confidence=0.0,
+                        ai_response="",
+                        sd_files=[]
+                    )
+                    for panel in detected_panels
+                ]
+                continue
+            
+            # Only proceed with panel caption matching if figure has a valid caption
+            if figure.figure_caption:
+                figure = self.panel_caption_matcher.match_captions(figure)
+                figure = self.panel_source_assigner.assign_panel_source(figure)
+    
+    return zip_structure
+
 def process_ev_materials(zip_structure: ZipStructure) -> ZipStructure:
     """
     Process EV materials in the manuscript and assign them to the appropriate figures.
@@ -426,7 +570,7 @@ def process_zip_structure(zip_structure):
     return zip_structure
 
 def main(zip_path: str, config_path: str, output_path: str = None) -> str:
-    output_json = ""  # Initialize output_json at the beginning
+    output_json = ""
     if not zip_path or not config_path:
         raise ValueError("ZIP path and config path must be provided")
 
@@ -442,6 +586,9 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     try:
         extract_zip_contents(zip_path, extract_dir)
 
+        # Add extract_dir to config
+        config["extract_dir"] = str(extract_dir)
+
         try:
             zip_structure = get_manuscript_structure(zip_path, str(extract_dir))
         except NoXMLFileFoundError as e:
@@ -456,30 +603,55 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
         expected_figure_count = len([fig for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)])
         logger.info(f"Expected figure count: {expected_figure_count}")
 
+        # Extract captions
         logger.info("Starting caption extraction process")
-        zip_structure = extract_figure_captions(zip_structure, config, expected_figure_count)
-        logger.info("Caption extraction process completed")
+        caption_extractor = FigureCaptionExtractorGpt(config["openai"])
+        zip_structure = caption_extractor.extract_captions(zip_structure._full_docx, zip_structure, expected_figure_count)
+        
+        # Process panels - create object detector and other components once
+        object_detector = create_object_detection(config)
+        panel_caption_matcher = MatchPanelCaptionOpenAI(config)
+        panel_source_assigner = PanelSourceAssigner(config)
+        
+        # Process each figure
+        for figure in zip_structure.figures:
+            if figure._full_img_files:
+                try:
+                    # First detect panels using object detection
+                    pil_image, _ = convert_to_pil_image(figure._full_img_files[0])
+                    detected_panels = object_detector.detect_panels(pil_image)
+                    
+                    # Create initial panel objects with detection results
+                    panels = [
+                        Panel(
+                            panel_label="",  # Will be filled by panel_caption_matcher if caption exists
+                            panel_caption="",  # Will be filled by panel_caption_matcher if caption exists
+                            panel_bbox=panel["panel_bbox"],
+                            confidence=panel["confidence"],
+                            ai_response="",
+                            sd_files=[]
+                        )
+                        for panel in detected_panels
+                    ]
+                    figure.panels = panels
 
-        logger.info("Updating source data files")
-        zip_structure = update_sd_files(zip_structure)
-        logger.info("Source data files updated")
+                    # If figure has valid caption, process panel captions and sources
+                    if figure.figure_caption and figure.figure_caption != "Figure caption not found.":
+                        logger.info(f"Processing panels for figure {figure.figure_label}")
+                        # Match panel captions
+                        figure = panel_caption_matcher.match_captions(figure)
+                        # Assign panel sources
+                        figure = panel_source_assigner.assign_panel_source(figure)
+                    else:
+                        logger.warning(f"Skipping panel caption matching for {figure.figure_label} - No valid caption")
+                        
+                except Exception as e:
+                    logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
 
-        missing_captions = [fig.figure_label for fig in zip_structure.figures if fig.figure_caption == "Figure caption not found."]
-        if missing_captions:
-            logger.warning(f"Captions still missing for figures: {', '.join(missing_captions)}")
-        else:
-            logger.info("All figure captions successfully extracted")
-
-        config["extract_dir"] = str(extract_dir)
-
-        zip_structure = extract_panels(zip_structure, config)
-        zip_structure = match_panel_caption(zip_structure, config)
-
-        logger.info("Starting panel source assignment process")
-        zip_structure = assign_panel_source(zip_structure, config, str(extract_dir))
-        logger.info("Panel source assignment process completed")
-
+        # Process EV materials
         zip_structure = process_ev_materials(zip_structure)
+        
+        # Final processing before output
         zip_structure = process_zip_structure(zip_structure)
 
         output_json = json.dumps(zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2)

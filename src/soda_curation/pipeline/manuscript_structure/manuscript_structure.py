@@ -55,6 +55,8 @@ class Figure:
         panels (List[Panel]): List of Panel objects representing individual panels in the figure.
         duplicated_panels (str): Flag indicating if the figure has duplicate panels. Defaults to "false".
         ai_response_panel_source_assign (Optional[str]): The raw AI response for panel source assignment.
+        possible_hallucination (bool): Flag indicating if the caption might be hallucinated.
+        caption_fuzzy_score (float): Fuzzy matching score between extracted and original caption.
     """
 
     figure_label: str
@@ -63,12 +65,14 @@ class Figure:
     figure_caption: str = ""
     panels: List[Panel] = field(default_factory=list)
     duplicated_panels: str = "false"
-    ai_response_panel_source_assign: Optional[str] = None  # New field for AI response
-    # New fields for full paths
+    ai_response_panel_source_assign: Optional[str] = None
+    possible_hallucination: bool = False
+    caption_fuzzy_score: float = 0.0
+    # Existing fields
     _full_img_files: List[str] = field(default_factory=list)
     _full_sd_files: List[str] = field(default_factory=list)
 
-
+@dataclass
 @dataclass
 class ZipStructure:
     """
@@ -84,21 +88,22 @@ class ZipStructure:
         errors (List[str]): List of errors encountered during processing. Defaults to an empty list.
         ai_response (Optional[Any]): The raw AI response for figure extraction.
         non_associated_sd_files (List[str]): List of non-associated source data files.
+        all_captions_extracted (str): Raw text containing all figure captions extracted from the document.
     """
-
+    appendix: List[str] = field(default_factory=list)
+    figures: List[Figure] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
+    non_associated_sd_files: List[str] = field(default_factory=list)
+    _full_appendix: List[str] = field(default_factory=list)
+    ai_response: Optional[Any] = None
     manuscript_id: str = ""
     xml: str = ""
     docx: str = ""
     pdf: str = ""
-    appendix: List[str] = field(default_factory=list)
-    figures: List[Figure] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    ai_response: Optional[Any] = None
-    non_associated_sd_files: List[str] = field(default_factory=list)
-    # New fields for full paths
+    all_captions_extracted: str = ""
+    # Internal fields for full paths
     _full_docx: str = ""
     _full_pdf: str = ""
-    _full_appendix: List[str] = field(default_factory=list)
 
 class CustomJSONEncoder(json.JSONEncoder):
     """
