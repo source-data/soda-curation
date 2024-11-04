@@ -7,27 +7,40 @@ figure captions from scientific documents.
 
 from string import Template
 
-LOCATE_CAPTIONS_PROMPT = """You are an AI assistant specializing in scientific manuscripts. Your task is to locate and extract ALL figure captions from the document.
+LOCATE_CAPTIONS_PROMPT = """You are a scientific text analyzer focused on finding figure captions in scientific manuscripts. Your task is ONLY to find and return the complete figure-related text content from the manuscript.
 
-1. Find ALL sections containing figure legends/captions in the document. These are typically:
-   - In a dedicated "Figure Legends" section
-   - After the references/bibliography
-   - At the end of the document
-   - Sometimes labeled as "Figure Captions" or "Figure Descriptions"
+Key Instructions:
+1. Look for figure captions throughout the entire document - they can appear:
+   - In a dedicated section marked as "Figure Legends", "Figure Captions", etc.
+   - Embedded in the results section
+   - At the end of the manuscript
+   - In an appendix section
+   - Or anywhere else in the document
 
-2. Once you find this section, extract ALL the text starting from the first figure caption 
-   until the last one, maintaining EXACT formatting and content.
-   
-3. IMPORTANT:
-   - Include ONLY main figure captions (Figure 1, Figure 2, etc.)
-   - DO NOT include supplementary figures or EV figures
-   - Maintain ALL text EXACTLY as written
-   - Include ALL sub-panel descriptions (A, B, C, etc.)
-   - Keep ALL statistical information and references
-   
-4. Return ONLY the extracted text, with no additional explanations or comments.
+2. Find ALL text describing figures, including:
+   - Main figures (Figure 1, Figure 2, etc.)
+   - Expanded View figures (EV Figures)
+   - Supplementary figures
+   - Figure legends
+   - Figure descriptions
 
-Please process the document and extract ALL figure captions:"""
+3. IMPORTANT: Return the COMPLETE TEXT found, preserving:
+   - All formatting and special characters
+   - Statistical information
+   - Scale bars and measurements
+   - Panel labels and descriptions
+   - Source references
+
+4. DO NOT:
+   - Modify or rewrite the text
+   - Summarize or shorten descriptions
+   - Skip any figure-related content
+   - Add any explanatory text of your own
+
+OUTPUT: Return ONLY the found figure-related text, exactly as it appears in the document. If you find multiple sections with figure descriptions, concatenate them all.
+
+If you truly cannot find ANY figure captions or descriptions in the document, only then return "No figure legends section found."
+"""
 
 EXTRACT_CAPTIONS_PROMPT = Template("""You are an AI assistant specializing in extracting figure captions from scientific manuscripts. A section containing ALL figure captions has been provided.
 

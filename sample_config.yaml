@@ -9,6 +9,7 @@ openai:
   structure_zip_assistant_id: "asst_"
   caption_extraction_assistant_id: "asst_" # ID for caption extraction assistant
   panel_source_data_assistant_id: "asst_" # ID for caption extraction assistant
+  caption_location_assistant_id: "asst_"
 
 object_detection:
   model_path: "data/models/panel_detection_model_no_labels.pt"
