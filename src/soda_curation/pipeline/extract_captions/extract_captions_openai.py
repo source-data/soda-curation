@@ -71,9 +71,22 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             instructions=EXTRACT_CAPTIONS_PROMPT
         )
 
+    def _cleanup_thread(self, thread_id: str):
+        """
+        Helper method to clean up a thread and its messages.
+        
+        Args:
+            thread_id: The ID of the thread to clean up
+        """
+        try:
+            # Delete the thread which also deletes all associated messages
+            self.client.beta.threads.delete(thread_id=thread_id)
+            logger.info(f"Successfully cleaned up thread {thread_id}")
+        except Exception as e:
+            logger.error(f"Error cleaning up thread {thread_id}: {str(e)}")
+
     def _locate_figure_captions(self,
-        docx_path: str,
-        pdf_path: str = None,
+        doc_string: str,
         expected_figure_count: int = None,
         expected_figure_labels: str = "") -> Optional[str]:
         """
@@ -87,91 +100,56 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         Returns:
             Optional[str]: Found captions text or None
         """
-        file_ids = []
         try:
-            # Upload all available files
-            files_info = []
-            if docx_path and os.path.exists(docx_path):
-                docx_obj = self._upload_file(docx_path)
-                if docx_obj:
-                    file_ids.append(docx_obj.id)
-                    files_info.append("DOCX document")
+            # Create message with enhanced prompt that mentions all available files
+            message_content = get_locate_captions_prompt(
+                manuscript_text=doc_string,
+                expected_figure_count=expected_figure_count,
+                expected_figure_labels=expected_figure_labels,
+            )
             
-            if pdf_path and os.path.exists(pdf_path):
-                pdf_obj = self._upload_file(pdf_path)
-                if pdf_obj:
-                    file_ids.append(pdf_obj.id)
-                    files_info.append("PDF document")
+            thread = self.client.beta.threads.create(
+                messages = [
+                    {"role": "user", "content": message_content},
+                ]
+            )
 
-            if not file_ids:
-                logger.error("No valid files could be uploaded")
-                return None
+            # Rest of the assistant communication code...
+            run = self.client.beta.threads.runs.create(
+                thread_id=thread.id,
+                assistant_id=self.locate_assistant.id
+            )
 
-            try:
-                # Create message with enhanced prompt that mentions all available files
-                files_desc = " and ".join(files_info)
-                message_content = get_locate_captions_prompt(
-                    expected_figure_count=expected_figure_count,
-                    expected_figure_labels=expected_figure_labels,
-                )
-                
-                thread = self.client.beta.threads.create(
-                    messages=[{
-                        "role": "user",
-                        "content": message_content,
-                        "attachments": [
-                            {
-                                "file_id": file_id,
-                                "tools": [{"type": "file_search"}]
-                            } for file_id in file_ids
-                        ]
-                    }]
-                )
-
-                # Rest of the assistant communication code...
-                run = self.client.beta.threads.runs.create(
-                    thread_id=thread.id,
-                    assistant_id=self.locate_assistant.id
-                )
-
-                # Wait for completion with timeout
-                start_time = time.time()
-                timeout = 300  # 5 minutes timeout
-                while run.status not in ["completed", "failed"]:
-                    if time.time() - start_time > timeout:
-                        logger.error("Assistant run timed out")
-                        return None
-                        
-                    time.sleep(1)
-                    run = self.client.beta.threads.runs.retrieve(
-                        thread_id=thread.id,
-                        run_id=run.id
-                    )
+            # Wait for completion with timeout
+            start_time = time.time()
+            timeout = 300  # 5 minutes timeout
+            while run.status not in ["completed", "failed"]:
+                if time.time() - start_time > timeout:
+                    logger.error("Assistant run timed out")
+                    return None
                     
-                    if run.status == "failed":
-                        logger.error(f"Assistant run failed: {run.last_error}")
-                        return None
-
-                # Get response
-                messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+                time.sleep(1)
+                run = self.client.beta.threads.runs.retrieve(
+                    thread_id=thread.id,
+                    run_id=run.id
+                )
                 
-                if messages.data:
-                    return messages.data[0].content[0].text.value
-                return None
+                if run.status == "failed":
+                    logger.error(f"Assistant run failed: {run.last_error}")
+                    return None
 
-            finally:
-                # Clean up - only try to delete if we have file_ids
-                for file_id in file_ids:
-                    try:
-                        self.client.files.delete(file_id)
-                        logger.debug(f"Deleted file {file_id}")
-                    except Exception as del_err:
-                        logger.warning(f"Error deleting file {file_id}: {del_err}")
-
-        except Exception as e:
-            logger.error(f"Error locating captions: {str(e)}")
+            # Get response
+            messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+            
+            if messages.data:
+                located_captions =  messages.data[0].content[0].text.value
+                self._cleanup_thread(thread.id)
+                return located_captions
             return None
-
+        except Exception as e:
+            logger.error(f"Error locating figure captions: {str(e)}")
+            return None
+        
     def _parse_response(self, response_text: str) -> Dict[str, str]:
         """Parse JSON response containing figure captions."""
         try:
@@ -246,12 +224,12 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 expected_figure_count=expected_figure_count,
                 expected_figure_labels=expected_figure_labels
                 )
-
+            
             thread = self.client.beta.threads.create(
-                messages=[{
-                    "role": "user",
-                    "content": message_content
-                }]
+                messages = [
+                    # {"role": "system", "content": EXTRACT_CAPTIONS_PROMPT},
+                    {"role": "user", "content": message_content},
+                ]
             )
 
             # Run the assistant
@@ -282,11 +260,14 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
             
             if messages.data:
-                return self._parse_response(messages.data[0].content[0].text.value)
-            return {}
+                extracted_captions = self._parse_response(messages.data[0].content[0].text.value)
+                self._cleanup_thread(thread.id)
+                return extracted_captions
 
         except Exception as e:
             logger.error(f"Error extracting individual captions: {str(e)}")
+            return None
+
             return {}
 
     def extract_captions(self,
@@ -295,13 +276,18 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         expected_figure_count: int,
         expected_figure_labels: str) -> ZipStructure:
         """Extract figure captions from document."""
+        
+        # Generate text string from dox_path
+        doc = Document(docx_path)
+        doc_string = doc.paragraphs
+        doc_string = " ".join([p.text.replace("\n", " ") for p in doc_string])
+        
         try:
             # Step 1: Get all captions using both DOCX and PDF if available
             logger.info(f"Starting caption extraction for {len(zip_structure.figures)} figures")
             pdf_path = getattr(zip_structure, '_full_pdf', None)
             all_captions = self._locate_figure_captions(
-                docx_path, 
-                pdf_path=pdf_path, 
+                doc_string, 
                 expected_figure_count=expected_figure_count,
                 expected_figure_labels=expected_figure_labels
             )
@@ -357,101 +343,3 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         except Exception as e:
             logger.error(f"Error uploading file: {str(e)}")
             return None
-
-class FigureCaptionExtractorDocx:
-    """A class to extract figure captions from a DOCX file using pattern matching."""
-
-    def __init__(self, config: Dict):
-        """Initialize the extractor."""
-        self.config = config
-        logger.info("FigureCaptionExtractorDocx initialized successfully")
-
-    def extract_captions(self, docx_path: str, zip_structure: ZipStructure, expected_figure_count: int) -> ZipStructure:
-        """Extract figure captions from a DOCX document."""
-        try:
-            logger.info(f"Starting caption extraction for {expected_figure_count} figures")
-            captions = self._extract_captions_from_paragraphs(docx_path)
-            if not captions:
-                logger.error("Failed to extract figure captions")
-                return zip_structure
-
-            # Store raw captions
-            zip_structure.all_captions_extracted = '\n'.join([f"{k}: {v}" for k, v in captions.items()])
-            logger.info(f"Extracted {len(captions)} figure captions")
-
-            # Update structure with validated captions
-            for figure in zip_structure.figures:
-                logger.info(f"Processing {figure.figure_label}")
-                if figure.figure_label in captions:
-                    caption_text = captions[figure.figure_label]
-                    is_valid, score = self._validate_caption(docx_path, caption_text)
-                    figure.figure_caption = caption_text
-                    figure.caption_fuzzy_score = score
-                    figure.possible_hallucination = score < 85
-                else:
-                    logger.warning(f"No caption found for {figure.figure_label}")
-                    figure.figure_caption = "Figure caption not found."
-                    figure.caption_fuzzy_score = 0
-                    figure.possible_hallucination = True
-
-            return zip_structure
-
-        except Exception as e:
-            logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
-            return zip_structure
-
-    def _extract_captions_from_paragraphs(self, docx_path: str) -> Dict[str, str]:
-        """Extract figure captions from the DOCX document."""
-        try:
-            doc = Document(docx_path)
-            paragraphs = doc.paragraphs
-            captions = {}
-            # Regex pattern to identify figure captions
-            pattern = re.compile(r'^(Figure|Fig\.?)\s*(\d+[A-Za-z]?)([:.,\s–-]+)(.*)', re.IGNORECASE)
-            current_label = None
-            current_caption = ''
-            for para in paragraphs:
-                text = para.text.strip()
-                match = pattern.match(text)
-                if match:
-                    if current_label and current_caption:
-                        captions[current_label] = current_caption.strip()
-                    current_label = f"Figure {match.group(2)}"
-                    current_caption = match.group(4).strip()
-                elif current_label:
-                    # Continue collecting caption text
-                    if text == '':
-                        continue
-                    current_caption += ' ' + text
-            if current_label and current_caption:
-                captions[current_label] = current_caption.strip()
-            return captions
-        except Exception as e:
-            logger.error(f"Error extracting captions: {str(e)}")
-            return {}
-
-    def _validate_caption(self, docx_path: str, caption: str) -> Tuple[bool, float]:
-        """Validate extracted caption against document text."""
-        try:
-            doc = Document(docx_path)
-            paragraphs = [p.text.strip() for p in doc.paragraphs if p.text.strip()]
-            norm_caption = normalize_text(caption)
-
-            max_score = 0
-            for para in paragraphs:
-                norm_para = normalize_text(para)
-                ratio_score = fuzz.ratio(norm_caption, norm_para)
-                token_sort = fuzz.token_sort_ratio(norm_caption, norm_para)
-                token_set = fuzz.token_set_ratio(norm_caption, norm_para)
-
-                score = max(ratio_score, token_sort, token_set)
-                max_score = max(max_score, score)
-
-                if max_score >= 85:
-                    return True, max_score
-
-            return False, max_score
-
-        except Exception as e:
-            logger.error(f"Error in caption validation: {str(e)}")
-            return False, 0

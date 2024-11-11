@@ -44,6 +44,8 @@ INPUT: Expected figures: $expected_figure_count
 
 Expected figure labels: $expected_figure_labels
 
+Manuscript_text: $manuscript_text
+
 OUTPUT: Return ONLY the found figure-related text, exactly as it appears in the document. 
 If you find multiple sections with figure descriptions, concatenate them all.
 
@@ -98,6 +100,7 @@ Provide the JSON object with the extracted figure captions following the schema:
 
 
 def get_locate_captions_prompt(
+    manuscript_text: str,
     expected_figure_count: str,
     expected_figure_labels: str
     ) -> str:
@@ -109,8 +112,13 @@ def get_locate_captions_prompt(
         Expected figures: $expected_figure_count
 
         Expected figure labels: $expected_figure_labels
+        
+        Manuscript_text: $manuscript_text
+        
+        
         """
     ).substitute(
+        manuscript_text=manuscript_text,
         expected_figure_count=expected_figure_count,
         expected_figure_labels=expected_figure_labels
     )
