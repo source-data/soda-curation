@@ -7,7 +7,10 @@ figure captions from scientific documents.
 
 from string import Template
 
-LOCATE_CAPTIONS_PROMPT = """You are a scientific text analyzer focused on finding figure captions in scientific manuscripts. Your task is ONLY to find and return the complete figure-related text content from the manuscript.
+LOCATE_CAPTIONS_PROMPT = """
+You are a scientific text analyzer focused on finding figure captions in scientific manuscripts. 
+    Your task is ONLY to find and return the complete figure-related text content from the manuscript.
+    
 
 Key Instructions:
 1. Look for figure captions throughout the entire document - they can appear:
@@ -37,12 +40,20 @@ Key Instructions:
    - Skip any figure-related content
    - Add any explanatory text of your own
 
-OUTPUT: Return ONLY the found figure-related text, exactly as it appears in the document. If you find multiple sections with figure descriptions, concatenate them all.
+INPUT: Expected figures: $expected_figure_count
 
-If you truly cannot find ANY figure captions or descriptions in the document, only then return "No figure legends section found."
+Expected figure labels: $expected_figure_labels
+
+OUTPUT: Return ONLY the found figure-related text, exactly as it appears in the document. 
+If you find multiple sections with figure descriptions, concatenate them all.
+
+If you truly cannot find ANY figure captions or descriptions in the document, 
+only then return "No figure legends section found."
 """
 
-EXTRACT_CAPTIONS_PROMPT = Template("""You are an AI assistant specializing in extracting figure captions from scientific manuscripts. A section containing ALL figure captions has been provided.
+EXTRACT_CAPTIONS_PROMPT = """
+You are an AI assistant specializing in extracting figure captions from scientific manuscripts. 
+A section containing ALL figure captions has been provided.
 
 Your task is to parse these captions into a structured format:
 
@@ -64,31 +75,65 @@ Your task is to parse these captions into a structured format:
    - Maintain consecutive numbering
    - Keep all statistical information and references
 
-Here are ALL the figure captions from the manuscript:
 
-$figure_captions""")
+You will get the following input:
 
-def get_locate_captions_prompt() -> str:
+Figure captions of the document: $figure_captions
+
+Expected figure count: $expected_figure_count
+
+Expected labels: $expected_figure_labels
+
+OUTPUT:
+
+Provide the JSON object with the extracted figure captions following the schema:
+
+```json
+{
+  "Figure 1": "Title of Figure 1. A) Description of panel A. B) Description of panel B. Statistical analysis: p < 0.05.",
+  "Figure 2": "Title of Figure 2. Detailed description of the figure, including multiple paragraphs if necessary."
+}
+```
+"""
+
+
+def get_locate_captions_prompt(
+    expected_figure_count: str,
+    expected_figure_labels: str
+    ) -> str:
     """
     Get the prompt for locating figure captions in a document.
-
-    Returns:
-        str: The prompt for caption location.
     """
-    return LOCATE_CAPTIONS_PROMPT
+    return Template(
+        """
+        Expected figures: $expected_figure_count
 
-def get_extract_captions_prompt(figure_captions: str, expected_figure_count: int) -> str:
+        Expected figure labels: $expected_figure_labels
+        """
+    ).substitute(
+        expected_figure_count=expected_figure_count,
+        expected_figure_labels=expected_figure_labels
+    )
+
+def get_extract_captions_prompt(
+    figure_captions: str,
+    expected_figure_count: str = "",
+    expected_figure_labels: str = ""
+    ) -> str:
     """
     Generate a prompt for extracting figure captions from the located captions text.
-
-    Args:
-        figure_captions (str): The text containing all figure captions.
-        expected_figure_count (int): The expected number of figure captions.
 
     Returns:
         str: A formatted prompt string for AI models to extract figure captions.
     """
-    return EXTRACT_CAPTIONS_PROMPT.substitute(
+    return Template("""
+        Figure captions of the document: $figure_captions
+
+        Expected figure count: $expected_figure_count
+
+        Expected labels: $expected_figure_labels
+    """).substitute(
         figure_captions=figure_captions,
-        expected_figure_count=expected_figure_count
+        expected_figure_count=expected_figure_count,
+        expected_figure_labels=expected_figure_labels
     )

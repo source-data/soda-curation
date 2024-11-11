@@ -243,7 +243,15 @@ def extract_figure_captions(zip_structure: ZipStructure, config: Dict[str, Any],
         ZipStructure: The updated ZipStructure object with extracted figure captions.
     """
     caption_extractor = FigureCaptionExtractorGpt(config["openai"])
-    result = caption_extractor.extract_captions(zip_structure._full_docx, zip_structure, expected_figure_count)
+    expected_figure_labels = []
+    for figure in zip_structure.figures:
+        expected_figure_labels.append(figure.figure_label)
+    result = caption_extractor.extract_captions(
+        zip_structure._full_docx,
+        zip_structure,
+        expected_figure_count,
+        expected_figure_labels=", ".join(expected_figure_labels),
+        )
     return result
 
 def update_sd_files(zip_structure: ZipStructure) -> ZipStructure:
@@ -585,12 +593,17 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
         zip_structure = update_file_paths(zip_structure, str(extract_dir))
 
         expected_figure_count = len([fig for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)])
+        expected_figure_labels = [fig.figure_label for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)]
         logger.info(f"Expected figure count: {expected_figure_count}")
 
         # Extract captions
         logger.info("Starting caption extraction process")
         caption_extractor = FigureCaptionExtractorGpt(config["openai"])
-        zip_structure = caption_extractor.extract_captions(zip_structure._full_docx, zip_structure, expected_figure_count)
+        zip_structure = caption_extractor.extract_captions(
+            zip_structure._full_docx,
+            zip_structure,
+            expected_figure_count,
+            expected_figure_labels=expected_figure_labels)
         
         # Process panels - create object detector and other components once
         object_detector = create_object_detection(config)

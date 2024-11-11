@@ -14,6 +14,8 @@ from openai.types.file_object import FileObject
 from ..manuscript_structure.manuscript_structure import Figure, ZipStructure
 from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import (
+    EXTRACT_CAPTIONS_PROMPT,
+    LOCATE_CAPTIONS_PROMPT,
     get_extract_captions_prompt,
     get_locate_captions_prompt,
 )
@@ -54,7 +56,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         return self.client.beta.assistants.update(
             assistant_id,
             model=self.config["model"],
-            instructions=get_locate_captions_prompt()
+            instructions=LOCATE_CAPTIONS_PROMPT
         )
 
     def _setup_extract_assistant(self):
@@ -66,10 +68,14 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         return self.client.beta.assistants.update(
             assistant_id,
             model=self.config["model"],
-            instructions="You will receive text containing figure captions and must extract individual figure captions. You will be provided with the expected number of figures to extract."
+            instructions=EXTRACT_CAPTIONS_PROMPT
         )
 
-    def _locate_figure_captions(self, docx_path: str, pdf_path: str = None, expected_figure_count: int = None) -> Optional[str]:
+    def _locate_figure_captions(self,
+        docx_path: str,
+        pdf_path: str = None,
+        expected_figure_count: int = None,
+        expected_figure_labels: str = "") -> Optional[str]:
         """
         Locate figure captions using AI, optionally using both DOCX and PDF files.
         
@@ -104,14 +110,11 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             try:
                 # Create message with enhanced prompt that mentions all available files
                 files_desc = " and ".join(files_info)
-                message_content = (
-                    f"Please locate all figure captions in the provided {files_desc}. "
-                    f"I expect {expected_figure_count} main figures, numbered from Figure 1 to Figure {expected_figure_count}. "
-                    f"If multiple documents are provided, they should contain the same information - "
-                    f"you can use them to cross-validate the extracted captions.\n\n"
-                    f"{get_locate_captions_prompt()}"
+                message_content = get_locate_captions_prompt(
+                    expected_figure_count=expected_figure_count,
+                    expected_figure_labels=expected_figure_labels,
                 )
-
+                
                 thread = self.client.beta.threads.create(
                     messages=[{
                         "role": "user",
@@ -231,17 +234,18 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             logger.error(f"Error in caption validation: {str(e)}")
             return False, 0
 
-    def _extract_individual_captions(self, all_captions: str, expected_figure_count: int) -> Dict[str, str]:
+    def _extract_individual_captions(self,
+        all_captions: str,
+        expected_figure_count: int,
+        expected_figure_labels: str) -> Dict[str, str]:
         """Extract individual figure captions using AI."""
         try:
             # Create thread for extraction
-            message_content = (
-                f"The text provided contains figure captions from a scientific manuscript. "
-                f"Please extract and structure individual captions for {expected_figure_count} main figures, "
-                f"numbered from Figure 1 to Figure {expected_figure_count}. "
-                f"Return them in a JSON format where keys are figure labels and values are their captions.\n\n"
-                f"{get_extract_captions_prompt(all_captions, expected_figure_count)}"
-            )
+            message_content = get_extract_captions_prompt(
+                figure_captions=all_captions,
+                expected_figure_count=expected_figure_count,
+                expected_figure_labels=expected_figure_labels
+                )
 
             thread = self.client.beta.threads.create(
                 messages=[{
@@ -285,7 +289,11 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             logger.error(f"Error extracting individual captions: {str(e)}")
             return {}
 
-    def extract_captions(self, docx_path: str, zip_structure, expected_figure_count: int) -> ZipStructure:
+    def extract_captions(self,
+        docx_path: str,
+        zip_structure,
+        expected_figure_count: int,
+        expected_figure_labels: str) -> ZipStructure:
         """Extract figure captions from document."""
         try:
             # Step 1: Get all captions using both DOCX and PDF if available
@@ -294,7 +302,8 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             all_captions = self._locate_figure_captions(
                 docx_path, 
                 pdf_path=pdf_path, 
-                expected_figure_count=expected_figure_count
+                expected_figure_count=expected_figure_count,
+                expected_figure_labels=expected_figure_labels
             )
             
             if not all_captions:
@@ -306,7 +315,10 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             logger.info(f"Successfully located captions section ({len(all_captions)} characters)")
 
             # Step 2: Extract individual captions
-            captions = self._extract_individual_captions(all_captions, expected_figure_count)
+            captions = self._extract_individual_captions(
+                all_captions,
+                expected_figure_count,
+                expected_figure_labels)
             logger.info(f"Extracted {len(captions)} individual captions")
 
             # Step 3: Update structure with validated captions
@@ -345,3 +357,101 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         except Exception as e:
             logger.error(f"Error uploading file: {str(e)}")
             return None
+
+class FigureCaptionExtractorDocx:
+    """A class to extract figure captions from a DOCX file using pattern matching."""
+
+    def __init__(self, config: Dict):
+        """Initialize the extractor."""
+        self.config = config
+        logger.info("FigureCaptionExtractorDocx initialized successfully")
+
+    def extract_captions(self, docx_path: str, zip_structure: ZipStructure, expected_figure_count: int) -> ZipStructure:
+        """Extract figure captions from a DOCX document."""
+        try:
+            logger.info(f"Starting caption extraction for {expected_figure_count} figures")
+            captions = self._extract_captions_from_paragraphs(docx_path)
+            if not captions:
+                logger.error("Failed to extract figure captions")
+                return zip_structure
+
+            # Store raw captions
+            zip_structure.all_captions_extracted = '\n'.join([f"{k}: {v}" for k, v in captions.items()])
+            logger.info(f"Extracted {len(captions)} figure captions")
+
+            # Update structure with validated captions
+            for figure in zip_structure.figures:
+                logger.info(f"Processing {figure.figure_label}")
+                if figure.figure_label in captions:
+                    caption_text = captions[figure.figure_label]
+                    is_valid, score = self._validate_caption(docx_path, caption_text)
+                    figure.figure_caption = caption_text
+                    figure.caption_fuzzy_score = score
+                    figure.possible_hallucination = score < 85
+                else:
+                    logger.warning(f"No caption found for {figure.figure_label}")
+                    figure.figure_caption = "Figure caption not found."
+                    figure.caption_fuzzy_score = 0
+                    figure.possible_hallucination = True
+
+            return zip_structure
+
+        except Exception as e:
+            logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
+            return zip_structure
+
+    def _extract_captions_from_paragraphs(self, docx_path: str) -> Dict[str, str]:
+        """Extract figure captions from the DOCX document."""
+        try:
+            doc = Document(docx_path)
+            paragraphs = doc.paragraphs
+            captions = {}
+            # Regex pattern to identify figure captions
+            pattern = re.compile(r'^(Figure|Fig\.?)\s*(\d+[A-Za-z]?)([:.,\s–-]+)(.*)', re.IGNORECASE)
+            current_label = None
+            current_caption = ''
+            for para in paragraphs:
+                text = para.text.strip()
+                match = pattern.match(text)
+                if match:
+                    if current_label and current_caption:
+                        captions[current_label] = current_caption.strip()
+                    current_label = f"Figure {match.group(2)}"
+                    current_caption = match.group(4).strip()
+                elif current_label:
+                    # Continue collecting caption text
+                    if text == '':
+                        continue
+                    current_caption += ' ' + text
+            if current_label and current_caption:
+                captions[current_label] = current_caption.strip()
+            return captions
+        except Exception as e:
+            logger.error(f"Error extracting captions: {str(e)}")
+            return {}
+
+    def _validate_caption(self, docx_path: str, caption: str) -> Tuple[bool, float]:
+        """Validate extracted caption against document text."""
+        try:
+            doc = Document(docx_path)
+            paragraphs = [p.text.strip() for p in doc.paragraphs if p.text.strip()]
+            norm_caption = normalize_text(caption)
+
+            max_score = 0
+            for para in paragraphs:
+                norm_para = normalize_text(para)
+                ratio_score = fuzz.ratio(norm_caption, norm_para)
+                token_sort = fuzz.token_sort_ratio(norm_caption, norm_para)
+                token_set = fuzz.token_set_ratio(norm_caption, norm_para)
+
+                score = max(ratio_score, token_sort, token_set)
+                max_score = max(max_score, score)
+
+                if max_score >= 85:
+                    return True, max_score
+
+            return False, max_score
+
+        except Exception as e:
+            logger.error(f"Error in caption validation: {str(e)}")
+            return False, 0
