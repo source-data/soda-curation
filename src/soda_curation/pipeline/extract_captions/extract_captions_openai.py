@@ -266,7 +266,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
         except Exception as e:
             logger.error(f"Error extracting individual captions: {str(e)}")
-            return None
 
             return {}
 
@@ -329,17 +328,3 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         except Exception as e:
             logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
             return zip_structure
-
-    def _upload_file(self, file_path: str) -> Optional[openai.types.FileObject]:
-        """Upload a file to OpenAI API."""
-        try:
-            with open(file_path, "rb") as file:
-                file_object = self.client.files.create(
-                    file=file,
-                    purpose="assistants"
-                )
-                logger.info(f"Uploaded file {file_object.id}")
-                return file_object
-        except Exception as e:
-            logger.error(f"Error uploading file: {str(e)}")
-            return None
