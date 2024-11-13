@@ -66,6 +66,7 @@ class Figure:
     possible_hallucination: bool = False
     rouge_l_score: float = 0.0
     figure_caption: str = ""
+    caption_title: str = ""  # New field for the figure caption title
 
 @dataclass
 class ZipStructure:
@@ -103,7 +104,6 @@ class ZipStructure:
     ai_response_extract_captions: Optional[str] = None
     _full_docx: str = ""
     _full_pdf: str = ""
-    caption_title: str = ""  # New field for the figure caption title
 
 class CustomJSONEncoder(json.JSONEncoder):
     """Custom JSON encoder for ZipStructure and related objects."""

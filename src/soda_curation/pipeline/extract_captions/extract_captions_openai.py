@@ -238,15 +238,20 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 logger.info(f"Processing {figure.figure_label}")
                 
                 if figure.figure_label in captions:
-                    caption_text = captions[figure.figure_label]
+                    caption_info = captions[figure.figure_label]
+                    caption_text = caption_info["caption"]
+                    caption_title = caption_info["title"]
+                    
                     is_valid, rouge_score = self._validate_caption(docx_path, caption_text)
                     
                     figure.figure_caption = caption_text
+                    figure.caption_title = caption_title
                     figure.rouge_l_score = rouge_score
                     figure.possible_hallucination = not is_valid
                 else:
                     logger.warning(f"No caption found for {figure.figure_label}")
                     figure.figure_caption = "Figure caption not found."
+                    figure.caption_title = ""
                     figure.rouge_l_score = 0.0
                     figure.possible_hallucination = True
             
