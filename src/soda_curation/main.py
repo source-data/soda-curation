@@ -11,6 +11,9 @@ from typing import Any, Dict, List
 from .config import load_config
 from .logging_config import setup_logging
 from .pipeline.assign_panel_source.assign_panel_source import PanelSourceAssigner
+from .pipeline.extract_captions.extract_captions_claude import (
+    FigureCaptionExtractorClaude,
+)
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
 from .pipeline.manuscript_structure.exceptions import (
     NoManuscriptFileError,
@@ -232,7 +235,7 @@ def update_file_paths(zip_structure: ZipStructure, extract_dir: str) -> ZipStruc
 
 def extract_figure_captions(zip_structure: ZipStructure, config: Dict[str, Any], expected_figure_count: int) -> ZipStructure:
     """
-    Extract figure captions from the manuscript using an AI model.
+    Extract figure captions from the manuscript using the configured AI model.
     
     Args:
         zip_structure (ZipStructure): The structured representation of the manuscript.
@@ -242,16 +245,31 @@ def extract_figure_captions(zip_structure: ZipStructure, config: Dict[str, Any],
     Returns:
         ZipStructure: The updated ZipStructure object with extracted figure captions.
     """
-    caption_extractor = FigureCaptionExtractorGpt(config["openai"])
+    ai_provider = config.get("ai", "openai")
+
     expected_figure_labels = []
     for figure in zip_structure.figures:
         expected_figure_labels.append(figure.figure_label)
+
+    if ai_provider == "openai":
+        from .pipeline.extract_captions.extract_captions_openai import (
+            FigureCaptionExtractorGpt,
+        )
+        caption_extractor = FigureCaptionExtractorGpt(config["openai"])
+    elif ai_provider == "anthropic":
+        from .pipeline.extract_captions.extract_captions_claude import (
+            FigureCaptionExtractorClaude,
+        )
+        caption_extractor = FigureCaptionExtractorClaude(config["anthropic"])
+    else:
+        raise ValueError(f"Unsupported AI provider: {ai_provider}")
+
     result = caption_extractor.extract_captions(
         zip_structure._full_docx,
         zip_structure,
         expected_figure_count,
         expected_figure_labels=", ".join(expected_figure_labels),
-        )
+    )
     return result
 
 def update_sd_files(zip_structure: ZipStructure) -> ZipStructure:
@@ -569,7 +587,8 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     config = load_config(config_path)
     setup_logging(config)
 
-    if config["ai"] not in ["openai"]:
+    # Update the AI provider validation
+    if config["ai"] not in ["openai", "anthropic"]:
         raise ValueError(f"Invalid AI provider: {config['ai']}")
 
     zip_file = Path(zip_path)
@@ -598,7 +617,13 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
 
         # Extract captions
         logger.info("Starting caption extraction process")
-        caption_extractor = FigureCaptionExtractorGpt(config["openai"])
+        if config["ai"] == "openai":
+            caption_extractor = FigureCaptionExtractorGpt(config["openai"])
+        elif config["ai"] == "anthropic":
+            caption_extractor = FigureCaptionExtractorClaude(config["anthropic"])
+        else:
+            raise ValueError(f"Unsupported AI provider: {config['ai']}")
+        
         zip_structure = caption_extractor.extract_captions(
             zip_structure._full_docx,
             zip_structure,

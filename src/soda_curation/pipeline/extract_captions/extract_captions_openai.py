@@ -22,20 +22,6 @@ from .extract_captions_prompts import (
 
 logger = logging.getLogger(__name__)
 
-def normalize_text(text: str) -> str:
-    """Normalize text for caption comparison."""
-    text = text.lower()
-    text = re.sub(r'^(figure|fig\.?)\s*\d+[\.:]?\s*', '', text)
-    text = re.sub(r'\s+', ' ', text)
-    text = re.sub(r'[\(\)]', '', text)
-    text = re.sub(r'["\']', '', text)
-    text = re.sub(r'±', 'plus/minus', text)
-    text = re.sub(r'[\(\)\[\]\{\}]', '', text)
-    text = re.sub(r'[,;:]', ' ', text)
-    text = re.sub(r'(\d+)\s*/\s*(\d+)', r'\1/\2', text)
-    text = re.sub(r'(\d+)\s+(mm|nm|µm|ml)', r'\1\2', text)
-    return text.strip()
-
 class FigureCaptionExtractorGpt(FigureCaptionExtractor):
     """A class to extract figure captions using OpenAI's GPT model."""
     
@@ -150,68 +136,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             logger.error(f"Error locating figure captions: {str(e)}")
             return None
         
-    def _parse_response(self, response_text: str) -> Dict[str, str]:
-        """Parse JSON response containing figure captions."""
-        try:
-            json_match = re.search(r'```json\s*({[\s\S]*?})\s*```', response_text)
-            if json_match:
-                json_str = json_match.group(1)
-            else:
-                json_match = re.search(r'({[^{]*})', response_text)
-                if json_match:
-                    json_str = json_match.group(1)
-                else:
-                    json_str = response_text.strip()
-
-            json_str = re.sub(r'[\n\r\t]', ' ', json_str)
-            json_str = re.sub(r'\s+', ' ', json_str)
-
-            try:
-                captions = json.loads(json_str)
-            except json.JSONDecodeError:
-                json_str = re.sub(r'([{,])\s*([a-zA-Z0-9_]+)\s*:', r'\1"\2":', json_str)
-                captions = json.loads(json_str)
-
-            cleaned_captions = {}
-            for key, value in captions.items():
-                if isinstance(value, str):
-                    value = value.strip()
-                    if value and value != "Figure caption not found.":
-                        clean_key = re.sub(r'^(Fig\.|Figure)\s*', 'Figure ', key)
-                        cleaned_captions[clean_key] = value
-
-            return cleaned_captions
-
-        except Exception as e:
-            logger.error(f"Error parsing response: {str(e)}")
-            return {}
-
-    def _validate_caption(self, docx_path: str, caption: str) -> Tuple[bool, float]:
-        """Validate extracted caption against document text."""
-        try:
-            doc = Document(docx_path)
-            paragraphs = [p.text.strip() for p in doc.paragraphs if p.text.strip()]
-            norm_caption = normalize_text(caption)
-            
-            max_score = 0
-            for para in paragraphs:
-                norm_para = normalize_text(para)
-                ratio_score = fuzz.ratio(norm_caption, norm_para)
-                token_sort = fuzz.token_sort_ratio(norm_caption, norm_para)
-                token_set = fuzz.token_set_ratio(norm_caption, norm_para)
-                
-                score = max(ratio_score, token_sort, token_set)
-                max_score = max(max_score, score)
-                
-                if max_score >= 85:
-                    return True, max_score
-
-            return False, max_score
-
-        except Exception as e:
-            logger.error(f"Error in caption validation: {str(e)}")
-            return False, 0
-
     def _extract_individual_captions(self,
         all_captions: str,
         expected_figure_count: int,
