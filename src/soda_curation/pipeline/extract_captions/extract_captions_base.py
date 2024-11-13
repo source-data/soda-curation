@@ -8,28 +8,90 @@ should inherit from, ensuring a consistent interface across different extraction
 import json
 import logging
 import re
+import unicodedata
 from abc import ABC, abstractmethod
 from typing import Dict, Optional, Tuple
 
 from docx import Document
-from fuzzywuzzy import fuzz
+from rouge_score import rouge_scorer
 
 from ..manuscript_structure.manuscript_structure import ZipStructure
 
 logger = logging.getLogger(__name__)
 
 def normalize_text(text: str) -> str:
-    """Normalize text for caption comparison."""
+    """
+    Normalize text for comparison by converting to ASCII and handling scientific notation.
+    
+    Args:
+        text (str): Input text to normalize
+        
+    Returns:
+        str: Normalized text ready for comparison
+    """
+    # First decompose Unicode characters
+    text = unicodedata.normalize('NFKD', text)
+    
+    # Remove combining characters (accents, diacritics)
+    text = ''.join(c for c in text if not unicodedata.combining(c))
+    
+    # Common scientific symbol replacements
+    replacements = {
+        '±': 'plus/minus',
+        '→': '->',
+        '←': '<-',
+        '°': ' degrees ',
+        'µ': 'micro',
+        '×': 'x',
+        'α': 'alpha',
+        'β': 'beta',
+        'γ': 'gamma',
+        'δ': 'delta',
+        'λ': 'lambda',
+        'μ': 'micro',
+        'π': 'pi',
+        'σ': 'sigma',
+        'τ': 'tau',
+        'φ': 'phi',
+        'ω': 'omega',
+        '≥': '>=',
+        '≤': '<=',
+        '≠': '!=',
+        '∼': '~',
+        '′': "'",
+        '"': '"',
+    }
+    for symbol, replacement in replacements.items():
+        text = text.replace(symbol, replacement)
+    
+    # Convert to lowercase and normalize whitespace
     text = text.lower()
-    text = re.sub(r'^(figure|fig\.?)\s*\d+[\.:]?\s*', '', text)
     text = re.sub(r'\s+', ' ', text)
-    text = re.sub(r'[\(\)]', '', text)
-    text = re.sub(r'["\']', '', text)
-    text = re.sub(r'±', 'plus/minus', text)
-    text = re.sub(r'[\(\)\[\]\{\}]', '', text)
-    text = re.sub(r'[,;:]', ' ', text)
+    
+    # Normalize unit spacing
+    text = re.sub(r'(\d+)\s*(mm|nm|µm|ml|kg|mg|ng|pg|L|ml|μl|°C|Hz|kDa|M|mM|μM|nM|pM|h|min|s|ms|V|mV|A|mA|μA|W|mW|μW)',
+                  r'\1 \2', text)
+    
+    # Normalize scientific notation
+    text = re.sub(r'(\d+)[eE]([-+]?\d+)', r'\1 x 10^\2', text)
+    
+    # Normalize decimal numbers
+    text = re.sub(r'(\d+),(\d+)', r'\1.\2', text)
+    
+    # Normalize ratios
+    text = re.sub(r'(\d+)\s*:\s*(\d+)', r'\1:\2', text)
     text = re.sub(r'(\d+)\s*/\s*(\d+)', r'\1/\2', text)
-    text = re.sub(r'(\d+)\s+(mm|nm|µm|ml)', r'\1\2', text)
+    
+    # Normalize percentages
+    text = re.sub(r'(\d+)\s*%', r'\1%', text)
+    
+    # Normalize ranges
+    text = re.sub(r'(\d+)\s*-\s*(\d+)', r'\1-\2', text)
+    
+    # Remove figure and panel labels
+    text = re.sub(r'^(figure|fig\.?)\s*\d+[\.:]?\s*', '', text)
+    text = re.sub(r'\(?[A-Z]\)?[\.,]?\s+', '', text)
+    
     return text.strip()
 
 class FigureCaptionExtractor(ABC):
@@ -43,6 +105,7 @@ class FigureCaptionExtractor(ABC):
     def __init__(self, config: Dict):
         """Initialize with configuration."""
         self.config = config
+        self.rouge_scorer = rouge_scorer.RougeScorer(['rougeL'], use_stemmer=True)
 
     def _extract_docx_content(self, file_path: str) -> str:
         """
@@ -94,11 +157,15 @@ class FigureCaptionExtractor(ABC):
 
             cleaned_captions = {}
             for key, value in captions.items():
-                if isinstance(value, str):
-                    value = value.strip()
-                    if value and value != "Figure caption not found.":
+                if isinstance(value, dict) and "title" in value and "caption" in value:
+                    title = value["title"].strip()
+                    caption = value["caption"].strip()
+                    if caption and caption != "Figure caption not found.":
                         clean_key = re.sub(r'^(Fig\.|Figure)\s*', 'Figure ', key)
-                        cleaned_captions[clean_key] = value
+                        cleaned_captions[clean_key] = {
+                            "title": title,
+                            "caption": caption
+                        }
 
             return cleaned_captions
 
@@ -106,40 +173,52 @@ class FigureCaptionExtractor(ABC):
             logger.error(f"Error parsing response: {str(e)}")
             return {}
 
-    def _validate_caption(self, docx_path: str, caption: str) -> Tuple[bool, float]:
+    def _validate_caption(self, docx_path: str, caption: str, threshold: float = 0.85) -> Tuple[bool, float]:
         """
-        Validate extracted caption against document text.
+        Validate extracted caption against document text using ROUGE-L score.
 
         Args:
             docx_path (str): Path to the DOCX file
             caption (str): Caption to validate
+            threshold (float): Minimum ROUGE score for validation
 
         Returns:
             Tuple[bool, float]: Validation result and confidence score
         """
         try:
-            doc = Document(docx_path)
-            paragraphs = [p.text.strip() for p in doc.paragraphs if p.text.strip()]
+            # Normalize caption
             norm_caption = normalize_text(caption)
+            if not norm_caption:
+                logger.warning("Caption is empty after normalization")
+                return False, 0.0
             
-            max_score = 0
+            # Extract and normalize document paragraphs
+            doc = Document(docx_path)
+            paragraphs = [
+                normalize_text(para.text)
+                for para in doc.paragraphs
+                if para.text.strip()
+            ]
+            
+            if not paragraphs:
+                logger.warning("No paragraphs found in document")
+                return False, 0.0
+            
+            # Find best ROUGE-L score among paragraphs
+            best_score = 0.0
             for para in paragraphs:
-                norm_para = normalize_text(para)
-                ratio_score = fuzz.ratio(norm_caption, norm_para)
-                token_sort = fuzz.token_sort_ratio(norm_caption, norm_para)
-                token_set = fuzz.token_set_ratio(norm_caption, norm_para)
+                scores = self.rouge_scorer.score(para, norm_caption)
+                rouge_l = scores['rougeL'].fmeasure
+                best_score = max(best_score, rouge_l)
                 
-                score = max(ratio_score, token_sort, token_set)
-                max_score = max(max_score, score)
-                
-                if max_score >= 85:
-                    return True, max_score
-
-            return False, max_score
+                if best_score >= threshold:
+                    return True, best_score
+            
+            return False, best_score
 
         except Exception as e:
             logger.error(f"Error in caption validation: {str(e)}")
-            return False, 0
+            return False, 0.0
 
     @abstractmethod
     def _locate_figure_captions(self, doc_string: str, expected_figure_count: int, expected_figure_labels: str) -> Optional[str]:

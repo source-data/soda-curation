@@ -200,55 +200,59 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         expected_figure_labels: str) -> ZipStructure:
         """Extract figure captions from document."""
         
-        # Generate text string from dox_path
-        doc = Document(docx_path)
-        doc_string = doc.paragraphs
-        doc_string = " ".join([p.text.replace("\n", " ") for p in doc_string])
-        
         try:
-            # Step 1: Get all captions using both DOCX and PDF if available
-            logger.info(f"Starting caption extraction for {len(zip_structure.figures)} figures")
-            pdf_path = getattr(zip_structure, '_full_pdf', None)
-            all_captions = self._locate_figure_captions(
-                doc_string, 
-                expected_figure_count=expected_figure_count,
-                expected_figure_labels=expected_figure_labels
+            logger.info(f"Processing file: {docx_path}")
+            file_content = self._extract_docx_content(docx_path)
+            
+            # Locate all captions and store raw response
+            located_captions = self._locate_figure_captions(
+                file_content,
+                expected_figure_count,
+                expected_figure_labels
             )
             
-            if not all_captions:
-                logger.error("Failed to locate figure captions section")
+            if not located_captions:
+                logger.error("Failed to locate figure captions")
                 return zip_structure
-
-            # Store raw captions
-            zip_structure.all_captions_extracted = all_captions
-            logger.info(f"Successfully located captions section ({len(all_captions)} characters)")
-
-            # Step 2: Extract individual captions
-            captions = self._extract_individual_captions(
-                all_captions,
+            
+            # Store raw located captions text and AI response
+            zip_structure.ai_response_locate_captions = located_captions
+            logger.info(f"Successfully located captions section ({len(located_captions)} characters)")
+            
+            # Extract individual captions
+            extracted_captions_response = self._extract_individual_captions(
+                located_captions,
                 expected_figure_count,
-                expected_figure_labels)
+                expected_figure_labels
+            )
+            
+            # Store the raw response from caption extraction
+            zip_structure.ai_response_extract_captions = extracted_captions_response
+            
+            # Parse the response into caption dictionary
+            captions = self._parse_response(extracted_captions_response)
             logger.info(f"Extracted {len(captions)} individual captions")
-
-            # Step 3: Update structure with validated captions
+            
+            # Process each figure
             for figure in zip_structure.figures:
                 logger.info(f"Processing {figure.figure_label}")
                 
                 if figure.figure_label in captions:
                     caption_text = captions[figure.figure_label]
-                    is_valid, score = self._validate_caption(docx_path, caption_text)
+                    is_valid, rouge_score = self._validate_caption(docx_path, caption_text)
                     
                     figure.figure_caption = caption_text
-                    figure.caption_fuzzy_score = score
-                    figure.possible_hallucination = score < 85
+                    figure.rouge_l_score = rouge_score
+                    figure.possible_hallucination = not is_valid
                 else:
                     logger.warning(f"No caption found for {figure.figure_label}")
                     figure.figure_caption = "Figure caption not found."
-                    figure.caption_fuzzy_score = 0
+                    figure.rouge_l_score = 0.0
                     figure.possible_hallucination = True
-
+            
             return zip_structure
-
+            
         except Exception as e:
             logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
             return zip_structure
+

@@ -62,6 +62,7 @@ Your task is to parse these captions into a structured format:
 1. You MUST extract EXACTLY $expected_figure_count figure captions from the provided text.
 
 2. For each caption (Figure 1 through Figure $expected_figure_count):
+   - Extract the TITLE of the figure (the main descriptive sentence before any panel descriptions)
    - Copy the ENTIRE caption text EXACTLY as it appears
    - Include ALL subsections (A, B, C, etc.)
    - Maintain ALL formatting, punctuation, and special characters
@@ -69,31 +70,33 @@ Your task is to parse these captions into a structured format:
 
 3. Create a JSON object where:
    - Keys are "Figure 1", "Figure 2", etc. (up to $expected_figure_count)
-   - Values are the complete, exact caption text
+   - Values are objects containing:
+     * "title": The main descriptive sentence of the figure
+     * "caption": The complete, exact caption text
 
 4. RULES:
    - Include ONLY main figures (1,2,3...)
    - Skip EV figures or supplementary figures
    - Maintain consecutive numbering
    - Keep all statistical information and references
+   - The title should be the first descriptive sentence before panel descriptions
+   - The caption should include the complete text, including the title
 
+The figures typically appear as:
 
-You will get the following input:
+Figure X: {Caption Title}. {Caption text}
 
-Figure captions of the document: $figure_captions
-
-Expected figure count: $expected_figure_count
-
-Expected labels: $expected_figure_labels
-
-OUTPUT:
-
-Provide the JSON object with the extracted figure captions following the schema:
-
+Example output format:
 ```json
 {
-  "Figure 1": "Title of Figure 1. A) Description of panel A. B) Description of panel B. Statistical analysis: p < 0.05.",
-  "Figure 2": "Title of Figure 2. Detailed description of the figure, including multiple paragraphs if necessary."
+  "Figure 1": {
+    "title": "Main descriptive sentence of the figure",
+    "caption": "Complete caption including title and all panel descriptions"
+  },
+  "Figure 2": {
+    "title": "Analysis of protein expression in response to treatment",
+    "caption": "Analysis of protein expression in response to treatment. A) Western blot analysis... B) Quantification of..."
+  }
 }
 ```
 """
@@ -204,52 +207,51 @@ Include every experimental detail, panel description, and statistical notation e
 """
 
 CLAUDE_EXTRACT_CAPTIONS_PROMPT = """
-You are an expert at analyzing scientific figure captions and structuring them systematically.
-Your task is to extract and organize figure captions from the provided text.
+You are an AI assistant specializing in extracting figure captions from scientific manuscripts. 
+A section containing ALL figure captions has been provided.
 
-Key Requirements:
-1. Extract EXACTLY $expected_figure_count figure captions.
+Your task is to parse these captions into a structured format:
 
-2. For each caption:
-   - Extract the complete original text
-   - Preserve all formatting
-   - Include all panel descriptions (A, B, C, etc.)
-   - Keep all statistical information
-   - Maintain all technical details
+1. You MUST extract EXACTLY $expected_figure_count figure captions from the provided text.
 
-3. Format output as a clean JSON object:
-   {
-     "Figure 1": "Complete caption text...",
-     "Figure 2": "Complete caption text..."
-   }
+2. For each caption (Figure 1 through Figure $expected_figure_count):
+   - Extract the TITLE of the figure (the main descriptive sentence before any panel descriptions)
+   - Copy the ENTIRE caption text EXACTLY as it appears
+   - Include ALL subsections (A, B, C, etc.)
+   - Maintain ALL formatting, punctuation, and special characters
+   - DO NOT modify or summarize the text
 
-4. Important Rules:
-   - Use exact figure numbers
-   - Include only main figures (not supplementary)
-   - Preserve all text exactly as written
-   - Do not modify or summarize content
+3. Create a JSON object where:
+   - Keys are "Figure 1", "Figure 2", etc. (up to $expected_figure_count)
+   - Values are objects containing:
+     * "title": The main descriptive sentence of the figure
+     * "caption": The complete, exact caption text
 
-Your response must focus only on accurately extracting and structuring the captions.
+4. RULES:
+   - Include ONLY main figures (1,2,3...)
+   - Skip EV figures or supplementary figures
+   - Maintain consecutive numbering
+   - Keep all statistical information and references
+   - The title should be the first descriptive sentence before panel descriptions
+   - The caption should include the complete text, including the title
 
-You will get the following input:
+The figures typically appear as:
 
-Figure captions of the document: $figure_captions
+Figure X: {Caption Title}. {Caption text}
 
-Expected figure count: $expected_figure_count
-
-Expected labels: $expected_figure_labels
-
-OUTPUT:
-
-Provide the JSON object with the extracted figure captions following the schema:
-
+OUTPUT FORMAT:
 ```json
 {
-  "Figure 1": "Title of Figure 1. A) Description of panel A. B) Description of panel B. Statistical analysis: p < 0.05.",
-  "Figure 2": "Title of Figure 2. Detailed description of the figure, including multiple paragraphs if necessary."
+  "Figure 1": {
+    "title": "Main descriptive sentence of the figure",
+    "caption": "Complete caption including title and all panel descriptions"
+  },
+  "Figure 2": {
+    "title": "Analysis of protein expression in response to treatment",
+    "caption": "Analysis of protein expression in response to treatment. A) Western blot analysis... B) Quantification of..."
+  }
 }
 ```
-
 """
 
 def get_claude_locate_captions_prompt(
@@ -278,8 +280,8 @@ def get_claude_locate_captions_prompt(
 
 def get_claude_extract_captions_prompt(
     figure_captions: str,
-    expected_figure_count: str = "",
-    expected_figure_labels: str = ""
+    expected_figure_count: str,
+    expected_figure_labels: str
     ) -> str:
     """
     Generate a prompt for extracting figure captions from the located captions text.
@@ -293,6 +295,8 @@ def get_claude_extract_captions_prompt(
         Expected figure count: $expected_figure_count
 
         Expected labels: $expected_figure_labels
+
+        Please extract both the title and complete caption for each figure and format the output as specified in the instructions.
     """).substitute(
         figure_captions=figure_captions,
         expected_figure_count=expected_figure_count,

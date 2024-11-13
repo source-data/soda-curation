@@ -45,8 +45,14 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         Args:
             config (Dict[str, Any]): Configuration dictionary for Anthropic API.
         """
-        self.config = config
+        super().__init__(config)
         self.client = Anthropic(api_key=self.config["api_key"])
+        self.model = self.config.get("model", "claude-3-5-sonnet-20240620")
+        self.max_tokens = self.config.get("max_tokens_to_sample", 8192)
+        self.temperature = self.config.get("temperature", 0.5)
+        self.top_p = self.config.get("top_p", 1.0)
+        self.top_k = self.config.get("top_k", 128)
+        logger.info(f"Initialized FigureCaptionExtractorClaude with model: {self.model}")
 
     def _extract_text_from_response(self, response) -> str:
         """Helper method to extract text from Claude's response."""
@@ -84,21 +90,21 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             response = self.client.messages.create(
                 model=self.config["model"],
                 system=CLAUDE_LOCATE_CAPTIONS_PROMPT,
-                max_tokens=self.config["max_tokens_to_sample"],
+                max_tokens=self.max_tokens,
+                temperature=self.temperature,
+                top_p=self.top_p,
+                top_k=self.top_k,
                 messages=[
                     {"role": "user", "content": message_content},
                 ],
             )
             
-            extracted_text = self._extract_text_from_response(response)
-            logger.info(f"EXTRACTED TEXT LOCATE CAPTIONS: \n {extracted_text}")
+            return self._extract_text_from_response(response)
             
-            return extracted_text
-        
         except Exception as e:
             logger.error(f"Error locating figure captions: {str(e)}")
             return ""
-
+        
     def extract_captions(self,
             docx_path: str,
             zip_structure: ZipStructure,
@@ -121,52 +127,61 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         """
         try:
             logger.info(f"Processing file: {docx_path}")
-
             file_content = self._extract_docx_content(docx_path)
-            logger.debug("Sending request to Anthropic API")
             
-            all_figure_captions = self._locate_figure_captions(
+            # Locate all captions and store raw response
+            located_captions = self._locate_figure_captions(
                 file_content,
-                expected_figure_count=expected_figure_count,
-                expected_figure_labels=expected_figure_labels
+                expected_figure_count,
+                expected_figure_labels
             )
             
-            if not all_figure_captions:
+            if not located_captions:
                 logger.error("Failed to locate figure captions")
                 return zip_structure
             
-            logger.debug(f"Answer from Anthropic: {all_figure_captions}")
+            # Store raw located captions text and AI response
+            zip_structure.ai_response_locate_captions = located_captions
+            logger.info(f"Successfully located captions section ({len(located_captions)} characters)")
             
-            # Store raw captions
-            zip_structure.all_captions_extracted = all_figure_captions
-            logger.info(f"Successfully located captions section ({len(all_figure_captions)} characters)")
-
             # Extract individual captions
-            captions = self._extract_individual_captions(
-                all_figure_captions,
+            extracted_captions_response = self._extract_individual_captions(
+                located_captions,
                 expected_figure_count,
-                expected_figure_labels)
+                expected_figure_labels
+            )
+            
+            # Store the raw response from caption extraction
+            zip_structure.ai_response_extract_captions = extracted_captions_response
+            
+            # Parse the response into caption dictionary
+            captions = self._parse_response(extracted_captions_response)
             logger.info(f"Extracted {len(captions)} individual captions")
-
-            # Update structure with validated captions
+            
+            # Process each figure
             for figure in zip_structure.figures:
                 logger.info(f"Processing {figure.figure_label}")
                 
                 if figure.figure_label in captions:
-                    caption_text = captions[figure.figure_label]
-                    is_valid, score = self._validate_caption(docx_path, caption_text)
+                    caption_info = captions[figure.figure_label]
+                    caption_text = caption_info["caption"]
+                    caption_title = caption_info["title"]
+                    
+                    is_valid, rouge_score = self._validate_caption(docx_path, caption_text)
                     
                     figure.figure_caption = caption_text
-                    figure.caption_fuzzy_score = score
-                    figure.possible_hallucination = score < 85
+                    figure.caption_title = caption_title
+                    figure.rouge_l_score = rouge_score
+                    figure.possible_hallucination = not is_valid
                 else:
                     logger.warning(f"No caption found for {figure.figure_label}")
                     figure.figure_caption = "Figure caption not found."
-                    figure.caption_fuzzy_score = 0
+                    figure.caption_title = ""
+                    figure.rouge_l_score = 0.0
                     figure.possible_hallucination = True
-
+            
             return zip_structure
-
+            
         except Exception as e:
             logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
             return zip_structure
@@ -181,25 +196,23 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
                 figure_captions=all_captions,
                 expected_figure_count=expected_figure_count,
                 expected_figure_labels=expected_figure_labels
-                )
+            )
             
             response = self.client.messages.create(
                 model=self.config["model"],
                 system=CLAUDE_EXTRACT_CAPTIONS_PROMPT,
-                max_tokens=self.config["max_tokens_to_sample"],
+                max_tokens=self.max_tokens,
+                temperature=self.temperature,
+                top_p=self.top_p,
+                top_k=self.top_k,
                 messages=[
                     {"role": "user", "content": message_content},
                 ],
             )
 
-            extracted_text = self._extract_text_from_response(response)
-            logger.info(f"EXTRACTED TEXT INDIVIDUAL CAPTIONS: \n {extracted_text}")
-
-            if extracted_text:
-                return self._parse_response(extracted_text)
-            return {}
+            return self._extract_text_from_response(response)
             
         except Exception as e:
             logger.error(f"Error extracting individual captions: {str(e)}")
-            return {}
+            return ""
 

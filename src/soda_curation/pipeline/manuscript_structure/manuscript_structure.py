@@ -1,9 +1,6 @@
 """
 This module defines the base classes and data structures for representing and processing
 the structure of ZIP files containing manuscript data.
-
-It includes dataclasses for representing panels, figures, and the overall ZIP structure,
-as well as an abstract base class for ZIP structure processors and a custom JSON encoder.
 """
 
 import json
@@ -15,10 +12,8 @@ from typing import Any, List, Optional
 
 logger = logging.getLogger(__name__)
 
-
 def full_path(extract_dir: str, file_path: str) -> str:
     return os.path.join(extract_dir, file_path)
-
 
 @dataclass
 class Panel:
@@ -30,17 +25,15 @@ class Panel:
         panel_caption (str): The caption specific to this panel.
         panel_bbox (List[float]): Bounding box coordinates of the panel [x1, y1, x2, y2].
         confidence (float): Confidence of the object detection algorithm.
-        ai_response (Optional[Any]): The raw AI response for this panel.
+        ai_response (Optional[str]): The raw AI response for this panel.
         sd_files (List[str]): Source data files for the panel.
     """
-
     panel_label: str
     panel_caption: str
     panel_bbox: List[float]
     confidence: float
-    ai_response: Optional[Any] = None
-    sd_files: List[str] = field(default_factory=list)  
-
+    ai_response: Optional[str] = None
+    sd_files: List[str] = field(default_factory=list)
 
 @dataclass
 class Figure:
@@ -51,14 +44,16 @@ class Figure:
         figure_label (str): The label of the figure (e.g., "Figure 1", "EV1").
         img_files (List[str]): List of image file paths associated with the figure.
         sd_files (List[str]): List of source data file paths associated with the figure.
-        figure_caption (str): The caption of the figure. Defaults to an empty string.
-        panels (List[Panel]): List of Panel objects representing individual panels in the figure.
-        duplicated_panels (str): Flag indicating if the figure has duplicate panels. Defaults to "false".
-        ai_response_panel_source_assign (Optional[str]): The raw AI response for panel source assignment.
-        possible_hallucination (bool): Flag indicating if the caption might be hallucinated.
-        caption_fuzzy_score (float): Fuzzy matching score between extracted and original caption.
+        figure_caption (str): The caption of the figure.
+        panels (List[Panel]): List of Panel objects representing individual panels.
+        duplicated_panels (str): Flag indicating if panels are duplicated.
+        ai_response_panel_source_assign (Optional[str]): AI response for panel source assignment.
+        possible_hallucination (bool): Flag indicating if caption might be hallucinated.
+        rouge_l_score (float): ROUGE-L F-measure score between extracted and original caption.
+        unassigned_sd_files (List[str]): Source data files not assigned to specific panels.
+        _full_img_files (List[str]): Full paths to image files.
+        _full_sd_files (List[str]): Full paths to source data files.
     """
-
     figure_label: str
     img_files: List[str]
     sd_files: List[str]
@@ -69,13 +64,13 @@ class Figure:
     duplicated_panels: str = "false"
     ai_response_panel_source_assign: Optional[str] = None
     possible_hallucination: bool = False
-    caption_fuzzy_score: float = 0.0
+    rouge_l_score: float = 0.0
     figure_caption: str = ""
 
 @dataclass
 class ZipStructure:
     """
-    Represents the structure of a ZIP file containing manuscript data from eJP.
+    Represents the structure of a ZIP file containing manuscript data.
 
     Attributes:
         manuscript_id (str): The identifier of the manuscript.
@@ -83,133 +78,65 @@ class ZipStructure:
         docx (str): Path to the DOCX file.
         pdf (str): Path to the PDF file.
         appendix (List[str]): List of paths to appendix files.
-        figures (List[Figure]): List of Figure objects representing the figures in the manuscript.
-        errors (List[str]): List of errors encountered during processing. Defaults to an empty list.
-        ai_response (Optional[Any]): The raw AI response for figure extraction.
+        figures (List[Figure]): List of Figure objects.
+        errors (List[str]): List of errors encountered during processing.
+        ai_response (Optional[str]): The raw AI response for figure extraction.
         non_associated_sd_files (List[str]): List of non-associated source data files.
-        all_captions_extracted (str): Raw text containing all figure captions extracted from the document.
+        all_captions_extracted (str): Raw text containing all extracted figure captions.
+        ai_response_locate_captions (Optional[str]): AI response from caption location phase.
+        ai_response_extract_captions (Optional[str]): AI response from caption extraction phase.
+        caption_title (str): The title of the figure caption.
+        _full_docx (str): Full path to DOCX file.
+        _full_pdf (str): Full path to PDF file.
+        _full_appendix (List[str]): Full paths to appendix files.
     """
     appendix: List[str] = field(default_factory=list)
     figures: List[Figure] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     non_associated_sd_files: List[str] = field(default_factory=list)
     _full_appendix: List[str] = field(default_factory=list)
-    ai_response: Optional[Any] = None
     manuscript_id: str = ""
     xml: str = ""
     docx: str = ""
     pdf: str = ""
-    all_captions_extracted: str = ""
-    # Internal fields for full paths
+    ai_response_locate_captions: Optional[str] = None
+    ai_response_extract_captions: Optional[str] = None
     _full_docx: str = ""
     _full_pdf: str = ""
+    caption_title: str = ""  # New field for the figure caption title
 
 class CustomJSONEncoder(json.JSONEncoder):
-    """
-    Custom JSON encoder for ZipStructure and Figure objects.
-
-    This encoder extends the default JSONEncoder to handle ZipStructure, Figure, and Panel objects,
-    converting them to dictionaries for JSON serialization.
-    """
+    """Custom JSON encoder for ZipStructure and related objects."""
 
     def default(self, obj):
-        """
-        Converts ZipStructure, Figure, and Panel objects to dictionaries.
-
-        Args:
-            obj: The object to be serialized.
-
-        Returns:
-            dict: A dictionary representation of the object if it's a ZipStructure, Figure, or Panel instance.
-            Any: The default serialization for other types.
-        """
+        """Convert dataclass objects to dictionaries, excluding private fields."""
         if isinstance(obj, (ZipStructure, Figure, Panel)):
+            # Convert to dict and filter out private fields (starting with _)
             return {k: v for k, v in asdict(obj).items() if not k.startswith("_")}
         return super().default(obj)
 
     def serialize_dataclass(self, obj):
-        """
-        Serialize a dataclass object to a dictionary.
-
-        Args:
-            obj: The dataclass object to serialize.
-
-        Returns:
-            dict: A dictionary representation of the dataclass object.
-        """
+        """Serialize a dataclass object, excluding private fields."""
         if isinstance(obj, ZipStructure):
             return {k: v for k, v in obj.__dict__.items() if not k.startswith("_")}
         elif isinstance(obj, Figure):
-            return {k: v for k, v in obj.__dict__.items() if not k.startswith("_") and k != "ai_response"}
+            return {k: v for k, v in obj.__dict__.items() if not k.startswith("_")}
         return super().default(obj)
 
-    @staticmethod
-    def unescape_string(s):
-        """
-        Unescape a string that may contain escaped characters.
-
-        Args:
-            s (str): The string to unescape.
-
-        Returns:
-            str: The unescaped string.
-        """
-        return s.encode("utf-8").decode("unicode_escape")
-
-
 class XMLStructureExtractor(ABC):
-    """
-    Abstract base class for processing ZIP file structures.
-
-    This class defines the interface for classes that process ZIP file structures
-    and convert them into ZipStructure objects.
-    """
+    """Abstract base class for processing ZIP file structures."""
 
     @abstractmethod
     def process_zip_structure(self, file_list: List[str]) -> ZipStructure:
-        """
-        Process the structure of a ZIP file based on its file list.
-
-        This method should be implemented by subclasses to define how the ZIP structure
-        is processed and converted into a ZipStructure object.
-
-        Args:
-            file_list (List[str]): A list of file paths in the ZIP archive.
-
-        Returns:
-            ZipStructure: A ZipStructure object representing the processed ZIP structure.
-        """
+        """Process the structure of a ZIP file based on its file list."""
         pass
 
-    def _json_to_zip_structure(self, json_str: str) -> ZipStructure:
-        """
-        Convert a JSON string to a ZipStructure object.
-
-        This method parses a JSON string representation of a ZIP structure and
-        creates a corresponding ZipStructure object.
-
-        Args:
-            json_str (str): A JSON string representing the ZIP structure.
-
-        Returns:
-            ZipStructure: A ZipStructure object created from the JSON data.
-            None: If there's an error in parsing or the JSON is invalid.
-
-        Raises:
-            json.JSONDecodeError: If the JSON string is invalid.
-            KeyError: If required keys are missing in the JSON data.
-            Exception: For any other unexpected errors during parsing.
-        """
+    def _json_to_zip_structure(self, json_str: str) -> Optional[ZipStructure]:
+        """Convert a JSON string to a ZipStructure object."""
         try:
             data = json.loads(json_str)
-            required_fields = [
-                "manuscript_id",
-                "xml",
-                "docx",
-                "pdf",
-                "appendix",
-                "figures",
-            ]
+            required_fields = ["manuscript_id", "xml", "docx", "pdf", "appendix", "figures"]
+            
             if not all(field in data for field in required_fields):
                 logger.error("Missing required fields in JSON response")
                 return None
@@ -224,6 +151,9 @@ class XMLStructureExtractor(ABC):
                             sd_files=fig["sd_files"],
                             figure_caption=fig.get("figure_caption", ""),
                             panels=fig.get("panels", []),
+                            ai_response_locate_captions=fig.get("ai_response_locate_captions"),
+                            ai_response_extract_captions=fig.get("ai_response_extract_captions"),
+                            rouge_l_score=fig.get("rouge_l_score", 0.0)
                         )
                     )
                 except KeyError as e:
@@ -243,7 +173,10 @@ class XMLStructureExtractor(ABC):
                 pdf=data.get("pdf", ""),
                 appendix=appendix,
                 figures=figures,
+                ai_response_locate_captions=data.get("ai_response_locate_captions"),
+                ai_response_extract_captions=data.get("ai_response_extract_captions")
             )
+            
         except json.JSONDecodeError:
             logger.error("Invalid JSON response from AI")
             return None
