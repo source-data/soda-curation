@@ -149,8 +149,41 @@ def run_task(task, strategy, context):
 ########################################################################################
 
 
+def _diff_text(a, b, matching_blocks, ignore_whitespace=True):
+    diffs = []
+    prev_a, prev_b = 0, 0
+    for block in matching_blocks:
+        i_a, i_b, size = block
+        if prev_a < i_a:
+            diffs.append({
+                "a": a[prev_a:i_a],
+                "b": "",
+                "type": "fn",
+            })
+        if prev_b < i_b:
+            diffs.append({
+                "a": "",
+                "b": b[prev_b:i_b],
+                "type": "fp",
+            })
+        # Matching block
+        if size > 0:
+            diffs.append({
+                "a": a[i_a:i_a + size],
+                "b": b[i_b:i_b + size],
+                "type": "tp",
+            })
+        prev_a, prev_b = i_a + size, i_b + size
+    return diffs
+
+
+def _normalize_text(text):
+    return re.sub(r"\s+", " ", text)
+
 def _score_text_extraction(ground_truth, extracted_text):
-    sm = difflib.SequenceMatcher(a=ground_truth, b=extracted_text)
+    ground_truth_normalized = _normalize_text(ground_truth)
+    extracted_text_normalized = _normalize_text(extracted_text)
+    sm = difflib.SequenceMatcher(a=ground_truth_normalized, b=extracted_text_normalized)
     mbs = sm.get_matching_blocks()
     true_positives = sum([mb.size for mb in mbs])
     false_positives = len(extracted_text) - true_positives
@@ -176,9 +209,7 @@ def _score_text_extraction(ground_truth, extracted_text):
         "precision": precision,
         "recall": recall,
         "f1": f1,
-        "diff": "\n".join(
-            difflib.ndiff(ground_truth.splitlines(), extracted_text.splitlines()),
-        ),
+        "diff": _diff_text(ground_truth, extracted_text, mbs),
     }
 
 
@@ -220,7 +251,11 @@ def _score_figure_captions(ground_truth_figures, extracted_figures):
         "precision": _avg_scores(scores, "precision"),
         "recall": _avg_scores(scores, "recall"),
         "f1": _avg_scores(scores, "f1"),
-        "diff": "\n\n".join([score["diff"] for score in scores.values()]),
+        "diff": [
+            d
+            for score in scores.values()
+            for d in score["diff"]
+        ],
         "scores": scores,
     }
 
