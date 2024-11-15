@@ -498,84 +498,147 @@ def process_zip_structure(zip_structure):
     Returns:
         ZipStructure: The processed ZipStructure object.
     """
-    manuscript_id = zip_structure.manuscript_id
-
-    # Update appendix paths
+    # Update appendix paths - strip to just the relative path
     processed_appendix = []
     for item in zip_structure.appendix:
         if isinstance(item, dict):
-            processed_appendix.append(f"{manuscript_id}/{item['object_id']}")
+            path = item['object_id']
+            # Get everything after the manuscript_id/
+            _, *parts = path.split('/')
+            processed_appendix.append('/'.join(parts))
         elif isinstance(item, str):
-            processed_appendix.append(f"{manuscript_id}/{item}")
+            _, *parts = item.split('/')
+            processed_appendix.append('/'.join(parts))
     zip_structure.appendix = processed_appendix
 
     # Create a set of Excel files to exclude from non_associated_sd_files
     excel_files = set(file for file in zip_structure.appendix if file.endswith('.xlsx'))
 
     non_associated_sd_files = set()
-
-    # Create a set of all figure-level source data files
     figure_sd_files = set()
 
     for figure in zip_structure.figures:
-        # Update sd_files to only include ZIP files
+        # Update image files paths - strip to just the relative path
+        figure.img_files = []
+        for img_file in figure._full_img_files:
+            # Split path and get everything after manuscript_id
+            parts = img_file.split('/')
+            try:
+                idx = parts.index(zip_structure.manuscript_id)
+                figure.img_files.append('/'.join(parts[idx + 1:]))
+            except ValueError:
+                # If manuscript_id not in path, take everything after input/
+                try:
+                    idx = parts.index('input')
+                    figure.img_files.append('/'.join(parts[idx + 2:]))
+                except ValueError:
+                    # If all else fails, use the last two parts of the path
+                    figure.img_files.append('/'.join(parts[-2:]))
+
+        # Update source data file paths
         if figure._full_sd_files:
-            figure.sd_files = [os.path.relpath(file, '/app/input/') for file in figure._full_sd_files if file.endswith('.zip')]
-            figure_sd_files.update(figure.sd_files)
-        else:
             figure.sd_files = []
-
-        # Remove Excel files from _full_sd_files
-        figure._full_sd_files = [file for file in figure._full_sd_files if not file.endswith('.xlsx')]
-
-        # Update img_files to include the manuscript ID in the path
-        figure.img_files = [os.path.relpath(img_file, '/app/input/') for img_file in figure._full_img_files]
+            for file in figure._full_sd_files:
+                if file.endswith('.zip'):
+                    parts = file.split('/')
+                    try:
+                        idx = parts.index(zip_structure.manuscript_id)
+                        figure.sd_files.append('/'.join(parts[idx + 1:]))
+                    except ValueError:
+                        try:
+                            idx = parts.index('input')
+                            figure.sd_files.append('/'.join(parts[idx + 2:]))
+                        except ValueError:
+                            figure.sd_files.append('/'.join(parts[-2:]))
+            figure_sd_files.update(figure.sd_files)
 
         # Process panels
         for panel in figure.panels:
             if figure.sd_files:
-                zip_filename = figure.sd_files[0]
-                panel_label = panel.panel_label
-                panel.sd_files = [
-                    f"{zip_filename}:{os.path.dirname(file)}/{panel_label}/{os.path.basename(file)}"
-                    for file in panel.sd_files
-                    if isinstance(file, str) and not ("__MACOSX" in file or file.endswith('.DS_Store'))
-                ]
-            else:
-                non_associated_sd_files.update(file for file in panel.sd_files if isinstance(file, str))
-                panel.sd_files = []
+                zip_filename = figure.sd_files[0]  # This is already in the correct format (suppl_data/Figure X.zip)
+                
+                # Update panel source data paths
+                new_sd_files = []
+                for file in panel.sd_files:
+                    if isinstance(file, str) and not ("__MACOSX" in file or file.endswith('.DS_Store')):
+                        if ':' in file:
+                            # Split into zip path and internal path
+                            zip_part, internal_path = file.split(':', 1)
+                            
+                            # Clean up zip part - already handled by previous code
+                            zip_parts = zip_part.split('/')
+                            try:
+                                idx = zip_parts.index(zip_structure.manuscript_id)
+                                clean_zip_path = '/'.join(zip_parts[idx + 1:])
+                            except ValueError:
+                                try:
+                                    idx = zip_parts.index('input')
+                                    clean_zip_path = '/'.join(zip_parts[idx + 2:])
+                                except ValueError:
+                                    clean_zip_path = '/'.join(zip_parts[-2:])
 
-    # Process non_associated_sd_files
-    for file in zip_structure.non_associated_sd_files:
-        if isinstance(file, str):
-            if ':' in file and file.split(':')[0].endswith('.zip'):
-                # It's a file within a ZIP, add it
-                non_associated_sd_files.add(file)
-            elif not any(excel_file in file for excel_file in excel_files):
-                # It's not an Excel file or its component, add it
-                non_associated_sd_files.add(file)
-
-    # Remove duplicates, files with __MACOSX or .DS_Store, and files that are properly associated with panels
-    all_panel_sd_files = set()
-    for figure in zip_structure.figures:
-        for panel in figure.panels:
-            all_panel_sd_files.update(sd_file for sd_file in panel.sd_files if isinstance(sd_file, str))
-
-    zip_structure.non_associated_sd_files = list(
-        non_associated_sd_files - all_panel_sd_files - figure_sd_files
-    )
+                            # Process internal path
+                            # Split path into components
+                            path_parts = internal_path.split('/')
+                            
+                            # Find the panel identifier (like '3A', '3B', etc.)
+                            panel_id = None
+                            for part in path_parts:
+                                if part.startswith(figure.figure_label.split()[-1]):
+                                    panel_id = part
+                                    break
+                                
+                            if panel_id:
+                                # Get all parts after the panel identifier, preserving subdirectories
+                                final_parts = []
+                                found_panel_id = False
+                                for part in path_parts:
+                                    if part == panel_id:
+                                        found_panel_id = True
+                                        final_parts.append(part)
+                                    elif found_panel_id:
+                                        # Keep all subsequent parts (preserves 1st, 2nd, 3rd directories)
+                                        final_parts.append(part)
+                                        
+                                # Construct final internal path
+                                clean_internal_path = '/'.join(final_parts)
+                                new_sd_files.append(f"{clean_zip_path}:{clean_internal_path}")
+                            else:
+                                # If we can't find the panel ID, preserve the original internal path
+                                new_sd_files.append(f"{clean_zip_path}:{os.path.basename(internal_path)}")
+                                
+                panel.sd_files = new_sd_files
 
     # Remove any files with __MACOSX or .DS_Store
-    zip_structure.non_associated_sd_files = [
-        file for file in zip_structure.non_associated_sd_files
-        if "__MACOSX" not in file and not file.endswith('.DS_Store')
-    ]
+    if hasattr(zip_structure, 'non_associated_sd_files'):
+        zip_structure.non_associated_sd_files = [
+            file for file in zip_structure.non_associated_sd_files
+            if "__MACOSX" not in file and not file.endswith('.DS_Store')
+            and ':' in file  # Only keep files within ZIP archives
+        ]
+        
+        # Clean up paths in non_associated_sd_files
+        cleaned_non_associated = []
+        for file in zip_structure.non_associated_sd_files:
+            if ':' in file:
+                zip_part, internal_path = file.split(':', 1)
+                zip_parts = zip_part.split('/')
+                try:
+                    idx = zip_parts.index(zip_structure.manuscript_id)
+                    clean_zip_path = '/'.join(zip_parts[idx + 1:])
+                except ValueError:
+                    try:
+                        idx = zip_parts.index('input')
+                        clean_zip_path = '/'.join(zip_parts[idx + 2:])
+                    except ValueError:
+                        clean_zip_path = '/'.join(zip_parts[-2:])
+                cleaned_non_associated.append(f"{clean_zip_path}:{internal_path}")
+        zip_structure.non_associated_sd_files = cleaned_non_associated
 
-    # Post-processing: Remove any entries that aren't files within ZIP files
-    zip_structure.non_associated_sd_files = [
-        file for file in zip_structure.non_associated_sd_files
-        if ':' in file and file.split(':')[0].endswith('.zip') and file.split(':')[1] != '' and not file.split(':')[1].endswith('/')
-    ]
+    # Final cleanup - remove private fields
+    for attr in list(vars(zip_structure)):
+        if attr.startswith('_'):
+            delattr(zip_structure, attr)
 
     return zip_structure
 

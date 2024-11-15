@@ -153,10 +153,10 @@ class XMLStructureExtractor:
         Extract complete manuscript structure from XML.
         
         Returns:
-            ZipStructure: Structured representation of the manuscript.
+            ZipStructure: A structured representation of the manuscript.
             
         Raises:
-            NoManuscriptFileError: If no manuscript file (DOCX/PDF) is found.
+            NoManuscriptFileError: If no manuscript file is found.
         """
         logger.info("Extracting structure from XML")
         
@@ -170,14 +170,19 @@ class XMLStructureExtractor:
         figures = self._get_figures()
         appendix = self._get_appendix()
 
-        return ZipStructure(
+        structure = ZipStructure(
             manuscript_id=self.manuscript_id,
             xml=xml_file,
             docx=docx_file or "",
             pdf=pdf_file or "",
             appendix=appendix,
             figures=figures,
+            _full_appendix=[],  # Initialize empty list
+            non_associated_sd_files=[],
+            errors=[]
         )
+
+        return structure
 
     def _get_xml_file(self) -> str:
         """Get name of the XML file."""

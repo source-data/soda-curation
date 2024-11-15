@@ -131,7 +131,7 @@ class PanelSourceAssigner:
                 if panel.panel_label in assignments:
                     panel_files = assignments[panel.panel_label]
                     panel.sd_files = [
-                        f"{zip_filename}:Figure {figure_number}/{file}"
+                        f"suppl_data/{zip_filename}:Figure {figure_number}/{file}"
                         for file in panel_files
                     ]
                     assigned_files.update(panel.sd_files)
@@ -139,7 +139,7 @@ class PanelSourceAssigner:
             # Add unassigned files
             if 'unassigned' in assignments:
                 unassigned = [
-                    f"{zip_filename}:Figure {figure_number}/{file}"
+                    f"suppl_data/{zip_filename}:Figure {figure_number}/{file}"
                     for file in assignments['unassigned']
                 ]
                 figure.unassigned_sd_files = unassigned

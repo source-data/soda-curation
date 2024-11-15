@@ -69,6 +69,7 @@ class Figure:
     caption_title: str = ""  # New field for the figure caption title
 
 @dataclass
+@dataclass
 class ZipStructure:
     """
     Represents the structure of a ZIP file containing manuscript data.
@@ -83,10 +84,6 @@ class ZipStructure:
         errors (List[str]): List of errors encountered during processing.
         ai_response (Optional[str]): The raw AI response for figure extraction.
         non_associated_sd_files (List[str]): List of non-associated source data files.
-        all_captions_extracted (str): Raw text containing all extracted figure captions.
-        ai_response_locate_captions (Optional[str]): AI response from caption location phase.
-        ai_response_extract_captions (Optional[str]): AI response from caption extraction phase.
-        caption_title (str): The title of the figure caption.
         _full_docx (str): Full path to DOCX file.
         _full_pdf (str): Full path to PDF file.
         _full_appendix (List[str]): Full paths to appendix files.
@@ -104,6 +101,11 @@ class ZipStructure:
     ai_response_extract_captions: Optional[str] = None
     _full_docx: str = ""
     _full_pdf: str = ""
+    
+    def __post_init__(self):
+        """Initialize any attributes that might be missing."""
+        if not hasattr(self, '_full_appendix'):
+            self._full_appendix = []
 
 class CustomJSONEncoder(json.JSONEncoder):
     """Custom JSON encoder for ZipStructure and related objects."""
@@ -112,7 +114,9 @@ class CustomJSONEncoder(json.JSONEncoder):
         """Convert dataclass objects to dictionaries, excluding private fields."""
         if isinstance(obj, (ZipStructure, Figure, Panel)):
             # Convert to dict and filter out private fields (starting with _)
-            return {k: v for k, v in asdict(obj).items() if not k.startswith("_")}
+            dict_obj = {k: v for k, v in vars(obj).items() if not k.startswith("_")}
+            # Remove any None values
+            return {k: v for k, v in dict_obj.items() if v is not None}
         return super().default(obj)
 
     def serialize_dataclass(self, obj):

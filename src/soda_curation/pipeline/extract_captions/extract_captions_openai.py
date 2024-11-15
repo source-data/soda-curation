@@ -235,7 +235,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             
             # Process each figure
             for figure in zip_structure.figures:
-                logger.info(f"Processing {figure.figure_label}")
+                logger.info(f"Processing {figure.figure_label}")\
                 
                 if figure.figure_label in captions:
                     caption_info = captions[figure.figure_label]
