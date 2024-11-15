@@ -173,52 +173,81 @@ class FigureCaptionExtractor(ABC):
             logger.error(f"Error parsing response: {str(e)}")
             return {}
 
-    def _validate_caption(self, docx_path: str, caption: str, threshold: float = 0.85) -> Tuple[bool, float]:
+    def _validate_caption(self, docx_path: str, caption: str, threshold: float = 0.85) -> Tuple[bool, float, str]:
         """
-        Validate extracted caption against document text using ROUGE-L score.
-
-        Args:
-            docx_path (str): Path to the DOCX file
-            caption (str): Caption to validate
-            threshold (float): Minimum ROUGE score for validation
-
+        Validate extracted caption against document text using ROUGE-L score and show differences.
+        
         Returns:
-            Tuple[bool, float]: Validation result and confidence score
+            Tuple[bool, float, str]: (validation result, confidence score, diff text)
         """
         try:
-            # Normalize caption
             norm_caption = normalize_text(caption)
             if not norm_caption:
-                logger.warning("Caption is empty after normalization")
-                return False, 0.0
+                return False, 0.0, ""
             
-            # Extract and normalize document paragraphs
             doc = Document(docx_path)
-            paragraphs = [
-                normalize_text(para.text)
-                for para in doc.paragraphs
-                if para.text.strip()
-            ]
+            text_blocks = []
+            current_block = []
+            best_block = ""
             
-            if not paragraphs:
-                logger.warning("No paragraphs found in document")
-                return False, 0.0
-            
-            # Find best ROUGE-L score among paragraphs
+            for para in doc.paragraphs:
+                text = para.text.strip()
+                if not text:
+                    if current_block:
+                        text_blocks.append(" ".join(current_block))
+                        current_block = []
+                    continue
+                    
+                if text.lower().startswith(('figure', 'fig.', 'fig ')):
+                    if current_block:
+                        text_blocks.append(" ".join(current_block))
+                    current_block = [text]
+                elif current_block:
+                    current_block.append(text)
+                else:
+                    current_block = [text]
+
+            if current_block:
+                text_blocks.append(" ".join(current_block))
+
             best_score = 0.0
-            for para in paragraphs:
-                scores = self.rouge_scorer.score(para, norm_caption)
+            for block in text_blocks:
+                norm_block = normalize_text(block)
+                if not norm_block:
+                    continue
+                    
+                scores = self.rouge_scorer.score(norm_block, norm_caption)
                 rouge_l = scores['rougeL'].fmeasure
-                best_score = max(best_score, rouge_l)
-                
-                if best_score >= threshold:
-                    return True, best_score
-            
-            return False, best_score
+                if rouge_l > best_score:
+                    best_score = rouge_l
+                    best_block = block
+
+            if best_score >= threshold:
+                diff = self._generate_diff(best_block, caption)
+                return True, best_score, diff
+            return False, best_score, ""
 
         except Exception as e:
             logger.error(f"Error in caption validation: {str(e)}")
-            return False, 0.0
+            return False, 0.0, ""
+
+    def _generate_diff(self, original: str, ai_generated: str) -> str:
+        """Generate a marked-up diff between original and AI-generated text."""
+        import difflib
+        
+        d = difflib.Differ()
+        diff = list(d.compare(original.split(), ai_generated.split()))
+        
+        result = []
+        for word in diff:
+            if word.startswith('  '):
+                result.append(word[2:])
+            elif word.startswith('- '):
+                result.append(f"\033[91m{word[2:]}\033[0m")  # Red for deletions
+            elif word.startswith('+ '):
+                result.append(f"\033[92m{word[2:]}\033[0m")  # Green for additions
+                
+        return ' '.join(result)
 
     @abstractmethod
     def _locate_figure_captions(self, doc_string: str, expected_figure_count: int, expected_figure_labels: str) -> Optional[str]:
@@ -265,3 +294,16 @@ class FigureCaptionExtractor(ABC):
             ZipStructure: Updated ZIP structure with extracted captions
         """
         pass
+    
+    @staticmethod
+    def normalize_figure_label(label: str) -> str:
+        """Normalize figure label to standard format 'Figure X'."""
+        # Remove any whitespace and convert to lowercase for comparison
+        clean_label = label.strip().lower()
+        
+        # Extract the figure number
+        number = ''.join(filter(str.isdigit, clean_label))
+        
+        if number:
+            return f"Figure {number}"
+        return label

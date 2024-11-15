@@ -195,3 +195,47 @@ class XMLStructureExtractor:
             return self._clean_path(pdf[0].xpath(".//object_id")[0].text)
         logger.warning("No PDF file found")
         return ""
+
+    @staticmethod
+    def normalize_figure_label(label: str) -> str:
+        """Normalize figure label to standard format 'Figure X'."""
+        # Remove any whitespace and convert to lowercase for comparison
+        clean_label = label.strip().lower()
+        
+        # Extract the figure number
+        number = ''.join(filter(str.isdigit, clean_label))
+        
+        if number:
+            return f"Figure {number}"
+        return label
+
+    # In XMLStructureExtractor class
+    def _get_figures(self) -> List[Figure]:
+        """Get list of figures from XML."""
+        figures = []
+        xpath_query = " | ".join([
+            f"//fig[@object-type='{type}']" for type in self.FIGURE_TYPES
+        ])
+        
+        for fig in self.xml_content.xpath(xpath_query):
+            raw_label = fig.xpath(".//label")[0].text
+            # Skip EV figures as they go to appendix
+            if "EV" in raw_label:
+                continue
+                
+            # Normalize the figure label
+            label = self.normalize_figure_label(raw_label)
+            img_files = [self._clean_path(fig.xpath(".//object_id")[0].text)]
+            sd_files = self._get_source_data_files(label)
+            
+            logger.info(f"Processing figure: {label}")
+            figures.append(
+                Figure(
+                    figure_label=label,
+                    img_files=img_files,
+                    sd_files=sd_files,
+                    figure_caption="",
+                    panels=[]
+                )
+            )
+        return figures

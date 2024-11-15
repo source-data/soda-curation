@@ -106,25 +106,12 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             return ""
         
     def extract_captions(self,
-            docx_path: str,
-            zip_structure: ZipStructure,
-            expected_figure_count: int,
-            expected_figure_labels: str
-        ) -> ZipStructure:
-        """
-        Extract figure captions from the given DOCX file using Anthropic's Claude model.
-
-        This method processes the DOCX file, sends its content to the Anthropic API,
-        and updates the ZipStructure with the extracted captions.
-
-        Args:
-            docx_path (str): Path to the DOCX file.
-            zip_structure (ZipStructure): The current ZIP structure.
-            expected_figure_count (int): The expected number of figures in the document.
-
-        Returns:
-            ZipStructure: Updated ZIP structure with extracted captions.
-        """
+        docx_path: str,
+        zip_structure,
+        expected_figure_count: int,
+        expected_figure_labels: str) -> ZipStructure:
+        """Extract figure captions from document."""
+        
         try:
             logger.info(f"Processing file: {docx_path}")
             file_content = self._extract_docx_content(docx_path)
@@ -160,31 +147,36 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             
             # Process each figure
             for figure in zip_structure.figures:
-                logger.info(f"Processing {figure.figure_label}")
+                normalized_label = self.normalize_figure_label(figure.figure_label)
+                logger.info(f"Processing {normalized_label}")
                 
-                if figure.figure_label in captions:
-                    caption_info = captions[figure.figure_label]
+                if normalized_label in captions:
+                    caption_info = captions[normalized_label]
                     caption_text = caption_info["caption"]
                     caption_title = caption_info["title"]
                     
-                    is_valid, rouge_score = self._validate_caption(docx_path, caption_text)
+                    # Validate caption and get diff
+                    is_valid, rouge_score, diff_text = self._validate_caption(docx_path, caption_text)
                     
                     figure.figure_caption = caption_text
                     figure.caption_title = caption_title
                     figure.rouge_l_score = rouge_score
                     figure.possible_hallucination = not is_valid
+                    figure.diff = diff_text  # Store the diff text
                 else:
                     logger.warning(f"No caption found for {figure.figure_label}")
                     figure.figure_caption = "Figure caption not found."
                     figure.caption_title = ""
                     figure.rouge_l_score = 0.0
                     figure.possible_hallucination = True
+                    figure.diff = ""
             
             return zip_structure
             
         except Exception as e:
-            logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
+            logger.error(f"Error in caption extraction: {str(e)}")
             return zip_structure
+
         
     def _extract_individual_captions(self,
         all_captions: str,

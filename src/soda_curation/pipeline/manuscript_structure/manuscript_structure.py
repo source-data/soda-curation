@@ -67,8 +67,8 @@ class Figure:
     rouge_l_score: float = 0.0
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
+    diff: str = ""  # New field for diff output
 
-@dataclass
 @dataclass
 class ZipStructure:
     """
