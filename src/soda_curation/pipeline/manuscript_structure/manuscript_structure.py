@@ -64,6 +64,8 @@ class Figure:
     duplicated_panels: str = "false"
     ai_response_panel_source_assign: Optional[str] = None
     possible_hallucination: bool = False
+    ai_response_locate_captions: Optional[str] = None
+    ai_response_extract_captions: Optional[str] = None
     rouge_l_score: float = 0.0
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
@@ -156,10 +158,11 @@ class XMLStructureExtractor(ABC):
                             figure_caption=fig.get("figure_caption", ""),
                             panels=fig.get("panels", []),
                             ai_response_locate_captions=fig.get("ai_response_locate_captions"),
-                            ai_response_extract_captions=fig.get("ai_response_extract_captions"),
+                            ai_response_extract_captions=data.get("ai_response_extract_captions"),
                             rouge_l_score=fig.get("rouge_l_score", 0.0)
                         )
                     )
+
                 except KeyError as e:
                     logger.error(f"Missing key in figure data: {str(e)}")
                     return None

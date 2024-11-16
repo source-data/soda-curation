@@ -184,9 +184,8 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
             
             if messages.data:
-                extracted_captions = self._parse_response(messages.data[0].content[0].text.value)
                 self._cleanup_thread(thread.id)
-                return extracted_captions
+                return messages.data[0].content[0].text.value
 
         except Exception as e:
             logger.error(f"Error extracting individual captions: {str(e)}")
@@ -235,7 +234,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             
             # Process each figure
             for figure in zip_structure.figures:
-                normalized_label = normalize_figure_label(figure.figure_label)
+                normalized_label = self.normalize_figure_label(figure.figure_label)
                 logger.info(f"Processing {normalized_label}")
                 
                 if normalized_label in captions:
@@ -262,6 +261,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             return zip_structure
             
         except Exception as e:
-            logger.error(f"Error in caption extraction: {str(e)}")
+            logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
             return zip_structure
 

@@ -105,7 +105,6 @@ class FigureCaptionExtractor(ABC):
     def __init__(self, config: Dict):
         """Initialize with configuration."""
         self.config = config
-        self.rouge_scorer = rouge_scorer.RougeScorer(['rougeL'], use_stemmer=True)
 
     def _extract_docx_content(self, file_path: str) -> str:
         """
@@ -170,7 +169,9 @@ class FigureCaptionExtractor(ABC):
             return cleaned_captions
 
         except Exception as e:
-            logger.error(f"Error parsing response: {str(e)}")
+            logger.error(f"Error parsing response: {str(e)}", exc_info=True)
+            logger.error(f"Error parsing response: {response_text}", exc_info=True)
+            import pdb; pdb.set_trace()
             return {}
 
     def _validate_caption(self, docx_path: str, caption: str, threshold: float = 0.85) -> Tuple[bool, float, str]:
@@ -215,8 +216,9 @@ class FigureCaptionExtractor(ABC):
                 norm_block = normalize_text(block)
                 if not norm_block:
                     continue
-                    
-                scores = self.rouge_scorer.score(norm_block, norm_caption)
+
+                rouge_scorer_ = rouge_scorer.RougeScorer(['rougeL'], use_stemmer=True)
+                scores = rouge_scorer_.score(norm_block, norm_caption)
                 rouge_l = scores['rougeL'].fmeasure
                 if rouge_l > best_score:
                     best_score = rouge_l

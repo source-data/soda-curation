@@ -174,7 +174,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             return zip_structure
             
         except Exception as e:
-            logger.error(f"Error in caption extraction: {str(e)}")
+            logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
             return zip_structure
 
         
