@@ -665,6 +665,26 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
 
         try:
             zip_structure = get_manuscript_structure(zip_path, str(extract_dir))
+            # Add AI configuration to zip_structure
+            zip_structure.ai_provider = config["ai"]
+            zip_structure.ai_config = {
+                "provider": config["ai"],
+                "model": config[config["ai"]]["model"],
+                "temperature": config[config["ai"]]["temperature"],
+                "top_p": config[config["ai"]]["top_p"],
+            }
+            
+            # Add provider-specific parameters
+            if config["ai"] == "openai":
+                zip_structure.ai_config.update({
+                    "max_tokens": config["openai"].get("max_tokens", 0)
+                })
+            elif config["ai"] == "anthropic":
+                zip_structure.ai_config.update({
+                    "max_tokens_to_sample": config["anthropic"].get("max_tokens_to_sample", 0),
+                    "top_k": config["anthropic"].get("top_k", 0)
+                })
+
         except NoXMLFileFoundError as e:
             logger.error(f"Error: {str(e)}")
             return json.dumps({"error": str(e)})

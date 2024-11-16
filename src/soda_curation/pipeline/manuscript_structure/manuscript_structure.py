@@ -8,7 +8,7 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +95,7 @@ class ZipStructure:
     errors: List[str] = field(default_factory=list)
     non_associated_sd_files: List[str] = field(default_factory=list)
     _full_appendix: List[str] = field(default_factory=list)
+    ai_config: Dict[str, Any] = field(default_factory=dict)
     manuscript_id: str = ""
     xml: str = ""
     docx: str = ""
@@ -103,11 +104,13 @@ class ZipStructure:
     ai_response_extract_captions: Optional[str] = None
     _full_docx: str = ""
     _full_pdf: str = ""
+    ai_provider: str = ""
     
     def __post_init__(self):
         """Initialize any attributes that might be missing."""
         if not hasattr(self, '_full_appendix'):
             self._full_appendix = []
+
 
 class CustomJSONEncoder(json.JSONEncoder):
     """Custom JSON encoder for ZipStructure and related objects."""
@@ -117,8 +120,8 @@ class CustomJSONEncoder(json.JSONEncoder):
         if isinstance(obj, (ZipStructure, Figure, Panel)):
             # Convert to dict and filter out private fields (starting with _)
             dict_obj = {k: v for k, v in vars(obj).items() if not k.startswith("_")}
-            # Remove any None values
-            return {k: v for k, v in dict_obj.items() if v is not None}
+            # Remove any None values and empty collections
+            return {k: v for k, v in dict_obj.items() if v is not None and v != {} and v != []}
         return super().default(obj)
 
     def serialize_dataclass(self, obj):
