@@ -1,350 +1,485 @@
 {
-    "manuscript_id": "EMBOJ-2023-114687",
-    "xml": "EMBOJ-2023-114687.xml",
-    "docx": "Doc/EMBOJ2023114687R2Manuscript_Textmstxt.docx",
-    "pdf": "pdf/EMBOJ-2023-114687.pdf",
-    "appendix": [
-        "suppl_data/EMBOJ2023114687_MovieEV1.zip",
-        "suppl_data/EMBOJ2023114687R2Appendix_Figuressupp.pdf",
-        "suppl_data/Extended View and Appendix Source Data.zip",
-        "suppl_data/EMBOJ2023114687R2Peer Review File_figs in.pdf"
-    ],
-    "figures": [
+  "manuscript_id": "EMBOJ-2023-114687",
+  "xml": "EMBOJ-2023-114687.xml",
+  "docx": "Doc/EMBOJ2023114687R2Manuscript_Textmstxt.docx",
+  "pdf": "pdf/EMBOJ-2023-114687.pdf",
+  "appendix": [
+    "suppl_data/EMBOJ2023114687_MovieEV1.zip",
+    "suppl_data/EMBOJ2023114687R2Appendix_Figuressupp.pdf",
+    "suppl_data/Extended View and Appendix Source Data.zip",
+    "suppl_data/EMBOJ2023114687R2Peer Review File_figs in.pdf"
+  ],
+  "figures": [
+    {
+      "figure_label": "Figure 1",
+      "img_files": ["graphic/Fig1.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip"],
+      "figure_caption": "A. Knockdown of FCHO2 or Nedd4L by siRNA. αβγENaC-HeLa cells treated with each siRNA were analyzed by immunoblotting (IB). B. Inhibition of ENaC endocytosis by knockdown of FCHO2 or Nedd4L. After cells were transfected with each siRNA, cell-surface ENaC was labeled by incubating at 4°C with anti-FLAG antibody. Endocytosis was started by incubating cells at 37°C for the indicated periods of time and stopped by chilling cells on ice. Antibody bound to the cell surface but not internalized was removed by acid stripping. After cells were solubilized, the antibody-labeled internalized ENaC subunits were precipitated and analyzed by IB (upper panel) and quantified (bottom and right panels). Internalization was expressed as a percentage of the initial amount of cell-surface αENaC determined by lysing cells without incubation at 37°C or acid stripping. Data are shown as the mean ± S.E.M. of three independent experiments. **P < 0.01; ***P < 0.001 (Student's t-test).",
+      "caption_title": "FCHO2 is required for Nedd4L-mediated ubiquitination and endocytosis of ENaC.",
+      "panels": [
         {
-            "figure_label": "Figure 1",
-            "img_files": ["graphic/Fig1.eps"],
-            "sd_files": [],
-            "figure_caption": "A. Knockdown of FCHO2 or Nedd4L by siRNA. αβγENaC-HeLa cells treated with each siRNA were analyzed by immunoblotting (IB). B. Inhibition of ENaC endocytosis by knockdown of FCHO2 or Nedd4L. After cells were transfected with each siRNA, cell-surface ENaC was labeled by incubating at 4°C with anti-FLAG antibody. Endocytosis was started by incubating cells at 37°C for the indicated periods of time and stopped by chilling cells on ice. Antibody bound to the cell surface but not internalized was removed by acid stripping. After cells were solubilized, the antibody-labeled internalized ENaC subunits were precipitated and analyzed by IB (upper panel) and quantified (bottom and right panels). Internalization was expressed as a percentage of the initial amount of cell-surface αENaC determined by lysing cells without incubation at 37°C or acid stripping. Data are shown as the mean ± S.E.M. of three independent experiments. **P < 0.01; ***P < 0.001 (Student's t-test).",
-            "caption_title": "FCHO2 is required for Nedd4L-mediated ubiquitination and endocytosis of ENaC.",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "Knockdown of FCHO2 or Nedd4L by siRNA. αβγENaC-HeLa cells treated with each siRNA were analyzed by immunoblotting (IB).",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Inhibition of ENaC endocytosis by knockdown of FCHO2 or Nedd4L. After cells were transfected with each siRNA, cell-surface ENaC was labeled by incubating at 4°C with anti-FLAG antibody. Endocytosis was started by incubating cells at 37°C for the indicated periods of time and stopped by chilling cells on ice. Antibody bound to the cell surface but not internalized was removed by acid stripping. After cells were solubilized, the antibody-labeled internalized ENaC subunits were precipitated and analyzed by IB (upper panel) and quantified (bottom and right panels). Internalization was expressed as a percentage of the initial amount of cell-surface αENaC determined by lysing cells without incubation at 37°C or acid stripping. Data are shown as the mean ± S.E.M. of three independent experiments. **P < 0.01; ***P < 0.001 (Student's t-test).",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Inhibition of transferrin receptor (TfR) endocytosis by FCHO2 knockdown. After cells were transfected with each siRNA, cell-surface proteins were biotinylated at 4°C. Cells were then incubated at 37°C for 10 min. Biotin was removed from the cell surface, and internalized biotinylated proteins were precipitated with avidin beads. Samples were subjected to IB with anti-TfR antibody and quantified. Internalization was expressed as a proportion of the initial amount of TfR on the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test).",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "D",
-                    "panel_caption": "Restoration of αENaC endocytosis by FCHO2 re-expression in knockdown cells. After cells were transfected with the indicated siRNA and GFP construct, cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then incubated at 37°C for 10 min. After acid stripping, cells were subjected to immunofluorescence microscopy (left panels) and quantified (right panel). The antibody-labeled, internalized αENaC was visualized with a fluorescence-conjugated secondary antibody. The border of each cell is delineated by a solid line. Arrows indicate cells expressing GFP-tagged proteins. Scale bars, 10 μm. The proportion of cells with internalized αENaC among cells expressing control GFP or GFP-siRNA-resistant (sr) -FCHO2 is shown. Data are shown as the mean ± S.E.M. of five independent images (31-71 cells expressing GFP-tagged proteins per image). ***P < 0.001 (two-way analysis of variance with post hoc test).",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "E",
-                    "panel_caption": "Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies. ENaC ubiquitination, Asterisks indicate the same band of ubiquitinated FLAG-αENaC.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "F",
-                    "panel_caption": "Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies quantified. ENaC expression at the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test).",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "A",
+          "panel_caption": "Knockdown of FCHO2 or Nedd4L by siRNA. αβγENaC-HeLa cells treated with each siRNA were analyzed by immunoblotting (IB).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1A/Fig1A_western.tiff"
+          ]
         },
         {
-            "figure_label": "Figure 2",
-            "img_files": ["graphic/Fig2.eps"],
-            "sd_files": [],
-            "figure_caption": "A, B. Localization of cell-surface ENaC. mTagRFP-clathrin light chain (CLC) (A) or Nedd4L C922A (catalytic inactive mutant)-GFP (B) was expressed in αβγENaC-HeLa cells. Cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then fixed and stained with anti-FCHO2 antibody. Samples were subjected to immunofluorescence microscopy (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown. A. Co-localization of cell-surface ENaC with FCHO2 at clathrin-coated structures. B. Co-localization of cell-surface ENaC with Nedd4L C922A mutant and FCHO2. C. Co-localization of Nedd4L with FCHO2 at clathrin-coated structures. Nedd4L-GFP and mTagRFP-CLC were co-expressed in wild-type HeLa cells. Cells were then fixed and stained with anti-FCHO2 antibody (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown.",
-            "caption_title": "Localization of cell-surface ENaC, FCHO2, and Nedd4L at clathrin-coated structures.",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "Localization of cell-surface ENaC. mTagRFP-clathrin light chain (CLC) was expressed in αβγENaC-HeLa cells. Cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then fixed and stained with anti-FCHO2 antibody. Samples were subjected to immunofluorescence microscopy (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown. Co-localization of cell-surface ENaC with FCHO2 at clathrin-coated structures.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Localization of cell-surface ENaC. Nedd4L C922A (catalytic inactive mutant)-GFP was expressed in αβγENaC-HeLa cells. Cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then fixed and stained with anti-FCHO2 antibody. Samples were subjected to immunofluorescence microscopy (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown. Co-localization of cell-surface ENaC with Nedd4L C922A mutant and FCHO2.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Co-localization of Nedd4L with FCHO2 at clathrin-coated structures. Nedd4L-GFP and mTagRFP-CLC were co-expressed in wild-type HeLa cells. Cells were then fixed and stained with anti-FCHO2 antibody (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown.",
-                    "sd_files": []
-                }
-            ]
-        },        
-        {
-            "figure_label": "Figure 3",
-            "img_files": ["graphic/Fig3.eps"],
-            "sd_files": [],
-            "figure_caption": "DsRed-CLC were co-expressed with Nedd4L-GFP in wild-type HeLa cells. Images were acquired at 1 s intervals through TIRF microscopy. Upper panel, TIRF images of HeLa cells. Insets represent enlarged images of the dashed boxes. Bottom panel, selected snapshots (every 10 sec) from a time series were obtained from a single CCP indicated by the arrowhead. The time point at which Nedd4L started to accumulate was set 0. Scale bar, 2 μm.",
-            "caption_title": "Recruitment of Nedd4L to CCPs.",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "DsRed-CLC were co-expressed with Nedd4L-GFP in wild-type HeLa cells. Images were acquired at 1 s intervals through TIRF microscopy. Upper panel, TIRF images of HeLa cells. Insets represent enlarged images of the dashed boxes. Bottom panel, selected snapshots (every 10 sec) from a time series were obtained from a single CCP indicated by the arrowhead. The time point at which Nedd4L started to accumulate was set 0. Scale bar, 2 μm.",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "B",
+          "panel_caption": "Inhibition of ENaC endocytosis by knockdown of FCHO2 or Nedd4L. After cells were transfected with each siRNA, cell-surface ENaC was labeled by incubating at 4°C with anti-FLAG antibody. Endocytosis was started by incubating cells at 37°C for the indicated periods of time and stopped by chilling cells on ice. Antibody bound to the cell surface but not internalized was removed by acid stripping. After cells were solubilized, the antibody-labeled internalized ENaC subunits were precipitated and analyzed by IB (upper panel) and quantified (bottom and right panels). Internalization was expressed as a percentage of the initial amount of cell-surface αENaC determined by lysing cells without incubation at 37°C or acid stripping. Data are shown as the mean ± S.E.M. of three independent experiments. **P < 0.01; ***P < 0.001 (Student's t-test).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1B/Fig1B bar graph.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1B/Fig1B line graph.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1B/Fig1B_1.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1B/Fig1B_2.tiff"
+          ]
         },
         {
-            "figure_label": "Figure 4",
-            "img_files": ["graphic/Fig4.eps"],
-            "sd_files": [],
-            "figure_caption": "GFP-BAR domains were co-expressed with Myc-Nedd4L proteins in COS7 cells (A) and HEK293 cells (B). Cells were serum-starved and subjected to immunofluorescence microscopy. Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm.",
-            "caption_title": "Recruitment of Nedd4L to membrane tubules generated by FCHO2 in cells.",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "GFP-BAR domains were co-expressed with Myc-Nedd4L proteins in COS7 cells (A) and HEK293 cells (B). Cells were serum-starved and subjected to immunofluorescence microscopy. Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm.",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "C",
+          "panel_caption": "Inhibition of transferrin receptor (TfR) endocytosis by FCHO2 knockdown. After cells were transfected with each siRNA, cell-surface proteins were biotinylated at 4°C. Cells were then incubated at 37°C for 10 min. Biotin was removed from the cell surface, and internalized biotinylated proteins were precipitated with avidin beads. Samples were subjected to IB with anti-TfR antibody and quantified. Internalization was expressed as a proportion of the initial amount of TfR on the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1C/Fig1C.xlsx"
+          ]
         },
         {
-            "figure_label": "Figure 5",
-            "img_files": ["graphic/Fig5.eps"],
-            "sd_files": [],
-            "figure_caption": "A–E. Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm. F. αENaC ubiquitination. An in vivo ubiquitination assay was performed with various concentrations of Myc-Nedd4L using FALAG-αENaC as a substrate in the presence or absence of GFP-FCHO2 BAR domain. Cell lysates were subjected to IP. Samples were analyzed by IB. Figure 6. The Nedd4L C2 domain is a Ca2+-dependent PS binding domain. A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (A) and with the C2 domain using synthetic liposomes containing various percentages of PS at 0.3 μM or 1.0 mM Ca2+ (B). The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments. A. Ca2+ dependency. B. PS dependency.",
-            "caption_title": "Activation of Nedd4L by membrane tubules generated by FCHO2 in cells.",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants. GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB. Scale bar, 10 μm.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants. GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB. Scale bar, 10 μm.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "D",
-                    "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and Nedd4L mutants. GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "E",
-                    "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "F",
-                    "panel_caption": "αENaC ubiquitination. An in vivo ubiquitination assay was performed with various concentrations of Myc-Nedd4L using FALAG-αENaC as a substrate in the presence or absence of GFP-FCHO2 BAR domain. Cell lysates were subjected to IP. Samples were analyzed by IB.",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "D",
+          "panel_caption": "Restoration of αENaC endocytosis by FCHO2 re-expression in knockdown cells. After cells were transfected with the indicated siRNA and GFP construct, cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then incubated at 37°C for 10 min. After acid stripping, cells were subjected to immunofluorescence microscopy (left panels) and quantified (right panel). The antibody-labeled, internalized αENaC was visualized with a fluorescence-conjugated secondary antibody. The border of each cell is delineated by a solid line. Arrows indicate cells expressing GFP-tagged proteins. Scale bars, 10 μm. The proportion of cells with internalized αENaC among cells expressing control GFP or GFP-siRNA-resistant (sr) -FCHO2 is shown. Data are shown as the mean ± S.E.M. of five independent images (31-71 cells expressing GFP-tagged proteins per image). ***P < 0.001 (two-way analysis of variance with post hoc test).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1D/Fig1D.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1D/GFP x siControl.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1D/GFP x siFCHO2.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1D/GFPsrFCHO2 x siControl.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1D/GFPsrFCHO2 x siFCHO2.tif"
+          ]
         },
         {
-            "figure_label": "Figure 6",
-            "img_files": ["graphic/Figure6corrected.pdf"],
-            "sd_files": [],
-            "figure_caption": "A, Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls. B, Quantification of diameters of all ISVs in A. n=15 per condition. *: p=0.0452, **: p=0.0150; one-way ANOVA with Tukey’s multiple comparisons test. C, Quantification of diameters of arterial and venous ISVs at 72 hpf of zebrafish. n=6 per condition. **: p=0.0013; Student’s t-test. D, Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test. F, Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test. H, Rectus femoris muscle from thighs of 10 weeks old mice of LPHN2 ECKO or wild-type littermates, stained for CD31 and SMA to visualize the entire vasculature and arteries. Scale Bar: 100µm. I. Quantification of capillary density in the entire stitched thigh muscle images. n=3 for control and n=6 for Lphn2 ECKO. ****: p<0.0001; Student’s t-test. J, Schematic of mouse treadmill fatigue test. K, Maximum running during test. n=4 for control and n=5 for Lphn2 ECKO. **:p=0.0082; Student’s t-test. L, Running distance for each mouse. n=4 for control and n=5 for Lphn2 ECKO. **: p=0.0064; Student’s t-test. M, Oxygen consumption during treadmill fatigue test. *: p<0.0001; two-way ANOVA with Tukey’s multiple comparisons test. Control: N=5, LPHN2 ECKO: N=4. N, Representative 3D reconstructed images at 20° downward angle of ECs plated on top of collagen gels and sprouting under static or flow conditions. ECs were stained with phalloidin; pseudocolors indicate distance from the gel surface as per the color scale on the right. O, Histograms of cell area vs. distance from gel surface in N. P, Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test.",
-            "caption_title": "Latrophilin-2 in flow-induced vascular remodeling",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Quantification of diameters of all ISVs in A. Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Quantification of diameters of arterial and venous ISVs at 72 hpf of zebrafish. n=6 per condition. **: p=0.0013; Student’s t-test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "D",
-                    "panel_caption": "Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "E",
-                    "panel_caption": "Quantification of results in D. Ratio of blood flow in the right ischemic vs left control foot by laser doppler. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "F",
-                    "panel_caption": "Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "G",
-                    "panel_caption": "Quantification of results in F. Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "H",
-                    "panel_caption": "Rectus femoris muscle from thighs of 10 weeks old mice of LPHN2 ECKO or wild-type littermates, stained for CD31 and SMA to visualize the entire vasculature and arteries. Scale Bar: 100µm. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "I",
-                    "panel_caption": "Quantification of capillary density in the entire stitched thigh muscle images. n=3 for control and n=6 for Lphn2 ECKO. ****: p<0.0001; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "J",
-                    "panel_caption": "Schematic of mouse treadmill fatigue test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "K",
-                    "panel_caption": "Maximum running during test. n=4 for control and n=5 for Lphn2 ECKO. **:p=0.0082; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "L",
-                    "panel_caption": "Running distance for each mouse. n=4 for control and n=5 for Lphn2 ECKO. **: p=0.0064; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "M",
-                    "panel_caption": "Oxygen consumption during treadmill fatigue test. *: p<0.0001; two-way ANOVA with Tukey’s multiple comparisons test. Control: N=5, LPHN2 ECKO: N=4.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "N",
-                    "panel_caption": "Representative 3D reconstructed images at 20° downward angle of ECs plated on top of collagen gels and sprouting under static or flow conditions. ECs were stained with phalloidin; pseudocolors indicate distance from the gel surface as per the color scale on the right. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "O",
-                    "panel_caption": "Histograms of cell area vs. distance from gel surface in N. P, Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test.",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "E",
+          "panel_caption": "Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies. ENaC ubiquitination, Asterisks indicate the same band of ubiquitinated FLAG-αENaC.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1E/Fig1E.tiff"
+          ]
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies quantified. ENaC expression at the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1F/Fig1F.xlsx"
+          ]
         }
-    ],
-
-    "all_captions": """Figure 1. FCHO2 is required for Nedd4L-mediated ubiquitination and endocytosis of ENaC.
-
-A. Knockdown of FCHO2 or Nedd4L by siRNA. αβγENaC-HeLa cells treated with each siRNA were analyzed by immunoblotting (IB).
-
-B. Inhibition of ENaC endocytosis by knockdown of FCHO2 or Nedd4L. After cells were transfected with each siRNA, cell-surface ENaC was labeled by incubating at 4°C with anti-FLAG antibody. Endocytosis was started by incubating cells at 37°C for the indicated periods of time and stopped by chilling cells on ice. Antibody bound to the cell surface but not internalized was removed by acid stripping. After cells were solubilized, the antibody-labeled internalized ENaC subunits were precipitated and analyzed by IB (upper panel) and quantified (bottom and right panels). Internalization was expressed as a percentage of the initial amount of cell-surface αENaC determined by lysing cells without incubation at 37°C or acid stripping. Data are shown as the mean ± S.E.M. of three independent experiments. **P < 0.01; ***P < 0.001 (Student's t-test).
-
-C. Inhibition of transferrin receptor (TfR) endocytosis by FCHO2 knockdown. After cells were transfected with each siRNA, cell-surface proteins were biotinylated at 4°C. Cells were then incubated at 37°C for 10 min. Biotin was removed from the cell surface, and internalized biotinylated proteins were precipitated with avidin beads. Samples were subjected to IB with anti-TfR antibody and quantified. Internalization was expressed as a proportion of the initial amount of TfR on the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test).
-
-D. Restoration of αENaC endocytosis by FCHO2 re-expression in knockdown cells. After cells were transfected with the indicated siRNA and GFP construct, cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then incubated at 37°C for 10 min. After acid stripping, cells were subjected to immunofluorescence microscopy (left panels) and quantified (right panel). The antibody-labeled, internalized αENaC was visualized with a fluorescence-conjugated secondary antibody. The border of each cell is delineated by a solid line. Arrows indicate cells expressing GFP-tagged proteins. Scale bars, 10 μm. The proportion of cells with internalized αENaC among cells expressing control GFP or GFP-siRNA-resistant (sr) -FCHO2 is shown. Data are shown as the mean ± S.E.M. of five independent images (31-71 cells expressing GFP-tagged proteins per image). ***P < 0.001 (two-way analysis of variance with post hoc test).
-
-E, F. Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies (E) and quantified (F). E, ENaC ubiquitination, Asterisks indicate the same band of ubiquitinated FLAG-αENaC. F, ENaC expression at the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test).
-
-Figure 2. Localization of cell-surface ENaC, FCHO2, and Nedd4L at clathrin-coated structures.
-
-A, B. Localization of cell-surface ENaC. mTagRFP-clathrin light chain (CLC) (A) or Nedd4L C922A (catalytic inactive mutant)-GFP (B) was expressed in αβγENaC-HeLa cells. Cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then fixed and stained with anti-FCHO2 antibody. Samples were subjected to immunofluorescence microscopy (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown. A. Co-localization of cell-surface ENaC with FCHO2 at clathrin-coated structures. B. Co-localization of cell-surface ENaC with Nedd4L C922A mutant and FCHO2.
-
-C. Co-localization of Nedd4L with FCHO2 at clathrin-coated structures. Nedd4L-GFP and mTagRFP-CLC were co-expressed in wild-type HeLa cells. Cells were then fixed and stained with anti-FCHO2 antibody (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown.
-
-Figure 3. Recruitment of Nedd4L to CCPs. DsRed-CLC were co-expressed with Nedd4L-GFP in wild-type HeLa cells. Images were acquired at 1 s intervals through TIRF microscopy. Upper panel, TIRF images of HeLa cells. Insets represent enlarged images of the dashed boxes. Bottom panel, selected snapshots (every 10 sec) from a time series were obtained from a single CCP indicated by the arrowhead. The time point at which Nedd4L started to accumulate was set 0. Scale bar, 2 μm.
-
-Figure 4. Recruitment of Nedd4L to membrane tubules generated by FCHO2 in cells.
-
-GFP-BAR domains were co-expressed with Myc-Nedd4L proteins in COS7 cells (A) and HEK293 cells (B). Cells were serum-starved and subjected to immunofluorescence microscopy. Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm.
-
-Figure 5. Activation of Nedd4L by membrane tubules generated by FCHO2 in cells.
-
-A–E. Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm.
-
-F. αENaC ubiquitination. An in vivo ubiquitination assay was performed with various concentrations of Myc-Nedd4L using FALAG-αENaC as a substrate in the presence or absence of GFP-FCHO2 BAR domain. Cell lysates were subjected to IP. Samples were analyzed by IB.
-
-Figure 6. The Nedd4L C2 domain is a Ca2+-dependent PS binding domain.
-
-A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (A) and with the C2 domain using synthetic liposomes containing various percentages of PS at 0.3 μM or 1.0 mM Ca2+ (B). The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments.
-
-A. Ca2+ dependency.
-
-B. PS dependency.
-
-Figure 7. Preference of Nedd4L for FCHO2-generated membrane curvature.
-
-A. Distribution of liposome diameters. Brain-lipid liposomes (~50% PS) of different diameters were prepared by extrusion through the indicated pore sizes and sonication. Left panel, electron microscopic images. Scale bars, 200 nm. Right panel, distribution of liposome diameters shown by boxplots (number of observations per pore size = 25). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers. So, sonication.
-
-B-D. Sensing and generation of membrane curvature by Nedd4L. Co-sedimentation (B) and in vitro tubulation (C, D) assays were performed using brain-lipid liposomes (~50% PS) at 0.1 μM (B) and 0.3 μM Ca2+ (C, D). B, Preference of Nedd4L for a specific degree of membrane curvature. Liposomes were supplemented with X-biotin-PE and rhodamine-PE. Full-length Nedd4L was incubated with liposomes of different sizes, which were prepared by extrusion through the indicated pore sizes. The sample was then incubated with avidin beads and ultracentrifuged. The proportion of precipitated liposomes of each size was calculated to be ~100% by measuring both total and supernatant fluorescence. The supernatants (S) and pellets (P) were subjected to SDS- PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. So, sonication. Data are shown as the mean ± S.E.M. of five independent experiments. *P < 0.05; **P < 0.01 (one-way analysis of variance with Tukey’s post hoc test). C, Curvature generation by Nedd4L. The assay was performed with the Nedd4L C2 domain. Samples were examined by electron microscopy. Scale bar, 100 nm. D, The degree of membrane curvature generated by Nedd4L is consistent with that generated by FCHO2. The assay was performed with the indicated protein. Left panel, electron microscopic image. Scale bar, 100 nm. Right panel, distribution of tubule diameters shown by boxplots (number of observations per protein = 14–33). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers.
-
-Figure 8. Conserved hydrophobic residues of Nedd4L are responsible for sensing and generation of membrane curvature.
-
-A. Sequence alignment of C2 domains. Conserved residues are highlighted with the following color code: yellow, aspartates for Ca2+ binding; blue, very hydrophobic residues probably for penetration into the lipid bilayer; and brown, others. Dots show the mutation sites. Hs, Homo sapiens; Sc, Saccharomyces cerevisiae; and Rt, Rattus norvegicus.
-
-B. Inability of Nedd4L C2 domain mutants to sense membrane curvature in cells. GFP-FCHO2 BAR domain and Myc-Nedd4L C2 domain mutants were co-expressed in COS7 cells. Insets are enlarged images of dashed boxes. Scale bar, 10 μm.
-
-C, D. Inability of Nedd4L C2 domain mutants to bind to membranes and to generate membrane curvature in vitro. Co-sedimentation (C) and in vitro tubulation (D) assays were performed using brain-lipid liposomes (~50% PS) at 0.3 μM Ca2+. C, Membrane binding. The assay was performed with Nedd4L C2 domain mutants using various concentrations of liposomes. The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. Data are shown as the mean ± S.E.M. of three independent experiments. D, Curvature generation. The assay was performed with Nedd4L C2 domain mutants. Samples were examined by fluorescence microscopy. Scale bar, 10 μm.
-
-Figure 9. Properties of the catalytic activity and membrane binding of Nedd4L.
-
-Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.
-
-A, B. Schematic diagrams of mSA-αENaC. A, Structure. B. Binding to biotinylated liposomes.
-
-C. Ca2+-dependent Nedd4L activity. Ubiquitination was detected by IB (upper panel) and the intensity was quantified by scanning (bottom panel). Data are shown as the mean ± S.E.M. of three independent experiments.
-
-D, Membrane localization of mSA-αENaC enhances the PS-dependent catalytic activity of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Ubiquitination was detected by IB (left panel). The intensities were quantified by scanning (right panel). Data are shown as the mean ± S.E.M. of three independent experiments.
-
-E. Nedd4L activity is predominantly stimulated by the specific degree of membrane curvature. The assay was performed using liposomes of different sizes which were prepared by extrusion through the indicated pore sizes. Ubiquitination was detected by IB (left panel) and quantified (right panel). Data are shown as the mean ± S.E.M. of three independent experiments. ***P < 0.001 (one-way analysis of variance with Tukey’s post hoc test).
-
-F. Membrane localization of mSA-αENaC enhances the PS-dependent membrane binding of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Liposome binding was detected by IB (left panel). The intensities were quantified by scanning (right panel). T, total sample. P, pellet. Data are shown as the mean ± S.E.M. of three independent experiments.
-
-Figure 10. Recruitment and activation of Nedd4L by FCHO2-generated membrane curvature in vitro.
-
-mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.
-
-A. FCHO2-induced recruitment of Nedd4L. The assay was performed with the FCHO2 BAR domain (1.4 μM, 50 μg/ml) in the presence or absence of biotin. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (FCHO2 BAR) and IB (Nedd4L and mSA-αENaC).
-
-B, C. FCHO2-induced activation of Nedd4L. B, Effects of various doses of the FCHO2 BAR domain. The assay was performed with various concentrations of the FCHO2 BAR domain. Ubiquitination was detected by IB (left panel) and the intensity was quantified by scanning (right panel). C, Effects of the PS percentage in liposomes. The assay was performed with the FCHO2 BAR domain (1.4 μM). Samples were analyzed by IB. Data are shown as the mean ± S.E.M. of three independent experiments.
-
-D, E. Specificity of BAR domains and effect of an FCHO2 mutant. The assay was performed with various BAR domains (D) and an FCHO2 mutant (E) (1.4 μM each). Samples were analyzed by IB.
-
-Figure 11. Effects of PI(4,5)P2 on FCHO2-induced recruitment and activation of Nedd4L.
-
-A, B. Binding to PI(4,5)P2. A co-sedimentation assay was performed at 0.7 μM Ca2+ with the FCHO2 BAR or Nedd4L C2 domain using mSA-αENaC-associated synthetic liposomes containing 20% PS, 5% PI(4,5)P2 (A), or various percentages of PI(4,5)P2 (B). The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (A and upper panel in B). Bottom panel in B, quantitative analysis. Control, synthetic liposomes [0% PS and 0% PI(4,5)P2]. Data are shown as the mean ± S.E.M. of three independent experiments.
-
-C, D. Effects on FCHO2-induced recruitment and activation of Nedd4L. Co-sedimentation (C) and ubiquitination (D) assays were performed at 0.7 μM Ca2+ with mSA-αENaC-associated synthetic liposomes containing 20% PS or 5% PI(4,5)P2 in the presence or absence of the FCHO2 BAR domain. C, Nedd4L recruitment. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by IB with anti-Nedd4L antibody (upper panel) and CBB staining (lower panel). D, Nedd4L activation. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.
-
-Figure 12. Effects of liposome size on FCHO2-induced activation of Nedd4L. Co-sedimentation (A) and ubiquitination (B) assays were performed at 0.7 μM Ca2+ with the FCHO2 BAR domain using brain-lipid liposomes (20% PS, 0.8 µm or 0.05 µm pore-size) that were associated with mSA-αENaC.
-
-A. Binding of the FCHO2 BAR domain to 0.8 µm and 0.05 µm pore-size liposomes. The co-sedimentation assay was performed using synthetic (0% PS) or brain-lipid liposomes (20% PS) containing rhodamine-PE and fluorescein-PE. Liposomes were precipitated with anti-fluorescein antibody. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining. The proportion of precipitated liposomes of each size was calculated to be ~100% by measuring both total and supernatant fluorescence.
-
-B. Effects of liposome size on FCHO2-induced activation of Nedd4L. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.
-
-Figure 13. Model of ENaC endocytosis.
-
-FCHO2 binds to the plasma membrane and generates a specific degree of membrane curvature according to the intrinsic curvature of its BAR domain. Nedd4L exists in a catalytically autoinhibited state due to an intramolecular interaction between the N-terminal C2 and C-terminal HECT domains. Nedd4L is recruited to FCHO2-generated membrane curvature at the rim of nascent CCPs that ENaC enters. Membrane binding of the C2 domain causes catalytic activation by relieving autoinhibition. ENaC is ubiquitinated and captured by adaptor proteins with Ub-interacting motifs, such as Eps15.
-
-Extended View Figure Legends
-
-Figure EV1. Expression of ENaC subunits in αβγENaC-HeLa cells.
-
-A, B. Doxycycline (Dox)-induced expression of αENaC. αβγENaC-HeLa cells were cultured overnight in the presence or absence of Dox. The lysates of parental HeLa and αβγENaC-HeLa cells were subjected to IB. A, 7.5% gel. B, Gradient gel (5-20%). Anti-γENaC antibody cross-reacted with two bands of endogenous proteins in parental HeLa cells, the lower band of which overlapped with γENaC (arrow) in αβγENaC-HeLa cells. Upon Dox-induced αENaC expression, an additional 70-kDa γENaC band (asterisk) was detected. It has been shown that co-expression of all three subunits induces ENaC maturation, including proteolytic cleavage of α- and γENaC (Hughey et al, 2003). The 70-kDa γENaC band is likely a cleavage product comprising the C-terminal region. The 20-kDa αENaC band (arrowhead) is likely a cleavage product comprising the N-terminal region.
-
-C. Association of α-, β-, and γENaC. When αENaC was immunoprecipitated with anti-FLAG antibody from αβγENaC-HeLa cells treated with Dox, β- and γENaC were co-precipitated. Asterisk, 70-kDa γENaC band.
-
-Figure EV2. Knockdown of FBP17 by siRNA.
-
-αβγENaC-HeLa cells were treated with each siRNA, and FBP17 mRNA levels were quantified using real-time PCR. The expression of FBP17 was normalized to GAPDH mRNA levels. Data are shown as the mean ± S.E.M. of three independent experiments. ***P < 0.001 (Student's t-test).
-
-Figure EV3. Inability of FCHO2 mutants to generate membrane tubules.
-
-GFP-FCHO2 BAR domain [wild type (WT) or mutant] was expressed in COS7 cells. Cells were then subjected to immunofluorescence microscopy. Scale bar, 10 μm.
-
-Figure EV4. Inability of Nedd4L mutants to ubiquitinate αENaC. An in vivo ubiquitination assay was performed with various Nedd4L constructs (each 0.5 µg) using FLAG-αENaC as a substrate in the presence or absence of GFP-FCHO2 BAR domain. Cell lysates were subjected to IP. Samples were analyzed by IB.
-
-Figure EV5. Inhibition of the liposome binding of Nedd4L by the FCHO2 BAR domain.
-
-A co-sedimentation assay was performed at 0.7 μM Ca2+ with control liposomes (0% PS) or brain-lipid liposomes (~50% PS) in the presence or absence of the FCHO2 BAR domain. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by IB (upper panel) and CBB staining (lower panel).
-
-Figure EV6. Membrane binding and curvature generation of BAR domains and an FCHO2 mutant. Co-sedimentation (A) and in vitro tubulation (B) assays were performed at 0.7 μM Ca2+ with the indicated BAR domains using brain-lipid liposomes (20% PS) that were associated with mSA-αENaC.
-
-A. Membrane binding. The supernatants (S) and pellets (P) were subjected to SDS-PAGE followed by CBB staining.
-
-B. Curvature generation. Left panel, electron microscopic image. Scale bar, 100 nm. Right panel, distribution of tubule diameters shown by boxplots (number of observations per protein = 22–26). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers.
-"""
-  
+      ]
+    },
+    {
+      "figure_label": "Figure 2",
+      "img_files": ["graphic/Fig2.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip"],
+      "figure_caption": "A, B. Localization of cell-surface ENaC. mTagRFP-clathrin light chain (CLC) (A) or Nedd4L C922A (catalytic inactive mutant)-GFP (B) was expressed in αβγENaC-HeLa cells. Cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then fixed and stained with anti-FCHO2 antibody. Samples were subjected to immunofluorescence microscopy (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown. A. Co-localization of cell-surface ENaC with FCHO2 at clathrin-coated structures. B. Co-localization of cell-surface ENaC with Nedd4L C922A mutant and FCHO2. C. Co-localization of Nedd4L with FCHO2 at clathrin-coated structures. Nedd4L-GFP and mTagRFP-CLC were co-expressed in wild-type HeLa cells. Cells were then fixed and stained with anti-FCHO2 antibody (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown.",
+      "caption_title": "Localization of cell-surface ENaC, FCHO2, and Nedd4L at clathrin-coated structures.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Localization of cell-surface ENaC. mTagRFP-clathrin light chain (CLC) was expressed in αβγENaC-HeLa cells. Cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then fixed and stained with anti-FCHO2 antibody. Samples were subjected to immunofluorescence microscopy (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown. Co-localization of cell-surface ENaC with FCHO2 at clathrin-coated structures.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:2A/ENaC x Clathrin.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:2A/ENaC x FCHO2.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:2A/Fig2A.xlsx"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Localization of cell-surface ENaC. Nedd4L C922A (catalytic inactive mutant)-GFP was expressed in αβγENaC-HeLa cells. Cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then fixed and stained with anti-FCHO2 antibody. Samples were subjected to immunofluorescence microscopy (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown. Co-localization of cell-surface ENaC with Nedd4L C922A mutant and FCHO2.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:2B/Fig2B.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:2B/Nedd4LC922A x alphaENaC x FCHO2.tif"
+          ]
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Co-localization of Nedd4L with FCHO2 at clathrin-coated structures. Nedd4L-GFP and mTagRFP-CLC were co-expressed in wild-type HeLa cells. Cells were then fixed and stained with anti-FCHO2 antibody (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:2C/Fig2C.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:2C/Nedd4L x Clathrin x FCHO2.tif"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 3",
+      "img_files": ["graphic/Fig3.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFig3.zip"],
+      "figure_caption": "DsRed-CLC were co-expressed with Nedd4L-GFP in wild-type HeLa cells. Images were acquired at 1 s intervals through TIRF microscopy. Upper panel, TIRF images of HeLa cells. Insets represent enlarged images of the dashed boxes. Bottom panel, selected snapshots (every 10 sec) from a time series were obtained from a single CCP indicated by the arrowhead. The time point at which Nedd4L started to accumulate was set 0. Scale bar, 2 μm.",
+      "caption_title": "Recruitment of Nedd4L to CCPs.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "DsRed-CLC were co-expressed with Nedd4L-GFP in wild-type HeLa cells. Images were acquired at 1 s intervals through TIRF microscopy. Upper panel, TIRF images of HeLa cells. Insets represent enlarged images of the dashed boxes. Bottom panel, selected snapshots (every 10 sec) from a time series were obtained from a single CCP indicated by the arrowhead. The time point at which Nedd4L started to accumulate was set 0. Scale bar, 2 μm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFig3.zip:Fig. 3/Movie EV1.avi"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 4",
+      "img_files": ["graphic/Fig4.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip"],
+      "figure_caption": "GFP-BAR domains were co-expressed with Myc-Nedd4L proteins in COS7 cells (A) and HEK293 cells (B). Cells were serum-starved and subjected to immunofluorescence microscopy. Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm.",
+      "caption_title": "Recruitment of Nedd4L to membrane tubules generated by FCHO2 in cells.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "GFP-BAR domains were co-expressed with Myc-Nedd4L proteins in COS7 cells. Cells were serum-starved and subjected to immunofluorescence microscopy. Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4A/Amphiphysin x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4A/FBP17 x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4A/FCHO2 x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4A/FCHO2 x Nedd4LC2.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4A/FCHO2 x Nedd4LdeltaC2.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4A/GFP x Nedd4L.tif"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "GFP-BAR domains were co-expressed with Myc-Nedd4L proteins in HEK293 cells. Cells were serum-starved and subjected to immunofluorescence microscopy. Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4B/Amphiphysin x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4B/FBP17 x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4B/FCHO2 x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:4B/GFP x Nedd4L.tif"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 5",
+      "img_files": ["graphic/Fig5.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip"],
+      "figure_caption": "A–E. Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm. F. αENaC ubiquitination. An in vivo ubiquitination assay was performed with various concentrations of Myc-Nedd4L using FALAG-αENaC as a substrate in the presence or absence of GFP-FCHO2 BAR domain. Cell lysates were subjected to IP. Samples were analyzed by IB. Figure 6. The Nedd4L C2 domain is a Ca2+-dependent PS binding domain. A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (A) and with the C2 domain using synthetic liposomes containing various percentages of PS at 0.3 μM or 1.0 mM Ca2+ (B). The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments. A. Ca2+ dependency. B. PS dependency.",
+      "caption_title": "Activation of Nedd4L by membrane tubules generated by FCHO2 in cells.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants. GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB. Scale bar, 10 μm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5A/Fig5A.tiff"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants. GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB. Scale bar, 10 μm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5B/Fig5B.tiff"
+          ]
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5C/FCHO2K146ER152E x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5C/FCHO2L136E x Nedd4L.tif"
+          ]
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and Nedd4L mutants. GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. ",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5D/Fig5D.tiff"
+          ]
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5E/FCHO2 x Nedd4LC922A.tif (RGB).tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5E/FCHO2 x Nedd4LI37AF38A.tif"
+          ]
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "αENaC ubiquitination. An in vivo ubiquitination assay was performed with various concentrations of Myc-Nedd4L using FALAG-αENaC as a substrate in the presence or absence of GFP-FCHO2 BAR domain. Cell lysates were subjected to IP. Samples were analyzed by IB.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5F/Fig5F_1.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5F/Fig5F_2.tiff"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 6",
+      "img_files": ["graphic/Fig6.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip"],
+      "figure_caption": "A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (A) and with the C2 domain using synthetic liposomes containing various percentages of PS at 0.3 μM or 1.0 mM Ca2+ (B). The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments.\nA. Ca2+ dependency.\nB. PS dependency.",
+      "caption_title": "The Nedd4L C2 domain is a Ca2+-dependent PS binding domain.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) at various Ca2+ concentrations. The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:6A/Fig6A.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:6A/Fig6A.xlsx"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) with the C2 domain using synthetic liposomes containing various percentages of PS at 0.3 μM or 1.0 mM Ca2+. The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:6B/Fig6B.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:6B/Fig6B.xlsx"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 7",
+      "img_files": ["graphic/Fig7.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip"],
+      "figure_caption": "A. Distribution of liposome diameters. Brain-lipid liposomes (~50% PS) of different diameters were prepared by extrusion through the indicated pore sizes and sonication. Left panel, electron microscopic images. Scale bars, 200 nm. Right panel, distribution of liposome diameters shown by boxplots (number of observations per pore size = 25). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers. So, sonication.\nB-D. Sensing and generation of membrane curvature by Nedd4L. Co-sedimentation (B) and in vitro tubulation (C, D) assays were performed using brain-lipid liposomes (~50% PS) at 0.1 μM (B) and 0.3 μM Ca2+ (C, D). B, Preference of Nedd4L for a specific degree of membrane curvature. Liposomes were supplemented with X-biotin-PE and rhodamine-PE. Full-length Nedd4L was incubated with liposomes of different sizes, which were prepared by extrusion through the indicated pore sizes. The sample was then incubated with avidin beads and ultracentrifuged. The proportion of precipitated liposomes of each size was calculated to be ~100% by measuring both total and supernatant fluorescence. The supernatants (S) and pellets (P) were subjected to SDS- PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. So, sonication. Data are shown as the mean ± S.E.M. of five independent experiments. *P < 0.05; **P < 0.01 (one-way analysis of variance with Tukey’s post hoc test). C, Curvature generation by Nedd4L. The assay was performed with the Nedd4L C2 domain. Samples were examined by electron microscopy. Scale bar, 100 nm. D, The degree of membrane curvature generated by Nedd4L is consistent with that generated by FCHO2. The assay was performed with the indicated protein. Left panel, electron microscopic image. Scale bar, 100 nm. Right panel, distribution of tubule diameters shown by boxplots (number of observations per protein = 14–33). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers.",
+      "caption_title": "Preference of Nedd4L for FCHO2-generated membrane curvature.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Distribution of liposome diameters. Brain-lipid liposomes (~50% PS) of different diameters were prepared by extrusion through the indicated pore sizes and sonication. Left panel, electron microscopic images. Scale bars, 200 nm. Right panel, distribution of liposome diameters shown by boxplots (number of observations per pore size = 25). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers. So, sonication.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:7A/Fig7A.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:7A/Fig7A.xlsx"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Sensing and generation of membrane curvature by Nedd4L. Co-sedimentation assays were performed using brain-lipid liposomes (~50% PS) at 0.1 μM. Preference of Nedd4L for a specific degree of membrane curvature. Liposomes were supplemented with X-biotin-PE and rhodamine-PE. Full-length Nedd4L was incubated with liposomes of different sizes, which were prepared by extrusion through the indicated pore sizes. The sample was then incubated with avidin beads and ultracentrifuged. The proportion of precipitated liposomes of each size was calculated to be ~100% by measuring both total and supernatant fluorescence. The supernatants (S) and pellets (P) were subjected to SDS- PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. So, sonication. Data are shown as the mean ± S.E.M. of five independent experiments. *P < 0.05; **P < 0.01 (one-way analysis of variance with Tukey’s post hoc test).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:7B/Fig7B.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:7B/Fig7B.xlsx"
+          ]
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Sensing and generation of membrane curvature by Nedd4L. In vitro tubulation assays were performed using brain-lipid liposomes (~50% PS) at 0.3 μM Ca2+. Curvature generation by Nedd4L. The assay was performed with the Nedd4L C2 domain. Samples were examined by electron microscopy. Scale bar, 100 nm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:7C/Fig7C.tiff"
+          ]
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Sensing and generation of membrane curvature by Nedd4L. In vitro tubulation assays were performed using brain-lipid liposomes (~50% PS) at 0.3 μM Ca2+. The degree of membrane curvature generated by Nedd4L is consistent with that generated by FCHO2. The assay was performed with the indicated protein. Left panel, electron microscopic image. Scale bar, 100 nm. Right panel, distribution of tubule diameters shown by boxplots (number of observations per protein = 14–33). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:7D/Fig7D.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:7D/Fig7D.xlsx"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 8",
+      "img_files": ["graphic/Fig8.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip"],
+      "figure_caption": "A. Sequence alignment of C2 domains. Conserved residues are highlighted with the following color code: yellow, aspartates for Ca2+ binding; blue, very hydrophobic residues probably for penetration into the lipid bilayer; and brown, others. Dots show the mutation sites. Hs, Homo sapiens; Sc, Saccharomyces cerevisiae; and Rt, Rattus norvegicus.\nB. Inability of Nedd4L C2 domain mutants to sense membrane curvature in cells. GFP-FCHO2 BAR domain and Myc-Nedd4L C2 domain mutants were co-expressed in COS7 cells. Insets are enlarged images of dashed boxes. Scale bar, 10 μm.\nC, D. Inability of Nedd4L C2 domain mutants to bind to membranes and to generate membrane curvature in vitro. Co-sedimentation (C) and in vitro tubulation (D) assays were performed using brain-lipid liposomes (~50% PS) at 0.3 μM Ca2+. C, Membrane binding. The assay was performed with Nedd4L C2 domain mutants using various concentrations of liposomes. The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. Data are shown as the mean ± S.E.M. of three independent experiments. D, Curvature generation. The assay was performed with Nedd4L C2 domain mutants. Samples were examined by fluorescence microscopy. Scale bar, 10 μm.",
+      "caption_title": "Conserved hydrophobic residues of Nedd4L are responsible for sensing and generation of membrane curvature.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Sequence alignment of C2 domains. Conserved residues are highlighted with the following color code: yellow, aspartates for Ca2+ binding; blue, very hydrophobic residues probably for penetration into the lipid bilayer; and brown, others. Dots show the mutation sites. Hs, Homo sapiens; Sc, Saccharomyces cerevisiae; and Rt, Rattus norvegicus.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Inability of Nedd4L C2 domain mutants to sense membrane curvature in cells. GFP-FCHO2 BAR domain and Myc-Nedd4L C2 domain mutants were co-expressed in COS7 cells. Insets are enlarged images of dashed boxes. Scale bar, 10 μm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8B/FCHO2 x Nedd4LC2F38A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8B/FCHO2 x Nedd4LC2I37A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8B/FCHO2 x Nedd4LC2I37AF38A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8B/FCHO2 x Nedd4LC2I37AL99A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8B/FCHO2 x Nedd4LC2L99A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8B/FCHO2 x Nedd4LC2triple.tif"
+          ]
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Inability of Nedd4L C2 domain mutants to bind to membranes and to generate membrane curvature in vitro. Co-sedimentation assays were performed using brain-lipid liposomes (~50% PS) at 0.3 μM Ca2+.Membrane binding. The assay was performed with Nedd4L C2 domain mutants using various concentrations of liposomes. The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8C/Fig8C.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8C/Fig8C.xlsx"
+          ]
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Inability of Nedd4L C2 domain mutants to bind to membranes and to generate membrane curvature in vitro. In vitro tubulation assays were performed using brain-lipid liposomes (~50% PS) at 0.3 μM Ca2+. Curvature generation. The assay was performed with Nedd4L C2 domain mutants. Samples were examined by fluorescence microscopy. Scale bar, 10 μm.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8D/Fig8D.tiff"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 9",
+      "img_files": ["graphic/Fig9.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip"],
+      "figure_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.\nA, B. Schematic diagrams of mSA-αENaC. A, Structure. B. Binding to biotinylated liposomes.\nC. Ca2+-dependent Nedd4L activity. Ubiquitination was detected by IB (upper panel) and the intensity was quantified by scanning (bottom panel). Data are shown as the mean ± S.E.M. of three independent experiments.\nD, Membrane localization of mSA-αENaC enhances the PS-dependent catalytic activity of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Ubiquitination was detected by IB (left panel). The intensities were quantified by scanning (right panel). Data are shown as the mean ± S.E.M. of three independent experiments.\nE. Nedd4L activity is predominantly stimulated by the specific degree of membrane curvature. The assay was performed using liposomes of different sizes which were prepared by extrusion through the indicated pore sizes. Ubiquitination was detected by IB (left panel) and quantified (right panel). Data are shown as the mean ± S.E.M. of three independent experiments. ***P < 0.001 (one-way analysis of variance with Tukey’s post hoc test).\nF. Membrane localization of mSA-αENaC enhances the PS-dependent membrane binding of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Liposome binding was detected by IB (left panel). The intensities were quantified by scanning (right panel). T, total sample. P, pellet. Data are shown as the mean ± S.E.M. of three independent experiments.",
+      "caption_title": "Properties of the catalytic activity and membrane binding of Nedd4L.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Schematic diagrams of mSA-αENaC structure.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Schematic diagrams of mSA-αENaC binding to biotinylated liposomes.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Ca2+-dependent Nedd4L activity. Ubiquitination was detected by IB (upper panel) and the intensity was quantified by scanning (bottom panel). Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9C/Fig9C.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9C/Fig9C.xlsx"
+          ]
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Membrane localization of mSA-αENaC enhances the PS-dependent catalytic activity of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Ubiquitination was detected by IB (left panel). The intensities were quantified by scanning (right panel). Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9D/Fig9D.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9D/Fig9D.xlsx"
+          ]
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Nedd4L activity is predominantly stimulated by the specific degree of membrane curvature. The assay was performed using liposomes of different sizes which were prepared by extrusion through the indicated pore sizes. Ubiquitination was detected by IB (left panel) and quantified (right panel). Data are shown as the mean ± S.E.M. of three independent experiments. ***P < 0.001 (one-way analysis of variance with Tukey’s post hoc test).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9E/Fig9E.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9E/Fig9E.xlsx"
+          ]
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Membrane localization of mSA-αENaC enhances the PS-dependent membrane binding of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Liposome binding was detected by IB (left panel). The intensities were quantified by scanning (right panel). T, total sample. P, pellet. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9F/Fig9F.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9F/Fig9F.xlsx"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 10",
+      "img_files": ["graphic/Fig10.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip"],
+      "figure_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.\nA. FCHO2-induced recruitment of Nedd4L. The assay was performed with the FCHO2 BAR domain (1.4 μM, 50 μg/ml) in the presence or absence of biotin. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (FCHO2 BAR) and IB (Nedd4L and mSA-αENaC).\nB, C. FCHO2-induced activation of Nedd4L. B, Effects of various doses of the FCHO2 BAR domain. The assay was performed with various concentrations of the FCHO2 BAR domain. Ubiquitination was detected by IB (left panel) and the intensity was quantified by scanning (right panel). C, Effects of the PS percentage in liposomes. The assay was performed with the FCHO2 BAR domain (1.4 μM). Samples were analyzed by IB. Data are shown as the mean ± S.E.M. of three independent experiments.\nD, E. Specificity of BAR domains and effect of an FCHO2 mutant. The assay was performed with various BAR domains (D) and an FCHO2 mutant (E) (1.4 μM each). Samples were analyzed by IB.",
+      "caption_title": "Recruitment and activation of Nedd4L by FCHO2-generated membrane curvature in vitro.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. FCHO2-induced recruitment of Nedd4L. The assay was performed with the FCHO2 BAR domain (1.4 μM, 50 μg/ml) in the presence or absence of biotin. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (FCHO2 BAR) and IB (Nedd4L and mSA-αENaC).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10A/Fig10A.tiff"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. FCHO2-induced activation of Nedd4L. Effects of various doses of the FCHO2 BAR domain. The assay was performed with various concentrations of the FCHO2 BAR domain. Ubiquitination was detected by IB (left panel) and the intensity was quantified by scanning (right panel).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10B/Fig10B.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10B/Fig10B.xlsx"
+          ]
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. FCHO2-induced activation of Nedd4L. Effects of the PS percentage in liposomes. The assay was performed with the FCHO2 BAR domain (1.4 μM). Samples were analyzed by IB. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10C/Fig10C.tiff"
+          ]
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Specificity of BAR domains and effect of an FCHO2 mutant. The assay was performed with various BAR domains (1.4 μM each). Samples were analyzed by IB.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10D/Fig10D.tiff"
+          ]
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Specificity of BAR domains and effect of an FCHO2 mutant. The assay was performed with an FCHO2 mutant (1.4 μM each). Samples were analyzed by IB.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10E/Fig10E.tiff"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 11",
+      "img_files": ["graphic/Fig11.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip"],
+      "figure_caption": "A, B. Binding to PI(4,5)P2. A co-sedimentation assay was performed at 0.7 μM Ca2+ with the FCHO2 BAR or Nedd4L C2 domain using mSA-αENaC-associated synthetic liposomes containing 20% PS, 5% PI(4,5)P2 (A), or various percentages of PI(4,5)P2 (B). The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (A and upper panel in B). Bottom panel in B, quantitative analysis. Control, synthetic liposomes [0% PS and 0% PI(4,5)P2]. Data are shown as the mean ± S.E.M. of three independent experiments.\nC, D. Effects on FCHO2-induced recruitment and activation of Nedd4L. Co-sedimentation (C) and ubiquitination (D) assays were performed at 0.7 μM Ca2+ with mSA-αENaC-associated synthetic liposomes containing 20% PS or 5% PI(4,5)P2 in the presence or absence of the FCHO2 BAR domain. C, Nedd4L recruitment. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by IB with anti-Nedd4L antibody (upper panel) and CBB staining (lower panel). D, Nedd4L activation. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.",
+      "caption_title": "Effects of PI(4,5)P2 on FCHO2-induced recruitment and activation of Nedd4L.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Binding to PI(4,5)P2. A co-sedimentation assay was performed at 0.7 μM Ca2+ with the FCHO2 BAR or Nedd4L C2 domain using mSA-αENaC-associated synthetic liposomes containing 20% PS, 5% PI(4,5)P2. The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining. Control, synthetic liposomes [0% PS and 0% PI(4,5)P2]. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:11A/Fig11A.tiff"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Binding to PI(4,5)P2. A co-sedimentation assay was performed at 0.7 μM Ca2+ with the FCHO2 BAR or Nedd4L C2 domain using mSA-αENaC-associated synthetic liposomes containing various percentages of PI(4,5)P2. The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. Control, synthetic liposomes [0% PS and 0% PI(4,5)P2]. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:11B/Fig11B.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:11B/Fig11B.xlsx"
+          ]
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Effects on FCHO2-induced recruitment and activation of Nedd4L. Co-sedimentation  assays were performed at 0.7 μM Ca2+ with mSA-αENaC-associated synthetic liposomes containing 20% PS or 5% PI(4,5)P2 in the presence or absence of the FCHO2 BAR domain. Nedd4L recruitment. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by IB with anti-Nedd4L antibody (upper panel) and CBB staining (lower panel).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:11C/Fig11C.tiff"
+          ]
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Effects on FCHO2-induced recruitment and activation of Nedd4L. Ubiquitination (D) assays were performed at 0.7 μM Ca2+ with mSA-αENaC-associated synthetic liposomes containing 20% PS or 5% PI(4,5)P2 in the presence or absence of the FCHO2 BAR domain. Nedd4L activation. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:11D/Fig11D.tiff"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 12",
+      "img_files": ["graphic/Fig12.eps"],
+      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip"],
+      "figure_caption": "Co-sedimentation (A) and ubiquitination (B) assays were performed at 0.7 μM Ca2+ with the FCHO2 BAR domain using brain-lipid liposomes (20% PS, 0.8 µm or 0.05 µm pore-size) that were associated with mSA-αENaC.\nA. Binding of the FCHO2 BAR domain to 0.8 µm and 0.05 µm pore-size liposomes. The co-sedimentation assay was performed using synthetic (0% PS) or brain-lipid liposomes (20% PS) containing rhodamine-PE and fluorescein-PE. Liposomes were precipitated with anti-fluorescein antibody. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining. The proportion of precipitated liposomes of each size was calculated to be ~100% by measuring both total and supernatant fluorescence.\nB. Effects of liposome size on FCHO2-induced activation of Nedd4L. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.",
+      "caption_title": "Effects of liposome size on FCHO2-induced activation of Nedd4L. ",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Co-sedimentation assays were performed at 0.7 μM Ca2+ with the FCHO2 BAR domain using brain-lipid liposomes (20% PS, 0.8 µm or 0.05 µm pore-size) that were associated with mSA-αENaC. Binding of the FCHO2 BAR domain to 0.8 µm and 0.05 µm pore-size liposomes. The co-sedimentation assay was performed using synthetic (0% PS) or brain-lipid liposomes (20% PS) containing rhodamine-PE and fluorescein-PE. Liposomes were precipitated with anti-fluorescein antibody. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining. The proportion of precipitated liposomes of each size was calculated to be ~100% by measuring both total and supernatant fluorescence.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip:12A/Fig12A.tiff"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Ubiquitination assays were performed at 0.7 μM Ca2+ with the FCHO2 BAR domain using brain-lipid liposomes (20% PS, 0.8 µm or 0.05 µm pore-size) that were associated with mSA-αENaC. Effects of liposome size on FCHO2-induced activation of Nedd4L. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip:12B/Fig12B.tiff"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 13",
+      "img_files": ["graphic/Fig13.eps"],
+      "sd_files": [],
+      "figure_caption": "FCHO2 binds to the plasma membrane and generates a specific degree of membrane curvature according to the intrinsic curvature of its BAR domain. Nedd4L exists in a catalytically autoinhibited state due to an intramolecular interaction between the N-terminal C2 and C-terminal HECT domains. Nedd4L is recruited to FCHO2-generated membrane curvature at the rim of nascent CCPs that ENaC enters. Membrane binding of the C2 domain causes catalytic activation by relieving autoinhibition. ENaC is ubiquitinated and captured by adaptor proteins with Ub-interacting motifs, such as Eps15.",
+      "caption_title": "Model of ENaC endocytosis.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "FCHO2 binds to the plasma membrane and generates a specific degree of membrane curvature according to the intrinsic curvature of its BAR domain. Nedd4L exists in a catalytically autoinhibited state due to an intramolecular interaction between the N-terminal C2 and C-terminal HECT domains. Nedd4L is recruited to FCHO2-generated membrane curvature at the rim of nascent CCPs that ENaC enters. Membrane binding of the C2 domain causes catalytic activation by relieving autoinhibition. ENaC is ubiquitinated and captured by adaptor proteins with Ub-interacting motifs, such as Eps15.",
+          "sd_files": []
+        }
+      ]
+    }
+  ],
+  "all_captions": "Figure 1. FCHO2 is required for Nedd4L-mediated ubiquitination and endocytosis of ENaC. A. Knockdown of FCHO2 or Nedd4L by siRNA. αβγENaC-HeLa cells treated with each siRNA were analyzed by immunoblotting (IB).B. Inhibition of ENaC endocytosis by knockdown of FCHO2 or Nedd4L. After cells were transfected with each siRNA, cell-surface ENaC was labeled by incubating at 4°C with anti-FLAG antibody. Endocytosis was started by incubating cells at 37°C for the indicated periods of time and stopped by chilling cells on ice. Antibody bound to the cell surface but not internalized was removed by acid stripping. After cells were solubilized, the antibody-labeled internalized ENaC subunits were precipitated and analyzed by IB (upper panel) and quantified (bottom and right panels). Internalization was expressed as a percentage of the initial amount of cell-surface αENaC determined by lysing cells without incubation at 37°C or acid stripping. Data are shown as the mean ± S.E.M. of three independent experiments. **P < 0.01; ***P < 0.001 (Student's t-test). C. Inhibition of transferrin receptor (TfR) endocytosis by FCHO2 knockdown. After cells were transfected with each siRNA, cell-surface proteins were biotinylated at 4°C. Cells were then incubated at 37°C for 10 min. Biotin was removed from the cell surface, and internalized biotinylated proteins were precipitated with avidin beads. Samples were subjected to IB with anti-TfR antibody and quantified. Internalization was expressed as a proportion of the initial amount of TfR on the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test). D. Restoration of αENaC endocytosis by FCHO2 re-expression in knockdown cells. After cells were transfected with the indicated siRNA and GFP construct, cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then incubated at 37°C for 10 min. After acid stripping, cells were subjected to immunofluorescence microscopy (left panels) and quantified (right panel). The antibody-labeled, internalized αENaC was visualized with a fluorescence-conjugated secondary antibody. The border of each cell is delineated by a solid line. Arrows indicate cells expressing GFP-tagged proteins. Scale bars, 10 μm. The proportion of cells with internalized αENaC among cells expressing control GFP or GFP-siRNA-resistant (sr) -FCHO2 is shown. Data are shown as the mean ± S.E.M. of five independent images (31-71 cells expressing GFP-tagged proteins per image). ***P < 0.001 (two-way analysis of variance with post hoc test). E, F. Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies (E) and quantified (F). E, ENaC ubiquitination, Asterisks indicate the same band of ubiquitinated FLAG-αENaC. F, ENaC expression at the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test). Figure 2. Localization of cell-surface ENaC, FCHO2, and Nedd4L at clathrin-coated structures. A, B. Localization of cell-surface ENaC. mTagRFP-clathrin light chain (CLC) (A) or Nedd4L C922A (catalytic inactive mutant)-GFP (B) was expressed in αβγENaC-HeLa cells. Cell-surface αENaC was labeled with anti-FLAG antibody at 4°C. Cells were then fixed and stained with anti-FCHO2 antibody. Samples were subjected to immunofluorescence microscopy (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown. A. Co-localization of cell-surface ENaC with FCHO2 at clathrin-coated structures. B. Co-localization of cell-surface ENaC with Nedd4L C922A mutant and FCHO2. C. Co-localization of Nedd4L with FCHO2 at clathrin-coated structures. Nedd4L-GFP and mTagRFP-CLC were co-expressed in wild-type HeLa cells. Cells were then fixed and stained with anti-FCHO2 antibody (left panel). Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Co-localization was analyzed (right panel). The mean values of Pearson’s correlation coefficient from three cells and the S.E.M. are shown. Figure 3. Recruitment of Nedd4L to CCPs. DsRed-CLC were co-expressed with Nedd4L-GFP in wild-type HeLa cells. Images were acquired at 1 s intervals through TIRF microscopy. Upper panel, TIRF images of HeLa cells. Insets represent enlarged images of the dashed boxes. Bottom panel, selected snapshots (every 10 sec) from a time series were obtained from a single CCP indicated by the arrowhead. The time point at which Nedd4L started to accumulate was set 0. Scale bar, 2 μm. Figure 4. Recruitment of Nedd4L to membrane tubules generated by FCHO2 in cells. GFP-BAR domains were co-expressed with Myc-Nedd4L proteins in COS7 cells (A) and HEK293 cells (B). Cells were serum-starved and subjected to immunofluorescence microscopy. Insets represent enlarged images of the dashed boxes. Scale bar, 10 μm. Figure 5. Activation of Nedd4L by membrane tubules generated by FCHO2 in cells. A–E. Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm. F. αENaC ubiquitination. An in vivo ubiquitination assay was performed with various concentrations of Myc-Nedd4L using FALAG-αENaC as a substrate in the presence or absence of GFP-FCHO2 BAR domain. Cell lysates were subjected to IP. Samples were analyzed by IB. Figure 6. The Nedd4L C2 domain is a Ca2+-dependent PS binding domain. A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (A) and with the C2 domain using synthetic liposomes containing various percentages of PS at 0.3 μM or 1.0 mM Ca2+ (B). The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments. A. Ca2+ dependency. B. PS dependency. Figure 7. Preference of Nedd4L for FCHO2-generated membrane curvature. A. Distribution of liposome diameters. Brain-lipid liposomes (~50% PS) of different diameters were prepared by extrusion through the indicated pore sizes and sonication. Left panel, electron microscopic images. Scale bars, 200 nm. Right panel, distribution of liposome diameters shown by boxplots (number of observations per pore size = 25). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers. So, sonication. B-D. Sensing and generation of membrane curvature by Nedd4L. Co-sedimentation (B) and in vitro tubulation (C, D) assays were performed using brain-lipid liposomes (~50% PS) at 0.1 μM (B) and 0.3 μM Ca2+ (C, D). B, Preference of Nedd4L for a specific degree of membrane curvature. Liposomes were supplemented with X-biotin-PE and rhodamine-PE. Full-length Nedd4L was incubated with liposomes of different sizes, which were prepared by extrusion through the indicated pore sizes. The sample was then incubated with avidin beads and ultracentrifuged. The proportion of precipitated liposomes of each size was calculated to be ~100% by measuring both total and supernatant fluorescence. The supernatants (S) and pellets (P) were subjected to SDS- PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. So, sonication. Data are shown as the mean ± S.E.M. of five independent experiments. *P < 0.05; **P < 0.01 (one-way analysis of variance with Tukey’s post hoc test). C, Curvature generation by Nedd4L. The assay was performed with the Nedd4L C2 domain. Samples were examined by electron microscopy. Scale bar, 100 nm. D, The degree of membrane curvature generated by Nedd4L is consistent with that generated by FCHO2. The assay was performed with the indicated protein. Left panel, electron microscopic image. Scale bar, 100 nm. Right panel, distribution of tubule diameters shown by boxplots (number of observations per protein = 14–33). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers. Figure 8. Conserved hydrophobic residues of Nedd4L are responsible for sensing and generation of membrane curvature. A. Sequence alignment of C2 domains. Conserved residues are highlighted with the following color code: yellow, aspartates for Ca2+ binding; blue, very hydrophobic residues probably for penetration into the lipid bilayer; and brown, others. Dots show the mutation sites. Hs, Homo sapiens; Sc, Saccharomyces cerevisiae; and Rt, Rattus norvegicus.B. Inability of Nedd4L C2 domain mutants to sense membrane curvature in cells. GFP-FCHO2 BAR domain and Myc-Nedd4L C2 domain mutants were co-expressed in COS7 cells. Insets are enlarged images of dashed boxes. Scale bar, 10 μm. C, D. Inability of Nedd4L C2 domain mutants to bind to membranes and to generate membrane curvature in vitro. Co-sedimentation (C) and in vitro tubulation (D) assays were performed using brain-lipid liposomes (~50% PS) at 0.3 μM Ca2+. C, Membrane binding. The assay was performed with Nedd4L C2 domain mutants using various concentrations of liposomes. The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. Data are shown as the mean ± S.E.M. of three independent experiments. D, Curvature generation. The assay was performed with Nedd4L C2 domain mutants. Samples were examined by fluorescence microscopy. Scale bar, 10 μm. Figure 9. Properties of the catalytic activity and membrane binding of Nedd4L. Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. A, B. Schematic diagrams of mSA-αENaC. A, Structure. B. Binding to biotinylated liposomes. C. Ca2+-dependent Nedd4L activity. Ubiquitination was detected by IB (upper panel) and the intensity was quantified by scanning (bottom panel). Data are shown as the mean ± S.E.M. of three independent experiments. D, Membrane localization of mSA-αENaC enhances the PS-dependent catalytic activity of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Ubiquitination was detected by IB (left panel). The intensities were quantified by scanning (right panel). Data are shown as the mean ± S.E.M. of three independent experiments. E. Nedd4L activity is predominantly stimulated by the specific degree of membrane curvature. The assay was performed using liposomes of different sizes which were prepared by extrusion through the indicated pore sizes. Ubiquitination was detected by IB (left panel) and quantified (right panel). Data are shown as the mean ± S.E.M. of three independent experiments. ***P < 0.001 (one-way analysis of variance with Tukey’s post hoc test). F. Membrane localization of mSA-αENaC enhances the PS-dependent membrane binding of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Liposome binding was detected by IB (left panel). The intensities were quantified by scanning (right panel). T, total sample. P, pellet. Data are shown as the mean ± S.E.M. of three independent experiments. Figure 10. Recruitment and activation of Nedd4L by FCHO2-generated membrane curvature in vitro. mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. A. FCHO2-induced recruitment of Nedd4L. The assay was performed with the FCHO2 BAR domain (1.4 μM, 50 μg/ml) in the presence or absence of biotin. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (FCHO2 BAR) and IB (Nedd4L and mSA-αENaC). B, C. FCHO2-induced activation of Nedd4L. B, Effects of various doses of the FCHO2 BAR domain. The assay was performed with various concentrations of the FCHO2 BAR domain. Ubiquitination was detected by IB (left panel) and the intensity was quantified by scanning (right panel). C, Effects of the PS percentage in liposomes. The assay was performed with the FCHO2 BAR domain (1.4 μM). Samples were analyzed by IB. Data are shown as the mean ± S.E.M. of three independent experiments. D, E. Specificity of BAR domains and effect of an FCHO2 mutant. The assay was performed with various BAR domains (D) and an FCHO2 mutant (E) (1.4 μM each). Samples were analyzed by IB. Figure 11. Effects of PI(4,5)P2 on FCHO2-induced recruitment and activation of Nedd4L. A, B. Binding to PI(4,5)P2. A co-sedimentation assay was performed at 0.7 μM Ca2+ with the FCHO2 BAR or Nedd4L C2 domain using mSA-αENaC-associated synthetic liposomes containing 20% PS, 5% PI(4,5)P2 (A), or various percentages of PI(4,5)P2 (B). The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (A and upper panel in B). Bottom panel in B, quantitative analysis. Control, synthetic liposomes [0% PS and 0% PI(4,5)P2]. Data are shown as the mean ± S.E.M. of three independent experiments. C, D. Effects on FCHO2-induced recruitment and activation of Nedd4L. Co-sedimentation (C) and ubiquitination (D) assays were performed at 0.7 μM Ca2+ with mSA-αENaC-associated synthetic liposomes containing 20% PS or 5% PI(4,5)P2 in the presence or absence of the FCHO2 BAR domain. C, Nedd4L recruitment. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by IB with anti-Nedd4L antibody (upper panel) and CBB staining (lower panel). D, Nedd4L activation. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Figure 12. Effects of liposome size on FCHO2-induced activation of Nedd4L. Co-sedimentation (A) and ubiquitination (B) assays were performed at 0.7 μM Ca2+ with the FCHO2 BAR domain using brain-lipid liposomes (20% PS, 0.8 µm or 0.05 µm pore-size) that were associated with mSA-αENaC. A. Binding of the FCHO2 BAR domain to 0.8 µm and 0.05 µm pore-size liposomes. The co-sedimentation assay was performed using synthetic (0% PS) or brain-lipid liposomes (20% PS) containing rhodamine-PE and fluorescein-PE. Liposomes were precipitated with anti-fluorescein antibody. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining. The proportion of precipitated liposomes of each size was calculated to be ~100% by measuring both total and supernatant fluorescence. B. Effects of liposome size on FCHO2-induced activation of Nedd4L. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.Figure 13. Model of ENaC endocytosis.FCHO2 binds to the plasma membrane and generates a specific degree of membrane curvature according to the intrinsic curvature of its BAR domain. Nedd4L exists in a catalytically autoinhibited state due to an intramolecular interaction between the N-terminal C2 and C-terminal HECT domains. Nedd4L is recruited to FCHO2-generated membrane curvature at the rim of nascent CCPs that ENaC enters. Membrane binding of the C2 domain causes catalytic activation by relieving autoinhibition. ENaC is ubiquitinated and captured by adaptor proteins with Ub-interacting motifs, such as Eps15. Extended View Figure Legends Figure EV1. Expression of ENaC subunits in αβγENaC-HeLa cells. A, B. Doxycycline (Dox)-induced expression of αENaC. αβγENaC-HeLa cells were cultured overnight in the presence or absence of Dox. The lysates of parental HeLa and αβγENaC-HeLa cells were subjected to IB. A, 7.5% gel. B, Gradient gel (5-20%). Anti-γENaC antibody cross-reacted with two bands of endogenous proteins in parental HeLa cells, the lower band of which overlapped with γENaC (arrow) in αβγENaC-HeLa cells. Upon Dox-induced αENaC expression, an additional 70-kDa γENaC band (asterisk) was detected. It has been shown that co-expression of all three subunits induces ENaC maturation, including proteolytic cleavage of α- and γENaC (Hughey et al, 2003). The 70-kDa γENaC band is likely a cleavage product comprising the C-terminal region. The 20-kDa αENaC band (arrowhead) is likely a cleavage product comprising the N-terminal region. C. Association of α-, β-, and γENaC. When αENaC was immunoprecipitated with anti-FLAG antibody from αβγENaC-HeLa cells treated with Dox, β- and γENaC were co-precipitated. Asterisk, 70-kDa γENaC band. Figure EV2. Knockdown of FBP17 by siRNA. αβγENaC-HeLa cells were treated with each siRNA, and FBP17 mRNA levels were quantified using real-time PCR. The expression of FBP17 was normalized to GAPDH mRNA levels. Data are shown as the mean ± S.E.M. of three independent experiments. ***P < 0.001 (Student's t-test). Figure EV3. Inability of FCHO2 mutants to generate membrane tubules. GFP-FCHO2 BAR domain [wild type (WT) or mutant] was expressed in COS7 cells. Cells were then subjected to immunofluorescence microscopy. Scale bar, 10 μm. Figure EV4. Inability of Nedd4L mutants to ubiquitinate αENaC. An in vivo ubiquitination assay was performed with various Nedd4L constructs (each 0.5 µg) using FLAG-αENaC as a substrate in the presence or absence of GFP-FCHO2 BAR domain. Cell lysates were subjected to IP. Samples were analyzed by IB. Figure EV5. Inhibition of the liposome binding of Nedd4L by the FCHO2 BAR domain. A co-sedimentation assay was performed at 0.7 μM Ca2+ with control liposomes (0% PS) or brain-lipid liposomes (~50% PS) in the presence or absence of the FCHO2 BAR domain. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by IB (upper panel) and CBB staining (lower panel).Figure EV6. Membrane binding and curvature generation of BAR domains and an FCHO2 mutant. Co-sedimentation (A) and in vitro tubulation (B) assays were performed at 0.7 μM Ca2+ with the indicated BAR domains using brain-lipid liposomes (20% PS) that were associated with mSA-αENaC.A. Membrane binding. The supernatants (S) and pellets (P) were subjected to SDS-PAGE followed by CBB staining.B. Curvature generation. Left panel, electron microscopic image. Scale bar, 100 nm. Right panel, distribution of tubule diameters shown by boxplots (number of observations per protein = 22–26). The center line inside the box corresponds to the median, the bounds of the box encompass data points between the first and third quartiles, and the whiskers extend to the minimum and maximum values including outliers."
 }
