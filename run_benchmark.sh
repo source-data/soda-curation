@@ -441,12 +441,12 @@
 
 # ./run_soda_curation_cpu.sh data/EMM-2023-18636.zip  data/output_EMM-2023-18636_topp0p1_temp0p1_5.json
 # ./run_soda_curation_cpu.sh data/EMBOJ-2023-114195.zip  data/output_EMBOJ-2023-114195_topp0p1_temp0p1_5.json
-./run_soda_curation_cpu.sh data/EMBOJ-2023-115257.zip  data/output_EMBOJ-2023-115257_topp0p1_temp0p1_5.json      
-./run_soda_curation_cpu.sh data/EMBOJ-2024-116743.zip  data/output_EMBOJ-2024-116743_topp0p1_temp0p1_5.json      
-./run_soda_curation_cpu.sh data/EMBOR-2023-58706-T.zip  data/output_EMBOR-2023-58706-T_topp0p1_temp0p1_5.json     
-./run_soda_curation_cpu.sh data/EMBOJ-2023-114687.zip  data/output_EMBOJ-2023-114687_topp0p1_temp0p1_5.json      
-./run_soda_curation_cpu.sh data/EMBOJ-2023-115537.zip   data/output_EMBOJ-2023-115537_topp0p1_temp0p1_5.json     
-./run_soda_curation_cpu.sh data/EMBOJ-2024-117116.zip   data/output_EMBOJ-2024-117116_topp0p1_temp0p1_5.json     
-./run_soda_curation_cpu.sh data/EMBOR-2024-59101V1-T.zip   data/output_EMBOR-2024-59101V1-T_topp0p1_temp0p1_5.json  
-./run_soda_curation_cpu.sh data/MSB-2023-12087.zip  data/output_MSB-2023-12087_topp0p1_temp0p1_5.json
+# ./run_soda_curation_cpu.sh data/EMBOJ-2023-115257.zip  data/output_EMBOJ-2023-115257_topp0p1_temp0p1_5.json      
+# ./run_soda_curation_cpu.sh data/EMBOJ-2024-116743.zip  data/output_EMBOJ-2024-116743_topp0p1_temp0p1_5.json      
+# ./run_soda_curation_cpu.sh data/EMBOR-2023-58706-T.zip  data/output_EMBOR-2023-58706-T_topp0p1_temp0p1_5.json     
+# ./run_soda_curation_cpu.sh data/EMBOJ-2023-114687.zip  data/output_EMBOJ-2023-114687_topp0p1_temp0p1_5.json      
+# ./run_soda_curation_cpu.sh data/EMBOJ-2023-115537.zip   data/output_EMBOJ-2023-115537_topp0p1_temp0p1_5.json     
+# ./run_soda_curation_cpu.sh data/EMBOJ-2024-117116.zip   data/output_EMBOJ-2024-117116_topp0p1_temp0p1_5.json     
+# ./run_soda_curation_cpu.sh data/EMBOR-2024-59101V1-T.zip   data/output_EMBOR-2024-59101V1-T_topp0p1_temp0p1_5.json  
+# ./run_soda_curation_cpu.sh data/MSB-2023-12087.zip  data/output_MSB-2023-12087_topp0p1_temp0p1_5.json
 
