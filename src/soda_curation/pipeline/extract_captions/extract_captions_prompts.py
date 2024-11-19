@@ -91,7 +91,7 @@ Example output format:
 {
   "Figure 1": {
     "title": "Main descriptive sentence of the figure",
-    "caption": "Complete caption including title and all panel descriptions"
+    "caption": "Figure caption not including title and label, but including all panel descriptions"
   },
   "Figure 2": {
     "title": "Analysis of protein expression in response to treatment",
