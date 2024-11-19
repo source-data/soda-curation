@@ -1,424 +1,399 @@
 {
-    "manuscript_id": "EMBOJ-2023-114195",
-    "xml": "EMBOJ-2023-114195.xml",
-    "docx": "Doc/EMBOJ2023114195R1Manuscript_TextIG.docx",
-    "pdf": "pdf/EMBOJ-2023-114195.pdf",
-    "appendix": [
-        "suppl_data/Appendix.pdf",
-        "suppl_data/Dataset EV1.docx",
-        "suppl_data/supplemental_data1.docx"
-    ],
-    "figures": [
+  "manuscript_id": "EMBOJ-2023-114195",
+  "xml": "EMBOJ-2023-114195.xml",
+  "docx": "Doc/EMBOJ2023114195R1Manuscript_TextIG.docx",
+  "pdf": "pdf/EMBOJ-2023-114195.pdf",
+  "appendix": [
+    "suppl_data/Appendix.pdf",
+    "suppl_data/Dataset EV1.docx",
+    "suppl_data/supplemental_data1.docx"
+  ],
+  "figures": [
+    {
+      "figure_label": "Figure 1",
+      "img_files": ["graphic/Figure1v22.eps"],
+      "sd_files": [],
+      "figure_caption": "A, Flow-induced endothelial alignment after Gα knockdown. HUVECs were subjected to fluid shear stress (FSS) at a rate of 12 dynes/cm2 for 16 hours and nuclear orientation quantified as histograms showing the percentage of cells within each 10° of the flow directions from 0° to 90° (see Methods) ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. B, Src family kinase activation, quantified in C. n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test. D, Rescue of Gq/11 and Gi knockdown by re-expression of siRNA-resistant versions of the indicated proteins. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparison test. E, Amino acid sequences of Gαi1, Gαi2, and Gαi3 at the mutation sites of Gαi1 gain-of-function mutant. F, Rescue of Gq/11 and Gi knockdown with indicated Gα proteins. Each point corresponds to one measurement averaged from >500 cells. N=4. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. G, GINIP pulldown assay for activation of Gαi2 by FSS. N=3. Results quantified in H. **: p=0.0185, Student’s t-test. I, GRK2N pulldown assay for activation of Gq. N=4, quantified in J. *: p<0.05, Student’s t-test. K, GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4, quantified in L. *: p=0.0304, ***: p=0.0017; Student’s t-test. M, Gi2 activation after PECAM-1 knockdown. HUVECs expressing GluGlu tagged Gi2 were transfected with scrambled siRNA or PECAM-1 siRNA, exposed to FSS, and Gi2 activation assayed as described above, quantified in N. Values are means ± SEM, normalized to input Gα protein levels. ***: p<0.001; Student’s t-test, N=4.",
+      "caption_title": "Gα proteins specific for endothelial flow responses",
+      "panels": [
         {
-            "figure_label": "Figure 1",
-            "img_files": ["graphic/Figure1v22.eps"],
-            "sd_files": [],
-            "figure_caption": "A, Flow-induced endothelial alignment after Gα knockdown. HUVECs were subjected to fluid shear stress (FSS) at a rate of 12 dynes/cm2 for 16 hours and nuclear orientation quantified as histograms showing the percentage of cells within each 10° of the flow directions from 0° to 90° (see Methods) ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. B, Src family kinase activation, quantified in C. n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test. D, Rescue of Gq/11 and Gi knockdown by re-expression of siRNA-resistant versions of the indicated proteins. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparison test. E, Amino acid sequences of Gαi1, Gαi2, and Gαi3 at the mutation sites of Gαi1 gain-of-function mutant. F, Rescue of Gq/11 and Gi knockdown with indicated Gα proteins. Each point corresponds to one measurement averaged from >500 cells. N=4. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. G, GINIP pulldown assay for activation of Gαi2 by FSS. N=3. Results quantified in H. **: p=0.0185, Student’s t-test. I, GRK2N pulldown assay for activation of Gq. N=4, quantified in J. *: p<0.05, Student’s t-test. K, GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4, quantified in L. *: p=0.0304, ***: p=0.0017; Student’s t-test. M, Gi2 activation after PECAM-1 knockdown. HUVECs expressing GluGlu tagged Gi2 were transfected with scrambled siRNA or PECAM-1 siRNA, exposed to FSS, and Gi2 activation assayed as described above, quantified in N. Values are means ± SEM, normalized to input Gα protein levels. ***: p<0.001; Student’s t-test, N=4.",
-            "caption_title": "Gα proteins specific for endothelial flow responses",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "Flow-induced endothelial alignment after Gα knockdown. HUVECs were subjected to fluid shear stress (FSS) at a rate of 12 dynes/cm2 for 16 hours and nuclear orientation quantified as histograms showing the percentage of cells within each 10° of the flow directions from 0° to 90° (see Methods) ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Src family kinase activation. n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Src family kinase quantification.  n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "D",
-                    "panel_caption": "Rescue of Gq/11 and Gi knockdown by re-expression of siRNA-resistant versions of the indicated proteins. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparison test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "E",
-                    "panel_caption": "Amino acid sequences of Gαi1, Gαi2, and Gαi3 at the mutation sites of Gαi1 gain-of-function mutant.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "F",
-                    "panel_caption": "Rescue of Gq/11 and Gi knockdown with indicated Gα proteins. Each point corresponds to one measurement averaged from >500 cells. N=4. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "G",
-                    "panel_caption": "GINIP pulldown assay for activation of Gαi2 by FSS. N=3. **: p=0.0185, Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "H",
-                    "panel_caption": "Quantification of GINIP pulldown assay for activation of Gαi2 by FSS. N=3. **: p=0.0185, Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "I",
-                    "panel_caption": "GRK2N pulldown assay for activation of Gq. N=4. *: p<0.05, Student’s t-test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "J",
-                    "panel_caption": "Quantification of GRK2N pulldown assay for activation of Gq. N=4. *: p<0.05, Student’s t-test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "K",
-                    "panel_caption": "GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4. *: p=0.0304, ***: p=0.0017; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "L",
-                    "panel_caption": "Quantification of GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4. *: p=0.0304, ***: p=0.0017; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "M",
-                    "panel_caption": "Gi2 activation after PECAM-1 knockdown. HUVECs expressing GluGlu tagged Gi2 were transfected with scrambled siRNA or PECAM-1 siRNA, exposed to FSS, and Gi2 activation assayed as described above. Values are means ± SEM, normalized to input Gα protein levels. ***: p<0.001; Student’s t-test, N=4.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "M",
-                    "panel_caption": "Quantification of Gi2 activation after PECAM-1 knockdown. HUVECs expressing GluGlu tagged Gi2 were transfected with scrambled siRNA or PECAM-1 siRNA, exposed to FSS, and Gi2 activation assayed as described above. Values are means ± SEM, normalized to input Gα protein levels. ***: p<0.001; Student’s t-test, N=4.",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "A",
+          "panel_caption": "Flow-induced endothelial alignment after Gα knockdown. HUVECs were subjected to fluid shear stress (FSS) at a rate of 12 dynes/cm2 for 16 hours and nuclear orientation quantified as histograms showing the percentage of cells within each 10° of the flow directions from 0° to 90° (see Methods) ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
         },
         {
-            "figure_label": "Figure 2",
-            "img_files": ["graphic/Figure2v25.eps"],
-            "sd_files": [],
-            "figure_caption": "A, Strategy for identification of GPCRs that bind the gain-of-function Gi1Q306K mutant but not the wild type Gi1. B, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test. D, Co-immunoprecipitation of LPHN2-GFP with the indicated Gα proteins containing internal GluGlu epitope tags. E, Gi2 pulldown assay after LPHN2 knockdown. N= 4. Results quantified in F. ***: p<0.001, Student’s t-test.",
-            "caption_title": "Identifiation of the upstream flow-responsive GPCR",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "A, Strategy for identification of GPCRs that bind the gain-of-function Gi1Q306K mutant but not the wild type Gi1. B, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test. D, Co-immunoprecipitation of LPHN2-GFP with the indicated Gα proteins containing internal GluGlu epitope tags. E, Gi2 pulldown assay after LPHN2 knockdown. N= 4. Results quantified in F. ***: p<0.001, Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Quantification of B, co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3. *: p=0.0374, Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "D",
-                    "panel_caption": "Co-immunoprecipitation of LPHN2-GFP with the indicated Gα proteins containing internal GluGlu epitope tags.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "E",
-                    "panel_caption": "Gi2 pulldown assay after LPHN2 knockdown. N= 4. Results quantified in F. ***: p<0.001, Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "F",
-                    "panel_caption": "Quantification of results in E. Gi2 pulldown assay after LPHN2 knockdown. N= 4. ***: p<0.001, Student’s t-test.",
-                    "sd_files": []
-                }
-            ]
-        },        
-        {
-            "figure_label": "Figure 3",
-            "img_files": ["graphic/Figure3v33.eps"],
-            "sd_files": [],
-            "figure_caption": "A, HUVECs with or without latrophilin-2 knockdown were subjected to FSS for 16 h, then fixed and stained with Hoechst (nuclei), phalloidin (F-actin) and an antibody against VE-Cadherin. Scale bar: 100µm. B, Alignment of HUVECs (each bar = 10° increments) after knockdown of latrophilin isoforms was quantified as in Fig. 1 from >2000 cells/experiment, N=3. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. C, Localization of LPHN2-mClover3. Scale bar: 100µm. N=6. D, Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3, quantified in E. F, Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3, quantified in G. H, Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, quantified in I & J. *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test. K, Alignment of LPHN2-depleted HUVECs rescued by re-expression of the indicated latrophilin isoforms. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >2000 cells for each condition, N=3. L, LPHN2 knockdown HUVECs were rescued by re-expression of the indicated LPHN2 mutants. ****: p<0.0001, one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >500 cells for each condition.",
-            "caption_title": "Latrophilins regulate endothelial flow responses",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "HUVECs with or without latrophilin-2 knockdown were subjected to FSS for 16 h, then fixed and stained with Hoechst (nuclei), phalloidin (F-actin) and an antibody against VE-Cadherin. Scale bar: 100µm.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Alignment of HUVECs (each bar = 10° increments) after knockdown of latrophilin isoforms was quantified as in Fig. 1 from >2000 cells/experiment, N=3. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Localization of LPHN2-mClover3. Scale bar: 100µm. N=6.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "D",
-                    "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3, quantified in E.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "E",
-                    "panel_caption": "Quantification of results in D. Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "F",
-                    "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3, quantified in G.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "G",
-                    "panel_caption": "Quantification of results in F. Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "H",
-                    "panel_caption": "Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, quantified in I & J. *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "I",
-                    "panel_caption": "Quantification of results in H. Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4. *: p=0.0184; one-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "J",
-                    "panel_caption": "Quantification of results in H. Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4. **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "K",
-                    "panel_caption": "Alignment of LPHN2-depleted HUVECs rescued by re-expression of the indicated latrophilin isoforms. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >2000 cells for each condition, N=3.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "L",
-                    "panel_caption": "LPHN2 knockdown HUVECs were rescued by re-expression of the indicated LPHN2 mutants. ****: p<0.0001, one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >500 cells for each condition.",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "B",
+          "panel_caption": "Src family kinase activation. n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test.",
+          "sd_files": []
         },
         {
-            "figure_label": "Figure 4",
-            "img_files": ["graphic/Figure4v31.eps"],
-            "sd_files": [],
-            "figure_caption": "A. Representative image of HUVECs transfected with scrambled siRNA or LPHN2 siRNA. Outlines of ECs from VE-cadherin staining are shown to next to each image. Scale Bar: 100µm. B, Quantification of junctional linearization index from A. n=30 for each condition. **: p=0.0019, Statistics is done using two-way ANOVA with Sidak’s multiple comparison test. C, Dorsal aortas from 48hpf Tg(kdrl:ras-mCherry) WT or LPHN mutant zebrafish embryos stained for ZO-1. EC were outlined as in Methods. LPHN2 mutant indicates adgrl2a+adgrl2b.1 sgRNAs. D&E, Quantification of cell size and eccentricity in embryos with latrophilin-2 CRISPR sgRNAs ± silent heart morpholinos (MO). N=6 per condition. ****: p<0.0001, *: p=0.0267, **: p=0.0015, ***: p=0.0008; one-way ANOVA with Tukey’s multiple comparisons test. F, ECs in the thoracic aorta in 18 weeks old mice at 10 weeks after tamoxifen injections, stained for β-catenin (left) and outlined (right). Data are representative of 6 mice for each condition. Scale Bar: 100µm. G&H, quantification of cell eccentricity and junction linearity in mouse aorta. N=4 per condition. **: p=0.0013; ****: p<0.0001; Student’s t-test. I, Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. Fractional blue area quantified in J. n=3 for each condition. *: p=0.0419; Student’s t-test. K, in vitro endothelial permeability assay using FITC-streptavidin and biotin-conjugated fibronectin. Scale Bar: 100µm. L, Permeability was quantified by measuring FITC-streptavidin area per image field from K. n=5, *: p=0.0457, one-way ANOVA.",
-            "caption_title": "Latrophilins in flow-mediated endothelial cell morphology in vivo",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "Representative image of HUVECs transfected with scrambled siRNA or LPHN2 siRNA. Outlines of ECs from VE-cadherin staining are shown to next to each image. Scale Bar: 100µm.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Quantification of junctional linearization index from A. n=30 for each condition. **: p=0.0019, Statistics is done using two-way ANOVA with Sidak’s multiple comparison test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Dorsal aortas from 48hpf Tg(kdrl:ras-mCherry) WT or LPHN mutant zebrafish embryos stained for ZO-1. EC were outlined as in Methods. LPHN2 mutant indicates adgrl2a+adgrl2b.1 sgRNAs. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "D",
-                    "panel_caption": "Quantification of cell size  in embryos with latrophilin-2 CRISPR sgRNAs ± silent heart morpholinos (MO). N=6 per condition. ****: p<0.0001, *: p=0.0267, **: p=0.0015, ***: p=0.0008; one-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "E",
-                    "panel_caption": "Quantification of eccentricity in embryos with latrophilin-2 CRISPR sgRNAs ± silent heart morpholinos (MO). N=6 per condition. ****: p<0.0001, *: p=0.0267, **: p=0.0015, ***: p=0.0008; one-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "F",
-                    "panel_caption": "ECs in the thoracic aorta in 18 weeks old mice at 10 weeks after tamoxifen injections, stained for β-catenin (left) and outlined (right). Data are representative of 6 mice for each condition. Scale Bar: 100µm.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "G",
-                    "panel_caption": "quantification of cell eccentricity linearity in mouse aorta. N=4 per condition. **: p=0.0013; ****: p<0.0001; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "H",
-                    "panel_caption": "quantification of junction linearity in mouse aorta. N=4 per condition. **: p=0.0013; ****: p<0.0001; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "I",
-                    "panel_caption": "Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. Fractional blue area quantified in J. n=3 for each condition. *: p=0.0419; Student’s t-test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "J",
-                    "panel_caption": "Quantification of the fractional blue area in I Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. n=3 for each condition. *: p=0.0419; Student’s t-test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "K",
-                    "panel_caption": "in vitro endothelial permeability assay using FITC-streptavidin and biotin-conjugated fibronectin. Scale Bar: 100µm.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "L",
-                    "panel_caption": "Permeability was quantified by measuring FITC-streptavidin area per image field from K. n=5, *: p=0.0457, one-way ANOVA.",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "C",
+          "panel_caption": "Src family kinase quantification.  n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test.",
+          "sd_files": []
         },
         {
-            "figure_label": "Figure 5",
-            "img_files": ["graphic/Figure5v19.eps"],
-            "sd_files": [],
-            "figure_caption": "A, ECs were treated with FSS or 5 mM methyl-β-cyclodextrin (mβCD) for 1 min then incubated with D4H-mClover3, rinsed and bound mClover3 quantified as described in Methods. N=27 for each condition. ****: p<0.0001; One-way ANOVA with Tukey multiple comparisons test. B, Phalloidin staining following short acute treatment of methyl-β-cyclodextrin (mβCD). Scale bar: 100µm. C, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous Latrophilin-2 (LPHN2) after 5mM MβCD for 1min. D, Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in E and F, respectively. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. G, Model for junctional endothelial shear stress mechanotransduction.",
-            "caption_title": "Latrophilins in flow-mediated endothelial cell morphology in vivo",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "ECs were treated with FSS or 5 mM methyl-β-cyclodextrin (mβCD) for 1 min then incubated with D4H-mClover3, rinsed and bound mClover3 quantified as described in Methods. N=27 for each condition. ****: p<0.0001; One-way ANOVA with Tukey multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Phalloidin staining following short acute treatment of methyl-β-cyclodextrin (mβCD). Scale bar: 100µm. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous Latrophilin-2 (LPHN2) after 5mM MβCD for 1min. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "D",
-                    "panel_caption": "Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in E and F, respectively. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "E",
-                    "panel_caption": "Quantification of results in D. Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Values are means ± SEM. N=5. *: p=0.0305; one-way ANOVA with Tukey multiple comparison test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "F",
-                    "panel_caption": "Quantification of results in D. Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Values are means ± SEM. N=5. *: p=0.0002; one-way ANOVA with Tukey multiple comparison test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "G",
-                    "panel_caption": "Model for junctional endothelial shear stress mechanotransduction.",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "D",
+          "panel_caption": "Rescue of Gq/11 and Gi knockdown by re-expression of siRNA-resistant versions of the indicated proteins. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparison test.",
+          "sd_files": []
         },
         {
-            "figure_label": "Figure 6",
-            "img_files": ["graphic/Figure6corrected.pdf"],
-            "sd_files": [],
-            "figure_caption": "A, Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls. B, Quantification of diameters of all ISVs in A. n=15 per condition. *: p=0.0452, **: p=0.0150; one-way ANOVA with Tukey’s multiple comparisons test. C, Quantification of diameters of arterial and venous ISVs at 72 hpf of zebrafish. n=6 per condition. **: p=0.0013; Student’s t-test. D, Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test. F, Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test. H, Rectus femoris muscle from thighs of 10 weeks old mice of LPHN2 ECKO or wild-type littermates, stained for CD31 and SMA to visualize the entire vasculature and arteries. Scale Bar: 100µm. I. Quantification of capillary density in the entire stitched thigh muscle images. n=3 for control and n=6 for Lphn2 ECKO. ****: p<0.0001; Student’s t-test. J, Schematic of mouse treadmill fatigue test. K, Maximum running during test. n=4 for control and n=5 for Lphn2 ECKO. **:p=0.0082; Student’s t-test. L, Running distance for each mouse. n=4 for control and n=5 for Lphn2 ECKO. **: p=0.0064; Student’s t-test. M, Oxygen consumption during treadmill fatigue test. *: p<0.0001; two-way ANOVA with Tukey’s multiple comparisons test. Control: N=5, LPHN2 ECKO: N=4. N, Representative 3D reconstructed images at 20° downward angle of ECs plated on top of collagen gels and sprouting under static or flow conditions. ECs were stained with phalloidin; pseudocolors indicate distance from the gel surface as per the color scale on the right. O, Histograms of cell area vs. distance from gel surface in N. P, Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test.",
-            "caption_title": "Latrophilin-2 in flow-induced vascular remodeling",
-            "panels": [
-                {
-                    "panel_label": "A",
-                    "panel_caption": "Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "B",
-                    "panel_caption": "Quantification of diameters of all ISVs in A. Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "C",
-                    "panel_caption": "Quantification of diameters of arterial and venous ISVs at 72 hpf of zebrafish. n=6 per condition. **: p=0.0013; Student’s t-test. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "D",
-                    "panel_caption": "Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "E",
-                    "panel_caption": "Quantification of results in D. Ratio of blood flow in the right ischemic vs left control foot by laser doppler. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "F",
-                    "panel_caption": "Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "G",
-                    "panel_caption": "Quantification of results in F. Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "H",
-                    "panel_caption": "Rectus femoris muscle from thighs of 10 weeks old mice of LPHN2 ECKO or wild-type littermates, stained for CD31 and SMA to visualize the entire vasculature and arteries. Scale Bar: 100µm. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "I",
-                    "panel_caption": "Quantification of capillary density in the entire stitched thigh muscle images. n=3 for control and n=6 for Lphn2 ECKO. ****: p<0.0001; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "J",
-                    "panel_caption": "Schematic of mouse treadmill fatigue test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "K",
-                    "panel_caption": "Maximum running during test. n=4 for control and n=5 for Lphn2 ECKO. **:p=0.0082; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "L",
-                    "panel_caption": "Running distance for each mouse. n=4 for control and n=5 for Lphn2 ECKO. **: p=0.0064; Student’s t-test.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "M",
-                    "panel_caption": "Oxygen consumption during treadmill fatigue test. *: p<0.0001; two-way ANOVA with Tukey’s multiple comparisons test. Control: N=5, LPHN2 ECKO: N=4.",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "N",
-                    "panel_caption": "Representative 3D reconstructed images at 20° downward angle of ECs plated on top of collagen gels and sprouting under static or flow conditions. ECs were stained with phalloidin; pseudocolors indicate distance from the gel surface as per the color scale on the right. ",
-                    "sd_files": []
-                },
-                {
-                    "panel_label": "O",
-                    "panel_caption": "Histograms of cell area vs. distance from gel surface in N. P, Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test.",
-                    "sd_files": []
-                }
-            ]
+          "panel_label": "E",
+          "panel_caption": "Amino acid sequences of Gαi1, Gαi2, and Gαi3 at the mutation sites of Gαi1 gain-of-function mutant.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "Rescue of Gq/11 and Gi knockdown with indicated Gα proteins. Each point corresponds to one measurement averaged from >500 cells. N=4. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "GINIP pulldown assay for activation of Gαi2 by FSS. N=3. **: p=0.0185, Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "Quantification of GINIP pulldown assay for activation of Gαi2 by FSS. N=3. **: p=0.0185, Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "GRK2N pulldown assay for activation of Gq. N=4. *: p<0.05, Student’s t-test. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "Quantification of GRK2N pulldown assay for activation of Gq. N=4. *: p<0.05, Student’s t-test. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4. *: p=0.0304, ***: p=0.0017; Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "Quantification of GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4. *: p=0.0304, ***: p=0.0017; Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "M",
+          "panel_caption": "Gi2 activation after PECAM-1 knockdown. HUVECs expressing GluGlu tagged Gi2 were transfected with scrambled siRNA or PECAM-1 siRNA, exposed to FSS, and Gi2 activation assayed as described above. Values are means ± SEM, normalized to input Gα protein levels. ***: p<0.001; Student’s t-test, N=4.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "M",
+          "panel_caption": "Quantification of Gi2 activation after PECAM-1 knockdown. HUVECs expressing GluGlu tagged Gi2 were transfected with scrambled siRNA or PECAM-1 siRNA, exposed to FSS, and Gi2 activation assayed as described above. Values are means ± SEM, normalized to input Gα protein levels. ***: p<0.001; Student’s t-test, N=4.",
+          "sd_files": []
         }
-    ],
+      ]
+    },
+    {
+      "figure_label": "Figure 2",
+      "img_files": ["graphic/Figure2v25.eps"],
+      "sd_files": [],
+      "figure_caption": "A, Strategy for identification of GPCRs that bind the gain-of-function Gi1Q306K mutant but not the wild type Gi1. B, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test. D, Co-immunoprecipitation of LPHN2-GFP with the indicated Gα proteins containing internal GluGlu epitope tags. E, Gi2 pulldown assay after LPHN2 knockdown. N= 4. Results quantified in F. ***: p<0.001, Student’s t-test.",
+      "caption_title": "Identifiation of the upstream flow-responsive GPCR",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "A, Strategy for identification of GPCRs that bind the gain-of-function Gi1Q306K mutant but not the wild type Gi1. B, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test. D, Co-immunoprecipitation of LPHN2-GFP with the indicated Gα proteins containing internal GluGlu epitope tags. E, Gi2 pulldown assay after LPHN2 knockdown. N= 4. Results quantified in F. ***: p<0.001, Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Quantification of B, co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3. *: p=0.0374, Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Co-immunoprecipitation of LPHN2-GFP with the indicated Gα proteins containing internal GluGlu epitope tags.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "Gi2 pulldown assay after LPHN2 knockdown. N= 4. Results quantified in F. ***: p<0.001, Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "Quantification of results in E. Gi2 pulldown assay after LPHN2 knockdown. N= 4. ***: p<0.001, Student’s t-test.",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 3",
+      "img_files": ["graphic/Figure3v33.eps"],
+      "sd_files": [],
+      "figure_caption": "A, HUVECs with or without latrophilin-2 knockdown were subjected to FSS for 16 h, then fixed and stained with Hoechst (nuclei), phalloidin (F-actin) and an antibody against VE-Cadherin. Scale bar: 100µm. B, Alignment of HUVECs (each bar = 10° increments) after knockdown of latrophilin isoforms was quantified as in Fig. 1 from >2000 cells/experiment, N=3. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. C, Localization of LPHN2-mClover3. Scale bar: 100µm. N=6. D, Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3, quantified in E. F, Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3, quantified in G. H, Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, quantified in I & J. *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test. K, Alignment of LPHN2-depleted HUVECs rescued by re-expression of the indicated latrophilin isoforms. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >2000 cells for each condition, N=3. L, LPHN2 knockdown HUVECs were rescued by re-expression of the indicated LPHN2 mutants. ****: p<0.0001, one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >500 cells for each condition.",
+      "caption_title": "Latrophilins regulate endothelial flow responses",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "HUVECs with or without latrophilin-2 knockdown were subjected to FSS for 16 h, then fixed and stained with Hoechst (nuclei), phalloidin (F-actin) and an antibody against VE-Cadherin. Scale bar: 100µm.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Alignment of HUVECs (each bar = 10° increments) after knockdown of latrophilin isoforms was quantified as in Fig. 1 from >2000 cells/experiment, N=3. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Localization of LPHN2-mClover3. Scale bar: 100µm. N=6.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3, quantified in E.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "Quantification of results in D. Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3, quantified in G.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "Quantification of results in F. Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, quantified in I & J. *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "Quantification of results in H. Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4. *: p=0.0184; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "Quantification of results in H. Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4. **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "Alignment of LPHN2-depleted HUVECs rescued by re-expression of the indicated latrophilin isoforms. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >2000 cells for each condition, N=3.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "LPHN2 knockdown HUVECs were rescued by re-expression of the indicated LPHN2 mutants. ****: p<0.0001, one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >500 cells for each condition.",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 4",
+      "img_files": ["graphic/Figure4v31.eps"],
+      "sd_files": [],
+      "figure_caption": "A. Representative image of HUVECs transfected with scrambled siRNA or LPHN2 siRNA. Outlines of ECs from VE-cadherin staining are shown to next to each image. Scale Bar: 100µm. B, Quantification of junctional linearization index from A. n=30 for each condition. **: p=0.0019, Statistics is done using two-way ANOVA with Sidak’s multiple comparison test. C, Dorsal aortas from 48hpf Tg(kdrl:ras-mCherry) WT or LPHN mutant zebrafish embryos stained for ZO-1. EC were outlined as in Methods. LPHN2 mutant indicates adgrl2a+adgrl2b.1 sgRNAs. D&E, Quantification of cell size and eccentricity in embryos with latrophilin-2 CRISPR sgRNAs ± silent heart morpholinos (MO). N=6 per condition. ****: p<0.0001, *: p=0.0267, **: p=0.0015, ***: p=0.0008; one-way ANOVA with Tukey’s multiple comparisons test. F, ECs in the thoracic aorta in 18 weeks old mice at 10 weeks after tamoxifen injections, stained for β-catenin (left) and outlined (right). Data are representative of 6 mice for each condition. Scale Bar: 100µm. G&H, quantification of cell eccentricity and junction linearity in mouse aorta. N=4 per condition. **: p=0.0013; ****: p<0.0001; Student’s t-test. I, Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. Fractional blue area quantified in J. n=3 for each condition. *: p=0.0419; Student’s t-test. K, in vitro endothelial permeability assay using FITC-streptavidin and biotin-conjugated fibronectin. Scale Bar: 100µm. L, Permeability was quantified by measuring FITC-streptavidin area per image field from K. n=5, *: p=0.0457, one-way ANOVA.",
+      "caption_title": "Latrophilins in flow-mediated endothelial cell morphology in vivo",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Representative image of HUVECs transfected with scrambled siRNA or LPHN2 siRNA. Outlines of ECs from VE-cadherin staining are shown to next to each image. Scale Bar: 100µm.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Quantification of junctional linearization index from A. n=30 for each condition. **: p=0.0019, Statistics is done using two-way ANOVA with Sidak’s multiple comparison test. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Dorsal aortas from 48hpf Tg(kdrl:ras-mCherry) WT or LPHN mutant zebrafish embryos stained for ZO-1. EC were outlined as in Methods. LPHN2 mutant indicates adgrl2a+adgrl2b.1 sgRNAs. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Quantification of cell size  in embryos with latrophilin-2 CRISPR sgRNAs ± silent heart morpholinos (MO). N=6 per condition. ****: p<0.0001, *: p=0.0267, **: p=0.0015, ***: p=0.0008; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "Quantification of eccentricity in embryos with latrophilin-2 CRISPR sgRNAs ± silent heart morpholinos (MO). N=6 per condition. ****: p<0.0001, *: p=0.0267, **: p=0.0015, ***: p=0.0008; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "ECs in the thoracic aorta in 18 weeks old mice at 10 weeks after tamoxifen injections, stained for β-catenin (left) and outlined (right). Data are representative of 6 mice for each condition. Scale Bar: 100µm.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "quantification of cell eccentricity linearity in mouse aorta. N=4 per condition. **: p=0.0013; ****: p<0.0001; Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "quantification of junction linearity in mouse aorta. N=4 per condition. **: p=0.0013; ****: p<0.0001; Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. Fractional blue area quantified in J. n=3 for each condition. *: p=0.0419; Student’s t-test. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "Quantification of the fractional blue area in I Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. n=3 for each condition. *: p=0.0419; Student’s t-test. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "in vitro endothelial permeability assay using FITC-streptavidin and biotin-conjugated fibronectin. Scale Bar: 100µm.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "Permeability was quantified by measuring FITC-streptavidin area per image field from K. n=5, *: p=0.0457, one-way ANOVA.",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 5",
+      "img_files": ["graphic/Figure5v19.eps"],
+      "sd_files": [],
+      "figure_caption": "A, ECs were treated with FSS or 5 mM methyl-β-cyclodextrin (mβCD) for 1 min then incubated with D4H-mClover3, rinsed and bound mClover3 quantified as described in Methods. N=27 for each condition. ****: p<0.0001; One-way ANOVA with Tukey multiple comparisons test. B, Phalloidin staining following short acute treatment of methyl-β-cyclodextrin (mβCD). Scale bar: 100µm. C, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous Latrophilin-2 (LPHN2) after 5mM MβCD for 1min. D, Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in E and F, respectively. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. G, Model for junctional endothelial shear stress mechanotransduction.",
+      "caption_title": "Latrophilins in flow-mediated endothelial cell morphology in vivo",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "ECs were treated with FSS or 5 mM methyl-β-cyclodextrin (mβCD) for 1 min then incubated with D4H-mClover3, rinsed and bound mClover3 quantified as described in Methods. N=27 for each condition. ****: p<0.0001; One-way ANOVA with Tukey multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Phalloidin staining following short acute treatment of methyl-β-cyclodextrin (mβCD). Scale bar: 100µm. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous Latrophilin-2 (LPHN2) after 5mM MβCD for 1min. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in E and F, respectively. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "Quantification of results in D. Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Values are means ± SEM. N=5. *: p=0.0305; one-way ANOVA with Tukey multiple comparison test. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "Quantification of results in D. Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Values are means ± SEM. N=5. *: p=0.0002; one-way ANOVA with Tukey multiple comparison test. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "Model for junctional endothelial shear stress mechanotransduction.",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 6",
+      "img_files": ["graphic/Figure6corrected.pdf"],
+      "sd_files": [],
+      "figure_caption": "A, Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls. B, Quantification of diameters of all ISVs in A. n=15 per condition. *: p=0.0452, **: p=0.0150; one-way ANOVA with Tukey’s multiple comparisons test. C, Quantification of diameters of arterial and venous ISVs at 72 hpf of zebrafish. n=6 per condition. **: p=0.0013; Student’s t-test. D, Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test. F, Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test. H, Rectus femoris muscle from thighs of 10 weeks old mice of LPHN2 ECKO or wild-type littermates, stained for CD31 and SMA to visualize the entire vasculature and arteries. Scale Bar: 100µm. I. Quantification of capillary density in the entire stitched thigh muscle images. n=3 for control and n=6 for Lphn2 ECKO. ****: p<0.0001; Student’s t-test. J, Schematic of mouse treadmill fatigue test. K, Maximum running during test. n=4 for control and n=5 for Lphn2 ECKO. **:p=0.0082; Student’s t-test. L, Running distance for each mouse. n=4 for control and n=5 for Lphn2 ECKO. **: p=0.0064; Student’s t-test. M, Oxygen consumption during treadmill fatigue test. *: p<0.0001; two-way ANOVA with Tukey’s multiple comparisons test. Control: N=5, LPHN2 ECKO: N=4. N, Representative 3D reconstructed images at 20° downward angle of ECs plated on top of collagen gels and sprouting under static or flow conditions. ECs were stained with phalloidin; pseudocolors indicate distance from the gel surface as per the color scale on the right. O, Histograms of cell area vs. distance from gel surface in N. P, Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test.",
+      "caption_title": "Latrophilin-2 in flow-induced vascular remodeling",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Quantification of diameters of all ISVs in A. Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Quantification of diameters of arterial and venous ISVs at 72 hpf of zebrafish. n=6 per condition. **: p=0.0013; Student’s t-test. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "Quantification of results in D. Ratio of blood flow in the right ischemic vs left control foot by laser doppler. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "Quantification of results in F. Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "Rectus femoris muscle from thighs of 10 weeks old mice of LPHN2 ECKO or wild-type littermates, stained for CD31 and SMA to visualize the entire vasculature and arteries. Scale Bar: 100µm. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "Quantification of capillary density in the entire stitched thigh muscle images. n=3 for control and n=6 for Lphn2 ECKO. ****: p<0.0001; Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "Schematic of mouse treadmill fatigue test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "Maximum running during test. n=4 for control and n=5 for Lphn2 ECKO. **:p=0.0082; Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "Running distance for each mouse. n=4 for control and n=5 for Lphn2 ECKO. **: p=0.0064; Student’s t-test.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "M",
+          "panel_caption": "Oxygen consumption during treadmill fatigue test. *: p<0.0001; two-way ANOVA with Tukey’s multiple comparisons test. Control: N=5, LPHN2 ECKO: N=4.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "N",
+          "panel_caption": "Representative 3D reconstructed images at 20° downward angle of ECs plated on top of collagen gels and sprouting under static or flow conditions. ECs were stained with phalloidin; pseudocolors indicate distance from the gel surface as per the color scale on the right. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "O",
+          "panel_caption": "Histograms of cell area vs. distance from gel surface in N. P, Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test.",
+          "sd_files": []
+        }
+      ]
+    }
+  ],
 
-    "all_captions": """Figure 1. Gα proteins specific for endothelial flow responses
-
-A, Flow-induced endothelial alignment after Gα knockdown. HUVECs were subjected to fluid shear stress (FSS) at a rate of 12 dynes/cm2 for 16 hours and nuclear orientation quantified as histograms showing the percentage of cells within each 10° of the flow directions from 0° to 90° (see Methods) ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. B, Src family kinase activation, quantified in C. n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test. D, Rescue of Gq/11 and Gi knockdown by re-expression of siRNA-resistant versions of the indicated proteins. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparison test. E, Amino acid sequences of Gαi1, Gαi2, and Gαi3 at the mutation sites of Gαi1 gain-of-function mutant. F, Rescue of Gq/11 and Gi knockdown with indicated Gα proteins. Each point corresponds to one measurement averaged from >500 cells. N=4. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. G, GINIP pulldown assay for activation of Gαi2 by FSS. N=3. Results quantified in H. **: p=0.0185, Student’s t-test. I, GRK2N pulldown assay for activation of Gq. N=4, quantified in J. *: p<0.05, Student’s t-test. K, GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4, quantified in L. *: p=0.0304, ***: p=0.0017; Student’s t-test. M, Gi2 activation after PECAM-1 knockdown. HUVECs expressing GluGlu tagged Gi2 were transfected with scrambled siRNA or PECAM-1 siRNA, exposed to FSS, and Gi2 activation assayed as described above, quantified in N. Values are means ± SEM, normalized to input Gα protein levels. ***: p<0.001; Student’s t-test, N=4.
-
-Figure 2. Identifiation of the upstream flow-responsive GPCR
-
-A, Strategy for identification of GPCRs that bind the gain-of-function Gi1Q306K mutant but not the wild type Gi1. B, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test. D, Co-immunoprecipitation of LPHN2-GFP with the indicated Gα proteins containing internal GluGlu epitope tags. E, Gi2 pulldown assay after LPHN2 knockdown. N= 4. Results quantified in F. ***: p<0.001, Student’s t-test.
-
-Figure 3. Latrophilins regulate endothelial flow responses
-
-A, HUVECs with or without latrophilin-2 knockdown were subjected to FSS for 16 h, then fixed and stained with Hoechst (nuclei), phalloidin (F-actin) and an antibody against VE-Cadherin. Scale bar: 100µm. B, Alignment of HUVECs (each bar = 10° increments) after knockdown of latrophilin isoforms was quantified as in Fig. 1 from >2000 cells/experiment, N=3. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. C, Localization of LPHN2-mClover3. Scale bar: 100µm. N=6. D, Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3, quantified in E. F, Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3, quantified in G. H, Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, quantified in I & J. *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test. K, Alignment of LPHN2-depleted HUVECs rescued by re-expression of the indicated latrophilin isoforms. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >2000 cells for each condition, N=3. L, LPHN2 knockdown HUVECs were rescued by re-expression of the indicated LPHN2 mutants. ****: p<0.0001, one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >500 cells for each condition.
-
-Figure 4, Latrophilins in flow-mediated endothelial cell morphology in vivo
-
-A. Representative image of HUVECs transfected with scrambled siRNA or LPHN2 siRNA. Outlines of ECs from VE-cadherin staining are shown to next to each image. Scale Bar: 100µm. B, Quantification of junctional linearization index from A. n=30 for each condition. **: p=0.0019, Statistics is done using two-way ANOVA with Sidak’s multiple comparison test. C, Dorsal aortas from 48hpf Tg(kdrl:ras-mCherry) WT or LPHN mutant zebrafish embryos stained for ZO-1. EC were outlined as in Methods. LPHN2 mutant indicates adgrl2a+adgrl2b.1 sgRNAs. D&E, Quantification of cell size and eccentricity in embryos with latrophilin-2 CRISPR sgRNAs ± silent heart morpholinos (MO). N=6 per condition. ****: p<0.0001, *: p=0.0267, **: p=0.0015, ***: p=0.0008; one-way ANOVA with Tukey’s multiple comparisons test. F, ECs in the thoracic aorta in 18 weeks old mice at 10 weeks after tamoxifen injections, stained for β-catenin (left) and outlined (right). Data are representative of 6 mice for each condition. Scale Bar: 100µm. G&H, quantification of cell eccentricity and junction linearity in mouse aorta. N=4 per condition. **: p=0.0013; ****: p<0.0001; Student’s t-test. I, Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. Fractional blue area quantified in J. n=3 for each condition. *: p=0.0419; Student’s t-test. K, in vitro endothelial permeability assay using FITC-streptavidin and biotin-conjugated fibronectin. Scale Bar: 100µm. L, Permeability was quantified by measuring FITC-streptavidin area per image field from K. n=5, *: p=0.0457, one-way ANOVA.
-
-Figure 5. Cholesterol depletion activates Latrophilin-dependent signaling
-
-A, ECs were treated with FSS or 5 mM methyl-β-cyclodextrin (mβCD) for 1 min then incubated with D4H-mClover3, rinsed and bound mClover3 quantified as described in Methods. N=27 for each condition. ****: p<0.0001; One-way ANOVA with Tukey multiple comparisons test. B, Phalloidin staining following short acute treatment of methyl-β-cyclodextrin (mβCD). Scale bar: 100µm. C, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous Latrophilin-2 (LPHN2) after 5mM MβCD for 1min. D, Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in E and F, respectively. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. G, Model for junctional endothelial shear stress mechanotransduction.
-
-Figure 6. Latrophilin-2 in flow-induced vascular remodeling
-
-A, Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls. B, Quantification of diameters of all ISVs in A. n=15 per condition. *: p=0.0452, **: p=0.0150; one-way ANOVA with Tukey’s multiple comparisons test. C, Quantification of diameters of arterial and venous ISVs at 72 hpf of zebrafish. n=6 per condition. **: p=0.0013; Student’s t-test. D, Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test. F, Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test. H, Rectus femoris muscle from thighs of 10 weeks old mice of LPHN2 ECKO or wild-type littermates, stained for CD31 and SMA to visualize the entire vasculature and arteries. Scale Bar: 100µm. I. Quantification of capillary density in the entire stitched thigh muscle images. n=3 for control and n=6 for Lphn2 ECKO. ****: p<0.0001; Student’s t-test. J, Schematic of mouse treadmill fatigue test. K, Maximum running during test. n=4 for control and n=5 for Lphn2 ECKO. **:p=0.0082; Student’s t-test. L, Running distance for each mouse. n=4 for control and n=5 for Lphn2 ECKO. **: p=0.0064; Student’s t-test. M, Oxygen consumption during treadmill fatigue test. *: p<0.0001; two-way ANOVA with Tukey’s multiple comparisons test. Control: N=5, LPHN2 ECKO: N=4. N, Representative 3D reconstructed images at 20° downward angle of ECs plated on top of collagen gels and sprouting under static or flow conditions. ECs were stained with phalloidin; pseudocolors indicate distance from the gel surface as per the color scale on the right. O, Histograms of cell area vs. distance from gel surface in N. P, Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test.
-
-"""
-  
+  "all_captions": "Figure 1. Gα proteins specific for endothelial flow responses\nA, Flow-induced endothelial alignment after Gα knockdown. HUVECs were subjected to fluid shear stress (FSS) at a rate of 12 dynes/cm2 for 16 hours and nuclear orientation quantified as histograms showing the percentage of cells within each 10° of the flow directions from 0° to 90° (see Methods) ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. B, Src family kinase activation, quantified in C. n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test. D, Rescue of Gq/11 and Gi knockdown by re-expression of siRNA-resistant versions of the indicated proteins. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparison test. E, Amino acid sequences of Gαi1, Gαi2, and Gαi3 at the mutation sites of Gαi1 gain-of-function mutant. F, Rescue of Gq/11 and Gi knockdown with indicated Gα proteins. Each point corresponds to one measurement averaged from >500 cells. N=4. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. G, GINIP pulldown assay for activation of Gαi2 by FSS. N=3. Results quantified in H. **: p=0.0185, Student’s t-test. I, GRK2N pulldown assay for activation of Gq. N=4, quantified in J. *: p<0.05, Student’s t-test. K, GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4, quantified in L. *: p=0.0304, ***: p=0.0017; Student’s t-test. M, Gi2 activation after PECAM-1 knockdown. HUVECs expressing GluGlu tagged Gi2 were transfected with scrambled siRNA or PECAM-1 siRNA, exposed to FSS, and Gi2 activation assayed as described above, quantified in N. Values are means ± SEM, normalized to input Gα protein levels. ***: p<0.001; Student’s t-test, N=4.\nFigure 2. Identifiation of the upstream flow-responsive GPCR\nA, Strategy for identification of GPCRs that bind the gain-of-function Gi1Q306K mutant but not the wild type Gi1. B, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test. D, Co-immunoprecipitation of LPHN2-GFP with the indicated Gα proteins containing internal GluGlu epitope tags. E, Gi2 pulldown assay after LPHN2 knockdown. N= 4. Results quantified in F. ***: p<0.001, Student’s t-test.\nFigure 3. Latrophilins regulate endothelial flow responses\nA, HUVECs with or without latrophilin-2 knockdown were subjected to FSS for 16 h, then fixed and stained with Hoechst (nuclei), phalloidin (F-actin) and an antibody against VE-Cadherin. Scale bar: 100µm. B, Alignment of HUVECs (each bar = 10° increments) after knockdown of latrophilin isoforms was quantified as in Fig. 1 from >2000 cells/experiment, N=3. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. C, Localization of LPHN2-mClover3. Scale bar: 100µm. N=6. D, Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3, quantified in E. F, Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3, quantified in G. H, Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, quantified in I & J. *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test. K, Alignment of LPHN2-depleted HUVECs rescued by re-expression of the indicated latrophilin isoforms. ****: p<0.0001; one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >2000 cells for each condition, N=3. L, LPHN2 knockdown HUVECs were rescued by re-expression of the indicated LPHN2 mutants. ****: p<0.0001, one-way ANOVA with Tukey’s multiple comparisons test. Quantification of >500 cells for each condition.\nFigure 4, Latrophilins in flow-mediated endothelial cell morphology in vivo\nA. Representative image of HUVECs transfected with scrambled siRNA or LPHN2 siRNA. Outlines of ECs from VE-cadherin staining are shown to next to each image. Scale Bar: 100µm. B, Quantification of junctional linearization index from A. n=30 for each condition. **: p=0.0019, Statistics is done using two-way ANOVA with Sidak’s multiple comparison test. C, Dorsal aortas from 48hpf Tg(kdrl:ras-mCherry) WT or LPHN mutant zebrafish embryos stained for ZO-1. EC were outlined as in Methods. LPHN2 mutant indicates adgrl2a+adgrl2b.1 sgRNAs. D&E, Quantification of cell size and eccentricity in embryos with latrophilin-2 CRISPR sgRNAs ± silent heart morpholinos (MO). N=6 per condition. ****: p<0.0001, *: p=0.0267, **: p=0.0015, ***: p=0.0008; one-way ANOVA with Tukey’s multiple comparisons test. F, ECs in the thoracic aorta in 18 weeks old mice at 10 weeks after tamoxifen injections, stained for β-catenin (left) and outlined (right). Data are representative of 6 mice for each condition. Scale Bar: 100µm. G&H, quantification of cell eccentricity and junction linearity in mouse aorta. N=4 per condition. **: p=0.0013; ****: p<0.0001; Student’s t-test. I, Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. Fractional blue area quantified in J. n=3 for each condition. *: p=0.0419; Student’s t-test. K, in vitro endothelial permeability assay using FITC-streptavidin and biotin-conjugated fibronectin. Scale Bar: 100µm. L, Permeability was quantified by measuring FITC-streptavidin area per image field from K. n=5, *: p=0.0457, one-way ANOVA.\nFigure 5. Cholesterol depletion activates Latrophilin-dependent signaling\nA, ECs were treated with FSS or 5 mM methyl-β-cyclodextrin (mβCD) for 1 min then incubated with D4H-mClover3, rinsed and bound mClover3 quantified as described in Methods. N=27 for each condition. ****: p<0.0001; One-way ANOVA with Tukey multiple comparisons test. B, Phalloidin staining following short acute treatment of methyl-β-cyclodextrin (mβCD). Scale bar: 100µm. C, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous Latrophilin-2 (LPHN2) after 5mM MβCD for 1min. D, Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in E and F, respectively. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. G, Model for junctional endothelial shear stress mechanotransduction.\nFigure 6. Latrophilin-2 in flow-induced vascular remodeling\nA, Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls. B, Quantification of diameters of all ISVs in A. n=15 per condition. *: p=0.0452, **: p=0.0150; one-way ANOVA with Tukey’s multiple comparisons test. C, Quantification of diameters of arterial and venous ISVs at 72 hpf of zebrafish. n=6 per condition. **: p=0.0013; Student’s t-test. D, Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test. F, Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test. H, Rectus femoris muscle from thighs of 10 weeks old mice of LPHN2 ECKO or wild-type littermates, stained for CD31 and SMA to visualize the entire vasculature and arteries. Scale Bar: 100µm. I. Quantification of capillary density in the entire stitched thigh muscle images. n=3 for control and n=6 for Lphn2 ECKO. ****: p<0.0001; Student’s t-test. J, Schematic of mouse treadmill fatigue test. K, Maximum running during test. n=4 for control and n=5 for Lphn2 ECKO. **:p=0.0082; Student’s t-test. L, Running distance for each mouse. n=4 for control and n=5 for Lphn2 ECKO. **: p=0.0064; Student’s t-test. M, Oxygen consumption during treadmill fatigue test. *: p<0.0001; two-way ANOVA with Tukey’s multiple comparisons test. Control: N=5, LPHN2 ECKO: N=4. N, Representative 3D reconstructed images at 20° downward angle of ECs plated on top of collagen gels and sprouting under static or flow conditions. ECs were stained with phalloidin; pseudocolors indicate distance from the gel surface as per the color scale on the right. O, Histograms of cell area vs. distance from gel surface in N. P, Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test."
 }
