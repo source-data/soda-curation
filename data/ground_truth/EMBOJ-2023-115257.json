@@ -1,0 +1,341 @@
+{
+  "manuscript_id": "EMBOJ-2023-115257",
+  "xml": "EMBOJ-2023-115257.xml",
+  "docx": "Doc/EMBOJ2023115257R1Manuscript_TextIG.docx",
+  "pdf": "pdf/EMBOJ-2023-115257.pdf",
+  "appendix": ["suppl_data/Appendix.pdf"],
+  "figures": [
+    {
+      "figure_label": "Figure 1",
+      "img_files": ["graphic/FIGURE 1.tif"],
+      "sd_files": [],
+      "figure_caption": "A) Heatmap representation of RNAseq differentially expressed TEs (LogFC>0.5) between 4h post-injury and intact femurs at different time points of the bone healing process. N=5 biological replicates for each time point. N=10 biological replicates for intact femur. B) Heatmap representation of RNAseq upregulated TEs (LogFC>0.5) between 4h and intact at different time points of the bone healing process. N=5 biological replicates for each time point. N=10 biological replicates for intact femur. C) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral (n=27) and iliac (n=34) bone biopsies from healthy donors. D) Pie charts showing the number and percentage of differentially expressed TEs subfamilies between femoral and iliac healthy bone. E) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral (n=27) and iliac (n=34) bone biopsies from healthy donors. One heatmap for each TEs order is shown.",
+      "caption_title": "TEs expression is induced after fracture and in mechanically loaded bone.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Heatmap representation of RNAseq differentially expressed TEs (LogFC>0.5) between 4h post-injury and intact femurs at different time points of the bone healing process. N=5 biological replicates for each time point. N=10 biological replicates for intact femur.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Heatmap representation of RNAseq upregulated TEs (LogFC>0.5) between 4h and intact at different time points of the bone healing process. N=5 biological replicates for each time point. N=10 biological replicates for intact femur.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral (n=27) and iliac (n=34) bone biopsies from healthy donors.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Pie charts showing the number and percentage of differentially expressed TEs subfamilies between femoral and iliac healthy bone.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral (n=27) and iliac (n=34) bone biopsies from healthy donors. One heatmap for each TEs order is shown.",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 2",
+      "img_files": ["graphic/FIGURE 2.tif"],
+      "sd_files": [],
+      "figure_caption": "A) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral bone from healthy (n=27), osteopenic (n=12), and osteoporotic (n=9) donors. B) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral bone with high BMD (FN T-score >-1) (n=27) and low BMD (FN T-score <-1) (n=21). C) Upper panels: pie charts showing the number and percentage of differentially expressed TEs subfamilies between high BMD and low BMD femoral bone. Lower panels: heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral bone with high BMD (n=27) and low BMD (n=21). One heatmap for each TEs order is shown. D) Upper panels: Heatmap representation of correlation analysis (P value<0.05) between TEs expression (FPKM) and local BMD (FN T-score) in femoral bone biopsies (n=48). Correlation between TE expression (FPKM values) and FN t-score was evaluated using Pearson method. Significant correlations (p-value < 0.05) were selected for the heatmap representation and arranged according to the Pearson correlation coefficient (r). r > 0, positive correlations; r < 0, negative correlations. Lower panels: Pie charts showing the percentage of TEs subfamilies positively correlated to local BMD.",
+      "caption_title": "TEs expression correlates with bone mineral density in human weight-bearing bone.",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral bone from healthy (n=27), osteopenic (n=12), and osteoporotic (n=9) donors.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral bone with high BMD (FN T-score >-1) (n=27) and low BMD (FN T-score <-1) (n=21).",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Upper panels: pie charts showing the number and percentage of differentially expressed TEs subfamilies between high BMD and low BMD femoral bone. Lower panels: heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral bone with high BMD (n=27) and low BMD (n=21). One heatmap for each TEs order is shown.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": " Upper panels: Heatmap representation of correlation analysis (P value<0.05) between TEs expression (FPKM) and local BMD (FN T-score) in femoral bone biopsies (n=48). Correlation between TE expression (FPKM values) and FN t-score was evaluated using Pearson method. Significant correlations (p-value < 0.05) were selected for the heatmap representation and arranged according to the Pearson correlation coefficient (r). r > 0, positive correlations; r < 0, negative correlations. Lower panels: Pie charts showing the percentage of TEs subfamilies positively correlated to local BMD.",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 3",
+      "img_files": ["graphic/FIGURE 3.tif"],
+      "sd_files": ["suppl_data/EMBOJ2023115257RFigure_3sd.zip"],
+      "figure_caption": "",
+      "caption_title": "",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Experimental workflow and flow cytometer analysis showing the percentage of positive cells 6 hours after L1 RNA delivery at day 5 of ex vivo osteogenesis. Intracellular localization of cy5 conjugated synthetic L1 RNA (red spots) three days after transfection is also shown from a typical experiment (right). ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "qPCR analysis of intracellular L1 RNA level 24 h (d6), 5 days (d10), and 9 days (d14) post-transfection. The graph is shown as mean ± s.d. of n =3 independent experiments. ",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3B/3B RT-qPCR rel expression.xlsx"
+          ]
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "cy5 conjugated synthetic L1 RNA (red) and osteoimage stained mineral matrix (green) detection 9 days post L1 RNA transfection. The white arrowheads indicate the colocalization between L1 RNA and hydroxyapatite. ",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3C/3C micr image.TIF"
+          ]
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Osteoimage stained mineral matrix quantification (upper panels), images (central panels), and Alizarin Red (lower panels) 9 days after L1 RNA or RFP RNA delivery in 2 healthy donors-derived MSCs (D188 and D170). RFU= Relative Fluorescence Units. The graph is shown as mean ± s.d. of n = 11 technical replicates. ****P < 0.00005 in Wilcoxon test. ",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D quantification.xlsx",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D osteoimages/D170 osteo RFP.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D osteoimages/D188 dapi L1.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D osteoimages/D170 dapi L1.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D osteoimages/D170 osteo L1.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D osteoimages/D188 osteo L1.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D osteoimages/D188 osteo RFP.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D osteoimages/D170 dapi RFP.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D osteoimages/D188 dapi RFP.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D  Alizarin images/D170 RFP.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D  Alizarin images/3D README.docx",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D  Alizarin images/D188 L1.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D  Alizarin images/D170 L1.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3D/3D  Alizarin images/D188 RFP.jpg"
+          ]
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "Alizarin Red staining of osteoblasts transfected with increasing doses of RFP RNA (upper panels) and L1 RNA (lower panels). ",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/RFP 10,6 .jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/L1 70.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/RFP 116.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/RFP 70.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/RFP770.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/3E README.docx",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/L1 32.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/L1 3,5.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/RFP 3,5.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/RFP 32.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/RFP 350.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3E/L1 10,6.jpg"
+          ]
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "Alizarin Red images (upper panel) and quantification (lower panel) of MSCs mineralization after 14, 17 and 21 days of ex vivo differentiation. MSCs were obtained from the femur of 4 healthy (D188, D239, D247, D170) and 4 OP patients (HUK7, HUK9, HUK12, HUK16). N=9 technical replicates for each donor and time point. Boxes in the boxplot indicate the interquartile range (50% of data), while the lower end and the upper end represent the 1st and the 3rd quartile, respectively. The solid line inside the box represents the median. Whiskers represent the max and min values. Values that are not within 1.5 times the interquartile range are considered as outliers and lie outside the whiskers.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F quantification.xlsx",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK7_d21.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D188_d21.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK12_d14.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D247_d21.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK16_d21.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK12_d17.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D170_d14.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK9_d17.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D239_d14.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D170_d17.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK9_d14.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D239_d17.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK12_d21.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D188_d14.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D247_d14.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK16_d14.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D188_d17.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D247_d17.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK16_d17.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D170_d21.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/D239_d21.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK9_d21.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK7_d17.png",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3F/3F micr image/HUK7_d14.png"
+          ]
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "Osteoimage stained mineral matrix quantification (upper panels), images (central panels), and Alizarin Red (lower panels) 9 days after L1 RNA or RFP RNA delivery in 3 OP patients derived MSCs (HUK9, HUK12, HUK16). RFU= Relative Fluorescence Units. The graph is shown as mean ± s.d. of n = 10-12 technical replicates. ****P < 0.00005 in Wilcoxon test.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G quantification.xlsx",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk16 dapi L1.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk12 osteo L1.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk9 osteo L1.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk9 dapi L1.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk16 dapi RFP.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk12 osteo RFP.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk16 osteo RFP.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk12 dapi L1.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk9 dapi RFP.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk12 dapi RFP.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk9 osteo RFP.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G osteoimages/huk16 osteo L1.tif",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G Alizarin images/HUK9 RFP.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G Alizarin images/HUK9 L1.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G Alizarin images/HUK12 RFP.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G Alizarin images/3G README.docx",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G Alizarin images/HUK12 L1.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G Alizarin images/HUK16 L1.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3G/3G Alizarin images/HUK16 RFP.JPG"
+          ]
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "qRT-PCR of early osteogenic genes in RFP and L1 transfected osteoblasts at different time points of osteogenic differentiation. Expression level is normalized on day 5 (not transfected osteoblasts). N=3 biological replicates. The graph is shown as mean ± s.d. of n = 3 independent experiments. *P < 0.05; **P < 0.005, ***P < 0.0005, ****P < 0.00005 in Student’s t test.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:3H/3H quantification.xlsx"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 4",
+      "img_files": ["graphic/FIGURE 4.tif"],
+      "sd_files": ["suppl_data/EMBOJ2023115257RFigure_4sd.zip"],
+      "figure_caption": "A) Left panel: heatmap representation of RNAseq differentially expressed gene analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in osteoblasts transfected with negative control RNA (RFP) or L1 RNA. Right panel: bubble plot showing gene ontology (GO) enrichment analysis of L1 upregulated biological processes. B) Tree plot showing gene ontology (GO) enrichment analysis of L1 upregulated biological processes (left) and cellular components (right). C) Top 25 upregulated biological processes 24h post-L1 RNA delivery in vitro (yellow) and 4h post fracture in vivo (blue). Shared GO terms are shown in green. D) qPCR analysis of “inflammatory response” (GO:0006954) and “immune response” (GO:0006955) genes at different time points post L1 RNA transfection at day 5. * **P < 0.005, ****P < 0.00005 in two way ANOVA.",
+      "caption_title": "L1 RNA delivery induces an inflammatory response characteristic of bone repair process",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Left panel: heatmap representation of RNAseq differentially expressed gene analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in osteoblasts transfected with negative control RNA (RFP) or L1 RNA. Right panel: bubble plot showing gene ontology (GO) enrichment analysis of L1 upregulated biological processes.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Tree plot showing gene ontology (GO) enrichment analysis of L1 upregulated biological processes (left) and cellular components (right).",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Top 25 upregulated biological processes 24h post-L1 RNA delivery in vitro (yellow) and 4h post fracture in vivo (blue). Shared GO terms are shown in green. D) qPCR analysis of “inflammatory response” (GO:0006954) and “immune response” (GO:0006955) genes at different time points post L1 RNA transfection at day 5. * **P < 0.005, ****P < 0.00005 in two way ANOVA.",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "qPCR analysis of “inflammatory response” (GO:0006954) and “immune response” (GO:0006955) genes at different time points post L1 RNA transfection at day 5. * **P < 0.005, ****P < 0.00005 in two way ANOVA.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_4sd.zip:4D/4D RT-qPCR rel expression.xlsx"
+          ]
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 5",
+      "img_files": ["graphic/FIGURE 5.tif"],
+      "sd_files": ["suppl_data/EMBOJ2023115257RFigure_5sd.zip"],
+      "figure_caption": "A) Upper panel: schematic representation of the pathway inhibited by Lamivudine 3TC and G140. Lower panel: Alizarin Red staining of differentiating osteoblasts transfected with L1 RNA and treated with Lamivudine 3TC and G140. B) IF on RFP and L1 transfected osteoblasts, 6h post-transfection, shows the colocalization between cy5 signal (L1 RNA, red) and 488-Anti-dsRNA signal (dsRNA, green). Nuclei are stained with Hoechst (blue).\nC)Western blot analysis showing the ratio between total eIF2a and phosphorylated eIF2a (P- eIF2a). H3: endogenous standard Histone 3. D) Volcano plot (left) showing the number of significantly upregulated and downregulated protein 24h post-L1 RNA transfection. Right: tree plots showing gene ontology (GO) enrichment analysis of biological processes (upper panel) and cellular components (lower panel) downregulated by L1 RNA delivery (MS data). E) qPCR analysis of “inflammatory response” (GO:0006954) and “immune response” (GO:0006955) genes 24h post L1 RNA transfection with and without PKR inhibitor C16. F) Alizarin Red staining of differentiating osteoblasts transfected with L1 RNA with and without PKR inhibitor C16. G) Tree plots showing gene ontology (GO) enrichment analysis of biological processes upregulated by L1 RNA 24h after transfection (MS data).",
+      "caption_title": "PKR mediates L1 RNA-induced stress response and mineralization",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Upper panel: schematic representation of the pathway inhibited by Lamivudine 3TC and G140. Lower panel: Alizarin Red staining of differentiating osteoblasts transfected with L1 RNA and treated with Lamivudine 3TC and G140.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5A/5A images/L1.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5A/5A images/L1 3TC.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5A/5A images/3TC.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5A/5A images/G140.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5A/5A images/L1 G140.jpg"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "IF on RFP and L1 transfected osteoblasts, 6h post-transfection, shows the colocalization between cy5 signal (L1 RNA, red) and 488-Anti-dsRNA signal (dsRNA, green). Nuclei are stained with Hoechst (blue).",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "Western blot analysis showing the ratio between total eIF2a and phosphorylated eIF2a (P- eIF2a). H3: endogenous standard Histone 3.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5C/5C README.pdf",
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5C/H3.tif",
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5C/eIF2alpha.tif",
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5C/merge.tif",
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5C/P-eIF2alpha.tif"
+          ]
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "Volcano plot (left) showing the number of significantly upregulated and downregulated protein 24h post-L1 RNA transfection. Right: tree plots showing gene ontology (GO) enrichment analysis of biological processes (upper panel) and cellular components (lower panel) downregulated by L1 RNA delivery (MS data).",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "qPCR analysis of “inflammatory response” (GO:0006954) and “immune response” (GO:0006955) genes 24h post L1 RNA transfection with and without PKR inhibitor C16.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5E/5E RT-qPCR rel expression.xlsx"
+          ]
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "Alizarin Red staining of differentiating osteoblasts transfected with L1 RNA with and without PKR inhibitor C16. ",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_5sd.zip:5F/5F image.jpg"
+          ]
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "Tree plots showing gene ontology (GO) enrichment analysis of biological processes upregulated by L1 RNA 24h after transfection (MS data).",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 6",
+      "img_files": ["graphic/FIGURE 6.tif"],
+      "sd_files": ["suppl_data/EMBOJ2023115257RFigure_6sd.zip"],
+      "figure_caption": "A) Left: Alizarin red staining on recipient OB 9 days after the delivery of conditioned media. Right: Microscope images of recipient OB 24h from the delivery of conditioned media. Mineralized nodules in OB receiving conditioned media from L1 treated OB are shown (orange arrows). B) Heat map of differentially expressed proteins in bulk secretome and exosomes derived from untransfected (NT), RFP- and L1-transfected osteoblasts. N=3 biological replicates. C) GO enrichment analysis of differentially expressed protein (adjusted p-value <0.05) in the bulk secretome of L1 compared to RFP transfected osteoblasts. D) GO enrichment analysis of differentially expressed protein (adjusted p-value <0.05) in the exosomes of L1 compared to RFP transfected osteoblasts.",
+      "caption_title": "L1-RNA-induced changes in osteoblast secretome",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "Left: Alizarin red staining on recipient OB 9 days after the delivery of conditioned media. Right: Microscope images of recipient OB 24h from the delivery of conditioned media. Mineralized nodules in OB receiving conditioned media from L1 treated OB are shown (orange arrows).",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:6A image.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/RFP.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/L1.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/NT.JPG"
+          ]
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "Heat map of differentially expressed proteins in bulk secretome and exosomes derived from untransfected (NT), RFP- and L1-transfected osteoblasts. N=3 biological replicates.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/RFP.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/L1.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/NT.JPG"
+          ]
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "GO enrichment analysis of differentially expressed protein (adjusted p-value <0.05) in the bulk secretome of L1 compared to RFP transfected osteoblasts.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/RFP.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/L1.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/NT.JPG"
+          ]
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "GO enrichment analysis of differentially expressed protein (adjusted p-value <0.05) in the exosomes of L1 compared to RFP transfected osteoblasts.",
+          "sd_files": [
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/RFP.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/L1.JPG",
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/Figure 6/NT.JPG"
+          ]
+        }
+      ]
+    }
+  ],
+
+  "all_captions": "Figure Legends\nFigure 1 - TEs expression is induced after fracture and in mechanically loaded bone.\nA) Heatmap representation of RNAseq differentially expressed TEs (LogFC>0.5) between 4h post-injury and intact femurs at different time points of the bone healing process. N=5 biological replicates for each time point. N=10 biological replicates for intact femur. B) Heatmap representation of RNAseq upregulated TEs (LogFC>0.5) between 4h and intact at different time points of the bone healing process. N=5 biological replicates for each time point. N=10 biological replicates for intact femur. C) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral (n=27) and iliac (n=34) bone biopsies from healthy donors. D) Pie charts showing the number and percentage of differentially expressed TEs subfamilies between femoral and iliac healthy bone. E) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral (n=27) and iliac (n=34) bone biopsies from healthy donors. One heatmap for each TEs order is shown.\nFigure 2 - TEs expression correlates with bone mineral density in human weight-bearing bone.\nA) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral bone from healthy (n=27), osteopenic (n=12), and osteoporotic (n=9) donors. B) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral bone with high BMD (FN T-score >-1) (n=27) and low BMD (FN T-score <-1) (n=21). C) Upper panels: pie charts showing the number and percentage of differentially expressed TEs subfamilies between high BMD and low BMD femoral bone. Lower panels: heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral bone with high BMD (n=27) and low BMD (n=21). One heatmap for each TEs order is shown. D) Upper panels: Heatmap representation of correlation analysis (P value<0.05) between TEs expression (FPKM) and local BMD (FN T-score) in femoral bone biopsies (n=48). Correlation between TE expression (FPKM values) and FN t-score was evaluated using Pearson method. Significant correlations (p-value < 0.05) were selected for the heatmap representation and arranged according to the Pearson correlation coefficient (r). r > 0, positive correlations; r < 0, negative correlations. Lower panels: Pie charts showing the percentage of TEs subfamilies positively correlated to local BMD.\nFigure 3 - L1 RNA delivery stimulates the mineralization of differentiating osteoblasts\nA) Experimental workflow and flow cytometer analysis showing the percentage of positive cells 6 hours after L1 RNA delivery at day 5 of ex vivo osteogenesis. Intracellular localization of cy5 conjugated synthetic L1 RNA (red spots) three days after transfection is also shown from a typical experiment (right). B) qPCR analysis of intracellular L1 RNA level 24 h (d6), 5 days (d10), and 9 days (d14) post-transfection. The graph is shown as mean ± s.d. of n =3 independent experiments. C) cy5 conjugated synthetic L1 RNA (red) and osteoimage stained mineral matrix (green) detection 9 days post L1 RNA transfection. The white arrowheads indicate the colocalization between L1 RNA and hydroxyapatite. D) Osteoimage stained mineral matrix quantification (upper panels), images (central panels), and Alizarin Red (lower panels) 9 days after L1 RNA or RFP RNA delivery in 2 healthy donors-derived MSCs (D188 and D170). RFU= Relative Fluorescence Units. The graph is shown as mean ± s.d. of n = 11 technical replicates. ****P < 0.00005 in Wilcoxon test. E) Alizarin Red staining of osteoblasts transfected with increasing doses of RFP RNA (upper panels) and L1 RNA (lower panels). F) Alizarin Red images (upper panel) and quantification (lower panel) of MSCs mineralization after 14, 17 and 21 days of ex vivo differentiation. MSCs were obtained from the femur of 4 healthy (D188, D239, D247, D170) and 4 OP patients (HUK7, HUK9, HUK12, HUK16). N=9 technical replicates for each donor and time point. Boxes in the boxplot indicate the interquartile range (50% of data), while the lower end and the upper end represent the 1st and the 3rd quartile, respectively. The solid line inside the box represents the median. Whiskers represent the max and min values. Values that are not within 1.5 times the interquartile range are considered as outliers and lie outside the whiskers. G) Osteoimage stained mineral matrix quantification (upper panels), images (central panels), and Alizarin Red (lower panels) 9 days after L1 RNA or RFP RNA delivery in 3 OP patients derived MSCs (HUK9, HUK12, HUK16). RFU= Relative Fluorescence Units. The graph is shown as mean ± s.d. of n = 10-12 technical replicates. ****P < 0.00005 in Wilcoxon test. H) qRT-PCR of early osteogenic genes in RFP and L1 transfected osteoblasts at different time points of osteogenic differentiation. Expression level is normalized on day 5 (not transfected osteoblasts). N=3 biological replicates. The graph is shown as mean ± s.d. of n = 3 independent experiments. *P < 0.05; **P < 0.005, ***P < 0.0005, ****P < 0.00005 in Student’s t test.\nFigure 4 - L1 RNA delivery induces an inflammatory response characteristic of bone repair process\nA) Left panel: heatmap representation of RNAseq differentially expressed gene analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in osteoblasts transfected with negative control RNA (RFP) or L1 RNA. Right panel: bubble plot showing gene ontology (GO) enrichment analysis of L1 upregulated biological processes. B) Tree plot showing gene ontology (GO) enrichment analysis of L1 upregulated biological processes (left) and cellular components (right). C) Top 25 upregulated biological processes 24h post-L1 RNA delivery in vitro (yellow) and 4h post fracture in vivo (blue). Shared GO terms are shown in green. D) qPCR analysis of “inflammatory response” (GO:0006954) and “immune response” (GO:0006955) genes at different time points post L1 RNA transfection at day 5. * **P < 0.005, ****P < 0.00005 in two way ANOVA.\nFigure 5 - PKR mediates L1 RNA-induced stress response and mineralization\nA) Upper panel: schematic representation of the pathway inhibited by Lamivudine 3TC and G140. Lower panel: Alizarin Red staining of differentiating osteoblasts transfected with L1 RNA and treated with Lamivudine 3TC and G140. B) IF on RFP and L1 transfected osteoblasts, 6h post-transfection, shows the colocalization between cy5 signal (L1 RNA, red) and 488-Anti-dsRNA signal (dsRNA, green). Nuclei are stained with Hoechst (blue).\nC)Western blot analysis showing the ratio between total eIF2a and phosphorylated eIF2a (P- eIF2a). H3: endogenous standard Histone 3. D) Volcano plot (left) showing the number of significantly upregulated and downregulated protein 24h post-L1 RNA transfection. Right: tree plots showing gene ontology (GO) enrichment analysis of biological processes (upper panel) and cellular components (lower panel) downregulated by L1 RNA delivery (MS data). E) qPCR analysis of “inflammatory response” (GO:0006954) and “immune response” (GO:0006955) genes 24h post L1 RNA transfection with and without PKR inhibitor C16. F) Alizarin Red staining of differentiating osteoblasts transfected with L1 RNA with and without PKR inhibitor C16. G) Tree plots showing gene ontology (GO) enrichment analysis of biological processes upregulated by L1 RNA 24h after transfection (MS data).\nFigure 6 - L1-RNA-induced changes in osteoblast secretome\nA) Left: Alizarin red staining on recipient OB 9 days after the delivery of conditioned media. Right: Microscope images of recipient OB 24h from the delivery of conditioned media. Mineralized nodules in OB receiving conditioned media from L1 treated OB are shown (orange arrows). B) Heat map of differentially expressed proteins in bulk secretome and exosomes derived from untransfected (NT), RFP- and L1-transfected osteoblasts. N=3 biological replicates. C) GO enrichment analysis of differentially expressed protein (adjusted p-value <0.05) in the bulk secretome of L1 compared to RFP transfected osteoblasts. D) GO enrichment analysis of differentially expressed protein (adjusted p-value <0.05) in the exosomes of L1 compared to RFP transfected osteoblasts."
+}
