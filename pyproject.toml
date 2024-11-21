@@ -30,7 +30,6 @@ backoff = "^2.2.1"
 PyYAML = "^6.0.0"
 beautifulsoup4 = "^4.12.0"
 pypandoc_binary = "^1.14.0"
-tabulate = "^0.9.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.0"
@@ -38,6 +37,13 @@ pytest-cov = "^4.0.0"
 black = "^23.3.0"
 isort = "^5.12.0"
 mypy = "^1.2.0"
+tabulate = "^0.9.0"
+deepeval = "^1.5.8"
+plotly = "^5.24.1"
+pytest-harvest = "^1.10.5"
+pytest-html = "^4.1.1"
+ipykernel = "^6.29.5"
+nbformat = "^5.10.4"
 
 [tool.poetry.group.lint.dependencies]
 flake8 = "^6.0.0"
