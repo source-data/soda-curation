@@ -79,8 +79,7 @@ Your task is to parse these captions into a structured format:
    - Skip EV figures or supplementary figures
    - Maintain consecutive numbering
    - Keep all statistical information and references
-   - The title should be the first descriptive sentence before panel descriptions
-   - The caption should include the complete text, including the title
+   - Do not include the title in the caption text
 
 The figures typically appear as:
 
@@ -95,7 +94,7 @@ Example output format:
   },
   "Figure 2": {
     "title": "Analysis of protein expression in response to treatment",
-    "caption": "Analysis of protein expression in response to treatment. A) Western blot analysis... B) Quantification of..."
+    "caption": "A) Western blot analysis... B) Quantification of..."
   }
 }
 ```
@@ -232,8 +231,7 @@ Your task is to parse these captions into a structured format:
    - Skip EV figures or supplementary figures
    - Maintain consecutive numbering
    - Keep all statistical information and references
-   - The title should be the first descriptive sentence before panel descriptions
-   - The caption should include the complete text, including the title
+   - Do not include the title in the caption text
 
 The figures typically appear as:
 
@@ -248,7 +246,7 @@ OUTPUT FORMAT:
   },
   "Figure 2": {
     "title": "Analysis of protein expression in response to treatment",
-    "caption": "Analysis of protein expression in response to treatment. A) Western blot analysis... B) Quantification of..."
+    "caption": "A) Western blot analysis... B) Quantification of..."
   }
 }
 ```
