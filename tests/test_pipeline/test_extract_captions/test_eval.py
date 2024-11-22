@@ -4,7 +4,7 @@ from deepeval.metrics import BaseMetric
 from deepeval.scorer import Scorer
 from deepeval.test_case import LLMTestCase
 from functools import lru_cache
-from json import load
+from json import dump, load
 from os import getenv
 import pandas as pd
 from pathlib import Path
@@ -266,10 +266,7 @@ def _extract_manuscript_content(msid, strategy):
 def _extract_figure_legends_from_manuscript(
     strategy, manuscript_content, expected_figure_labels
 ):
-    """
-    Extract the figure legends section from a manuscript.
-
-    """
+    """Extract the figure legends section from a manuscript."""
     extractor = _get_extractor(strategy)
     expected_figure_count = len(expected_figure_labels)
     return extractor._locate_figure_captions(
@@ -277,7 +274,30 @@ def _extract_figure_legends_from_manuscript(
     )
 
 
-@lru_cache
+eval_base_dir = Path("data/eval")
+cache_dir = eval_base_dir / "cache"
+
+
+def _figures_cache_file(strategy, msid, run):
+    return cache_dir / f"{msid}_{strategy}_{run}_figures.json"
+
+
+def _get_cached_figures(strategy, msid, run):
+    cache_file = _figures_cache_file(strategy, msid, run)
+    try:
+        with open(cache_file, "r") as f:
+            return load(f)
+    except FileNotFoundError:
+        raise ValueError(f"Cache file not found: {cache_file}")
+
+
+def _cache_figures(strategy, msid, run, figures):
+    cache_file = _figures_cache_file(strategy, msid, run)
+    cache_file.parent.mkdir(exist_ok=True, parents=True)
+    with open(cache_file, "w") as f:
+        dump(figures, f, indent=2)
+
+
 def _extract_figures_from_figure_legends(strategy, msid, run):
     """
     Extract the figure captions from the figure legends section of a manuscript.
@@ -295,6 +315,11 @@ def _extract_figures_from_figure_legends(strategy, msid, run):
     }
     """
     figure_legends = _expected_figure_legends(msid)
+    try:
+        return figure_legends, _get_cached_figures(strategy, msid, run)
+    except ValueError:
+        pass
+
     expected_figure_labels = _expected_figure_labels(msid)
     expected_figure_count = len(expected_figure_labels)
 
@@ -305,6 +330,7 @@ def _extract_figures_from_figure_legends(strategy, msid, run):
         expected_figure_labels,
     )
     captions = extractor._parse_response(extracted_captions)
+    _cache_figures(strategy, msid, run, captions)
     return figure_legends, captions
 
 
