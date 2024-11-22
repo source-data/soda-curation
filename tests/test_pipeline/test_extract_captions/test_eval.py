@@ -399,14 +399,9 @@ def test_extract_figure_legends_from_manuscript(strategy, msid, run, results_bag
 
 @pytest.mark.parametrize(
     "strategy, msid, run",
-    [
-        (f["strategy"], f["msid"], f["run"])
-        for f in figure_legends()
-    ],
+    [(f["strategy"], f["msid"], f["run"]) for f in figure_legends()],
 )
-def test_extract_figures_from_figure_legends(
-    strategy, msid, run, results_bag
-):
+def test_extract_figures_from_figure_legends(strategy, msid, run, results_bag):
     """
     Test the extraction of individual figures from the figure legends section of a manuscript.
 
@@ -450,6 +445,60 @@ def test_extract_figures_from_figure_legends(
         for f in figure_captions()
     ],
 )
+def test_extract_figure_titles_from_figure_legends(
+    strategy, msid, run, figure_label, results_bag
+):
+    """
+    Test the extraction of a single figure title from the figure legends section of a manuscript.
+
+    The extracted figure title is scored against the reference figure title.
+    The test passes if the score is above a threshold.
+
+    The test results are added to the results_bag for further processing in the synthesis step.
+    """
+    figure_legends, extracted_figures = _extract_figures_from_figure_legends(
+        strategy, msid, run
+    )
+
+    assert (
+        figure_label in extracted_figures
+    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
+    actual_figure_title = extracted_figures[figure_label]["title"]
+
+    ground_truth = _get_ground_truth(msid)
+    expected_figure_title = next(
+        f["caption_title"]
+        for f in ground_truth["figures"]
+        if f["figure_label"] == figure_label
+    )
+
+    test_case = LLMTestCase(
+        input=figure_legends,
+        actual_output=actual_figure_title,
+        expected_output=expected_figure_title,
+    )
+
+    _fill_results_bag(
+        results_bag,
+        task="extract_figure_title",
+        strategy=strategy,
+        msid=msid,
+        run=run,
+        figure_label=figure_label,
+        metrics=_get_metrics(),
+        test_case=test_case,
+    )
+
+    assert_test(test_case, metrics=_get_metrics())
+
+
+@pytest.mark.parametrize(
+    "strategy, msid, run, figure_label",
+    [
+        (f["strategy"], f["msid"], f["run"], f["figure_label"])
+        for f in figure_captions()
+    ],
+)
 def test_extract_figure_captions_from_figure_legends(
     strategy, msid, run, figure_label, results_bag
 ):
@@ -465,7 +514,9 @@ def test_extract_figure_captions_from_figure_legends(
         strategy, msid, run
     )
 
-    assert figure_label in extracted_figures, f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
+    assert (
+        figure_label in extracted_figures
+    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
     actual_figure_caption = extracted_figures[figure_label]["caption"]
 
     ground_truth = _get_ground_truth(msid)
