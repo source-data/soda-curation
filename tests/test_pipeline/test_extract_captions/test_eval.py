@@ -170,12 +170,11 @@ def _parse_env_list(env_var, all_value, all_indicator="all", delimiter=","):
 
 
 def strategies():
-    all_strategies = [
-        "regex",
-        "gpt-4o t=0 t_p=0",
-        "gpt-4o t=.1 t_p=.1",
-        "gpt-4o t=.5 t_p=1",
-    ]
+    all_strategies = (
+        ["regex"]
+        + [f"gpt-4o_temp={temp}" for temp in [0.0, 0.1, 0.5]]
+        + [f"gpt-4o_top_p={top_p}" for top_p in [0.0, 0.1, 0.5]]
+    )
     return _parse_env_list("STRATEGIES", all_strategies)
 
 
@@ -235,46 +234,25 @@ def _get_base_config():
     return load_config(config_path)
 
 
-def _get_config(strategy_id):
-    is_openai = "gpt" in strategy_id
-    config_id = "openai" if is_openai else strategy_id
+def _get_extractor(strategy):
+    is_openai = "gpt" in strategy
+
+    config_id = "openai" if is_openai else strategy
     config = _get_base_config().get(config_id, {})
-    if strategy_id == "gpt-4o t=0 t_p=0":
-        config["temperature"] = 0.0
-        config["top_p"] = 0.0
-    elif strategy_id == "gpt-4o t=.1 t_p=.1":
-        config["temperature"] = 0.1
-        config["top_p"] = 0.1
-    elif strategy_id == "gpt-4o t=.5 t_p=1":
-        config["temperature"] = 0.5
-        config["top_p"] = 1.0
-    return config
-
-
-def _get_extractor(strategy_id):
-    is_openai = "gpt" in strategy_id
-
-    config_id = "openai" if is_openai else strategy_id
-    config = _get_base_config().get(config_id, {})
-
-    if strategy_id == "gpt-4o t=0 t_p=0":
-        config["temperature"] = 0.0
-        config["top_p"] = 0.0
-    elif strategy_id == "gpt-4o t=.1 t_p=.1":
-        config["temperature"] = 0.1
-        config["top_p"] = 0.1
-    elif strategy_id == "gpt-4o t=.5 t_p=1":
-        config["temperature"] = 0.5
-        config["top_p"] = 1.0
-    config = _get_config(strategy_id)
 
     if is_openai:
+        config_id = strategy.replace("gpt-4o_", "")
+        if config_id.startswith("temp="):
+            config["temperature"] = float(config_id.split("=")[1])
+        elif config_id.startswith("top_p="):
+            config["top_p"] = float(config_id.split("=")[1])
+
         extractor_cls = FigureCaptionExtractorGpt
     else:
         extractor_cls = {
             "anthropic": FigureCaptionExtractorClaude,
             "regex": FigureCaptionExtractorRegex,
-        }.get(strategy_id)
+        }.get(strategy)
     return extractor_cls(config)
 
 
