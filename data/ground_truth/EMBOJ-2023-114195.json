@@ -270,7 +270,7 @@
       "img_files": ["graphic/Figure5v19.eps"],
       "sd_files": [],
       "figure_caption": "A, ECs were treated with FSS or 5 mM methyl-β-cyclodextrin (mβCD) for 1 min then incubated with D4H-mClover3, rinsed and bound mClover3 quantified as described in Methods. N=27 for each condition. ****: p<0.0001; One-way ANOVA with Tukey multiple comparisons test. B, Phalloidin staining following short acute treatment of methyl-β-cyclodextrin (mβCD). Scale bar: 100µm. C, Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous Latrophilin-2 (LPHN2) after 5mM MβCD for 1min. D, Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in E and F, respectively. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. G, Model for junctional endothelial shear stress mechanotransduction.",
-      "caption_title": "Latrophilins in flow-mediated endothelial cell morphology in vivo",
+      "caption_title": "Cholesterol depletion activates Latrophilin-dependent signaling",
       "panels": [
         {
           "panel_label": "A",

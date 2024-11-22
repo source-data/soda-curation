@@ -292,7 +292,7 @@
       "figure_label": "Figure 5",
       "img_files": ["graphic/0504_Figure 5.pdf"],
       "sd_files": ["suppl_data/Figure 5.zip"],
-      "figure_caption": "A-C) Same as Figs. 2F-2H, in MEF. (A) The ERAD client NHK is not delivered to LAMP1-positive endolysosomes. NHK is delivered and accumulates within endolysosomes inactivated with BafA1 upon ERAD inhibition with KIF (B) or with PS341 (C). \nD Western blots showing deletion of ATG7 (left panels) and defective LC3 lipidation in ATG7-KO upon starvation (right panels). (E) NHK does not accumulate in LAMP1-positive endolysosomes in ATG7-KO cells. (F) Western blot showing deletion of ATG13 in MEF. (G) NHK delivery within LAMP1-positive endolysosomes is not perturbed in ATG13-KO MEF. (H ) LysoQuant quantification of A-C, E, G (n=17, 57, 29, 46 and 50 cells, respectively). \nData Information: (H) Mean is shown. N=3 independent experiments. One-way analysis of variance (ANOVA) and Dunnett’s multiple comparison test, nsP> 0.05, ****P<0.0001. (A-C, E, G) Scale bars: 10μM. Insets are shown with white squares.",
+      "figure_caption": "(A-C) Same as Figs. 2F-2H, in MEF. (A) The ERAD client NHK is not delivered to LAMP1-positive endolysosomes. NHK is delivered and accumulates within endolysosomes inactivated with BafA1 upon ERAD inhibition with KIF (B) or with PS341 (C). \nD Western blots showing deletion of ATG7 (left panels) and defective LC3 lipidation in ATG7-KO upon starvation (right panels). (E) NHK does not accumulate in LAMP1-positive endolysosomes in ATG7-KO cells. (F) Western blot showing deletion of ATG13 in MEF. (G) NHK delivery within LAMP1-positive endolysosomes is not perturbed in ATG13-KO MEF. (H ) LysoQuant quantification of A-C, E, G (n=17, 57, 29, 46 and 50 cells, respectively). \nData Information: (H) Mean is shown. N=3 independent experiments. One-way analysis of variance (ANOVA) and Dunnett’s multiple comparison test, nsP> 0.05, ****P<0.0001. (A-C, E, G) Scale bars: 10μM. Insets are shown with white squares.",
       "caption_title": "The LC3 lipidation machinery is involved, autophagosome biogenesis is dispensable, for delivery of NHK to LAMP1-positive endolysosomes upon ERAD inactivation. ",
       "panels": [
         {
@@ -477,7 +477,7 @@
       "figure_label": "Figure 7",
       "img_files": ["graphic/0504_Figure 7.pdf"],
       "sd_files": [],
-      "figure_caption": "Schematic representation of how pharmacologic (blue) and genetic (red) ERAD perturbation triggers compensatory ERLAD programs. Defective proteasomal clearance of NHK and BACE457D activates FAM134B-driven ERLAD. Other clients or maintenance of ER homeostasis in specific tissues may activate other ER-phagy receptors (e.g., CCPG1 in the pancreas and FAM134B-2 in the liver).",
+      "figure_caption": "Defective proteasomal clearance of NHK and BACE457D activates FAM134B-driven ERLAD. Other clients or maintenance of ER homeostasis in specific tissues may activate other ER-phagy receptors (e.g., CCPG1 in the pancreas and FAM134B-2 in the liver).",
       "caption_title": "Schematic representation of how pharmacologic (blue) and genetic (red) ERAD perturbation triggers compensatory ERLAD programs. ",
       "panels": [
         {
