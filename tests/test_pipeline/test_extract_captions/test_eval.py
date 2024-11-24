@@ -6,7 +6,7 @@ from deepeval.test_case import LLMTestCase
 from functools import lru_cache
 from json import dump, load
 from os import getenv
-import pandas as pd
+import papermill as pm
 from pathlib import Path
 import pytest
 from tabulate import tabulate
@@ -559,35 +559,34 @@ def test_synthesis(module_results_df):
     """
     if module_results_df.empty:
         return
-    results_dir = Path("data/eval")
-    results_dir.mkdir(exist_ok=True, parents=True)
 
-    # dump results to its own file
+    # add a timestamp to the results
     ts = datetime.now()
     module_results_df = module_results_df.assign(timestamp=ts)
-    module_results_df.to_json(
-        results_dir / f"{ts.strftime('%Y-%m-%d_%H:%M:%S')}_results.json",
-        orient="records",
+
+    # dump everything related to the test run to its own directory
+    results_dir = eval_base_dir / ts.strftime("%Y-%m-%d_%H-%M-%S")
+    results_dir.mkdir(exist_ok=True, parents=True)
+
+    # results to JSON
+    results_file = results_dir / "results.json"
+    module_results_df.to_json(results_file, orient="records")
+
+    # move test run cache to directory
+    cache_dir.rename(results_dir / "cache")
+
+    # run eval notebook on the results
+    eval_notebook = "results.ipynb"
+    output_notebook = results_dir / eval_notebook
+    pm.execute_notebook(
+        eval_notebook,
+        output_notebook,
+        parameters=dict(
+            results_file=str(results_file.resolve())
+        ),
     )
 
-    is_prod_run = (
-        module_results_df["msid"].nunique() > 2
-        and module_results_df["run"].nunique() > 2
-    )
-    if is_prod_run:
-        # dump results to global file
-        global_results_file = results_dir / "results.json"
-        if global_results_file.exists():
-            global_results_df = pd.concat(
-                [
-                    pd.read_json(global_results_file),
-                    module_results_df,
-                ]
-            )
-        else:
-            global_results_df = module_results_df
-        global_results_df.to_json(global_results_file, orient="records")
-
+    print("\n   results written to:", results_file)
     print("\n   summary:\n")
     summary_df = (
         module_results_df[["task", "strategy", "bleu1"]]

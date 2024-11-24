@@ -44,6 +44,7 @@ pytest-harvest = "^1.10.5"
 pytest-html = "^4.1.1"
 ipykernel = "^6.29.5"
 nbformat = "^5.10.4"
+papermill = "^2.6.0"
 
 [tool.poetry.group.lint.dependencies]
 flake8 = "^6.0.0"
