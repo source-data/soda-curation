@@ -159,10 +159,16 @@ def _parse_env_list(env_var, all_value, all_indicator="all", delimiter=","):
 
 
 def _strategies():
+    def model_strats(model, temps=["0", "0.1", "0.5"], top_ps=["0", "0.1", "0.5"]):
+        return [
+            f"{model}_temp={temp}" for temp in temps
+        ] + [
+            f"{model}_top_p={top_p}" for top_p in top_ps
+        ]
     all_strategies = (
         ["regex"]
-        + [f"gpt-4o_temp={temp}" for temp in ["0", "0.1", "0.5"]]
-        + [f"gpt-4o_top_p={top_p}" for top_p in ["0", "0.1", "0.5"]]
+        + model_strats("gpt-4o")
+        + model_strats("claude-3-5-sonnet")
     )
     return _parse_env_list("STRATEGIES", all_strategies)
 
@@ -192,12 +198,12 @@ def manuscript_fixtures():
     return [
         {
             "strategy": strategy,
-            "msid": msid,
             "run": run,
+            "msid": msid,
         }
         for strategy in _strategies()
-        for msid in _manuscripts()
         for run in _runs()
+        for msid in _manuscripts()
     ]
 
 
@@ -205,16 +211,16 @@ def figure_fixtures():
     return [
         {
             "strategy": strategy,
+            "run": run,
             "msid": msid,
             "figure_label": figure_label,
-            "run": run,
         }
         for strategy in _strategies()
+        for run in _runs()
         for msid in _manuscripts()
         for figure_label in [
             f["figure_label"] for f in _get_ground_truth(msid)["figures"]
         ]
-        for run in _runs()
     ]
 
 
@@ -231,21 +237,28 @@ def _get_base_config():
 
 def _get_extractor(strategy):
     is_openai = "gpt" in strategy
+    is_anthropic = "claude" in strategy
 
-    config_id = "openai" if is_openai else strategy
+    config_id = (
+        "openai" if is_openai
+        else "anthropic" if is_anthropic
+        else strategy
+    )
     config = _get_base_config().get(config_id, {})
 
-    if is_openai:
-        config_id = strategy.replace("gpt-4o_", "")
+    if is_openai or is_anthropic:
+        config_id = strategy.split("_")[1]
         if config_id.startswith("temp="):
             config["temperature"] = float(config_id.split("=")[1])
         elif config_id.startswith("top_p="):
             config["top_p"] = float(config_id.split("=")[1])
 
+    if is_openai:
         extractor_cls = FigureCaptionExtractorGpt
+    elif is_anthropic:
+        extractor_cls = FigureCaptionExtractorClaude
     else:
         extractor_cls = {
-            "anthropic": FigureCaptionExtractorClaude,
             "regex": FigureCaptionExtractorRegex,
         }.get(strategy)
     return extractor_cls(config)
