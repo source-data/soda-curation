@@ -142,17 +142,6 @@ def _get_manuscript_path(msid):
     return extracted_archive_path / ground_truth["docx"]
 
 
-def available_manuscripts():
-    msids_with_ground_truth = set([f.stem for f in ground_truth_dir.glob("*.json")])
-    msids_with_manuscript_archive = set([f.stem for f in manuscript_dir.glob("*.zip")])
-    print("msids_with_ground_truth", msids_with_ground_truth)
-    print("msids_with_manuscript_archive", msids_with_manuscript_archive)
-    msids_with_both = msids_with_ground_truth.intersection(
-        msids_with_manuscript_archive
-    )
-    return list(sorted(msids_with_both))
-
-
 def _parse_env_list(env_var, all_value, all_indicator="all", delimiter=","):
     val = getenv(env_var, "")
     if len(val) == 0:
@@ -169,21 +158,27 @@ def _parse_env_list(env_var, all_value, all_indicator="all", delimiter=","):
     return val.split(delimiter)
 
 
-def strategies():
+def _strategies():
     all_strategies = (
         ["regex"]
-        + [f"gpt-4o_temp={temp}" for temp in [0.0, 0.1, 0.5]]
-        + [f"gpt-4o_top_p={top_p}" for top_p in [0.0, 0.1, 0.5]]
+        + [f"gpt-4o_temp={temp}" for temp in ["0", "0.1", "0.5"]]
+        + [f"gpt-4o_top_p={top_p}" for top_p in ["0", "0.1", "0.5"]]
     )
     return _parse_env_list("STRATEGIES", all_strategies)
 
 
-def manuscripts():
-    all_manuscripts = available_manuscripts()
-    return _parse_env_list("MANUSCRIPTS", all_manuscripts)
+def _manuscripts():
+    msids_with_ground_truth = set([f.stem for f in ground_truth_dir.glob("*.json")])
+    msids_with_manuscript_archive = set([f.stem for f in manuscript_dir.glob("*.zip")])
+    print("msids_with_ground_truth", msids_with_ground_truth)
+    print("msids_with_manuscript_archive", msids_with_manuscript_archive)
+    msids_with_both = msids_with_ground_truth.intersection(
+        msids_with_manuscript_archive
+    )
+    return _parse_env_list("MANUSCRIPTS", list(sorted(msids_with_both)))
 
 
-def runs():
+def _runs():
     runs = getenv("RUNS", "")
     try:
         n_runs = int(runs)
@@ -193,33 +188,33 @@ def runs():
     return range(n_runs)
 
 
-def figure_legends():
+def manuscript_fixtures():
     return [
         {
             "strategy": strategy,
             "msid": msid,
             "run": run,
         }
-        for strategy in strategies()
-        for msid in manuscripts()
-        for run in runs()
+        for strategy in _strategies()
+        for msid in _manuscripts()
+        for run in _runs()
     ]
 
 
-def figure_captions():
+def figure_fixtures():
     return [
         {
             "strategy": strategy,
             "msid": msid,
-            "run": run,
             "figure_label": figure_label,
+            "run": run,
         }
-        for strategy in strategies()
-        for msid in manuscripts()
-        for run in runs()
+        for strategy in _strategies()
+        for msid in _manuscripts()
         for figure_label in [
             f["figure_label"] for f in _get_ground_truth(msid)["figures"]
         ]
+        for run in _runs()
     ]
 
 
@@ -263,15 +258,16 @@ def _extract_manuscript_content(msid, strategy):
     return extractor._extract_docx_content(docx_path)
 
 
-def _extract_figure_legends_from_manuscript(
-    strategy, manuscript_content, expected_figure_labels
-):
+def _extract_figure_legends_from_manuscript(strategy, msid):
     """Extract the figure legends section from a manuscript."""
+    manuscript_content = _extract_manuscript_content(msid, strategy)
+    expected_figure_labels = _expected_figure_labels(msid)
     extractor = _get_extractor(strategy)
     expected_figure_count = len(expected_figure_labels)
-    return extractor._locate_figure_captions(
+    extracted_figures = extractor._locate_figure_captions(
         manuscript_content, expected_figure_count, expected_figure_labels
     )
+    return manuscript_content, extracted_figures
 
 
 eval_base_dir = Path("data/eval")
@@ -361,7 +357,7 @@ def _fill_results_bag(
 
 @pytest.mark.parametrize(
     "strategy, msid, run",
-    [(f["strategy"], f["msid"], f["run"]) for f in figure_legends()],
+    [(f["strategy"], f["msid"], f["run"]) for f in manuscript_fixtures()],
 )
 def test_extract_figure_legends_from_manuscript(strategy, msid, run, results_bag):
     """
@@ -371,13 +367,8 @@ def test_extract_figure_legends_from_manuscript(strategy, msid, run, results_bag
 
     The test results are added to the results_bag for further processing in the synthesis step.
     """
-    ground_truth = _get_ground_truth(msid)
-    expected_figure_labels = _expected_figure_labels(msid)
-    manuscript_content = _extract_manuscript_content(msid, strategy)
-    extracted_figure_legends = _extract_figure_legends_from_manuscript(
-        strategy, manuscript_content, expected_figure_labels
-    )
-    expected_figure_legends = ground_truth["all_captions"]
+    manuscript_content, extracted_figure_legends = _extract_figure_legends_from_manuscript(strategy, msid)
+    expected_figure_legends = _get_ground_truth(msid)["all_captions"]
 
     test_case = LLMTestCase(
         input=manuscript_content,
@@ -399,7 +390,7 @@ def test_extract_figure_legends_from_manuscript(strategy, msid, run, results_bag
 
 @pytest.mark.parametrize(
     "strategy, msid, run",
-    [(f["strategy"], f["msid"], f["run"]) for f in figure_legends()],
+    [(f["strategy"], f["msid"], f["run"]) for f in manuscript_fixtures()],
 )
 def test_extract_figures_from_figure_legends(strategy, msid, run, results_bag):
     """
@@ -442,7 +433,7 @@ def test_extract_figures_from_figure_legends(strategy, msid, run, results_bag):
     "strategy, msid, run, figure_label",
     [
         (f["strategy"], f["msid"], f["run"], f["figure_label"])
-        for f in figure_captions()
+        for f in figure_fixtures()
     ],
 )
 def test_extract_figure_titles_from_figure_legends(
@@ -496,7 +487,7 @@ def test_extract_figure_titles_from_figure_legends(
     "strategy, msid, run, figure_label",
     [
         (f["strategy"], f["msid"], f["run"], f["figure_label"])
-        for f in figure_captions()
+        for f in figure_fixtures()
     ],
 )
 def test_extract_figure_captions_from_figure_legends(
