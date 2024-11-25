@@ -8,8 +8,16 @@
       "caption_title": "Autophagy adaptors show distinct distributions during Parkin-mediated mitophagy.",
       "panels": [
         {
-          "panel_caption": "(A and B) Representative images (left) and spline graphs of the intensity profiles along the indicated arrows (from position 0) in the respective images (right) of wild-type HeLa cells expressing one of the GFP-tagged autophagy adaptors or ubiquitin, mRuby-Omp25, and HaloTag7-LC3B at 45 min after CCCP treatment. Separate mitochondria without contacting other mitochondria or isolation membranes (A; Mt) or mitochondria with an isolation membrane (B; Mt-IM) are shown. The y-axis in each of the graphs indicates the fluorescence intensity. Scale bars indicate 1 \u03bcm. (C) The relative intensity of GFP-tagged adaptors or ubiquitin (a and b) in LC3B-positive areas compared with LC3B-negative areas in panel B. GFP signals were normalized to the mRuby-Omp25 signals (a\u2032 and b\u2032) using the formula Relative Intensity = (a/b)/(a\u2032/b\u2032), where a and a\u2032 represent the intensities in the LC3B-positive area, and b and b\u2032 represent the intensities in the LC3B-negative area. Solid horizontal bars indicate the means, and dots indicate the data from five structures. Differences were statistically analyzed by one-way analysis of variance with Dunnett's post-hoc test.",
-          "panel_label": "A to C"
+          "panel_caption": "(A) Representative images (left) and spline graphs of the intensity profiles along the indicated arrows (from position 0) in the respective images (right) of wild-type HeLa cells expressing one of the GFP-tagged autophagy adaptors or ubiquitin, mRuby-Omp25, and HaloTag7-LC3B at 45 min after CCCP treatment. Separate mitochondria without contacting other mitochondria or isolation membranes (A; Mt) are shown. The y-axis in each of the graphs indicates the fluorescence intensity. Scale bars indicate 1 \u03bcm.",
+          "panel_label": "A"
+        },
+        {
+          "panel_caption": "(B) Representative images (left) and spline graphs of the intensity profiles along the indicated arrows (from position 0) in the respective images (right) of wild-type HeLa cells expressing one of the GFP-tagged autophagy adaptors or ubiquitin, mRuby-Omp25, and HaloTag7-LC3B at 45 min after CCCP treatment. Separate mitochondria with an isolation membrane (B; Mt-IM) are shown. The y-axis in each of the graphs indicates the fluorescence intensity. Scale bars indicate 1 \u03bcm.",
+          "panel_label": "B"
+        },
+        {
+          "panel_caption": "(C) The relative intensity of GFP-tagged adaptors or ubiquitin (a and b) in LC3B-positive areas compared with LC3B-negative areas in panel B. GFP signals were normalized to the mRuby-Omp25 signals (a\u2032 and b\u2032) using the formula Relative Intensity = (a/b)/(a\u2032/b\u2032), where a and a\u2032 represent the intensities in the LC3B-positive area, and b and b\u2032 represent the intensities in the LC3B-negative area. Solid horizontal bars indicate the means, and dots indicate the data from five structures. Differences were statistically analyzed by one-way analysis of variance with Dunnett's post-hoc test.",
+          "panel_label": "C"
         },
         {
           "panel_caption": "(D) Immunostaining of endogenous OPTN or NDP52 in wild-type HeLa cells expressing mRuby-Omp25 and HaloTag7-LC3B at 45 min after CCCP treatment. Scale bars indicate 4 \u00b5m and 1 \u00b5m (magnified images).",
