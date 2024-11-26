@@ -101,16 +101,24 @@
           "panel_label": "C"
         },
         {
-          "panel_caption": "D-E. Heatmaps and metaplots revealed reduced YY1 enrichment at KDM5C demethylase dependent regions (n=9943) or KDM5C demethylase independent regions (n=1144) in ACHN parental and shKDM5C cells.",
-          "panel_label": "D to E"
+          "panel_caption": "D. Heatmaps and metaplots revealed reduced YY1 enrichment at KDM5C demethylase dependent regions (n=9943) in ACHN parental and shKDM5C cells.",
+          "panel_label": "D"
+        },
+        {
+          "panel_caption": "E. Heatmaps and metaplots revealed reduced YY1 enrichment at KDM5C demethylase independent regions (n=1144) in ACHN parental and shKDM5C cells.",
+          "panel_label": "E"
         },
         {
           "panel_caption": "F. KDM5C protein levels in whole-cell lysates or chromatin fractions from HEK293T cells transfected with KDM5C-WT or KDM5C-H514A mutant construct.",
           "panel_label": "F"
         },
         {
-          "panel_caption": "Effect of the re-expression of the KDM5C-WT or KDM5C-H514A mutant on the proliferation of ACHN (G), 769-P (H) as determined by the CCK8 assay. Each experiment was repeated three times with similar results. \"Dsh\" indicates cells in which KDM5C and YY1 were both knocked down. The data are shown as the mean \u00b1 SD of three independent experiments after analysis via Student's t test. In ACHN cells, P=5.37E-08 (Dsh) and P=3.48E-07 (Dsh+KDM5C); in 769-P cells, P=4.45E-10 (Dsh) and P=7.49E-10 (Dsh+KDM5C); in ACHN cells, P=5.86E-09 (Dsh) and P=2.72E-07 (Dsh+KDM5C).",
-          "panel_label": "G to H"
+          "panel_caption": "Effect of the re-expression of the KDM5C-WT or KDM5C-H514A mutant on the proliferation of ACHN (G) as determined by the CCK8 assay. Each experiment was repeated three times with similar results. \"Dsh\" indicates cells in which KDM5C and YY1 were both knocked down. The data are shown as the mean \u00b1 SD of three independent experiments after analysis via Student's t test. In ACHN cells, P=5.37E-08 (Dsh) and P=3.48E-07 (Dsh+KDM5C); in ACHN cells, P=5.86E-09 (Dsh) and P=2.72E-07 (Dsh+KDM5C).",
+          "panel_label": "G"
+        },
+        {
+          "panel_caption": "Effect of the re-expression of the KDM5C-WT or KDM5C-H514A mutant on the proliferation of 769-P (H) as determined by the CCK8 assay. Each experiment was repeated three times with similar results. \"Dsh\" indicates cells in which KDM5C and YY1 were both knocked down. The data are shown as the mean \u00b1 SD of three independent experiments after analysis via Student's t test. in 769-P cells, P=4.45E-10 (Dsh) and P=7.49E-10 (Dsh+KDM5C)",
+          "panel_label": "H"
         },
         {
           "panel_caption": "Effect of the re-expression of the KDM5C-WT or KDM5C-H514A mutant on the proliferation of RCC4 (I) cells after the depletion KDM5C, YY1 or both, as determined by the CCK8 assay. Each experiment was repeated three times with similar results. The data are shown as the mean \u00b1 SD of three independent experiments after analysis via Student's t test.",
