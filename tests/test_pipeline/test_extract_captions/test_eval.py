@@ -271,7 +271,49 @@ def _extract_manuscript_content(msid, strategy):
     return extractor._extract_docx_content(docx_path)
 
 
-def _extract_figure_legends_from_manuscript(strategy, msid):
+eval_base_dir = Path("data/eval")
+cache_dir = eval_base_dir / "cache"
+
+
+def _cache_file(task, strategy, msid, run):
+    return cache_dir / f"{msid}_{strategy}_{run}_{task}.json"
+
+
+def _get_cached_output(task, strategy, msid, run):
+    cache_file = _cache_file(task, strategy, msid, run)
+    try:
+        with open(cache_file, "r") as f:
+            return load(f)
+    except FileNotFoundError:
+        raise ValueError(f"Cache file not found: {cache_file}")
+
+
+def _cache_output(task, strategy, msid, run, output):
+    cache_file = _cache_file(task, strategy, msid, run)
+    cache_file.parent.mkdir(exist_ok=True, parents=True)
+    with open(cache_file, "w") as f:
+        dump(output, f, indent=2)
+
+
+def file_cache(task):
+    def decorator(func):
+        def wrapper(strategy, msid, run):
+            try:
+                cached_data = _get_cached_output(task, strategy, msid, run)
+                print(f"Using cached {task} data for {strategy} {msid} {run}")
+                return cached_data["input"], cached_data["output"]
+            except ValueError:
+                print(f"No cached {task} data found for {strategy} {msid} {run}")
+                pass
+            input_data, output_data = func(strategy, msid, run)
+            _cache_output(task, strategy, msid, run, {"input": input_data, "output": output_data})
+            return input_data, output_data
+        return wrapper
+    return decorator
+
+
+@file_cache("figure_legends")
+def _extract_figure_legends_from_manuscript(strategy, msid, run):
     """Extract the figure legends section from a manuscript."""
     manuscript_content = _extract_manuscript_content(msid, strategy)
     expected_figure_labels = _expected_figure_labels(msid)
@@ -283,30 +325,7 @@ def _extract_figure_legends_from_manuscript(strategy, msid):
     return manuscript_content, extracted_figures
 
 
-eval_base_dir = Path("data/eval")
-cache_dir = eval_base_dir / "cache"
-
-
-def _figures_cache_file(strategy, msid, run):
-    return cache_dir / f"{msid}_{strategy}_{run}_figures.json"
-
-
-def _get_cached_figures(strategy, msid, run):
-    cache_file = _figures_cache_file(strategy, msid, run)
-    try:
-        with open(cache_file, "r") as f:
-            return load(f)
-    except FileNotFoundError:
-        raise ValueError(f"Cache file not found: {cache_file}")
-
-
-def _cache_figures(strategy, msid, run, figures):
-    cache_file = _figures_cache_file(strategy, msid, run)
-    cache_file.parent.mkdir(exist_ok=True, parents=True)
-    with open(cache_file, "w") as f:
-        dump(figures, f, indent=2)
-
-
+@file_cache("figures")
 def _extract_figures_from_figure_legends(strategy, msid, run):
     """
     Extract the figure captions from the figure legends section of a manuscript.
@@ -324,11 +343,6 @@ def _extract_figures_from_figure_legends(strategy, msid, run):
     }
     """
     figure_legends = _expected_figure_legends(msid)
-    try:
-        return figure_legends, _get_cached_figures(strategy, msid, run)
-    except ValueError:
-        pass
-
     expected_figure_labels = _expected_figure_labels(msid)
     expected_figure_count = len(expected_figure_labels)
 
@@ -339,7 +353,6 @@ def _extract_figures_from_figure_legends(strategy, msid, run):
         expected_figure_labels,
     )
     captions = extractor._parse_response(extracted_captions)
-    _cache_figures(strategy, msid, run, captions)
     return figure_legends, captions
 
 
@@ -380,7 +393,7 @@ def test_extract_figure_legends_from_manuscript(strategy, msid, run, results_bag
 
     The test results are added to the results_bag for further processing in the synthesis step.
     """
-    manuscript_content, extracted_figure_legends = _extract_figure_legends_from_manuscript(strategy, msid)
+    manuscript_content, extracted_figure_legends = _extract_figure_legends_from_manuscript(strategy, msid, run)
     expected_figure_legends = _get_ground_truth(msid)["all_captions"]
 
     test_case = LLMTestCase(
