@@ -171,7 +171,6 @@ class FigureCaptionExtractor(ABC):
         except Exception as e:
             logger.error(f"Error parsing response: {str(e)}", exc_info=True)
             logger.error(f"Error parsing response: {response_text}", exc_info=True)
-            import pdb; pdb.set_trace()
             return {}
 
     def _validate_caption(self, docx_path: str, caption: str, threshold: float = 0.85) -> Tuple[bool, float, str]:
