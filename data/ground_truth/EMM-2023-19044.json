@@ -12,12 +12,28 @@
           "panel_label": "A"
         },
         {
-          "panel_caption": "(B) Cortical astrocytes were immunostained against GFP (green) to mark infected cells, P73 (grey) and S100\u03b2 (red) at day 7 of differentiation. Arrows point to McIdas-infected cells which are P73+ and represent cells committed to the ependymal lineage. (C-D) The graph depicts the percentage of the infected cells that co-express the ependymal marker P73 over the total number of the infected cells (C) The percentage of the infected cells which display S100\u03b2 staining around their cell body, which corresponds to ependymal cells, is depicted in the graph (D) Data are presented as the median \u00b1interquartile range (IQR) of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001). DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm.",
-          "panel_label": "B to D"
+          "panel_caption": "(B) Cortical astrocytes were immunostained against GFP (green) to mark infected cells, P73 (grey) and S100\u03b2 (red) at day 7 of differentiation. Arrows point to McIdas-infected cells which are P73+ and represent cells committed to the ependymal lineage. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm.",
+          "panel_label": "B"
         },
         {
-          "panel_caption": "(E) Transduced astrocytes were immunostained at differentiation day 14 against GFP (green), FoxJ1 (grey) and pericentrin (PCNT, red). Note the presence of multiple basal bodies, based on PCNT signal accumulation, in McIdas-infected cells which co-express the ependymal marker FoxJ1 (arrows). (F-G) The graphs present the percentage of the infected cells that express FoxJ1 over the total number of the infected cells (F) and the percentage of FoxJ1-positive infected cells which also display accumulation of PCNT signal (G). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001). DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm.",
-          "panel_label": "E to G"
+          "panel_caption": "(C) The graph depicts the percentage of the infected cells that co-express the ependymal marker P73 over the total number of the infected cells (C) Data are presented as the median \u00b1interquartile range (IQR) of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
+          "panel_label": "C"
+        },
+        {
+          "panel_caption": "(D) The percentage of the infected cells which display S100\u03b2 staining around their cell body, which corresponds to ependymal cells, is depicted in the graph (D) Data are presented as the median \u00b1interquartile range (IQR) of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
+          "panel_label": "D"
+        },
+        {
+          "panel_caption": "(E) Transduced astrocytes were immunostained at differentiation day 14 against GFP (green), FoxJ1 (grey) and pericentrin (PCNT, red). Note the presence of multiple basal bodies, based on PCNT signal accumulation, in McIdas-infected cells which co-express the ependymal marker FoxJ1 (arrows). DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm.",
+          "panel_label": "E"
+        },
+         {
+          "panel_caption": "(F) The graphs present the percentage of the infected cells that express FoxJ1 over the total number of the infected cells (F). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
+          "panel_label": "F"
+        },
+         {
+          "panel_caption": "(G) The graphs present the percentage of FoxJ1-positive infected cells which also display accumulation of PCNT signal (G). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
+          "panel_label": "G"
         }
       ]
     },
@@ -27,8 +43,16 @@
       "caption_title": "McIdas reprograms cortical astrocytes into functional ependymal cells.",
       "panels": [
         {
-          "panel_caption": "(A) Immunofluorescence of transduced cortical astrocytes at differentiation day 22 with antibodies against GFP (green), Glial Fibrillary Acidic Protein (GFAP, grey) which labels astrocytes and acetylated a-tubulin (ACT, red), a marker of ciliary axonemes. McIdas expression triggers the formation of multiple cilia, tiny hair-like structures which appear on the surface of the reprogrammed astrocytes (arrow). Note the downregulation of the GFAP signal in the reprogrammed multiciliated cells. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm (B-C) The graph shows the percentage of infected cells that express GFAP and correspond to an astrocytic population (B) The percentage of the infected cells which possess multiple cilia based on ACT staining is depicted in the graph (C) Data are presented as the median \u00b1IQR of two independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
-          "panel_label": "A to C"
+          "panel_caption": "(A) Immunofluorescence of transduced cortical astrocytes at differentiation day 22 with antibodies against GFP (green), Glial Fibrillary Acidic Protein (GFAP, grey) which labels astrocytes and acetylated a-tubulin (ACT, red), a marker of ciliary axonemes. McIdas expression triggers the formation of multiple cilia, tiny hair-like structures which appear on the surface of the reprogrammed astrocytes (arrow). Note the downregulation of the GFAP signal in the reprogrammed multiciliated cells. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm.",
+          "panel_label": "A "
+        },
+        {
+          "panel_caption": "(B) The graph shows the percentage of infected cells that express GFAP and correspond to an astrocytic population (B) Data are presented as the median \u00b1IQR of two independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
+          "panel_label": "B"
+        },
+        {
+          "panel_caption": "The percentage of the infected cells which possess multiple cilia based on ACT staining is depicted in the graph (C) Data are presented as the median \u00b1IQR of two independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
+          "panel_label": "C"
         },
         {
           "panel_caption": "(D) Live imaging microscopy experiments were performed on cortical astrocytes transduced either with GFP or McIdas lentiviruses. The positions of fluorescent beads included in the live imaging medium, were marked with colored dots on selected video frames. \u03a4rack of one representative bead is shown in the right panel. Two independent experiments were performed. Scale bar, 10 \u03bcm",
@@ -42,12 +66,24 @@
       "caption_title": "McIdas induces ependymal cells regeneration in a mouse model of intracranial hemorrhage hydrocephalus.",
       "panels": [
         {
-          "panel_caption": "(A) Mice received unilateral intracranial injection of Lysophosphatidic acid (LPA) to induce hydrocephalus. Coronal brain slices derived from brains electroporated either with a GFP or GFP-McIdas (McIdas) plasmid were cultured for 5 days. Immunofluorescence experiments were performed with antibodies against GFP (green) and the ependymal marker P73 (red). Inserts show higher magnification images. Arrows indicate GFP+P73+ cells. (B) The graph depicts the percentage of the electroporated cells that co-express the ependymal marker P73, over the total number of the electroporated cells, at day 5 of culture. Data are presented as the median \u00b1 IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p = 0.0002). DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
-          "panel_label": "A to B"
+          "panel_caption": "(A) Mice received unilateral intracranial injection of Lysophosphatidic acid (LPA) to induce hydrocephalus. Coronal brain slices derived from brains electroporated either with a GFP or GFP-McIdas (McIdas) plasmid were cultured for 5 days. Immunofluorescence experiments were performed with antibodies against GFP (green) and the ependymal marker P73 (red). Inserts show higher magnification images. Arrows indicate GFP+P73+ cells. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
+          "panel_label": "A"
+        },
+         {
+          "panel_caption": "(B) The graph depicts the percentage of the electroporated cells that co-express the ependymal marker P73, over the total number of the electroporated cells, at day 5 of culture. Data are presented as the median \u00b1 IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p = 0.0002).",
+          "panel_label": "B"
         },
         {
-          "panel_caption": "(C) Coronal brain slices were cultured for 9 days and immunostained against GFP (green), pericentrin (PCNT, red) and acetylated a-tubulin (ACT, grey) to detect mature multiciliated cells. Note the presence of multiple basal bodies and cilia in McIdas electroporated cells. (D-E) The percentage of the electroporated cells that carry multiple basal bodies, based on PCNT accumulation signal, upon 9 days of culture, is presented in the graph (D), (***p < 0.0001). The graph shows the percentage of multiciliated cells based on PCNT and ACT staining (E) upon 9 days of culture, (p=0.0013). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
-          "panel_label": "C to E"
+          "panel_caption": "(C) Coronal brain slices were cultured for 9 days and immunostained against GFP (green), pericentrin (PCNT, red) and acetylated a-tubulin (ACT, grey) to detect mature multiciliated cells. Note the presence of multiple basal bodies and cilia in McIdas electroporated cells. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
+          "panel_label": "C"
+        },
+         {
+          "panel_caption": "(D) The percentage of the electroporated cells that carry multiple basal bodies, based on PCNT accumulation signal, upon 9 days of culture, is presented in the graph (D), (***p < 0.0001). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test. ",
+          "panel_label": "D"
+        },
+         {
+          "panel_caption": "(E)The graph shows the percentage of multiciliated cells based on PCNT and ACT staining (E) upon 9 days of culture, (p=0.0013). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test.",
+          "panel_label": "E"
         }
       ]
     },
@@ -57,12 +93,24 @@
       "caption_title": "McIdas ectopic expression promotes in vivo reprogramming into ependymal cells in a genetic mouse model of hydrocephalus.",
       "panels": [
         {
-          "panel_caption": "(A) Neonatal subventricular zone electroporation was conducted at GemC1-knockout mice at postnatal day 1 (P1) with plasmids encoding GFP, or GFP-McIdas (McIdas). Mice were sacrificed 4 days post electroporation and coronal brain sections were immunostained with antibodies against GFP (green) and P73 (red). Arrows point to McIdas-electroporated cells co-expressing P73, which represent cells committed to the ependymal lineage. Higher magnification of the boxed region is shown in the right panel. (B) The graph shows the percentage of the electroporated cells expressing P73. Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001). DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
-          "panel_label": "A to B"
+          "panel_caption": "(A) Neonatal subventricular zone electroporation was conducted at GemC1-knockout mice at postnatal day 1 (P1) with plasmids encoding GFP, or GFP-McIdas (McIdas). Mice were sacrificed 4 days post electroporation and coronal brain sections were immunostained with antibodies against GFP (green) and P73 (red). Arrows point to McIdas-electroporated cells co-expressing P73, which represent cells committed to the ependymal lineage. Higher magnification of the boxed region is shown in the right panel. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
+          "panel_label": "A "
         },
         {
-          "panel_caption": "(C) Coronal brain sections from GemC1-knockout electroporated mice were stained with specific antibodies against GFP (green), Pericentrin (PCNT, red) and acetylated a-tubulin (ACT grey). Multiple basal bodies and cilia on the surface of McIdas electroporated cells are indicated by an arrow. Higher magnification of the boxed region is shown in the right panel. (D-E) Quantification of the percentage of the electroporated cells with multiple basal bodies, based on PCNT accumulation (D), (***p < 0.0001), and the percentage of multiciliated cells based on PCNT and ACT staining over the total number of the electroporated cells (E), (P=0.0041). Data are presented as the median \u00b1IQR of two independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
-          "panel_label": "C to E"
+          "panel_caption": "(B) The graph shows the percentage of the electroporated cells expressing P73. Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
+          "panel_label": "B"
+        },
+        {
+          "panel_caption": "(C) Coronal brain sections from GemC1-knockout electroporated mice were stained with specific antibodies against GFP (green), Pericentrin (PCNT, red) and acetylated a-tubulin (ACT grey). Multiple basal bodies and cilia on the surface of McIdas electroporated cells are indicated by an arrow. Higher magnification of the boxed region is shown in the right panel. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
+          "panel_label": "C"
+        },
+        {
+          "panel_caption": "(D) Quantification of the percentage of the electroporated cells with multiple basal bodies, based on PCNT accumulation (D), (***p < 0.0001). Data are presented as the median \u00b1IQR of two independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test.",
+          "panel_label": "D"
+        },
+        {
+          "panel_caption": "(E) Quantification of the percentage of multiciliated cells based on PCNT and ACT staining over the total number of the electroporated cells (E), (P=0.0041). Data are presented as the median \u00b1IQR of two independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test.",
+          "panel_label": "E"
         }
       ]
     },
@@ -95,8 +143,16 @@
       "caption_title": "Ectopic expression of McIdas restores the subventricular zone niche cytoarchitecture.",
       "panels": [
         {
-          "panel_caption": "(A-B) GemC1-knockout mouse brains were electroporated with plasmids encoding GFP or McIdas-GFP (McIdas) at postnatal day 1 (P1). Mice were sacrificed at ages P7-P9 and lateral ventricular wall whole-mount immunofluorescence was conducted with antibodies against GFP (green), \u03b2-catenin (red), and Vascular Cell adhesion Molecule 1 (VCAM1, grey) (A) or Glial Fibrillary Acidic Protein (GFAP, grey) (B). Formation of pinwheel structures by McIdas-reprogrammed ependymal cells surrounding VCAM1+ neural stem cells (arrow, A) or GFAP-expressing neural stem cells (B) was observed. Note the enlarged apical domain of McIdas-reprogrammed ependymal cells. Higher magnification of the boxed region is shown in the right panel. (C) The graph shows the percentage of electroporated cells, shown in A, identified in pinwheel structures. Data are presented as the median \u00b1IQR (n=3 for GFP (control) and n=4 for McIdas). Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001.).",
-          "panel_label": "A to C"
+          "panel_caption": "(A) GemC1-knockout mouse brains were electroporated with plasmids encoding GFP or McIdas-GFP (McIdas) at postnatal day 1 (P1). Mice were sacrificed at ages P7-P9 and lateral ventricular wall whole-mount immunofluorescence was conducted with antibodies against GFP (green), \u03b2-catenin (red), and Vascular Cell adhesion Molecule 1 (VCAM1, grey) (A). Formation of pinwheel structures by McIdas-reprogrammed ependymal cells surrounding VCAM1+ neural stem cells (arrow, A) was observed. Note the enlarged apical domain of McIdas-reprogrammed ependymal cells. Higher magnification of the boxed region is shown in the right panel.",
+          "panel_label": "A"
+        },
+        {
+          "panel_caption": "(B) GemC1-knockout mouse brains were electroporated with plasmids encoding GFP or McIdas-GFP (McIdas) at postnatal day 1 (P1). Mice were sacrificed at ages P7-P9 and lateral ventricular wall whole-mount immunofluorescence was conducted with antibodies against GFP (green), \u03b2-catenin (red), and Glial Fibrillary Acidic Protein (GFAP, grey) (B). Formation of pinwheel structures by McIdas-reprogrammed ependymal cells surrounding GFAP-expressing neural stem cells (B) was observed. Note the enlarged apical domain of McIdas-reprogrammed ependymal cells. Higher magnification of the boxed region is shown in the right panel.",
+          "panel_label": "B"
+        },
+        {
+          "panel_caption": "(C) The graph shows the percentage of electroporated cells, shown in A, identified in pinwheel structures. Data are presented as the median \u00b1IQR (n=3 for GFP (control) and n=4 for McIdas). Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001.).",
+          "panel_label": "C"
         }
       ]
     }
