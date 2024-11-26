@@ -38,9 +38,21 @@
       "figure_label": "Figure 2",
       "caption_title": "OPTN and NDP52 show a dynamic exchange between the mitochondrial surface and cytosol.",
       "panels": [
+      {
+          "panel_caption": "(A) Representative images (A) of GFP fluorescence recovery after photobleaching (FRAP) on separate mitochondria (Mt) (A) in HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at 45 min after CCCP treatment. The photobleached areas are indicated by dotted lines. The magnified panels display time-lapse images of the photobleached areas. Scale bars indicate 2 \u03bcm and 1 \u03bcm (magnified images).",
+          "panel_label": "A"
+        },
         {
-          "panel_caption": "(A-D) Representative images (A and C) and quantification (B and D) of GFP fluorescence recovery after photobleaching (FRAP) on separate mitochondria (Mt) (A and B) or on mitochondria with an isolation membrane (Mt-IM) (C and D) in HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at 45 min after CCCP treatment. The photobleached areas are indicated by dotted lines. The magnified panels display time-lapse images of the photobleached areas. Scale bars indicate 2 \u03bcm and 1 \u03bcm (magnified images). Data were collected from four structures and were fitted to the equation y = a*(1 \u2212 exp(\u2212b*x)). The dark shaded areas represent the 95% confidence intervals, and the light shaded areas represent the 95% prediction intervals.",
-          "panel_label": "A to D"
+          "panel_caption": "quantification (B) of GFP fluorescence recovery after photobleaching (FRAP) on separate mitochondria (Mt) (B) in HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at 45 min after CCCP treatment. Data were collected from four structures and were fitted to the equation y = a*(1 \u2212 exp(\u2212b*x)). The dark shaded areas represent the 95% confidence intervals, and the light shaded areas represent the 95% prediction intervals.",
+          "panel_label": "B"
+        },
+        {
+          "panel_caption": "Representative images (C) of GFP fluorescence recovery after photobleaching (FRAP) on mitochondria with an isolation membrane (Mt-IM) (C) in HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at 45 min after CCCP treatment. The photobleached areas are indicated by dotted lines. The magnified panels display time-lapse images of the photobleached areas. Scale bars indicate 2 \u03bcm and 1 \u03bcm (magnified images). ",
+          "panel_label": "C"
+        },
+        {
+          "panel_caption": "quantification (D) of GFP fluorescence recovery after photobleaching (FRAP) on mitochondria with an isolation membrane (Mt-IM) (D) in HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at 45 min after CCCP treatment. Data were collected from four structures and were fitted to the equation y = a*(1 \u2212 exp(\u2212b*x)). The dark shaded areas represent the 95% confidence intervals, and the light shaded areas represent the 95% prediction intervals.",
+          "panel_label": "D"
         },
         {
           "panel_caption": "(E) Penta KO cells expressing GFP-OPTN and GFP-NDP52 at 45 min after treatment with CCCP and wortmannin. Wortmannin was added to inhibit autophagosome formation so that OPTN is not sequestered in a closed compartment. Images of cells before (upper panels) and 2 min after (lower panels) the addition of 10% 1,6-hexanediol are displayed. Scale bars, 5 \u03bcm and 2 \u03bcm (magnified images).",
@@ -77,12 +89,28 @@
       "caption_title": "OPTN condensates redistribute upon contact with membranes.",
       "panels": [
         {
-          "panel_caption": "(A-D) Time-lapse images (A and C) and spline graphs (B and D) of two separate mitochondria approaching and contacting each other. Events of the attachment of two mitochondria with comparable sizes (A and B) and with differing sizes (C and D) were observed. The line graphs represent the intensity profiles along the indicated arrows (from position 0) in the respective images shown (B and D). The arrowheads indicate redistributed OPTN signals filling the cleft between two adjacent mitochondria. Scale bars indicate 1 \u03bcm.",
-          "panel_label": "A to D"
+          "panel_caption": "(A) Time-lapse images (A) of two separate mitochondria approaching and contacting each other. Events of the attachment of two mitochondria with comparable sizes (A) were observed. The arrowheads indicate redistributed OPTN signals filling the cleft between two adjacent mitochondria. Scale bars indicate 1 \u03bcm.",
+          "panel_label": "A"
         },
         {
-          "panel_caption": "(E and F) Time-lapse images (E) and a spline graph (F) of a mitochondrion with an isolation membrane elongating on its surface. The arrowhead indicates the elongating isolation membrane. The line graph represent the intensity profiles along the indicated arrows (from position 0) in the respective images shown. Scale bars indicate 1 \u03bcm.",
-          "panel_label": "E to F"
+          "panel_caption": "spline graphs (B ) of two separate mitochondria approaching and contacting each other. Events of the attachment of two mitochondria with comparable sizes (B) were observed. The line graphs represent the intensity profiles along the indicated arrows (from position 0) in the respective images shown (B).",
+          "panel_label": "B"
+        },
+        {
+          "panel_caption": "Time-lapse images (C) of two separate mitochondria approaching and contacting each other. Events of the attachment of two mitochondria with differing sizes (C) were observed. The arrowheads indicate redistributed OPTN signals filling the cleft between two adjacent mitochondria. Scale bars indicate 1 \u03bcm.",
+          "panel_label": "C"
+        },
+        {
+          "panel_caption": "(D) spline graphs (D) of two separate mitochondria approaching and contacting each other. Events of the attachment of two mitochondria with differing sizes (D) were observed. The line graphs represent the intensity profiles along the indicated arrows (from position 0) in the respective images shown (D).",
+          "panel_label": "D"
+        },
+        {
+          "panel_caption": "(E) Time-lapse images (E) of a mitochondrion with an isolation membrane elongating on its surface. The arrowhead indicates the elongating isolation membrane. Scale bars indicate 1 \u03bcm.",
+          "panel_label": "E"
+        },
+        {
+          "panel_caption": "(F) spline graph (F) of a mitochondrion with an isolation membrane elongating on its surface. The line graph represent the intensity profiles along the indicated arrows (from position 0) in the respective images shown.",
+          "panel_label": "F"
         }
       ]
     },
@@ -119,12 +147,20 @@
       "caption_title": "Liquid-like property of OPTN condensates is required for the recruitment of ATG9 vesicles.",
       "panels": [
         {
-          "panel_caption": "(A and B) Localization of ATG9 vesicles under normal (CCCP\u2212) or mitophagy-inducing conditions (CCCP+, 60 min) (A) and quantification (B) of ATG9A colocalization with mitochondria. Endogenous ATG9 was immunostained in penta KO cells expressing both GFP-OPTN and mRuby-Ub or both GFP-OPTN\u0394UBAN and anti-GFP nanobody-mRuby-Ub (nano-mRuby-Ub) together with mitochondrially targeted Halo-SNAP (mtHalo-SNAP). Scale bars indicate 4 \u03bcm and 2 \u03bcm (magnified images). Solid horizontal bars indicate the means, each dot indicates the mean value from one field of view with \u226510 cells (n=15). Differences were statistically analyzed by Welch's two-tailed t test.",
-          "panel_label": "A to B"
+          "panel_caption": "(A) Localization of ATG9 vesicles under normal (CCCP\u2212) or mitophagy-inducing conditions (CCCP+, 60 min) (A) of ATG9A colocalization with mitochondria. Endogenous ATG9 was immunostained in penta KO cells expressing both GFP-OPTN and mRuby-Ub or both GFP-OPTN\u0394UBAN and anti-GFP nanobody-mRuby-Ub (nano-mRuby-Ub) together with mitochondrially targeted Halo-SNAP (mtHalo-SNAP). Scale bars indicate 4 \u03bcm and 2 \u03bcm (magnified images).",
+          "panel_label": "A"
         },
         {
-          "panel_caption": "(C and D) Representative data (C) and quantification (D; p=0.99) of organelle immunoprecipitation in cells expressing GFP-OPTN or GFP-OPTN\u0394UBAN in the presence or absence of FLAG-ATG9A. ATG9 vesicles were immunoprecipitated by FLAG M2 beads and GFP was blotted to detect the interaction between GFP-OPTN (WT or \u0394UBAN) and ATG9 vesicles at 60 min after CCCP treatment. Solid horizontal bars indicate the means, and dots indicate the data from five independent experiments. Differences were statistically analyzed by Welch's two-tailed t test.",
-          "panel_label": "C to D"
+          "panel_caption": "(B) quantification (B) of ATG9A colocalization with mitochondria. Endogenous ATG9 was immunostained in penta KO cells expressing both GFP-OPTN and mRuby-Ub or both GFP-OPTN\u0394UBAN and anti-GFP nanobody-mRuby-Ub (nano-mRuby-Ub) together with mitochondrially targeted Halo-SNAP (mtHalo-SNAP). Solid horizontal bars indicate the means, each dot indicates the mean value from one field of view with \u226510 cells (n=15). Differences were statistically analyzed by Welch's two-tailed t test.",
+          "panel_label": "B"
+        },
+        {
+          "panel_caption": "(C) Representative data (C) of organelle immunoprecipitation in cells expressing GFP-OPTN or GFP-OPTN\u0394UBAN in the presence or absence of FLAG-ATG9A. ATG9 vesicles were immunoprecipitated by FLAG M2 beads and GFP was blotted to detect the interaction between GFP-OPTN (WT or \u0394UBAN) and ATG9 vesicles at 60 min after CCCP treatment.",
+          "panel_label": "C"
+        },
+        {
+          "panel_caption": "(D) Representative quantification (D; p=0.99) of organelle immunoprecipitation in cells expressing GFP-OPTN or GFP-OPTN\u0394UBAN in the presence or absence of FLAG-ATG9A. ATG9 vesicles were immunoprecipitated by FLAG M2 beads and GFP was blotted to detect the interaction between GFP-OPTN (WT or \u0394UBAN) and ATG9 vesicles at 60 min after CCCP treatment. Solid horizontal bars indicate the means, and dots indicate the data from five independent experiments. Differences were statistically analyzed by Welch's two-tailed t test.",
+          "panel_label": "D"
         },
         {
           "panel_caption": "(E) The models of ATG9 vesicle recruitment (left) and isolation membrane elongation (right) mediated by liquid-like OPTN condensates. Partial or complete wetting of phase-separated OPTN enables the recruitment of ATG9 vesicles to ubiquitinated mitochondria (left). Wetting of OPTN on mitochondria and isolation membranes also facilitates the engulfment of mitochondria by the isolation membranes (right).",
