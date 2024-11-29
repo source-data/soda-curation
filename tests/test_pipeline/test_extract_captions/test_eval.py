@@ -476,11 +476,11 @@ def test_extract_figure_titles_from_figure_legends(
     figure_legends, extracted_figures = _extract_figures_from_figure_legends(
         strategy, msid, run
     )
-
-    assert (
-        figure_label in extracted_figures
-    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
-    actual_figure_title = extracted_figures[figure_label]["title"]
+    actual_figure_title = (
+        extracted_figures[figure_label]["title"]
+        if figure_label in extracted_figures
+        else ""
+    )
 
     ground_truth = _get_ground_truth(msid)
     expected_figure_title = next(
@@ -506,6 +506,10 @@ def test_extract_figure_titles_from_figure_legends(
         test_case=test_case,
     )
 
+
+    assert (
+        figure_label in extracted_figures
+    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
     assert_test(test_case, metrics=_get_metrics())
 
 
@@ -530,11 +534,11 @@ def test_extract_figure_captions_from_figure_legends(
     figure_legends, extracted_figures = _extract_figures_from_figure_legends(
         strategy, msid, run
     )
-
-    assert (
-        figure_label in extracted_figures
-    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
-    actual_figure_caption = extracted_figures[figure_label]["caption"]
+    actual_figure_caption = (
+        extracted_figures[figure_label]["caption"]
+        if figure_label in extracted_figures
+        else ""
+    )
 
     ground_truth = _get_ground_truth(msid)
     expected_figure_caption = next(
@@ -560,6 +564,9 @@ def test_extract_figure_captions_from_figure_legends(
         test_case=test_case,
     )
 
+    assert (
+        figure_label in extracted_figures
+    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
     assert_test(test_case, metrics=_get_metrics())
 
 
