@@ -1,11 +1,13 @@
 """Regex-based extraction of data from manuscript text."""
 
-from typing import Dict, List, Optional
-from bs4 import BeautifulSoup
-import pypandoc
 import re
-from .extract_captions_base import FigureCaptionExtractor
+from typing import Dict, List, Optional
+
+import pypandoc
+from bs4 import BeautifulSoup
+
 from ..manuscript_structure.manuscript_structure import ZipStructure
+from .extract_captions_base import FigureCaptionExtractor
 
 
 def extract_sections(html_content: str, sections: List[str] = None) -> Dict[str, str]:
@@ -168,18 +170,6 @@ def extract_figures(
 
 
 class FigureCaptionExtractorRegex(FigureCaptionExtractor):
-
-    def _extract_docx_content(self, file_path: str) -> str:
-        """
-        Extract text content from a DOCX file.
-
-        Args:
-            file_path (str): Path to the DOCX file.
-
-        Returns:
-            str: Extracted text content from the DOCX file.
-        """
-        return pypandoc.convert_file(str(file_path), "html")
 
     def _locate_figure_captions(
         self, doc_string: str, expected_figure_count: int, expected_figure_labels: str

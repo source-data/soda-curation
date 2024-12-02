@@ -12,6 +12,8 @@ import unicodedata
 from abc import ABC, abstractmethod
 from typing import Dict, Optional, Tuple
 
+import pypandoc
+from bs4 import BeautifulSoup
 from docx import Document
 from rouge_score import rouge_scorer
 
@@ -116,13 +118,7 @@ class FigureCaptionExtractor(ABC):
         Returns:
             str: Extracted text content from the DOCX file.
         """
-        try:
-            doc = Document(file_path)
-            paragraphs = [para.text for para in doc.paragraphs if para.text.strip()]
-            return " ".join(paragraphs)
-        except Exception as e:
-            logger.exception(f"Error reading DOCX file {file_path}: {str(e)}")
-            return ""
+        return pypandoc.convert_file(str(file_path), "html")
 
     def _parse_response(self, response_text: str) -> Dict[str, str]:
         """
