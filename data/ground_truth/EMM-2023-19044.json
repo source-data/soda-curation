@@ -27,11 +27,11 @@
           "panel_caption": "(E) Transduced astrocytes were immunostained at differentiation day 14 against GFP (green), FoxJ1 (grey) and pericentrin (PCNT, red). Note the presence of multiple basal bodies, based on PCNT signal accumulation, in McIdas-infected cells which co-express the ependymal marker FoxJ1 (arrows). DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm.",
           "panel_label": "E"
         },
-         {
+        {
           "panel_caption": "(F) The graphs present the percentage of the infected cells that express FoxJ1 over the total number of the infected cells (F). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
           "panel_label": "F"
         },
-         {
+        {
           "panel_caption": "(G) The graphs present the percentage of FoxJ1-positive infected cells which also display accumulation of PCNT signal (G). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p < 0.0001).",
           "panel_label": "G"
         }
@@ -69,7 +69,7 @@
           "panel_caption": "(A) Mice received unilateral intracranial injection of Lysophosphatidic acid (LPA) to induce hydrocephalus. Coronal brain slices derived from brains electroporated either with a GFP or GFP-McIdas (McIdas) plasmid were cultured for 5 days. Immunofluorescence experiments were performed with antibodies against GFP (green) and the ependymal marker P73 (red). Inserts show higher magnification images. Arrows indicate GFP+P73+ cells. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
           "panel_label": "A"
         },
-         {
+        {
           "panel_caption": "(B) The graph depicts the percentage of the electroporated cells that co-express the ependymal marker P73, over the total number of the electroporated cells, at day 5 of culture. Data are presented as the median \u00b1 IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test (***p = 0.0002).",
           "panel_label": "B"
         },
@@ -77,11 +77,11 @@
           "panel_caption": "(C) Coronal brain slices were cultured for 9 days and immunostained against GFP (green), pericentrin (PCNT, red) and acetylated a-tubulin (ACT, grey) to detect mature multiciliated cells. Note the presence of multiple basal bodies and cilia in McIdas electroporated cells. DNA was stained with Dapi (blue). Scale bars, 10 \u03bcm. .",
           "panel_label": "C"
         },
-         {
+        {
           "panel_caption": "(D) The percentage of the electroporated cells that carry multiple basal bodies, based on PCNT accumulation signal, upon 9 days of culture, is presented in the graph (D), (***p < 0.0001). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test. ",
           "panel_label": "D"
         },
-         {
+        {
           "panel_caption": "(E)The graph shows the percentage of multiciliated cells based on PCNT and ACT staining (E) upon 9 days of culture, (p=0.0013). Data are presented as the median \u00b1IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann-Whitney test.",
           "panel_label": "E"
         }

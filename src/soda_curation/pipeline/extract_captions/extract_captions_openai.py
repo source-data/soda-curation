@@ -225,6 +225,8 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 expected_figure_labels
             )
             
+            import pdb; pdb.set_trace()
+
             # Store the raw response from caption extraction
             zip_structure.ai_response_extract_captions = extracted_captions_response
             
