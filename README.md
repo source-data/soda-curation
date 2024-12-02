@@ -453,9 +453,15 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
-### v0.2.0 (2024-10-10)
+### v0.2.1 (2024-12-02)
 
-- Removed support for Anthropic AI provider and passed to legacy branch for future implementation
+- Obsolete tests removed
+
+### v0.2.0 (2024-12-02)
+
+- Addition of benchmarking capabilities
+- Adding manuscripts as string context to the AI models instead of DOCX or PDF files to improve behavior
+- Ground truth data added
 
 ### v0.1.0 (2024-10-01)
 
