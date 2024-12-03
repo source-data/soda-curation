@@ -365,7 +365,7 @@ def _fill_results_bag(
     figure_label: str = None,
     metrics: list = [],
     test_case: LLMTestCase = None,
-    ai_response: str = None  # Add this parameter
+    ai_response: str = None,
 ):
     results_bag.task = task
     results_bag.input = test_case.input
@@ -375,7 +375,7 @@ def _fill_results_bag(
     results_bag.msid = msid
     results_bag.run = run
     results_bag.figure_label = figure_label
-    results_bag.ai_response = ai_response  # Store AI response
+    results_bag.ai_response = ai_response 
     
     for metric in metrics:
         score = metric.measure(test_case)
@@ -412,6 +412,8 @@ def test_extract_figure_legends_from_manuscript(strategy, msid, run, results_bag
         run=run,
         metrics=_get_metrics(),
         test_case=test_case,
+        ai_response=extracted_figure_legends
+        
     )
     assert_test(test_case, metrics=_get_metrics())
 
@@ -454,7 +456,7 @@ def test_extract_figures_from_figure_legends(strategy, msid, run, results_bag):
         run=run,
         metrics=_get_metrics(),
         test_case=test_case,
-        ai_response=ai_response  # Pass AI response
+        ai_response=_stringify_figure_labels(actual_figure_labels),
     )
 
     assert_test(test_case, metrics=_get_metrics())
@@ -508,6 +510,7 @@ def test_extract_figure_titles_from_figure_legends(
         figure_label=figure_label,
         metrics=_get_metrics(),
         test_case=test_case,
+        ai_response=actual_figure_title
     )
 
 
@@ -566,6 +569,7 @@ def test_extract_figure_captions_from_figure_legends(
         figure_label=figure_label,
         metrics=_get_metrics(),
         test_case=test_case,
+        ai_response=actual_figure_caption,
     )
 
     assert (
