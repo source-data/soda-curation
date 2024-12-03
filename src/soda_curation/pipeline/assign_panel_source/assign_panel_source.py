@@ -203,7 +203,11 @@ class PanelSourceAssigner:
 
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
             response = messages.data[0].content[0].text.value
-            
+            logger.info(f"****************")
+            logger.info(f"PANEL SOURCE ASSIGNMENT RESPONSE")
+            logger.info(f"****************")
+            logger.info(response)
+
             # Cleanup
             self.client.beta.threads.delete(thread_id=thread.id)
             

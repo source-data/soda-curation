@@ -192,6 +192,10 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             logger.info(f"Processing file: {docx_path}")
             file_content = self._extract_docx_content(docx_path)
             
+            logger.info(f"****************")
+            logger.info(f"EXTRACTED FILE CONTENT FROM DOCX FILE")
+            logger.info(f"****************")
+            logger.info(file_content)
             # Locate all captions and store raw response
             located_captions = self._locate_figure_captions(
                 file_content,
@@ -219,8 +223,11 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             
             # Parse the response into caption dictionary
             captions = self._parse_response(extracted_captions_response)
+            logger.info(f"****************")
             logger.info(f"Extracted {len(captions)} individual captions")
-            
+            logger.info(f"****************")
+            logger.info(captions)
+
             # Process each figure
             for figure in zip_structure.figures:
                 normalized_label = self.normalize_figure_label(figure.figure_label)

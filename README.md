@@ -472,7 +472,7 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 ### v0.2.2 (2024-12-02)
 
 - The text output is now given as `html` format to keep all the information present int he DOCX manuscripts
-- Improved logging, generating now a log file each time the program is run
+- Improved logging, generating now a log file each time the program is run and adding AI responses for possible analysis on errors
 
 ### v0.2.1 (2024-12-02)
 
