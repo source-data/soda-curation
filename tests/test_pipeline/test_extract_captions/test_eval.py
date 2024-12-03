@@ -1,16 +1,17 @@
 from datetime import datetime
+from functools import lru_cache
+from json import dump, load
+from os import getenv
+from pathlib import Path
+from zipfile import ZipFile
+
+import papermill as pm
+import pytest
 from deepeval import assert_test
 from deepeval.metrics import BaseMetric
 from deepeval.scorer import Scorer
 from deepeval.test_case import LLMTestCase
-from functools import lru_cache
-from json import dump, load
-from os import getenv
-import papermill as pm
-from pathlib import Path
-import pytest
 from tabulate import tabulate
-from zipfile import ZipFile
 
 from soda_curation.config import load_config
 from soda_curation.pipeline.extract_captions.extract_captions_claude import (
@@ -22,7 +23,6 @@ from soda_curation.pipeline.extract_captions.extract_captions_openai import (
 from soda_curation.pipeline.extract_captions.extract_captions_regex import (
     FigureCaptionExtractorRegex,
 )
-
 
 ########################################################################################
 # Scoring task results
@@ -365,6 +365,7 @@ def _fill_results_bag(
     figure_label: str = None,
     metrics: list = [],
     test_case: LLMTestCase = None,
+    ai_response: str = None  # Add this parameter
 ):
     results_bag.task = task
     results_bag.input = test_case.input
@@ -374,12 +375,13 @@ def _fill_results_bag(
     results_bag.msid = msid
     results_bag.run = run
     results_bag.figure_label = figure_label
+    results_bag.ai_response = ai_response  # Store AI response
+    
     for metric in metrics:
         score = metric.measure(test_case)
         setattr(results_bag, metric.name, score)
         setattr(results_bag, f"{metric.name}_success", metric.is_successful())
         setattr(results_bag, f"{metric.name}_threshold", metric.threshold)
-
 
 @pytest.mark.parametrize(
     "strategy, msid, run",
@@ -426,10 +428,8 @@ def test_extract_figures_from_figure_legends(strategy, msid, run, results_bag):
 
     The test results are added to the results_bag for further processing in the synthesis step.
     """
-    figure_legends, extracted_figures = _extract_figures_from_figure_legends(
-        strategy, msid, run
-    )
-
+    figure_legends, extracted_figures = _extract_figures_from_figure_legends(strategy, msid, run)
+    
     def _stringify_figure_labels(labels):
         return "\n".join(sorted(labels))
 
@@ -442,18 +442,22 @@ def test_extract_figures_from_figure_legends(strategy, msid, run, results_bag):
         expected_output=_stringify_figure_labels(expected_figure_labels),
     )
 
+    # Get AI response from zip_structure
+    zip_structure = _get_ground_truth(msid)
+    ai_response = zip_structure.get('ai_response_extract_captions', '')
+
     _fill_results_bag(
         results_bag,
         task="extract_figures",
-        strategy=strategy,
+        strategy=strategy, 
         msid=msid,
         run=run,
         metrics=_get_metrics(),
         test_case=test_case,
+        ai_response=ai_response  # Pass AI response
     )
 
     assert_test(test_case, metrics=_get_metrics())
-
 
 @pytest.mark.parametrize(
     "strategy, msid, run, figure_label",

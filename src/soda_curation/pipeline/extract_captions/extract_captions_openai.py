@@ -202,11 +202,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         try:
             logger.info(f"Processing file: {docx_path}")
             file_content = self._extract_docx_content(docx_path)
-            
-            logger.info(f"****************")
-            logger.info(f"EXTRACTED FILE CONTENT FROM DOCX FILE")
-            logger.info(f"****************")
-            logger.info(file_content)
 
             # Locate all captions and store raw response
             located_captions = self._locate_figure_captions(
