@@ -469,6 +469,11 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### v0.2.2 (2024-12-02)
+
+- The text output is now given as `html` format to keep all the information present int he DOCX manuscripts
+- Improved logging, generating now a log file each time the program is run
+
 ### v0.2.1 (2024-12-02)
 
 - Obsolete tests removed

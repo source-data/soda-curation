@@ -35,8 +35,13 @@ from .pipeline.object_detection.object_detection import (
     create_object_detection,
 )
 
-logger = logging.getLogger(__name__)
-
+CONFIG = {
+    "logging": {
+        "level": "INFO",
+        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        "date_format": "%Y-%m-%d %H:%M:%S"
+    }
+}
 class FigureProcessor:
     """Class to handle figure processing including panel detection, caption matching and source assignment."""
     
@@ -48,7 +53,7 @@ class FigureProcessor:
 
     def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
         """Process figures and their panels."""
-        logger.info("Processing figures and panels")
+        logging.info("Processing figures and panels")
         
         for figure in zip_structure.figures:
             if figure._full_img_files:
@@ -73,16 +78,16 @@ class FigureProcessor:
 
                     # If figure has valid caption, process panel captions and sources
                     if figure.figure_caption and figure.figure_caption != "Figure caption not found.":
-                        logger.info(f"Processing panels for figure {figure.figure_label}")
+                        logging.info(f"Processing panels for figure {figure.figure_label}")
                         # Match panel captions
                         figure = self.panel_caption_matcher.match_captions(figure)
                         # Assign panel sources - now process individual figure
                         figure = self.panel_source_assigner.assign_panel_source(figure)
                     else:
-                        logger.warning(f"Skipping panel caption matching for {figure.figure_label} - No valid caption")
+                        logging.warning(f"Skipping panel caption matching for {figure.figure_label} - No valid caption")
                         
                 except Exception as e:
-                    logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
+                    logging.error(f"Error processing figure {figure.figure_label}: {str(e)}")
 
         return zip_structure
 
@@ -157,7 +162,7 @@ def get_file_tree(directory: str) -> Dict[str, Any]:
             full_path = os.path.join(root, file)
             relative_path = os.path.relpath(full_path, directory)
             current[relative_path] = None
-    logger.debug(f"Generated file tree: {json.dumps(file_tree, indent=2)}")
+    logging.debug(f"Generated file tree: {json.dumps(file_tree, indent=2)}")
     return file_tree
 
 def extract_zip_contents(zip_path: str, extract_dir: Path) -> None:
@@ -175,12 +180,12 @@ def extract_zip_contents(zip_path: str, extract_dir: Path) -> None:
     try:
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_dir)
-        logger.info(f"Extracted ZIP contents to: {extract_dir}")
+        logging.info(f"Extracted ZIP contents to: {extract_dir}")
     except zipfile.BadZipFile:
-        logger.error(f"Invalid ZIP file: {zip_path}")
+        logging.error(f"Invalid ZIP file: {zip_path}")
         raise
     except Exception as e:
-        logger.error(f"Error extracting ZIP file: {str(e)}")
+        logging.error(f"Error extracting ZIP file: {str(e)}")
         raise
 
 def get_manuscript_structure(zip_path: str, extract_dir: str) -> ZipStructure:
@@ -196,8 +201,8 @@ def get_manuscript_structure(zip_path: str, extract_dir: str) -> ZipStructure:
     """
     xml_extractor = XMLStructureExtractor(zip_path, extract_dir)
     structure = xml_extractor.extract_structure()
-    logger.info(f"Manuscript structure: id={structure.manuscript_id}, xml={structure.xml}, docx={structure.docx}, pdf={structure.pdf}")
-    logger.info(f"Number of figures: {len(structure.figures)}")
+    logging.info(f"Manuscript structure: id={structure.manuscript_id}, xml={structure.xml}, docx={structure.docx}, pdf={structure.pdf}")
+    logging.info(f"Number of figures: {len(structure.figures)}")
     return structure
 
 def update_file_paths(zip_structure: ZipStructure, extract_dir: str) -> ZipStructure:
@@ -213,10 +218,10 @@ def update_file_paths(zip_structure: ZipStructure, extract_dir: str) -> ZipStruc
     """
     if zip_structure.docx:
         zip_structure._full_docx = full_path(extract_dir, zip_structure.docx)
-        logger.info(f"Full DOCX path: {zip_structure._full_docx}")
+        logging.info(f"Full DOCX path: {zip_structure._full_docx}")
     if zip_structure.pdf:
         zip_structure._full_pdf = full_path(extract_dir, zip_structure.pdf)
-        logger.info(f"Full PDF path: {zip_structure._full_pdf}")
+        logging.info(f"Full PDF path: {zip_structure._full_pdf}")
     
     zip_structure._full_appendix = []
     for app in zip_structure.appendix:
@@ -225,7 +230,7 @@ def update_file_paths(zip_structure: ZipStructure, extract_dir: str) -> ZipStruc
         elif isinstance(app, dict):
             zip_structure._full_appendix.append(app)
         else:
-            logger.warning(f"Unexpected appendix item type: {type(app)}")
+            logging.warning(f"Unexpected appendix item type: {type(app)}")
 
     for figure in zip_structure.figures:
         figure._full_img_files = [full_path(extract_dir, img) for img in figure.img_files]
@@ -331,11 +336,11 @@ def extract_panels(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipSt
                         )
                         for p in panels
                     ]
-                    logger.info(f"Detected {len(panels)} panels in {figure.img_files[0]}")
+                    logging.info(f"Detected {len(panels)} panels in {figure.img_files[0]}")
                 except Exception as e:
-                    logger.error(f"Error during panel detection for {figure.img_files[0]}: {str(e)}")
+                    logging.error(f"Error during panel detection for {figure.img_files[0]}: {str(e)}")
             else:
-                logger.warning(f"Image file not found: {figure.img_files[0]}")
+                logging.warning(f"Image file not found: {figure.img_files[0]}")
     return zip_structure
 
 def match_panel_caption(zip_structure: ZipStructure, config: Dict[str, Any]) -> ZipStructure:
@@ -366,7 +371,7 @@ def assign_panel_source(zip_structure: ZipStructure, config: Dict[str, Any], ext
         ZipStructure: The updated ZipStructure object with assigned panel source data files.
     """
     file_tree = get_file_tree(extract_dir)
-    logger.info(f"File tree structure: {json.dumps(file_tree, indent=2)}")
+    logging.info(f"File tree structure: {json.dumps(file_tree, indent=2)}")
     panel_source_assigner = PanelSourceAssigner(config)
     zip_structure = panel_source_assigner.assign_panel_source(zip_structure)
 
@@ -422,7 +427,7 @@ def assign_panel_source(zip_structure: ZipStructure, config: Dict[str, Any], ext
 
 def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
     """Process figures and their panels."""
-    logger.info("Processing figures and panels")
+    logging.info("Processing figures and panels")
     
     for figure in zip_structure.figures:
         # First extract panels using object detection
@@ -478,13 +483,13 @@ def process_ev_materials(zip_structure: ZipStructure) -> ZipStructure:
             ev_figure = next((fig for fig in zip_structure.figures if fig.figure_label == f"{ev_type} EV{ev_number}"), None)
             if ev_figure:
                 ev_figure.sd_files.append(material_name)
-                logger.info(f"Assigned {material_name} to {ev_figure.figure_label}")
+                logging.info(f"Assigned {material_name} to {ev_figure.figure_label}")
             else:
                 zip_structure.non_associated_sd_files.append(material_name)
-                logger.info(f"Added {material_name} to non_associated_sd_files (no matching EV figure found)")
+                logging.info(f"Added {material_name} to non_associated_sd_files (no matching EV figure found)")
         else:
             zip_structure.non_associated_sd_files.append(material_name)
-            logger.info(f"Added {material_name} to non_associated_sd_files (not recognized as EV material)")
+            logging.info(f"Added {material_name} to non_associated_sd_files (not recognized as EV material)")
 
     return zip_structure
 
@@ -643,6 +648,11 @@ def process_zip_structure(zip_structure):
     return zip_structure
 
 def main(zip_path: str, config_path: str, output_path: str = None) -> str:
+    setup_logging(CONFIG)
+
+    # Now proceed with the rest of your application
+    logging.info("Application has started.")
+
     output_json = ""
     if not zip_path or not config_path:
         raise ValueError("ZIP path and config path must be provided")
@@ -686,20 +696,20 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
                 })
 
         except NoXMLFileFoundError as e:
-            logger.error(f"Error: {str(e)}")
+            logging.error(f"Error: {str(e)}")
             return json.dumps({"error": str(e)})
         except NoManuscriptFileError as e:
-            logger.error(f"Error: {str(e)}")
+            logging.error(f"Error: {str(e)}")
             return json.dumps({"error": str(e)})
 
         zip_structure = update_file_paths(zip_structure, str(extract_dir))
 
         expected_figure_count = len([fig for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)])
         expected_figure_labels = [fig.figure_label for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)]
-        logger.info(f"Expected figure count: {expected_figure_count}")
+        logging.info(f"Expected figure count: {expected_figure_count}")
 
         # Extract captions
-        logger.info("Starting caption extraction process")
+        logging.info("Starting caption extraction process")
         if config["ai"] == "openai":
             caption_extractor = FigureCaptionExtractorGpt(config["openai"])
         elif config["ai"] == "anthropic":
@@ -742,16 +752,16 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
 
                     # If figure has valid caption, process panel captions and sources
                     if figure.figure_caption and figure.figure_caption != "Figure caption not found.":
-                        logger.info(f"Processing panels for figure {figure.figure_label}")
+                        logging.info(f"Processing panels for figure {figure.figure_label}")
                         # Match panel captions
                         figure = panel_caption_matcher.match_captions(figure)
                         # Assign panel sources
                         figure = panel_source_assigner.assign_panel_source(figure)
                     else:
-                        logger.warning(f"Skipping panel caption matching for {figure.figure_label} - No valid caption")
+                        logging.warning(f"Skipping panel caption matching for {figure.figure_label} - No valid caption")
                         
                 except Exception as e:
-                    logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
+                    logging.error(f"Error processing figure {figure.figure_label}: {str(e)}")
 
         # Process EV materials
         zip_structure = process_ev_materials(zip_structure)
@@ -767,20 +777,20 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
             try:
                 with open(output_path, "w", encoding="utf-8") as f:
                     f.write(output_json)
-                logger.info(f"Output written to {output_path}")
+                logging.info(f"Output written to {output_path}")
             except Exception as e:
-                logger.error(f"An error occurred while writing to the file: {e}")
+                logging.error(f"An error occurred while writing to the file: {e}")
 
     except Exception as e:
-        logger.exception(f"An unexpected error occurred: {str(e)}")
+        logging.exception(f"An unexpected error occurred: {str(e)}")
         output_json = json.dumps({"error": str(e)})
 
     finally:
         try:
             shutil.rmtree(extract_dir)
-            logger.info(f"Cleaned up extracted files in {extract_dir}")
+            logging.info(f"Cleaned up extracted files in {extract_dir}")
         except Exception as e:
-            logger.error(f"Error cleaning up extracted files: {str(e)}")
+            logging.error(f"Error cleaning up extracted files: {str(e)}")
 
     return output_json
 

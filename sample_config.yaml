@@ -16,7 +16,7 @@ object_detection:
 
 logging:
   level: "INFO" # Can be DEBUG, INFO, WARNING, ERROR, CRITICAL
-  file: "soda_curation.log"
+  file: "logs/soda_curation.log"  # Specify a directory here
   format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   date_format: "%Y-%m-%d %H:%M:%S"
 

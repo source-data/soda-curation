@@ -1,42 +1,25 @@
 import logging
 import os
-from typing import Any, Dict
+from datetime import datetime
 
 
-def setup_logging(config: Dict[str, Any]) -> None:
-    """
-    Set up logging configuration based on the provided config.
+def setup_logging(config) -> None:
+    # Create absolute path for logs directory
+    log_dir = os.path.abspath("logs")
+    os.makedirs(log_dir, exist_ok=True)
 
-    Args:
-        config (Dict[str, Any]): The configuration dictionary containing logging settings.
-    """
-    log_config = config.get("logging", {})
-    log_level = log_config.get("level", "INFO").upper()
-    log_file = log_config.get("file", "soda_curation.log")
-    log_format = log_config.get(
-        "format", "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    date_format = log_config.get("date_format", "%Y-%m-%d %H:%M:%S")
+    # Configure file logging
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    log_file = os.path.join(log_dir, f"{timestamp}.log")
 
-    # Ensure the log directory exists
-    log_dir = os.path.dirname(log_file)
-    if log_dir and not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-
-    # Set up basic configuration
     logging.basicConfig(
-        level=getattr(logging, log_level),
-        format=log_format,
-        datefmt=date_format,
-        filename=log_file,
-        filemode="a",
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ]
     )
+    
+    logging.info(f"Logging initialized. Log file: {log_file}")
 
-    # Add console handler to print logs to console as well
-    console = logging.StreamHandler()
-    console.setLevel(getattr(logging, log_level))
-    formatter = logging.Formatter(log_format)
-    console.setFormatter(formatter)
-    logging.getLogger("").addHandler(console)
-
-    logging.info(f"Logging initialized with level: {log_level}")
