@@ -413,6 +413,22 @@ For CPU-only:
 
 Make sure to update the `config.yaml` file with your API keys before running the Docker container.
 
+### Running model evaluation
+
+To run the model evaluation script, use the following command:
+
+```bash
+docker build -t soda-curation-test . -f Dockerfile.cpu --target testing
+
+docker run -it \
+  -v $(pwd):/app \
+  -e STRATEGIES=1 \
+  -e MANUSCRIPTS=1 \
+  -e RUNS=5 \
+  soda-curation-test \
+  poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+```
+
 ### Code Formatting and Linting
 
 To format and lint your code, run the following command:
