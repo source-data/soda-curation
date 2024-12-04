@@ -130,23 +130,23 @@ class FigureCaptionExtractor(ABC):
         Returns:
             Dict[str, str]: Dictionary of figure labels and their captions.
         """
-        try:
-            json_match = re.search(r'```json\s*({[\s\S]*?})\s*```', response_text)
-            if json_match:
-                json_str = json_match.group(1)
-            else:
-                json_match = re.search(r'({[^{]*})', response_text)
-                if json_match:
-                    json_str = json_match.group(1)
-                else:
-                    json_str = response_text.strip()
 
+        try:
+            # Remove leading and trailing code block markers if present
+            json_str = response_text.strip()
+            json_str = re.sub(r'^```json\s*', '', json_str)
+            json_str = re.sub(r'\s*```$', '', json_str)
+
+            # Remove control characters and excess whitespace
             json_str = re.sub(r'[\n\r\t]', ' ', json_str)
             json_str = re.sub(r'\s+', ' ', json_str)
-
+            json_str = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', json_str)
+            
+            # Attempt to parse the JSON string
             try:
                 captions = json.loads(json_str)
             except json.JSONDecodeError:
+                # Attempt to fix unquoted keys and parse again
                 json_str = re.sub(r'([{,])\s*([a-zA-Z0-9_]+)\s*:', r'\1"\2":', json_str)
                 captions = json.loads(json_str)
 
@@ -165,7 +165,6 @@ class FigureCaptionExtractor(ABC):
             return cleaned_captions
 
         except Exception as e:
-            logger.error(f"Error parsing response: {str(e)}", exc_info=True)
             logger.error(f"Error parsing response: {response_text}", exc_info=True)
             return {}
 
