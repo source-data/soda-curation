@@ -55,7 +55,12 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             config (Dict[str, Any]): Configuration dictionary for Anthropic API.
         """
         super().__init__(config)
-        self.client = Anthropic(api_key=self.config["api_key"])
+        client_kwargs = {
+            'api_key': self.config["api_key"],
+            'default_request_timeout': self.config.get("timeout", 60),
+            'max_retries': self.config.get("max_retries", 5)
+        }
+        self.client = Anthropic(**client_kwargs)
         self.model = self.config.get("model", "claude-3-5-sonnet-20240620")
         self.max_tokens = self.config.get("max_tokens_to_sample", 8192)
         self.temperature = self.config.get("temperature", 0.5)
@@ -180,29 +185,6 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         except Exception as e:
             logger.error(f"Error locating figure captions: {str(e)}")
             return ""
-
-    # def _parse_response(self, response_text: str) -> Dict[str, str]:
-    #     try:
-    #         # Find JSON content between ```json and ``` markers
-    #         json_match = re.search(r'```json\s*(.*?)\s*```', response_text, re.DOTALL)
-    #         if json_match:
-    #             json_str = json_match.group(1)
-    #         else:
-    #             # Fall back to finding content between curly braces
-    #             json_match = re.search(r'(\{.*\})', response_text, re.DOTALL) 
-    #             if json_match:
-    #                 json_str = json_match.group(1)
-    #             else:
-    #                 return {}
-
-    #         # Clean up the JSON string
-    #         json_str = re.sub(r'[\n\r\t]', ' ', json_str)
-    #         json_str = re.sub(r'\s+', ' ', json_str)
-
-    #         return json.loads(json_str)
-    #     except Exception as e:
-    #         logger.error(f"Error parsing response: {response_text}", exc_info=True)
-    #         return {}
 
     def extract_captions(self,
         docx_path: str,
