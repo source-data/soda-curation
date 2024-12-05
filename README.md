@@ -422,8 +422,8 @@ docker build -t soda-curation-test . -f Dockerfile.cpu --target testing
 
 docker run -it \
   -v $(pwd):/app \
-  -e STRATEGIES='gpt-4o_temp=0' \
-  -e MANUSCRIPTS=MSB-2023-12087 \
+  -e STRATEGIES=all \
+  -e MANUSCRIPTS=all \
   -e RUNS=5 \
   soda-curation-test \
   poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py

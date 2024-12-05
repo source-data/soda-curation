@@ -130,26 +130,31 @@ class FigureCaptionExtractor(ABC):
         Returns:
             Dict[str, str]: Dictionary of figure labels and their captions.
         """
-
         try:
-            # Remove leading and trailing code block markers if present
             json_str = response_text.strip()
-            json_str = re.sub(r'^```json\s*', '', json_str)
-            json_str = re.sub(r'\s*```$', '', json_str)
+            
+            # Handle code block formatted responses (Claude style)
+            json_match = re.search(r'```json\s*(.*?)\s*```', json_str, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(1)
+            else:
+                # Handle direct JSON responses (OpenAI style) or content between braces
+                json_match = re.search(r'(\{.*\})', json_str, re.DOTALL)
+                if json_match:
+                    json_str = json_match.group(1)
 
-            # Remove control characters and excess whitespace
+            # Clean and normalize JSON string
             json_str = re.sub(r'[\n\r\t]', ' ', json_str)
             json_str = re.sub(r'\s+', ' ', json_str)
             json_str = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', json_str)
             
-            # Attempt to parse the JSON string
             try:
                 captions = json.loads(json_str)
             except json.JSONDecodeError:
-                # Attempt to fix unquoted keys and parse again
                 json_str = re.sub(r'([{,])\s*([a-zA-Z0-9_]+)\s*:', r'\1"\2":', json_str)
                 captions = json.loads(json_str)
 
+            # Clean and validate captions
             cleaned_captions = {}
             for key, value in captions.items():
                 if isinstance(value, dict) and "title" in value and "caption" in value:
@@ -167,7 +172,7 @@ class FigureCaptionExtractor(ABC):
         except Exception as e:
             logger.error(f"Error parsing response: {response_text}", exc_info=True)
             return {}
-
+        
     def _validate_caption(self, docx_path: str, caption: str, threshold: float = 0.85) -> Tuple[bool, float, str]:
         """
         Validate extracted caption against document text using ROUGE-L score and show differences.

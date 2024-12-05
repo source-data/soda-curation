@@ -180,7 +180,30 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
         except Exception as e:
             logger.error(f"Error locating figure captions: {str(e)}")
             return ""
-        
+
+    # def _parse_response(self, response_text: str) -> Dict[str, str]:
+    #     try:
+    #         # Find JSON content between ```json and ``` markers
+    #         json_match = re.search(r'```json\s*(.*?)\s*```', response_text, re.DOTALL)
+    #         if json_match:
+    #             json_str = json_match.group(1)
+    #         else:
+    #             # Fall back to finding content between curly braces
+    #             json_match = re.search(r'(\{.*\})', response_text, re.DOTALL) 
+    #             if json_match:
+    #                 json_str = json_match.group(1)
+    #             else:
+    #                 return {}
+
+    #         # Clean up the JSON string
+    #         json_str = re.sub(r'[\n\r\t]', ' ', json_str)
+    #         json_str = re.sub(r'\s+', ' ', json_str)
+
+    #         return json.loads(json_str)
+    #     except Exception as e:
+    #         logger.error(f"Error parsing response: {response_text}", exc_info=True)
+    #         return {}
+
     def extract_captions(self,
         docx_path: str,
         zip_structure,

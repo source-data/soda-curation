@@ -246,6 +246,8 @@ The figures typically appear as:
 
 Figure X: {Caption Title}. {Caption text}
 
+DO NOT include any explanatory text before or after the JSON.
+
 OUTPUT FORMAT:
 ```json
 {
