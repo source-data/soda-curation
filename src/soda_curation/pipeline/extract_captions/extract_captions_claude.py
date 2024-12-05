@@ -55,12 +55,7 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             config (Dict[str, Any]): Configuration dictionary for Anthropic API.
         """
         super().__init__(config)
-        client_kwargs = {
-            'api_key': self.config["api_key"],
-            'default_request_timeout': self.config.get("timeout", 60),
-            'max_retries': self.config.get("max_retries", 5)
-        }
-        self.client = Anthropic(**client_kwargs)
+        self.client = Anthropic(api_key=self.config["api_key"])
         self.model = self.config.get("model", "claude-3-5-sonnet-20240620")
         self.max_tokens = self.config.get("max_tokens_to_sample", 8192)
         self.temperature = self.config.get("temperature", 0.5)
