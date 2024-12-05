@@ -110,10 +110,8 @@ def _get_metrics():
 # Fixtures
 ########################################################################################
 
-
 ground_truth_dir = Path("data/ground_truth")
 manuscript_dir = Path("data/archives")
-
 
 @lru_cache
 def _get_ground_truth(msid):
@@ -121,14 +119,11 @@ def _get_ground_truth(msid):
     with open(ground_truth_file, "r") as f:
         return load(f)
 
-
 def _expected_figure_labels(msid):
     return [f["figure_label"] for f in _get_ground_truth(msid)["figures"]]
 
-
 def _expected_figure_legends(msid):
     return _get_ground_truth(msid)["all_captions"]
-
 
 @lru_cache
 def _get_manuscript_path(msid):
@@ -140,7 +135,6 @@ def _get_manuscript_path(msid):
         with ZipFile(archive_path, "r") as zip_ref:
             zip_ref.extractall(extracted_archive_path)
     return extracted_archive_path / ground_truth["docx"]
-
 
 def _parse_env_list(env_var, all_value, all_indicator="all", delimiter=","):
     val = getenv(env_var, "")
