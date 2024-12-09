@@ -434,7 +434,11 @@ docker run -it \
   -v $(pwd):/app soda-curation-test \
   /bin/bash
 
+STRATEGIES='claude-3-5-sonnet_temp=0.5' MANUSCRIPTS=EMM-2023-19044 RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+
 STRATEGIES='claude-3-5-sonnet_temp=0.5' MANUSCRIPTS=MSB-2023-12087 RUNS=5 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+
+
 ```
 
 ### Code Formatting and Linting
