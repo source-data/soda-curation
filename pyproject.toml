@@ -30,6 +30,8 @@ backoff = "^2.2.1"
 PyYAML = "^6.0.0"
 beautifulsoup4 = "^4.12.0"
 pypandoc_binary = "^1.14.0"
+ipywidgets = "^8.1.5"
+pandas = "^2.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.0"
