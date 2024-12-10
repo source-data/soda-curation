@@ -43,7 +43,7 @@
         },
         {
           "panel_label": "C",
-          "panel_caption": "Quantification of 35S-NHK after a 10- or 120-min chase in cells mock treated or exposed to PS341 or PS341/BafA1. Individual data points at 120-min (%, normalized to 10’ mock): mock= 49, 37 and 49%; PS341= 73, 55 and 52%; PS341/BafA1= 91, 63 and 68%. (C) Same as (B) for Kif, KIF/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): mock= 49, 37 and 49%; KIF= 80, 53 and 54%; KIF/BafA1= 99, 64 and 83%. N=3 independent experiments, mean +/- SEM is shown.",
+          "panel_caption": "Same as (B) for Kif, KIF/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): mock= 49, 37 and 49%; KIF= 80, 53 and 54%; KIF/BafA1= 99, 64 and 83%. N=3 independent experiments, mean +/- SEM is shown.",
           "sd_files": ["suppl_data/Figure 2.zip:2C/quantification.xlsx"]
         },
         {
@@ -164,7 +164,7 @@
         },
         {
           "panel_label": "C",
-          "panel_caption": "LysoQuant quantification of Delivery of NHK in control cells (upper panels) and in cells with reduced ERAD upon EDEM1 silencing (lower panels). (n=39 and 25 cells, respectively). Mean is shown. N=3 independent experiments. Unpaired t-test, *** P<0.001.",
+          "panel_caption": "LysoQuant quantification of (B). (n=39 and 25 cells, respectively). Mean is shown. N=3 independent experiments. Unpaired t-test, *** P<0.001.",
           "sd_files": ["suppl_data/Figure 3.zip:3C/Quantification.xlsx"]
         },
         {
@@ -218,7 +218,7 @@
         },
         {
           "panel_label": "C",
-          "panel_caption": "LysoQuant quantification of NHK does not accumulate in LAMP1-positive endolysosomes in wild type (upper panels) and FAM134B-KO cells (lower panels). Scale bars: 10μm. (n=17 and 27 cells, respectively). ",
+          "panel_caption": "LysoQuant quantification of (B) (n=17 and 27 cells, respectively). Mean is shown. N=3 independent experiments, Unpaired t-test, nsP> 0.05. ",
           "sd_files": ["suppl_data/Figure 4.zip:4C/Quantification.xlsx"]
         },
         {
@@ -265,7 +265,7 @@
         },
         {
           "panel_label": "I",
-          "panel_caption": "Analysis of NHK delivery to LAMP1-positive lysosomes in FAM134B-KO cells as in (E-G), when ERAD is inhibited with PS341. Insets are shown with white squares.",
+          "panel_caption": "Analysis of NHK delivery to LAMP1-positive lysosomes in FAM134B-KO cells as in (E-G), when ERAD is inhibited with PS341. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
             "suppl_data/Figure 4.zip:Figure 4/Figure 4/4I/ha.tif",
             "suppl_data/Figure 4.zip:Figure 4/Figure 4/4I/lamp.tif",
@@ -274,7 +274,7 @@
         },
         {
           "panel_label": "J",
-          "panel_caption": "Analysis of NHK delivery to LAMP1-positive lysosomes in FAM134B-KO cells as in (E-G), when ERAD is inhibited with PS341. Insets are shown with white squares.",
+          "panel_caption": "Analysis of NHK delivery to LAMP1-positive lysosomes in FAM134B-KO cells as in (E-G), when ERAD is inhibited with PS341. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
             "suppl_data/Figure 4.zip:Figure 4/Figure 4/4J/ha.tif",
             "suppl_data/Figure 4.zip:Figure 4/Figure 4/4J/lamp.tif",
@@ -313,7 +313,7 @@
         },
         {
           "panel_label": "C",
-          "panel_caption": "Same as Figs. 2F-2H, in MEF. The ERAD client NHK is not delivered to LAMP1-positive endolysosomes. NHK is delivered and accumulates within endolysosomes inactivated with BafA1 upon ERAD inhibition with PS341 (C). Scale bars: 10μM. Insets are shown with white squares.",
+          "panel_caption": "Same as Figs. 2F-2H, in MEF. The ERAD client NHK is not delivered to LAMP1-positive endolysosomes. NHK is delivered and accumulates within endolysosomes inactivated with BafA1 upon ERAD inhibition with PS341. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
             "suppl_data/Figure 5.zip:Figure 5/Figure 5/5C/ha.tif",
             "suppl_data/Figure 5.zip:Figure 5/Figure 5/5C/lamp.tif"
@@ -364,17 +364,17 @@
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "HEK239 cells transiently expressing the 35S- BACE457D are chased for the indicated time without (lanes 1-3) or with PS341 (lanes 4, 5), PS341/BafA1 (lanes 6, 7), KIF (lanes 8, 9), or KIF/BafA1 (10-11). Radiolabelled BACE457D is immunoisolated at the end of the indicated chase time and separated in SDS-PAGE. Densitometric quantification of the 35S-BACE457D band in the representative experiment is shown. HEK239 cells transiently expressing the BACE457D are chased for the indicated time without (lanes 1-3) or with PS341 (lanes 4, 5), PS341/BafA1 (lanes 6, 7), KIF (lanes 8, 9), or KIF/BafA1 (10-11). Radiolabeled NHK is immunoisolated at the end of the indicated chase time and separated in SDS-PAGE. Densitometric quantification of the 35S-NHK band in this representative experiment is shown.",
+          "panel_caption": "Same as Figs. 2A-2C for BACE457∆. HEK239 cells transiently expressing the 35S- BACE457D are chased for the indicated time without (lanes 1-3) or with PS341 (lanes 4, 5), PS341/BafA1 (lanes 6, 7), KIF (lanes 8, 9), or KIF/BafA1 (10-11). Radiolabelled BACE457D is immunoisolated at the end of the indicated chase time and separated in SDS-PAGE. Densitometric quantification of the 35S-BACE457D band in the representative experiment is shown.",
           "sd_files": ["suppl_data/Figure 6.zip:6A/gel 35S.tif"]
         },
         {
           "panel_label": "B",
-          "panel_caption": "Quantification of 35S- BACE457D after a 10- or 120-min chase in cells mock treated, exposed to PS341 or PS341/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): for (B) mock= 36 and 54%; PS341= 70 and 84%; PS341/BafA1= 97 and 99%. For (C): mock= 36 and 54%; KIF= 72 and 75%; KIF/BafA1= 91 and 85%. Quantification of BACE457D after a 10- or 120-min chase in cells mock treated or exposed to PS341 or PS341/BafA1. Individual data points at 120-min (%, normalized to 10’ mock): mock= 49, 37 and 49%; PS341= 73, 55 and 52%; PS341/BafA1= 91, 63 and 68%. N=3 independent experiments, mean +/- SEM is shown. N=2 independent experiments, mean +/- SEM is shown. (G, O) Mean is shown. N=2 independent experiments.",
+          "panel_caption": "Quantification of 35S- BACE457D after a 10- or 120-min chase in cells mock treated, exposed to PS341 or PS341/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): mock= 36 and 54%; PS341= 70 and 84%; PS341/BafA1= 97 and 99%. N=2 independent experiments, mean +/- SEM is shown.",
           "sd_files": ["suppl_data/Figure 6.zip:6B/quantification.xlsx"]
         },
         {
           "panel_label": "C",
-          "panel_caption": "Quantification of 35S- BACE457D after a 10- or 120-min chase in cells mock treated, exposed to PS341 or KIF, KIF/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): for (B) mock= 36 and 54%; PS341= 70 and 84%; PS341/BafA1= 97 and 99%. For (C): mock= 36 and 54%; KIF= 72 and 75%; KIF/BafA1= 91 and 85%. Quantification of BACE457D after a 10- or 120-min chase in cells mock treated or exposed to PS341 or PS341/BafA1. Individual data points at 120-min (%, normalized to 10’ mock): mock= 49, 37 and 49%; PS341= 73, 55 and 52%; PS341/BafA1= 91, 63 and 68%. (C) Same as (B) for Kif, KIF/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): mock= 49, 37 and 49%; KIF= 80, 53 and 54%; KIF/BafA1= 99, 64 and 83%. N=3 independent experiments, mean +/- SEM is shown. N=2 independent experiments, mean +/- SEM is shown. (G, O) Mean is shown. N=2 independent experiments.",
+          "panel_caption": "Quantification of 35S- BACE457D after a 10- or 120-min chase in cells mock treated, exposed to PS341 or KIF, KIF/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): mock= 36 and 54%; KIF= 72 and 75%; KIF/BafA1= 91 and 85%. N=2 independent experiments, mean +/- SEM is shown.",
           "sd_files": ["suppl_data/Figure 6.zip:6C/quantification.xlsx"]
         },
         {
@@ -387,7 +387,7 @@
         },
         {
           "panel_label": "E",
-          "panel_caption": "BACE457D is delivered and accumulates within endolysosomes upon ERAD inhibition with KIF. Insets are shown with white squares.",
+          "panel_caption": "BACE457D is delivered and accumulates within endolysosomes upon ERAD inhibition with KIF. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
             "suppl_data/Figure 6.zip:Figure 6/Figure 6/6E/ha.tif",
             "suppl_data/Figure 6.zip:Figure 6/Figure 6/6E/lamp.tif"
@@ -395,7 +395,7 @@
         },
         {
           "panel_label": "F",
-          "panel_caption": "BACE457D is delivered and accumulates within endolysosomes upon ERAD inhibition with PS341. Insets are shown with white squares.",
+          "panel_caption": "Same as E, when ERAD is inhibited with PS341. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
             "suppl_data/Figure 6.zip:Figure 6/Figure 6/6F/ha.tif",
             "suppl_data/Figure 6.zip:Figure 6/Figure 6/6F/lamp.tif"
@@ -408,7 +408,7 @@
         },
         {
           "panel_label": "H",
-          "panel_caption": "BACE457D is not delivered in LAMP1-positive endolysosomes in MEF lacking FAM134B. Scale bars: 10μM. Insets are shown with white squares.",
+          "panel_caption": "BACE457D is not delivered in LAMP1-positive endolysosomes in MEF lacking FAM134B. n=24 Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
             "suppl_data/Figure 6.zip:6H/ha.tif",
             "suppl_data/Figure 6.zip:6H/lamp.tif"
@@ -481,7 +481,7 @@
       "caption_title": "Schematic representation of how\npharmacologic (blue) and genetic (red) ERAD perturbation triggers\ncompensatory ERLAD programs.",
       "panels": [
         {
-          "panel_label": "A",
+          "panel_label": "",
           "panel_caption": "Schematic representation of how pharmacologic (blue) and genetic (red) ERAD perturbation triggers compensatory ERLAD programs. Defective proteasomal clearance of NHK and BACE457D activates FAM134B-driven ERLAD. Other clients or maintenance of ER homeostasis in specific tissues may activate other ER-phagy receptors (e.g., CCPG1 in the pancreas and FAM134B-2 in the liver).",
           "sd_files": []
         }
