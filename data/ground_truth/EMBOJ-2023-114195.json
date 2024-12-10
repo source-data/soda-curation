@@ -23,12 +23,12 @@
         },
         {
           "panel_label": "B",
-          "panel_caption": "Src family kinase activation. n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test.",
+          "panel_caption": " Src family kinase activation. n=5 for control, Gi knockdown, Gq11 knockdown and\nn=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM.****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test.",
           "sd_files": []
         },
         {
           "panel_label": "C",
-          "panel_caption": "Src family kinase quantification.  n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test.",
+          "panel_caption": " Src family kinase activation, quantified in C. n=5 for control, Gi knockdown, Gq11 knockdown and n=3 for simultaneous knockdown of Gi and Gq11. Values are means ± SEM. ****: p<0.0001, ***: p<0.001; one-way ANOVA with Tukey multiple comparison test.",
           "sd_files": []
         },
         {
@@ -48,32 +48,32 @@
         },
         {
           "panel_label": "G",
-          "panel_caption": "GINIP pulldown assay for activation of Gαi2 by FSS. N=3. **: p=0.0185, Student’s t-test.",
+          "panel_caption": "GINIP pulldown assay for activation of Gαi2 by FSS.N=3. **: p=0.0185, Student’s t-test. . ",
           "sd_files": []
         },
         {
           "panel_label": "H",
-          "panel_caption": "Quantification of GINIP pulldown assay for activation of Gαi2 by FSS. N=3. **: p=0.0185, Student’s t-test.",
+          "panel_caption": "GINIP pulldown assay for activation of Gαi2 by FSS.N=3. Results quantified in H. **: p=0.0185, Student’s t-test. ",
           "sd_files": []
         },
         {
           "panel_label": "I",
-          "panel_caption": "GRK2N pulldown assay for activation of Gq. N=4. *: p<0.05, Student’s t-test. ",
+          "panel_caption": "GRK2N pulldown assay for\nactivation of Gq. N=4 . *: p<0.05, Student’s t-test. ",
           "sd_files": []
         },
         {
           "panel_label": "J",
-          "panel_caption": "Quantification of GRK2N pulldown assay for activation of Gq. N=4. *: p<0.05, Student’s t-test. ",
+          "panel_caption": "GRK2N pulldown assay for activation of Gq. N=4, quantified in J. *: p<0.05, Student’s t-test. ",
           "sd_files": []
         },
         {
           "panel_label": "K",
-          "panel_caption": "GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4. *: p=0.0304, ***: p=0.0017; Student’s t-test.",
+          "panel_caption": "GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4, *: p=0.0304, ***: p=0.0017; Student’s t-test.",
           "sd_files": []
         },
         {
           "panel_label": "L",
-          "panel_caption": "Quantification of GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4. *: p=0.0304, ***: p=0.0017; Student’s t-test.",
+          "panel_caption": "GINIP pulldown assay for FSS-induced activation of wild type and Q306K Gαi1. N = 4, quantified in L. *: p=0.0304, ***: p=0.0017; Student’s t-test.",
           "sd_files": []
         },
         {
@@ -102,12 +102,12 @@
         },
         {
           "panel_label": "B",
-          "panel_caption": "Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test.",
+          "panel_caption": "Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3 *: p=0.0374, Student’s t-test.",
           "sd_files": []
         },
         {
           "panel_label": "C",
-          "panel_caption": "Quantification of B, co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3. *: p=0.0374, Student’s t-test.",
+          "panel_caption": "Co-immunoprecipitation of Gi1Q306K(ins4A) with endogenous LPHN2 with and without FSS for 2 min. N=3, quantified in C. *: p=0.0374, Student’s t-test.",
           "sd_files": []
         },
         {
@@ -117,12 +117,12 @@
         },
         {
           "panel_label": "E",
-          "panel_caption": "Gi2 pulldown assay after LPHN2 knockdown. N= 4. Results quantified in F. ***: p<0.001, Student’s t-test.",
+          "panel_caption": "Gi2 pulldown assay after LPHN2 knockdown. N= 4. ***: p<0.001, Student’s t-test.",
           "sd_files": []
         },
         {
           "panel_label": "F",
-          "panel_caption": "Quantification of results in E. Gi2 pulldown assay after LPHN2 knockdown. N= 4. ***: p<0.001, Student’s t-test.",
+          "panel_caption": "Gi2 pulldown assay after LPHN2 knockdown. Results quantified in F. N= 4. ***: p<0.001, Student’s t-test.",
           "sd_files": []
         }
       ]
@@ -151,37 +151,37 @@
         },
         {
           "panel_label": "D",
-          "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3, quantified in E.",
+          "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3",
           "sd_files": []
         },
         {
           "panel_label": "E",
-          "panel_caption": "Quantification of results in D. Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3.",
+          "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours, probed for PECAM-1. N=3, quantified in E.",
           "sd_files": []
         },
         {
           "panel_label": "F",
-          "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3, quantified in G.",
+          "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3",
           "sd_files": []
         },
         {
           "panel_label": "G",
-          "panel_caption": "Quantification of results in F. Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3.",
+          "panel_caption": "Gi1(Q306K) pulldown from ECs ± FSS for 5 min or for 24 hours probed for VE-cadherin. N=3, quantified in G.",
           "sd_files": []
         },
         {
           "panel_label": "H",
-          "panel_caption": "Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, quantified in I & J. *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "panel_caption": "Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test.",
           "sd_files": []
         },
         {
           "panel_label": "I",
-          "panel_caption": "Quantification of results in H. Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4. *: p=0.0184; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "panel_caption": "Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, quantified in I. *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test.",
           "sd_files": []
         },
         {
           "panel_label": "J",
-          "panel_caption": "Quantification of results in H. Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4. **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test.",
+          "panel_caption": "Activation of Src family kinases and Akt by FSS in HUVECs depleted for latrophilin isoforms. N=3-4, quantified in J. *: p=0.0184, **: p<0.001; one-way ANOVA with Tukey’s multiple comparisons test.",
           "sd_files": []
         },
         {
@@ -245,12 +245,12 @@
         },
         {
           "panel_label": "I",
-          "panel_caption": "Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. Fractional blue area quantified in J. n=3 for each condition. *: p=0.0419; Student’s t-test. ",
+          "panel_caption": "Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. n=3 for each condition. *: p=0.0419; Student’s t-test. ",
           "sd_files": []
         },
         {
           "panel_label": "J",
-          "panel_caption": "Quantification of the fractional blue area in I Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. n=3 for each condition. *: p=0.0419; Student’s t-test. ",
+          "panel_caption": "Aortas from mice 30 min after Evans blue dye injection, thresholded images on the right. Fractional blue area quantified in J. n=3 for each condition. *: p=0.0419; Student’s t-test.  ",
           "sd_files": []
         },
         {
@@ -289,17 +289,17 @@
         },
         {
           "panel_label": "D",
-          "panel_caption": "Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in E and F, respectively. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. ",
+          "panel_caption": "Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. ",
           "sd_files": []
         },
         {
           "panel_label": "E",
-          "panel_caption": "Quantification of results in D. Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Values are means ± SEM. N=5. *: p=0.0305; one-way ANOVA with Tukey multiple comparison test. ",
+          "panel_caption": "Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in E. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. ",
           "sd_files": []
         },
         {
           "panel_label": "F",
-          "panel_caption": "Quantification of results in D. Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Values are means ± SEM. N=5. *: p=0.0002; one-way ANOVA with Tukey multiple comparison test. ",
+          "panel_caption": "Activation of Src family kinases and VEGFR2 after 5mM MβCD for 1min in HUVECs ± LPHN2 knockdown. Results quantified in F. Values are means ± SEM. N=5. *: p=0.0305, ***: p=0.0002; one-way ANOVA with Tukey multiple comparison test. ",
           "sd_files": []
         },
         {
@@ -323,7 +323,7 @@
         },
         {
           "panel_label": "B",
-          "panel_caption": "Quantification of diameters of all ISVs in A. Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls.",
+          "panel_caption": "Representative images of ISVs from 48 hpf embryos with F(0)/mosaic depletions of latrophilin genes or controls. Quantification of diameters of all ISVs. ",
           "sd_files": []
         },
         {
@@ -333,22 +333,22 @@
         },
         {
           "panel_label": "D",
-          "panel_caption": "Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
+          "panel_caption": "Ratio of blood flow in the right ischemic vs left control foot by laser doppler. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
           "sd_files": []
         },
         {
           "panel_label": "E",
-          "panel_caption": "Quantification of results in D. Ratio of blood flow in the right ischemic vs left control foot by laser doppler. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
+          "panel_caption": "Ratio of blood flow in the right ischemic vs left control foot by laser doppler, quantified in E. N=7-8 per condition. *#: p=0.0439, *: p=0.0135, **: p=0.0028, ##: p=0.0056, #: p=0.0163; Student’s t-test.",
           "sd_files": []
         },
         {
           "panel_label": "F",
-          "panel_caption": "Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
+          "panel_caption": "Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
           "sd_files": []
         },
         {
           "panel_label": "G",
-          "panel_caption": "Quantification of results in F. Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
+          "panel_caption": "Micro-CT of arterial vasculature after surgery. Representative reconstructed micro-CT images from LPHN2 ECKO and WT littermates on day 22 after surgery, quantified in G. n=8 per condition. ****: p<0.0001, ***: p=0.0007, *: p=0.0167; two-way ANOVA with Tukey’s multiple comparisons test.",
           "sd_files": []
         },
         {
@@ -388,7 +388,12 @@
         },
         {
           "panel_label": "O",
-          "panel_caption": "Histograms of cell area vs. distance from gel surface in N. P, Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test.",
+          "panel_caption": "Histograms of cell area vs. distance from gel surface in N. ",
+          "sd_files": []
+        },
+        {
+          "panel_label": "P",
+          "panel_caption": "Mean sprout length. N=4. ***: p=0.0006; one-way ANOVA with Tukey’s multi comparison test.",
           "sd_files": []
         }
       ]
