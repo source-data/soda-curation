@@ -54,14 +54,14 @@
         },
         {
           "panel_label": "E",
-          "panel_caption": "Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies. ENaC ubiquitination, Asterisks indicate the same band of ubiquitinated FLAG-αENaC.",
+          "panel_caption": "Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies. ENaC ubiquitination, Asterisks indicate the same band of ubiquitinated FLAG-αENaC.Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test).",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1E/Fig1E.tiff"
           ]
         },
         {
           "panel_label": "F",
-          "panel_caption": "Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies quantified. ENaC expression at the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test).",
+          "panel_caption": "Effects of FCHO2, Nedd4L, and FBP17 knockdown on ENaC ubiquitination and expression at the cell surface. After cells were transfected with each siRNA, cell-surface αENaC was biotinylated and sequentially precipitated with anti-FLAG antibody and then avidin beads. Samples were subjected to IB with anti-FLAG and anti-Ub antibodies and quantified. ENaC expression at the cell surface. Data are shown as the mean ± S.E.M. of three independent experiments. *P < 0.05 (Student's t-test).",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1F/Fig1F.xlsx"
           ]
@@ -110,7 +110,7 @@
       "caption_title": "Recruitment of Nedd4L to CCPs.",
       "panels": [
         {
-          "panel_label": "A",
+          "panel_label": "",
           "panel_caption": "DsRed-CLC were co-expressed with Nedd4L-GFP in wild-type HeLa cells. Images were acquired at 1 s intervals through TIRF microscopy. Upper panel, TIRF images of HeLa cells. Insets represent enlarged images of the dashed boxes. Bottom panel, selected snapshots (every 10 sec) from a time series were obtained from a single CCP indicated by the arrowhead. The time point at which Nedd4L started to accumulate was set 0. Scale bar, 2 μm.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFig3.zip:Fig. 3/Movie EV1.avi"
@@ -172,7 +172,7 @@
         },
         {
           "panel_label": "C",
-          "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm.",
+          "panel_caption": "GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cells were subjected to immunofluorescence microscopy . Scale bar, 10 μm.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5C/FCHO2K146ER152E x Nedd4L.tif",
             "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5C/FCHO2L136E x Nedd4L.tif"
@@ -180,14 +180,14 @@
         },
         {
           "panel_label": "D",
-          "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and Nedd4L mutants. GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. ",
+          "panel_caption": "An in vivo ubiquitination assay was performed with various BAR domains and Nedd4L mutants. GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB. ",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5D/Fig5D.tiff"
           ]
         },
         {
           "panel_label": "E",
-          "panel_caption": "Nedd4L autoubiquitination. An in vivo ubiquitination assay was performed with various BAR domains and FCHO2 mutants (A, B) and Nedd4L mutants (D). GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cell lysates were subjected to immunoprecipitation (IP) and analyzed by IB (A, B, D). WT, wild type. Cells were also subjected to immunofluorescence microscopy (C, E). Scale bar, 10 μm.",
+          "panel_caption": "GFP-BAR domains were co-expressed with Myc-Nedd4L proteins and HA-tagged Ub in HEK293 cells. Cells were subjected to immunofluorescence microscopy. Scale bar, 10 μm.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5E/FCHO2 x Nedd4LC922A.tif (RGB).tif",
             "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:5E/FCHO2 x Nedd4LI37AF38A.tif"
@@ -212,7 +212,7 @@
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) at various Ca2+ concentrations. The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "panel_caption": "A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) at various Ca2+ concentrations. The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments. Ca dependency.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:6A/Fig6A.tiff",
             "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:6A/Fig6A.xlsx"
@@ -220,7 +220,7 @@
         },
         {
           "panel_label": "B",
-          "panel_caption": "A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) with the C2 domain using synthetic liposomes containing various percentages of PS at 0.3 μM or 1.0 mM Ca2+. The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "panel_caption": "A co-sedimentation assay was performed with the C2 domain or full-length Nedd4L using brain-lipid liposomes (~50% PS) with the C2 domain using synthetic liposomes containing various percentages of PS at 0.3 μM or 1.0 mM Ca2+. The supernatants (S) and pellets (P) were subjected to sodium dodecyl sulfate (SDS)-polyacrylamide gel electrophoresis (PAGE), followed by Coomassie brilliant blue (CBB) staining (upper panels). Bottom panels, quantitative analysis. (−) for [Ca2+] indicates EGTA alone. Data are shown as the mean ± S.E.M. of three independent experiments. PS dependency.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:6B/Fig6B.tiff",
             "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:6B/Fig6B.xlsx"
@@ -294,7 +294,7 @@
         },
         {
           "panel_label": "C",
-          "panel_caption": "Inability of Nedd4L C2 domain mutants to bind to membranes and to generate membrane curvature in vitro. Co-sedimentation assays were performed using brain-lipid liposomes (~50% PS) at 0.3 μM Ca2+.Membrane binding. The assay was performed with Nedd4L C2 domain mutants using various concentrations of liposomes. The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "panel_caption": "Inability of Nedd4L C2 domain mutants to bind to membranes and to generate membrane curvature in vitro. Co-sedimentation assays were performed using brain-lipid liposomes (~50% PS) at 0.3 μM Ca2+. Membrane binding. The assay was performed with Nedd4L C2 domain mutants using various concentrations of liposomes. The supernatants (S) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (upper panel). Bottom panel, quantitative analysis. Data are shown as the mean ± S.E.M. of three independent experiments.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8C/Fig8C.tiff",
             "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:8C/Fig8C.xlsx"
@@ -318,17 +318,17 @@
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Schematic diagrams of mSA-αENaC structure.",
+          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC. Schematic diagrams of mSA-αENaC structure.",
           "sd_files": []
         },
         {
           "panel_label": "B",
-          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Schematic diagrams of mSA-αENaC binding to biotinylated liposomes.",
+          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC. binding to biotinylated liposomes.",
           "sd_files": []
         },
         {
           "panel_label": "C",
-          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Ca2+-dependent Nedd4L activity. Ubiquitination was detected by IB (upper panel) and the intensity was quantified by scanning (bottom panel). Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "panel_caption": "Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations , with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+.  Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Ca2+-dependent Nedd4L activity. Ubiquitination was detected by IB (upper panel) and the intensity was quantified by scanning (bottom panel). Data are shown as the mean ± S.E.M. of three independent experiments",
           "sd_files": [
             "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9C/Fig9C.tiff",
             "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9C/Fig9C.xlsx"
@@ -336,7 +336,7 @@
         },
         {
           "panel_label": "D",
-          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Membrane localization of mSA-αENaC enhances the PS-dependent catalytic activity of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Ubiquitination was detected by IB (left panel). The intensities were quantified by scanning (right panel). Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "panel_caption": "Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination assays. These assays were performed with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+. Ubiquitination were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Membrane localization of mSA-αENaC enhances the PS-dependent catalytic activity of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Ubiquitination was detected by IB (left panel). The intensities were quantified by scanning (right panel). Data are shown as the mean ± S.E.M. of three independent experiments.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9D/Fig9D.tiff",
             "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9D/Fig9D.xlsx"
@@ -344,7 +344,7 @@
         },
         {
           "panel_label": "E",
-          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Nedd4L activity is predominantly stimulated by the specific degree of membrane curvature. The assay was performed using liposomes of different sizes which were prepared by extrusion through the indicated pore sizes. Ubiquitination was detected by IB (left panel) and quantified (right panel). Data are shown as the mean ± S.E.M. of three independent experiments. ***P < 0.001 (one-way analysis of variance with Tukey’s post hoc test).",
+          "panel_caption": "Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination assays. These assays were performed with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+. Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Nedd4L activity is predominantly stimulated by the specific degree of membrane curvature. The assay was performed using liposomes of different sizes which were prepared by extrusion through the indicated pore sizes. Ubiquitination was detected by IB (left panel) and quantified (right panel). Data are shown as the mean ± S.E.M. of three independent experiments. ***P < 0.001 (one-way analysis of variance with Tukey’s post hoc test).",
           "sd_files": [
             "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9E/Fig9E.tiff",
             "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9E/Fig9E.xlsx"
@@ -352,7 +352,7 @@
         },
         {
           "panel_label": "F",
-          "panel_caption": "Liposomes supplemented with biotinylated phospholipids were incubated with mSA-αENaC (A, B). Samples were mixed with Nedd4L. Mixtures were subjected to ubiquitination (C-E) and co-sedimentation (F) assays. These assays were performed with brain-lipid liposomes (~50% PS) at various Ca2+ concentrations (C), with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+ (D, F), and with brain-lipid liposomes (20% PS) at 0.7 μM Ca2+ (E). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Membrane localization of mSA-αENaC enhances the PS-dependent membrane binding of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Liposome binding was detected by IB (left panel). The intensities were quantified by scanning (right panel). T, total sample. P, pellet. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "panel_caption": "Samples were mixed with Nedd4L. Mixtures were subjected to co-sedimentation (F) assays. These assays were performed with synthetic liposomes (various percentages of PS) at 0.7 μM Ca2+. Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Membrane localization of mSA-αENaC enhances the PS-dependent membrane binding of Nedd4L. Assays were performed in the presence or absence of 40 μM biotin. Liposome binding was detected by IB (left panel). The intensities were quantified by scanning (right panel). T, total sample. P, pellet. Data are shown as the mean ± S.E.M. of three independent experiments.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9F/Fig9F.tiff",
             "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:9F/Fig9F.xlsx"
@@ -369,14 +369,14 @@
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. FCHO2-induced recruitment of Nedd4L. The assay was performed with the FCHO2 BAR domain (1.4 μM, 50 μg/ml) in the presence or absence of biotin. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (FCHO2 BAR) and IB (Nedd4L and mSA-αENaC).",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. FCHO2-induced recruitment of Nedd4L. The assay was performed with the FCHO2 BAR domain (1.4 μM, 50 μg/ml) in the presence or absence of biotin. The total sample (T) and pellets (P) were subjected to SDS-PAGE, followed by CBB staining (FCHO2 BAR) and IB (Nedd4L and mSA-αENaC).",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10A/Fig10A.tiff"
           ]
         },
         {
           "panel_label": "B",
-          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. FCHO2-induced activation of Nedd4L. Effects of various doses of the FCHO2 BAR domain. The assay was performed with various concentrations of the FCHO2 BAR domain. Ubiquitination was detected by IB (left panel) and the intensity was quantified by scanning (right panel).",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected ubiquitination assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. FCHO2-induced activation of Nedd4L. Effects of various doses of the FCHO2 BAR domain. The assay was performed with various concentrations of the FCHO2 BAR domain. Ubiquitination was detected by IB (left panel) and the intensity was quantified by scanning (right panel).",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10B/Fig10B.tiff",
             "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10B/Fig10B.xlsx"
@@ -384,21 +384,21 @@
         },
         {
           "panel_label": "C",
-          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. FCHO2-induced activation of Nedd4L. Effects of the PS percentage in liposomes. The assay was performed with the FCHO2 BAR domain (1.4 μM). Samples were analyzed by IB. Data are shown as the mean ± S.E.M. of three independent experiments.",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected ubiquitination assays. These assays were performed with the indicated (20% PS or ~50% PS) brain-lipid liposomes. Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. FCHO2-induced activation of Nedd4L. Effects of the PS percentage in liposomes. The assay was performed with the FCHO2 BAR domain (1.4 μM). Samples were analyzed by IB. Data are shown as the mean ± S.E.M. of three independent experiments.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10C/Fig10C.tiff"
           ]
         },
         {
           "panel_label": "D",
-          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Specificity of BAR domains and effect of an FCHO2 mutant. The assay was performed with various BAR domains (1.4 μM each). Samples were analyzed by IB.",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to ubiquitination assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Specificity of BAR domains and effect of an FCHO2 mutant. The assay was performed with various BAR domains (1.4 μM each). Samples were analyzed by IB.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10D/Fig10D.tiff"
           ]
         },
         {
           "panel_label": "E",
-          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to co-sedimentation (A) and ubiquitination (B-E) assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS) (A, B, D, and E) and with the indicated (20% PS or ~50% PS) brain-lipid liposomes (C). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Specificity of BAR domains and effect of an FCHO2 mutant. The assay was performed with an FCHO2 mutant (1.4 μM each). Samples were analyzed by IB.",
+          "panel_caption": "mSA-αENaC-associated brain-lipid liposomes (20% PS) were mixed with Nedd4L in the presence or absence of BAR domains. Mixtures were subjected to ubiquitination assays. These assays were performed at 0.7 μM Ca2+ with brain-lipid liposomes (20%PS). Ubiquitination and liposome binding were quantified by scanning and expressed as ratios to maximum levels. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC. Specificity of BAR domains and effect of an FCHO2 mutant. The assay was performed with an FCHO2 mutant (1.4 μM each). Samples were analyzed by IB.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:10E/Fig10E.tiff"
           ]
@@ -436,7 +436,7 @@
         },
         {
           "panel_label": "D",
-          "panel_caption": "Effects on FCHO2-induced recruitment and activation of Nedd4L. Ubiquitination (D) assays were performed at 0.7 μM Ca2+ with mSA-αENaC-associated synthetic liposomes containing 20% PS or 5% PI(4,5)P2 in the presence or absence of the FCHO2 BAR domain. Nedd4L activation. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.",
+          "panel_caption": "Effects on FCHO2-induced recruitment and activation of Nedd4L. Ubiquitination assays were performed at 0.7 μM Ca2+ with mSA-αENaC-associated synthetic liposomes containing 20% PS or 5% PI(4,5)P2 in the presence or absence of the FCHO2 BAR domain. Nedd4L activation. Samples were analyzed by IB. Asterisks indicate the same band of mono-ubiquitinated mSA-αENaC.",
           "sd_files": [
             "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:11D/Fig11D.tiff"
           ]
@@ -474,7 +474,7 @@
       "caption_title": "Model of ENaC endocytosis.",
       "panels": [
         {
-          "panel_label": "A",
+          "panel_label": "",
           "panel_caption": "FCHO2 binds to the plasma membrane and generates a specific degree of membrane curvature according to the intrinsic curvature of its BAR domain. Nedd4L exists in a catalytically autoinhibited state due to an intramolecular interaction between the N-terminal C2 and C-terminal HECT domains. Nedd4L is recruited to FCHO2-generated membrane curvature at the rim of nascent CCPs that ENaC enters. Membrane binding of the C2 domain causes catalytic activation by relieving autoinhibition. ENaC is ubiquitinated and captured by adaptor proteins with Ub-interacting motifs, such as Eps15.",
           "sd_files": []
         }
