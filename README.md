@@ -436,7 +436,7 @@ docker run -it \
 
 STRATEGIES='claude-3-5-sonnet_temp=0.5' MANUSCRIPTS=EMM-2023-19044 RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 
-STRATEGIES='claude-3-5-sonnet_temp=0.5' MANUSCRIPTS=MSB-2023-12087 RUNS=5 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+STRATEGIES='all' MANUSCRIPTS='all' RUNS=5 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 
 
 ```
@@ -502,3 +502,4 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 - Support for OpenAI and Anthropic AI providers
 - Implemented figure and panel detection
 - Added caption extraction and matching functionality
+- Generating a better script to run soda-model evaluations
