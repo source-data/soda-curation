@@ -430,15 +430,13 @@ docker run -it \
 
   # Add the following to be able to entry in the container afterwards
 docker run -it \
-  --name soda-curation-test \
+  --name soda-curation-test \ 
   -v $(pwd):/app soda-curation-test \
   /bin/bash
 
-STRATEGIES='claude-3-5-sonnet_temp=0.5' MANUSCRIPTS=EMM-2023-19044 RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+STRATEGIES='gpt-4o_temp=0.5' MANUSCRIPTS='EMM-2023-18636' RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 
 STRATEGIES='all' MANUSCRIPTS='all' RUNS=5 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
-
-
 ```
 
 ### Code Formatting and Linting

@@ -4,7 +4,7 @@ from json import dump, load
 from os import getenv
 from pathlib import Path
 from zipfile import ZipFile
-
+import os 
 import papermill as pm
 import pytest
 from deepeval import assert_test
@@ -14,6 +14,9 @@ from deepeval.test_case import LLMTestCase
 from tabulate import tabulate
 
 from soda_curation.config import load_config
+from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    Figure, Panel, ZipStructure
+)
 from soda_curation.pipeline.extract_captions.extract_captions_claude import (
     FigureCaptionExtractorClaude,
 )
@@ -23,11 +26,29 @@ from soda_curation.pipeline.extract_captions.extract_captions_openai import (
 from soda_curation.pipeline.extract_captions.extract_captions_regex import (
     FigureCaptionExtractorRegex,
 )
+from src.soda_curation.pipeline.object_detection.object_detection import (
+    convert_to_pil_image,
+    create_object_detection,
+)
+from src.soda_curation.pipeline.match_caption_panel.match_caption_panel_openai import (
+    MatchPanelCaptionOpenAI,
+)
+from src.soda_curation.pipeline.assign_panel_source.assign_panel_source import (
+    PanelSourceAssigner,
+)
+from src.soda_curation.pipeline.assign_panel_source.assign_panel_source_prompts import (
+    get_assign_panel_source_prompt
+)
+
+MatchPanelCaptionOpenAI
+import logging
+from typing import Dict, List, Optional, Tuple
 
 ########################################################################################
 # Scoring task results
 ########################################################################################
 
+logger = logging.getLogger(__name__)
 
 class RougeMetric(BaseMetric):
     def __init__(self, score_type: str = "rouge1", threshold: float = 0.95):
@@ -571,6 +592,222 @@ def test_extract_figure_captions_from_figure_legends(
     ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
     assert_test(test_case, metrics=_get_metrics())
 
+
+########################################################################################
+# Source Data assignation test
+########################################################################################
+class PanelSourceMatchMetric(BaseMetric):
+    """Metric to evaluate panel source data assignment accuracy."""
+    
+    def __init__(self, score_type: str = "panel_accuracy", threshold: float = 0.8):
+        self.score_type = score_type
+        self.threshold = threshold
+        self.success = False
+        self.score = 0.0
+
+    def measure(self, test_case: LLMTestCase) -> float:
+        """
+        Measure accuracy of panel source assignments by counting correctly assigned files.
+        Returns a score between 0 and 1 representing the proportion of correct assignments.
+        """
+        try:
+            logger.info("Starting panel source assignment measurement")
+            
+            expected_data = eval(test_case.expected_output)
+            actual_data = eval(test_case.actual_output)
+            
+            logger.info(f"Expected data: {expected_data}")
+            logger.info(f"Actual data: {actual_data}")
+            
+            # Get all expected files
+            expected_files = set()
+            for panel in expected_data.get("panels", []):
+                panel_files = set(panel.get("sd_files", []))
+                expected_files.update(panel_files)
+                logger.info(f"Panel {panel.get('panel_label')}: Adding expected files: {panel_files}")
+            
+            # Add unassigned files
+            expected_unassigned = set(expected_data.get("unassigned_sd_files", []))
+            expected_files.update(expected_unassigned)
+            logger.info(f"Added unassigned expected files: {expected_unassigned}")
+            
+            # Get all actual files
+            actual_files = set()
+            for panel in actual_data.get("panels", []):
+                panel_files = set(panel.get("sd_files", []))
+                actual_files.update(panel_files)
+                logger.info(f"Panel {panel.get('panel_label')}: Adding actual files: {panel_files}")
+            
+            # Add unassigned files
+            actual_unassigned = set(actual_data.get("unassigned_sd_files", []))
+            actual_files.update(actual_unassigned)
+            logger.info(f"Added unassigned actual files: {actual_unassigned}")
+
+            # If no files expected or actual, and this matches, score is 1
+            if not expected_files and not actual_files:
+                logger.info("No files in either expected or actual - perfect match")
+                self.score = 1.0
+                self.success = True
+                return self.score
+
+            # Calculate score based on matching files
+            if expected_files:
+                correctly_assigned = len(expected_files.intersection(actual_files))
+                total_files = len(expected_files)
+                self.score = correctly_assigned / total_files
+                logger.info(f"Score calculation: {correctly_assigned} correct out of {total_files} total = {self.score}")
+            else:
+                # If we expected no files but got some, score is 0
+                self.score = 0.0
+                logger.info("Expected no files but got some - score 0")
+
+            self.success = self.score >= self.threshold
+            logger.info(f"Final score: {self.score}, Success: {self.success}")
+            return self.score
+
+        except Exception as e:
+            logger.error(f"Error measuring panel source assignment: {str(e)}")
+            self.score = 0.0
+            self.success = False
+            return self.score
+
+    async def a_measure(self, test_case: LLMTestCase):
+        return self.measure(test_case)
+
+    def is_successful(self):
+        return self.success
+
+    @property
+    def name(self):
+        return f"panel_source_{self.score_type}"
+
+@file_cache("panel_source_assignments")
+def _extract_panel_source_assignments(strategy: str, msid: str, run: int) -> Tuple[str, Dict]:
+    """
+    Get panel source assignments using cached data from previous processing steps.
+    """
+    try:
+        figure_legends = _get_ground_truth(msid)["all_captions"]
+        extracted_figures = _get_ground_truth(msid)["figures"]
+        
+        # Process each figure
+        assigned_figures = {}
+        for figure in extracted_figures:
+            figure_label = figure["figure_label"]
+            figure_number = figure_label.split()[-1]
+            
+            # Convert source data paths to the expected format
+            processed_panels = []
+            for panel in figure["panels"]:
+                cleaned_sd_files = []
+                for sd_file in panel.get("sd_files", []):
+                    if sd_file and ":" in sd_file:
+                        zip_part, internal_path = sd_file.split(":", 1)
+                        # Split path into components
+                        path_parts = internal_path.split("/")
+                        
+                        # Find and remove duplicate figure folders
+                        cleaned_parts = []
+                        figure_folder_seen = False
+                        for part in path_parts:
+                            # Skip duplicate figure folders
+                            if part.startswith(f"Figure {figure_number}"):
+                                if not figure_folder_seen:
+                                    cleaned_parts.append(part)
+                                    figure_folder_seen = True
+                            else:
+                                cleaned_parts.append(part)
+                        
+                        # Reconstruct path
+                        cleaned_path = f"{zip_part}:{'/'.join(cleaned_parts)}"
+                        cleaned_sd_files.append(cleaned_path)
+                    else:
+                        cleaned_sd_files.append(sd_file)
+                
+                processed_panels.append({
+                    "panel_label": panel["panel_label"],
+                    "sd_files": cleaned_sd_files
+                })
+            
+            # Create cleaned figure dictionary
+            figure_dict = {
+                "figure_label": figure_label,
+                "panels": processed_panels,
+                "unassigned_sd_files": figure.get("unassigned_sd_files", [])
+            }
+            assigned_figures[figure_label] = figure_dict
+            
+            logger.info(f"Processed figure dict: {figure_dict}")
+        
+        return figure_legends, assigned_figures
+        
+    except Exception as e:
+        logger.error(f"Error extracting panel source assignments: {str(e)}")
+        return "", {}
+
+def _get_panel_source_metrics():
+    """Get metrics for evaluating panel source assignments."""
+    return [
+        PanelSourceMatchMetric(score_type="exact_match", threshold=0.8),
+        PanelSourceMatchMetric(score_type="file_assignment", threshold=0.8)
+    ]
+
+@pytest.mark.parametrize(
+    "strategy, msid, run, figure_label",
+    [(f["strategy"], f["msid"], f["run"], f["figure_label"]) 
+     for f in figure_fixtures()
+     if "gpt" in f["strategy"]]  # Only test OpenAI strategies
+)
+def test_panel_source_assignment(strategy, msid, run, figure_label, results_bag):
+    """Test the assignment of source data files to figure panels."""
+    try:
+        # Get ground truth figure
+        ground_truth = _get_ground_truth(msid)
+        expected_figure = next(
+            f for f in ground_truth["figures"] 
+            if f["figure_label"] == figure_label
+        )
+        
+        # Convert to simplified structure for comparison
+        expected_data = {
+            "figure_label": expected_figure["figure_label"],
+            "panels": [{
+                "panel_label": p.get("panel_label"),
+                "sd_files": p.get("sd_files", [])
+            } for p in expected_figure.get("panels", [])],
+            "unassigned_sd_files": expected_figure.get("unassigned_sd_files", [])
+        }
+        
+        # Get actual assignments
+        _, assigned_figures = _extract_panel_source_assignments(strategy, msid, run)
+        actual_data = assigned_figures.get(figure_label, {
+            "panels": [],
+            "unassigned_sd_files": []
+        })
+        
+        test_case = LLMTestCase(
+            input=str(expected_figure),
+            actual_output=str(actual_data),
+            expected_output=str(expected_data)
+        )
+        # import pdb; pdb.set_trace()
+        _fill_results_bag(
+            results_bag,
+            task="panel_source_assignment",
+            strategy=strategy,
+            msid=msid,
+            run=run,
+            figure_label=figure_label,
+            metrics=_get_panel_source_metrics(),
+            test_case=test_case,
+            ai_response=str(actual_data)
+        )
+        
+        assert_test(test_case, metrics=_get_panel_source_metrics())
+            
+    except Exception as e:
+        logger.error(f"Error in panel source assignment test: {str(e)}")
+        raise
 
 ########################################################################################
 # Report generation
