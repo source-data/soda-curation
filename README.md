@@ -428,11 +428,8 @@ docker run -it \
   soda-curation-test \
   poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 
-  # Add the following to be able to entry in the container afterwards
-docker run -it \
-  --name soda-curation-test \ 
-  -v $(pwd):/app soda-curation-test \
-  /bin/bash
+# Add the following to be able to entry in the container afterwards  
+docker run -it --name soda-curation-test  --shm-size=1g -v $(pwd):/app soda-curation-test  /bin/bash
 
 STRATEGIES='gpt-4o_temp=0.5' MANUSCRIPTS='EMM-2023-18636' RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 
