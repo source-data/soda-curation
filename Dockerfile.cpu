@@ -19,7 +19,6 @@ ENV PYTHONUNBUFFERED=1 \
     VIRTUAL_ENV="/app/.venv" \
     PATH="/app/.venv/bin:$PATH"
 
-
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \

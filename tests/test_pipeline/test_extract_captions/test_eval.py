@@ -15,7 +15,7 @@ from tabulate import tabulate
 
 from soda_curation.config import load_config
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
-    Figure, Panel, ZipStructure
+    Figure, Panel, ZipStructure, full_path 
 )
 from soda_curation.pipeline.extract_captions.extract_captions_claude import (
     FigureCaptionExtractorClaude,
@@ -330,15 +330,17 @@ def file_cache(task):
 @file_cache("figure_legends")
 def _extract_figure_legends_from_manuscript(strategy, msid, run):
     """Extract the figure legends section from a manuscript."""
+    # Get manuscript content from docx
     manuscript_content = _extract_manuscript_content(msid, strategy)
     expected_figure_labels = _expected_figure_labels(msid)
+    
+    # Use raw manuscript content as input
     extractor = _get_extractor(strategy)
     expected_figure_count = len(expected_figure_labels)
     extracted_figures = extractor._locate_figure_captions(
         manuscript_content, expected_figure_count, expected_figure_labels
     )
     return manuscript_content, extracted_figures
-
 
 @file_cache("figures")
 def _extract_figures_from_figure_legends(strategy, msid, run):
@@ -357,7 +359,8 @@ def _extract_figures_from_figure_legends(strategy, msid, run):
         ...
     }
     """
-    figure_legends = _expected_figure_legends(msid)
+    # Use ground truth figure legends as input instead of extracted ones
+    figure_legends = _get_ground_truth(msid)["all_captions"]
     expected_figure_labels = _expected_figure_labels(msid)
     expected_figure_count = len(expected_figure_labels)
 
@@ -369,7 +372,6 @@ def _extract_figures_from_figure_legends(strategy, msid, run):
     )
     captions = extractor._parse_response(extracted_captions)
     return figure_legends, captions
-
 
 def _fill_results_bag(
     results_bag,
@@ -445,64 +447,17 @@ def test_extract_figures_from_figure_legends(strategy, msid, run, results_bag):
 
     The test results are added to the results_bag for further processing in the synthesis step.
     """
-    figure_legends, extracted_figures = _extract_figures_from_figure_legends(strategy, msid, run)
-    
-    def _stringify_figure_labels(labels):
-        return "\n".join(sorted(labels))
+    # Use ground truth figure legends as input
+    figure_legends = _get_ground_truth(msid)["all_captions"]
+    _, extracted_figures = _extract_figures_from_figure_legends(strategy, msid, run)
 
-    actual_figure_labels = extracted_figures.keys()
-    expected_figure_labels = _expected_figure_labels(msid)
-
-    test_case = LLMTestCase(
-        input=figure_legends,
-        actual_output=_stringify_figure_labels(actual_figure_labels),
-        expected_output=_stringify_figure_labels(expected_figure_labels),
-    )
-
-    # Get AI response from zip_structure
-    zip_structure = _get_ground_truth(msid)
-    ai_response = zip_structure.get('ai_response_extract_captions', '')
-
-    _fill_results_bag(
-        results_bag,
-        task="extract_figures",
-        strategy=strategy, 
-        msid=msid,
-        run=run,
-        metrics=_get_metrics(),
-        test_case=test_case,
-        ai_response=_stringify_figure_labels(actual_figure_labels),
-    )
-
-    assert_test(test_case, metrics=_get_metrics())
-
-@pytest.mark.parametrize(
-    "strategy, msid, run, figure_label",
-    [
-        (f["strategy"], f["msid"], f["run"], f["figure_label"])
-        for f in figure_fixtures()
-    ],
-)
-def test_extract_figure_titles_from_figure_legends(
-    strategy, msid, run, figure_label, results_bag
-):
-    """
-    Test the extraction of a single figure title from the figure legends section of a manuscript.
-
-    The extracted figure title is scored against the reference figure title.
-    The test passes if the score is above a threshold.
-
-    The test results are added to the results_bag for further processing in the synthesis step.
-    """
-    figure_legends, extracted_figures = _extract_figures_from_figure_legends(
-        strategy, msid, run
-    )
     actual_figure_title = (
         extracted_figures[figure_label]["title"]
         if figure_label in extracted_figures
         else ""
     )
 
+    # Compare against ground truth title
     ground_truth = _get_ground_truth(msid)
     expected_figure_title = next(
         f["caption_title"]
@@ -528,12 +483,8 @@ def test_extract_figure_titles_from_figure_legends(
         ai_response=actual_figure_title
     )
 
-
-    assert (
-        figure_label in extracted_figures
-    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
+    assert figure_label in extracted_figures
     assert_test(test_case, metrics=_get_metrics())
-
 
 @pytest.mark.parametrize(
     "strategy, msid, run, figure_label",
@@ -542,26 +493,29 @@ def test_extract_figure_titles_from_figure_legends(
         for f in figure_fixtures()
     ],
 )
-def test_extract_figure_captions_from_figure_legends(
+def test_extract_figure_titles_from_figure_legends(
     strategy, msid, run, figure_label, results_bag
 ):
     """
-    Test the extraction of a single figure caption from the figure legends section of a manuscript.
+    Test the extraction of a single figure title from the figure legends section of a manuscript.
 
-    The extracted figure caption is scored against the reference figure caption.
+    The extracted figure title is scored against the reference figure title.
     The test passes if the score is above a threshold.
 
     The test results are added to the results_bag for further processing in the synthesis step.
     """
-    figure_legends, extracted_figures = _extract_figures_from_figure_legends(
-        strategy, msid, run
-    )
+    """Test extraction of figure titles using ground truth legends."""
+    # Use ground truth figure legends as input
+    figure_legends = _get_ground_truth(msid)["all_captions"]
+    _, extracted_figures = _extract_figures_from_figure_legends(strategy, msid, run)
+
     actual_figure_caption = (
         extracted_figures[figure_label]["caption"]
         if figure_label in extracted_figures
         else ""
     )
 
+    # Compare against ground truth caption
     ground_truth = _get_ground_truth(msid)
     expected_figure_caption = next(
         f["figure_caption"]
@@ -584,20 +538,74 @@ def test_extract_figure_captions_from_figure_legends(
         figure_label=figure_label,
         metrics=_get_metrics(),
         test_case=test_case,
-        ai_response=actual_figure_caption,
+        ai_response=actual_figure_caption
     )
 
-    assert (
-        figure_label in extracted_figures
-    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
+    assert figure_label in extracted_figures
     assert_test(test_case, metrics=_get_metrics())
 
+@pytest.mark.parametrize(
+    "strategy, msid, run, figure_label",
+    [
+        (f["strategy"], f["msid"], f["run"], f["figure_label"])
+        for f in figure_fixtures()
+    ],
+)
+def test_extract_figure_captions_from_figure_legends(
+    strategy, msid, run, figure_label, results_bag
+):
+    """
+    Test the extraction of a single figure caption from the figure legends section of a manuscript.
+
+    The extracted figure caption is scored against the reference figure caption.
+    The test passes if the score is above a threshold.
+
+    The test results are added to the results_bag for further processing in the synthesis step.
+    """
+    # Use ground truth figure legends as input 
+    figure_legends = _get_ground_truth(msid)["all_captions"]
+    _, extracted_figures = _extract_figures_from_figure_legends(strategy, msid, run)
+
+    actual_figure_caption = (
+        extracted_figures[figure_label]["caption"]
+        if figure_label in extracted_figures
+        else ""
+    )
+
+    # Compare against ground truth caption
+    ground_truth = _get_ground_truth(msid)
+    expected_figure_caption = next(
+        f["figure_caption"]
+        for f in ground_truth["figures"]
+        if f["figure_label"] == figure_label
+    )
+
+    test_case = LLMTestCase(
+        input=figure_legends,
+        actual_output=actual_figure_caption,
+        expected_output=expected_figure_caption,
+    )
+
+    _fill_results_bag(
+        results_bag,
+        task="extract_figure_caption",
+        strategy=strategy,
+        msid=msid,
+        run=run,
+        figure_label=figure_label,
+        metrics=_get_metrics(),
+        test_case=test_case,
+        ai_response=actual_figure_caption
+    )
+
+    assert figure_label in extracted_figures
+    assert_test(test_case, metrics=_get_metrics())
 
 ########################################################################################
 # Source Data assignation test
 ########################################################################################
 class PanelSourceMatchMetric(BaseMetric):
-    """Metric to evaluate panel source data assignment accuracy."""
+    """Metric to evaluate panel source data assignment accuracy for entire manuscripts."""
     
     def __init__(self, score_type: str = "panel_accuracy", threshold: float = 0.8):
         self.score_type = score_type
@@ -607,66 +615,65 @@ class PanelSourceMatchMetric(BaseMetric):
 
     def measure(self, test_case: LLMTestCase) -> float:
         """
-        Measure accuracy of panel source assignments by counting correctly assigned files.
+        Measure accuracy of panel source assignments across all figures in manuscript.
         Returns a score between 0 and 1 representing the proportion of correct assignments.
         """
         try:
-            logger.info("Starting panel source assignment measurement")
-            
             expected_data = eval(test_case.expected_output)
             actual_data = eval(test_case.actual_output)
             
-            logger.info(f"Expected data: {expected_data}")
-            logger.info(f"Actual data: {actual_data}")
+            # Track totals across all figures
+            total_expected_files = 0
+            total_correct_assignments = 0
             
-            # Get all expected files
-            expected_files = set()
-            for panel in expected_data.get("panels", []):
-                panel_files = set(panel.get("sd_files", []))
-                expected_files.update(panel_files)
-                logger.info(f"Panel {panel.get('panel_label')}: Adding expected files: {panel_files}")
-            
-            # Add unassigned files
-            expected_unassigned = set(expected_data.get("unassigned_sd_files", []))
-            expected_files.update(expected_unassigned)
-            logger.info(f"Added unassigned expected files: {expected_unassigned}")
-            
-            # Get all actual files
-            actual_files = set()
-            for panel in actual_data.get("panels", []):
-                panel_files = set(panel.get("sd_files", []))
-                actual_files.update(panel_files)
-                logger.info(f"Panel {panel.get('panel_label')}: Adding actual files: {panel_files}")
-            
-            # Add unassigned files
-            actual_unassigned = set(actual_data.get("unassigned_sd_files", []))
-            actual_files.update(actual_unassigned)
-            logger.info(f"Added unassigned actual files: {actual_unassigned}")
+            # Process each figure
+            for figure_label, figure_data in expected_data.items():
+                # Get actual figure data
+                actual_figure = actual_data.get(figure_label, {})
+                
+                # Process each panel in the figure
+                expected_panel_files = {}
+                for panel in figure_data.get("panels", []):
+                    label = panel.get("panel_label", "")
+                    files = set(panel.get("sd_files", []))
+                    expected_panel_files[label] = files
+                    total_expected_files += len(files)
+                    
+                    # Find matching actual panel
+                    actual_panel = next(
+                        (p for p in actual_figure.get("panels", [])
+                         if p.get("panel_label") == label),
+                        None
+                    )
+                    
+                    if actual_panel:
+                        actual_files = set(actual_panel.get("sd_files", []))
+                        correct_for_panel = len(actual_files.intersection(files))
+                        total_correct_assignments += correct_for_panel
+                        logger.info(f"Figure {figure_label} Panel {label}: {correct_for_panel} correct of {len(files)}")
 
-            # If no files expected or actual, and this matches, score is 1
-            if not expected_files and not actual_files:
-                logger.info("No files in either expected or actual - perfect match")
-                self.score = 1.0
-                self.success = True
-                return self.score
+                # Handle unassigned files for this figure
+                expected_unassigned = set(figure_data.get("unassigned_sd_files", []))
+                actual_unassigned = set(actual_figure.get("unassigned_sd_files", []))
+                total_expected_files += len(expected_unassigned)
+                correct_unassigned = len(actual_unassigned.intersection(expected_unassigned))
+                total_correct_assignments += correct_unassigned
+                
+                logger.info(f"Figure {figure_label} unassigned: {correct_unassigned} correct of {len(expected_unassigned)}")
 
-            # Calculate score based on matching files
-            if expected_files:
-                correctly_assigned = len(expected_files.intersection(actual_files))
-                total_files = len(expected_files)
-                self.score = correctly_assigned / total_files
-                logger.info(f"Score calculation: {correctly_assigned} correct out of {total_files} total = {self.score}")
+            # Calculate final manuscript score
+            if total_expected_files == 0:
+                self.score = 1.0 if total_correct_assignments == 0 else 0.0
             else:
-                # If we expected no files but got some, score is 0
-                self.score = 0.0
-                logger.info("Expected no files but got some - score 0")
-
+                self.score = total_correct_assignments / total_expected_files
+                
             self.success = self.score >= self.threshold
-            logger.info(f"Final score: {self.score}, Success: {self.success}")
+            logger.info(f"Manuscript total: {total_correct_assignments} correct of {total_expected_files} ({self.score:.2f})")
+            
             return self.score
 
         except Exception as e:
-            logger.error(f"Error measuring panel source assignment: {str(e)}")
+            logger.error(f"Error measuring manuscript panel source assignments: {str(e)}")
             self.score = 0.0
             self.success = False
             return self.score
@@ -681,130 +688,117 @@ class PanelSourceMatchMetric(BaseMetric):
     def name(self):
         return f"panel_source_{self.score_type}"
 
-@file_cache("panel_source_assignments")
-def _extract_panel_source_assignments(strategy: str, msid: str, run: int) -> Tuple[str, Dict]:
-    """
-    Get panel source assignments using cached data from previous processing steps.
-    """
-    try:
-        figure_legends = _get_ground_truth(msid)["all_captions"]
-        extracted_figures = _get_ground_truth(msid)["figures"]
-        
-        # Process each figure
-        assigned_figures = {}
-        for figure in extracted_figures:
-            figure_label = figure["figure_label"]
-            figure_number = figure_label.split()[-1]
-            
-            # Convert source data paths to the expected format
-            processed_panels = []
-            for panel in figure["panels"]:
-                cleaned_sd_files = []
-                for sd_file in panel.get("sd_files", []):
-                    if sd_file and ":" in sd_file:
-                        zip_part, internal_path = sd_file.split(":", 1)
-                        # Split path into components
-                        path_parts = internal_path.split("/")
-                        
-                        # Find and remove duplicate figure folders
-                        cleaned_parts = []
-                        figure_folder_seen = False
-                        for part in path_parts:
-                            # Skip duplicate figure folders
-                            if part.startswith(f"Figure {figure_number}"):
-                                if not figure_folder_seen:
-                                    cleaned_parts.append(part)
-                                    figure_folder_seen = True
-                            else:
-                                cleaned_parts.append(part)
-                        
-                        # Reconstruct path
-                        cleaned_path = f"{zip_part}:{'/'.join(cleaned_parts)}"
-                        cleaned_sd_files.append(cleaned_path)
-                    else:
-                        cleaned_sd_files.append(sd_file)
-                
-                processed_panels.append({
-                    "panel_label": panel["panel_label"],
-                    "sd_files": cleaned_sd_files
-                })
-            
-            # Create cleaned figure dictionary
-            figure_dict = {
-                "figure_label": figure_label,
-                "panels": processed_panels,
-                "unassigned_sd_files": figure.get("unassigned_sd_files", [])
-            }
-            assigned_figures[figure_label] = figure_dict
-            
-            logger.info(f"Processed figure dict: {figure_dict}")
-        
-        return figure_legends, assigned_figures
-        
-    except Exception as e:
-        logger.error(f"Error extracting panel source assignments: {str(e)}")
-        return "", {}
-
 def _get_panel_source_metrics():
     """Get metrics for evaluating panel source assignments."""
-    return [
-        PanelSourceMatchMetric(score_type="exact_match", threshold=0.8),
-        PanelSourceMatchMetric(score_type="file_assignment", threshold=0.8)
-    ]
+    return [PanelSourceMatchMetric(score_type="manuscript_accuracy", threshold=0.8)]
 
 @pytest.mark.parametrize(
-    "strategy, msid, run, figure_label",
-    [(f["strategy"], f["msid"], f["run"], f["figure_label"]) 
-     for f in figure_fixtures()
+    "strategy, msid, run",
+    [(f["strategy"], f["msid"], f["run"]) 
+     for f in manuscript_fixtures()
      if "gpt" in f["strategy"]]  # Only test OpenAI strategies
 )
-def test_panel_source_assignment(strategy, msid, run, figure_label, results_bag):
-    """Test the assignment of source data files to figure panels."""
+def test_panel_source_assignment(strategy, msid, run, results_bag):
+    """Test panel source data assignment for entire manuscript."""
     try:
-        # Get ground truth figure
+        # Get ground truth figures
         ground_truth = _get_ground_truth(msid)
-        expected_figure = next(
-            f for f in ground_truth["figures"] 
-            if f["figure_label"] == figure_label
+        extract_dir = manuscript_dir / msid
+        
+        # Process all figures in the manuscript
+        test_figures = []
+        for expected_figure in ground_truth["figures"]:
+            # Create Panel objects for this figure
+            input_panels = [
+                Panel(
+                    panel_label=p.get("panel_label", ""),
+                    panel_caption=p.get("panel_caption", ""),
+                    panel_bbox=p.get("panel_bbox", []),
+                    confidence=p.get("confidence", 0.0),
+                    sd_files=[],
+                    ai_response=""
+                ) for p in expected_figure.get("panels", [])
+            ]
+
+            # Get paths for this figure
+            sd_files = expected_figure.get("sd_files", [])
+            full_sd_files = [full_path(str(extract_dir), f) for f in sd_files]
+
+            # Create Figure object
+            test_figure = Figure(
+                figure_label=expected_figure["figure_label"],
+                img_files=expected_figure.get("img_files", []),
+                sd_files=sd_files,
+                _full_sd_files=full_sd_files,
+                panels=input_panels,
+                figure_caption=expected_figure.get("figure_caption", ""),
+                caption_title=expected_figure.get("caption_title", "")
+            )
+            test_figures.append(test_figure)
+
+        # Create ZipStructure with all figures
+        test_zip_structure = ZipStructure(
+            manuscript_id=msid,
+            xml=ground_truth.get("xml", ""),
+            docx=ground_truth.get("docx", ""),
+            pdf=ground_truth.get("pdf", ""),
+            _full_docx=full_path(str(extract_dir), ground_truth["docx"]) if ground_truth.get("docx") else None,
+            _full_pdf=full_path(str(extract_dir), ground_truth["pdf"]) if ground_truth.get("pdf") else None,
+            appendix=ground_truth.get("appendix", []),
+            _full_appendix=[full_path(str(extract_dir), f) for f in ground_truth.get("appendix", [])],
+            figures=test_figures,
+            errors=[],
+            non_associated_sd_files=[]
         )
+
+        # Process entire manuscript
+        config = _get_base_config()
+        assigner = PanelSourceAssigner(config)
+        actual_zip_structure = assigner.assign_panel_source(test_zip_structure)
+
+        # Convert to comparable dictionaries
+        actual_data = {}
+        expected_data = {}
         
-        # Convert to simplified structure for comparison
-        expected_data = {
-            "figure_label": expected_figure["figure_label"],
-            "panels": [{
-                "panel_label": p.get("panel_label"),
-                "sd_files": p.get("sd_files", [])
-            } for p in expected_figure.get("panels", [])],
-            "unassigned_sd_files": expected_figure.get("unassigned_sd_files", [])
-        }
+        # Build actual data
+        for figure in actual_zip_structure.figures:
+            actual_data[figure.figure_label] = {
+                "panels": [{
+                    "panel_label": p.panel_label,
+                    "sd_files": p.sd_files
+                } for p in figure.panels],
+                "unassigned_sd_files": getattr(figure, "unassigned_sd_files", [])
+            }
         
-        # Get actual assignments
-        _, assigned_figures = _extract_panel_source_assignments(strategy, msid, run)
-        actual_data = assigned_figures.get(figure_label, {
-            "panels": [],
-            "unassigned_sd_files": []
-        })
-        
+        # Build expected data
+        for figure in ground_truth["figures"]:
+            expected_data[figure["figure_label"]] = {
+                "panels": [{
+                    "panel_label": p["panel_label"],
+                    "sd_files": p.get("sd_files", [])
+                } for p in figure["panels"]],
+                "unassigned_sd_files": figure.get("unassigned_sd_files", [])
+            }
+
         test_case = LLMTestCase(
-            input=str(expected_figure),
+            input=str(test_zip_structure),
             actual_output=str(actual_data),
             expected_output=str(expected_data)
         )
-        # import pdb; pdb.set_trace()
+
         _fill_results_bag(
             results_bag,
             task="panel_source_assignment",
             strategy=strategy,
             msid=msid,
             run=run,
-            figure_label=figure_label,
             metrics=_get_panel_source_metrics(),
             test_case=test_case,
             ai_response=str(actual_data)
         )
-        
+
         assert_test(test_case, metrics=_get_panel_source_metrics())
-            
+        
     except Exception as e:
         logger.error(f"Error in panel source assignment test: {str(e)}")
         raise
@@ -812,7 +806,6 @@ def test_panel_source_assignment(strategy, msid, run, figure_label, results_bag)
 ########################################################################################
 # Report generation
 ########################################################################################
-
 
 def test_synthesis(module_results_df):
     """
