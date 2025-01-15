@@ -12,6 +12,8 @@ import unicodedata
 from abc import ABC, abstractmethod
 from typing import Dict, Optional, Tuple
 
+import pypandoc
+from bs4 import BeautifulSoup
 from docx import Document
 from rouge_score import rouge_scorer
 
@@ -116,13 +118,7 @@ class FigureCaptionExtractor(ABC):
         Returns:
             str: Extracted text content from the DOCX file.
         """
-        try:
-            doc = Document(file_path)
-            paragraphs = [para.text for para in doc.paragraphs if para.text.strip()]
-            return " ".join(paragraphs)
-        except Exception as e:
-            logger.exception(f"Error reading DOCX file {file_path}: {str(e)}")
-            return ""
+        return pypandoc.convert_file(str(file_path), "html")
 
     def _parse_response(self, response_text: str) -> Dict[str, str]:
         """
@@ -135,25 +131,30 @@ class FigureCaptionExtractor(ABC):
             Dict[str, str]: Dictionary of figure labels and their captions.
         """
         try:
-            json_match = re.search(r'```json\s*({[\s\S]*?})\s*```', response_text)
+            json_str = response_text.strip()
+            
+            # Handle code block formatted responses (Claude style)
+            json_match = re.search(r'```json\s*(.*?)\s*```', json_str, re.DOTALL)
             if json_match:
                 json_str = json_match.group(1)
             else:
-                json_match = re.search(r'({[^{]*})', response_text)
+                # Handle direct JSON responses (OpenAI style) or content between braces
+                json_match = re.search(r'(\{.*\})', json_str, re.DOTALL)
                 if json_match:
                     json_str = json_match.group(1)
-                else:
-                    json_str = response_text.strip()
 
+            # Clean and normalize JSON string
             json_str = re.sub(r'[\n\r\t]', ' ', json_str)
             json_str = re.sub(r'\s+', ' ', json_str)
-
+            json_str = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', json_str)
+            
             try:
                 captions = json.loads(json_str)
             except json.JSONDecodeError:
                 json_str = re.sub(r'([{,])\s*([a-zA-Z0-9_]+)\s*:', r'\1"\2":', json_str)
                 captions = json.loads(json_str)
 
+            # Clean and validate captions
             cleaned_captions = {}
             for key, value in captions.items():
                 if isinstance(value, dict) and "title" in value and "caption" in value:
@@ -169,10 +170,9 @@ class FigureCaptionExtractor(ABC):
             return cleaned_captions
 
         except Exception as e:
-            logger.error(f"Error parsing response: {str(e)}", exc_info=True)
             logger.error(f"Error parsing response: {response_text}", exc_info=True)
             return {}
-
+        
     def _validate_caption(self, docx_path: str, caption: str, threshold: float = 0.85) -> Tuple[bool, float, str]:
         """
         Validate extracted caption against document text using ROUGE-L score and show differences.

@@ -413,6 +413,29 @@ For CPU-only:
 
 Make sure to update the `config.yaml` file with your API keys before running the Docker container.
 
+### Running model evaluation
+
+To run the model evaluation script, use the following command:
+
+```bash
+docker build -t soda-curation-test . -f Dockerfile.cpu --target testing
+
+docker run -it \
+  -v $(pwd):/app \
+  -e STRATEGIES=all \
+  -e MANUSCRIPTS=all \
+  -e RUNS=5 \
+  soda-curation-test \
+  poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+
+# Add the following to be able to entry in the container afterwards  
+docker run -it --name soda-curation-test  --shm-size=1g -v $(pwd):/app soda-curation-test  /bin/bash
+
+STRATEGIES='gpt-4o_temp=0.5' MANUSCRIPTS='EMM-2023-18636' RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+
+STRATEGIES='all' MANUSCRIPTS='all' RUNS=5 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+```
+
 ### Code Formatting and Linting
 
 To format and lint your code, run the following command:
@@ -453,6 +476,11 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### v0.2.2 (2024-12-02)
+
+- The text output is now given as `html` format to keep all the information present int he DOCX manuscripts
+- Improved logging, generating now a log file each time the program is run and adding AI responses for possible analysis on errors
+
 ### v0.2.1 (2024-12-02)
 
 - Obsolete tests removed
@@ -469,3 +497,4 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 - Support for OpenAI and Anthropic AI providers
 - Implemented figure and panel detection
 - Added caption extraction and matching functionality
+- Generating a better script to run soda-model evaluations

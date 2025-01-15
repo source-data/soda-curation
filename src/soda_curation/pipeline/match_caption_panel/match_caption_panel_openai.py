@@ -193,6 +193,11 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
                     )
 
                 response = self._call_openai_api(encoded_image, figure.figure_caption)
+                logger.info(f"****************")
+                logger.info(f"Panel to caption matching")
+                logger.info(f"****************")
+                logger.info(response)
+
                 panel_label, panel_caption = self._parse_response(response)
 
                 matched_panel = Panel(

@@ -1,5 +1,5 @@
 # Use a CPU-only Python image as the base image
-FROM python:3.8-slim-buster as base
+FROM python:3.8-slim-bullseye as base
 
 # Set work directory
 WORKDIR /app
@@ -15,7 +15,9 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
     PYSETUP_PATH="/app" \
-    VENV_PATH="/app/.venv"
+    VENV_PATH="/app/.venv" \
+    VIRTUAL_ENV="/app/.venv" \
+    PATH="/app/.venv/bin:$PATH"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -29,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     git \
     ghostscript \
     poppler-utils \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
@@ -46,6 +49,18 @@ COPY data/models/panel_detection_model_no_labels.pt ./data/models/
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
 
+# Install PyTorch for ARM/CPU
+RUN poetry run pip install --no-cache-dir \
+    torch==2.0.0 \
+    torchvision==0.15.1 \
+    --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Set environment variables to manage threading and memory
+ENV OMP_NUM_THREADS=1 \
+    MKL_NUM_THREADS=1 \
+    GOMP_STACKSIZE_MAX=32768 
+    # LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1
+
 # Install additional packages
 RUN poetry run pip install --upgrade pip \
     && poetry run pip install opencv-python==4.8.0.74 \
@@ -54,6 +69,7 @@ RUN poetry run pip install --upgrade pip \
     && poetry run pip install jupyterlab \
     && poetry run pip install PyMuPDF pdf2image \
     && poetry run python -c "from opencv_fixer import AutoFix; AutoFix()"
+    
 
 # Copy the config file
 COPY config.yaml /app/config.yaml
@@ -68,10 +84,12 @@ RUN mkdir /app/input
 RUN poetry run python -c "import yaml; print(yaml.__file__)"
 RUN poetry run python -c "import openai; print(openai.__file__)"
 RUN poetry run python -c "import cv2; print(cv2.__file__)"
-RUN poetry run python -c "from ultralytics import YOLO; print(YOLO)"
+RUN poetry run python -c "from ultralytics import YOLOv10; print(YOLOv10)"
 RUN poetry run python -c "import fitz; print(fitz.__file__)"
 RUN poetry run python -c "import pdf2image; print(pdf2image.__file__)"
 RUN mkdir -p /app/input /app/output
+RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
+
 
 # Development stage
 FROM base as development

@@ -1,18 +1,22 @@
 from datetime import datetime
+from functools import lru_cache
+from json import dump, load
+from os import getenv
+from pathlib import Path
+from zipfile import ZipFile
+import os 
+import papermill as pm
+import pytest
 from deepeval import assert_test
 from deepeval.metrics import BaseMetric
 from deepeval.scorer import Scorer
 from deepeval.test_case import LLMTestCase
-from functools import lru_cache
-from json import dump, load
-from os import getenv
-import papermill as pm
-from pathlib import Path
-import pytest
 from tabulate import tabulate
-from zipfile import ZipFile
 
 from soda_curation.config import load_config
+from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    Figure, Panel, ZipStructure, full_path 
+)
 from soda_curation.pipeline.extract_captions.extract_captions_claude import (
     FigureCaptionExtractorClaude,
 )
@@ -22,12 +26,29 @@ from soda_curation.pipeline.extract_captions.extract_captions_openai import (
 from soda_curation.pipeline.extract_captions.extract_captions_regex import (
     FigureCaptionExtractorRegex,
 )
+from src.soda_curation.pipeline.object_detection.object_detection import (
+    convert_to_pil_image,
+    create_object_detection,
+)
+from src.soda_curation.pipeline.match_caption_panel.match_caption_panel_openai import (
+    MatchPanelCaptionOpenAI,
+)
+from src.soda_curation.pipeline.assign_panel_source.assign_panel_source import (
+    PanelSourceAssigner,
+)
+from src.soda_curation.pipeline.assign_panel_source.assign_panel_source_prompts import (
+    get_assign_panel_source_prompt
+)
 
+MatchPanelCaptionOpenAI
+import logging
+from typing import Dict, List, Optional, Tuple
 
 ########################################################################################
 # Scoring task results
 ########################################################################################
 
+logger = logging.getLogger(__name__)
 
 class RougeMetric(BaseMetric):
     def __init__(self, score_type: str = "rouge1", threshold: float = 0.95):
@@ -110,10 +131,8 @@ def _get_metrics():
 # Fixtures
 ########################################################################################
 
-
 ground_truth_dir = Path("data/ground_truth")
 manuscript_dir = Path("data/archives")
-
 
 @lru_cache
 def _get_ground_truth(msid):
@@ -121,14 +140,11 @@ def _get_ground_truth(msid):
     with open(ground_truth_file, "r") as f:
         return load(f)
 
-
 def _expected_figure_labels(msid):
     return [f["figure_label"] for f in _get_ground_truth(msid)["figures"]]
 
-
 def _expected_figure_legends(msid):
     return _get_ground_truth(msid)["all_captions"]
-
 
 @lru_cache
 def _get_manuscript_path(msid):
@@ -140,7 +156,6 @@ def _get_manuscript_path(msid):
         with ZipFile(archive_path, "r") as zip_ref:
             zip_ref.extractall(extracted_archive_path)
     return extracted_archive_path / ground_truth["docx"]
-
 
 def _parse_env_list(env_var, all_value, all_indicator="all", delimiter=","):
     val = getenv(env_var, "")
@@ -315,15 +330,17 @@ def file_cache(task):
 @file_cache("figure_legends")
 def _extract_figure_legends_from_manuscript(strategy, msid, run):
     """Extract the figure legends section from a manuscript."""
+    # Get manuscript content from docx
     manuscript_content = _extract_manuscript_content(msid, strategy)
     expected_figure_labels = _expected_figure_labels(msid)
+    
+    # Use raw manuscript content as input
     extractor = _get_extractor(strategy)
     expected_figure_count = len(expected_figure_labels)
     extracted_figures = extractor._locate_figure_captions(
         manuscript_content, expected_figure_count, expected_figure_labels
     )
     return manuscript_content, extracted_figures
-
 
 @file_cache("figures")
 def _extract_figures_from_figure_legends(strategy, msid, run):
@@ -342,7 +359,8 @@ def _extract_figures_from_figure_legends(strategy, msid, run):
         ...
     }
     """
-    figure_legends = _expected_figure_legends(msid)
+    # Use ground truth figure legends as input instead of extracted ones
+    figure_legends = _get_ground_truth(msid)["all_captions"]
     expected_figure_labels = _expected_figure_labels(msid)
     expected_figure_count = len(expected_figure_labels)
 
@@ -355,7 +373,6 @@ def _extract_figures_from_figure_legends(strategy, msid, run):
     captions = extractor._parse_response(extracted_captions)
     return figure_legends, captions
 
-
 def _fill_results_bag(
     results_bag,
     task: str,
@@ -365,6 +382,7 @@ def _fill_results_bag(
     figure_label: str = None,
     metrics: list = [],
     test_case: LLMTestCase = None,
+    ai_response: str = None,
 ):
     results_bag.task = task
     results_bag.input = test_case.input
@@ -374,12 +392,13 @@ def _fill_results_bag(
     results_bag.msid = msid
     results_bag.run = run
     results_bag.figure_label = figure_label
+    results_bag.ai_response = ai_response 
+    
     for metric in metrics:
         score = metric.measure(test_case)
         setattr(results_bag, metric.name, score)
         setattr(results_bag, f"{metric.name}_success", metric.is_successful())
         setattr(results_bag, f"{metric.name}_threshold", metric.threshold)
-
 
 @pytest.mark.parametrize(
     "strategy, msid, run",
@@ -410,6 +429,8 @@ def test_extract_figure_legends_from_manuscript(strategy, msid, run, results_bag
         run=run,
         metrics=_get_metrics(),
         test_case=test_case,
+        ai_response=extracted_figure_legends
+        
     )
     assert_test(test_case, metrics=_get_metrics())
 
@@ -426,62 +447,17 @@ def test_extract_figures_from_figure_legends(strategy, msid, run, results_bag):
 
     The test results are added to the results_bag for further processing in the synthesis step.
     """
-    figure_legends, extracted_figures = _extract_figures_from_figure_legends(
-        strategy, msid, run
-    )
+    # Use ground truth figure legends as input
+    figure_legends = _get_ground_truth(msid)["all_captions"]
+    _, extracted_figures = _extract_figures_from_figure_legends(strategy, msid, run)
 
-    def _stringify_figure_labels(labels):
-        return "\n".join(sorted(labels))
-
-    actual_figure_labels = extracted_figures.keys()
-    expected_figure_labels = _expected_figure_labels(msid)
-
-    test_case = LLMTestCase(
-        input=figure_legends,
-        actual_output=_stringify_figure_labels(actual_figure_labels),
-        expected_output=_stringify_figure_labels(expected_figure_labels),
-    )
-
-    _fill_results_bag(
-        results_bag,
-        task="extract_figures",
-        strategy=strategy,
-        msid=msid,
-        run=run,
-        metrics=_get_metrics(),
-        test_case=test_case,
-    )
-
-    assert_test(test_case, metrics=_get_metrics())
-
-
-@pytest.mark.parametrize(
-    "strategy, msid, run, figure_label",
-    [
-        (f["strategy"], f["msid"], f["run"], f["figure_label"])
-        for f in figure_fixtures()
-    ],
-)
-def test_extract_figure_titles_from_figure_legends(
-    strategy, msid, run, figure_label, results_bag
-):
-    """
-    Test the extraction of a single figure title from the figure legends section of a manuscript.
-
-    The extracted figure title is scored against the reference figure title.
-    The test passes if the score is above a threshold.
-
-    The test results are added to the results_bag for further processing in the synthesis step.
-    """
-    figure_legends, extracted_figures = _extract_figures_from_figure_legends(
-        strategy, msid, run
-    )
     actual_figure_title = (
         extracted_figures[figure_label]["title"]
         if figure_label in extracted_figures
         else ""
     )
 
+    # Compare against ground truth title
     ground_truth = _get_ground_truth(msid)
     expected_figure_title = next(
         f["caption_title"]
@@ -504,14 +480,11 @@ def test_extract_figure_titles_from_figure_legends(
         figure_label=figure_label,
         metrics=_get_metrics(),
         test_case=test_case,
+        ai_response=actual_figure_title
     )
 
-
-    assert (
-        figure_label in extracted_figures
-    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
+    assert figure_label in extracted_figures
     assert_test(test_case, metrics=_get_metrics())
-
 
 @pytest.mark.parametrize(
     "strategy, msid, run, figure_label",
@@ -520,26 +493,29 @@ def test_extract_figure_titles_from_figure_legends(
         for f in figure_fixtures()
     ],
 )
-def test_extract_figure_captions_from_figure_legends(
+def test_extract_figure_titles_from_figure_legends(
     strategy, msid, run, figure_label, results_bag
 ):
     """
-    Test the extraction of a single figure caption from the figure legends section of a manuscript.
+    Test the extraction of a single figure title from the figure legends section of a manuscript.
 
-    The extracted figure caption is scored against the reference figure caption.
+    The extracted figure title is scored against the reference figure title.
     The test passes if the score is above a threshold.
 
     The test results are added to the results_bag for further processing in the synthesis step.
     """
-    figure_legends, extracted_figures = _extract_figures_from_figure_legends(
-        strategy, msid, run
-    )
+    """Test extraction of figure titles using ground truth legends."""
+    # Use ground truth figure legends as input
+    figure_legends = _get_ground_truth(msid)["all_captions"]
+    _, extracted_figures = _extract_figures_from_figure_legends(strategy, msid, run)
+
     actual_figure_caption = (
         extracted_figures[figure_label]["caption"]
         if figure_label in extracted_figures
         else ""
     )
 
+    # Compare against ground truth caption
     ground_truth = _get_ground_truth(msid)
     expected_figure_caption = next(
         f["figure_caption"]
@@ -562,18 +538,274 @@ def test_extract_figure_captions_from_figure_legends(
         figure_label=figure_label,
         metrics=_get_metrics(),
         test_case=test_case,
+        ai_response=actual_figure_caption
     )
 
-    assert (
-        figure_label in extracted_figures
-    ), f"Figure {figure_label} not found in extracted figures: {extracted_figures.keys()}"
+    assert figure_label in extracted_figures
     assert_test(test_case, metrics=_get_metrics())
 
+@pytest.mark.parametrize(
+    "strategy, msid, run, figure_label",
+    [
+        (f["strategy"], f["msid"], f["run"], f["figure_label"])
+        for f in figure_fixtures()
+    ],
+)
+def test_extract_figure_captions_from_figure_legends(
+    strategy, msid, run, figure_label, results_bag
+):
+    """
+    Test the extraction of a single figure caption from the figure legends section of a manuscript.
+
+    The extracted figure caption is scored against the reference figure caption.
+    The test passes if the score is above a threshold.
+
+    The test results are added to the results_bag for further processing in the synthesis step.
+    """
+    # Use ground truth figure legends as input 
+    figure_legends = _get_ground_truth(msid)["all_captions"]
+    _, extracted_figures = _extract_figures_from_figure_legends(strategy, msid, run)
+
+    actual_figure_caption = (
+        extracted_figures[figure_label]["caption"]
+        if figure_label in extracted_figures
+        else ""
+    )
+
+    # Compare against ground truth caption
+    ground_truth = _get_ground_truth(msid)
+    expected_figure_caption = next(
+        f["figure_caption"]
+        for f in ground_truth["figures"]
+        if f["figure_label"] == figure_label
+    )
+
+    test_case = LLMTestCase(
+        input=figure_legends,
+        actual_output=actual_figure_caption,
+        expected_output=expected_figure_caption,
+    )
+
+    _fill_results_bag(
+        results_bag,
+        task="extract_figure_caption",
+        strategy=strategy,
+        msid=msid,
+        run=run,
+        figure_label=figure_label,
+        metrics=_get_metrics(),
+        test_case=test_case,
+        ai_response=actual_figure_caption
+    )
+
+    assert figure_label in extracted_figures
+    assert_test(test_case, metrics=_get_metrics())
+
+########################################################################################
+# Source Data assignation test
+########################################################################################
+class PanelSourceMatchMetric(BaseMetric):
+    """Metric to evaluate panel source data assignment accuracy for entire manuscripts."""
+    
+    def __init__(self, score_type: str = "panel_accuracy", threshold: float = 0.8):
+        self.score_type = score_type
+        self.threshold = threshold
+        self.success = False
+        self.score = 0.0
+
+    def measure(self, test_case: LLMTestCase) -> float:
+        """
+        Measure accuracy of panel source assignments across all figures in manuscript.
+        Returns a score between 0 and 1 representing the proportion of correct assignments.
+        """
+        try:
+            expected_data = eval(test_case.expected_output)
+            actual_data = eval(test_case.actual_output)
+            
+            # Track totals across all figures
+            total_expected_files = 0
+            total_correct_assignments = 0
+            
+            # Process each figure
+            for figure_label, figure_data in expected_data.items():
+                # Get actual figure data
+                actual_figure = actual_data.get(figure_label, {})
+                
+                # Process each panel in the figure
+                expected_panel_files = {}
+                for panel in figure_data.get("panels", []):
+                    label = panel.get("panel_label", "")
+                    files = set(panel.get("sd_files", []))
+                    expected_panel_files[label] = files
+                    total_expected_files += len(files)
+                    
+                    # Find matching actual panel
+                    actual_panel = next(
+                        (p for p in actual_figure.get("panels", [])
+                         if p.get("panel_label") == label),
+                        None
+                    )
+                    
+                    if actual_panel:
+                        actual_files = set(actual_panel.get("sd_files", []))
+                        correct_for_panel = len(actual_files.intersection(files))
+                        total_correct_assignments += correct_for_panel
+                        logger.info(f"Figure {figure_label} Panel {label}: {correct_for_panel} correct of {len(files)}")
+
+                # Handle unassigned files for this figure
+                expected_unassigned = set(figure_data.get("unassigned_sd_files", []))
+                actual_unassigned = set(actual_figure.get("unassigned_sd_files", []))
+                total_expected_files += len(expected_unassigned)
+                correct_unassigned = len(actual_unassigned.intersection(expected_unassigned))
+                total_correct_assignments += correct_unassigned
+                
+                logger.info(f"Figure {figure_label} unassigned: {correct_unassigned} correct of {len(expected_unassigned)}")
+
+            # Calculate final manuscript score
+            if total_expected_files == 0:
+                self.score = 1.0 if total_correct_assignments == 0 else 0.0
+            else:
+                self.score = total_correct_assignments / total_expected_files
+                
+            self.success = self.score >= self.threshold
+            logger.info(f"Manuscript total: {total_correct_assignments} correct of {total_expected_files} ({self.score:.2f})")
+            
+            return self.score
+
+        except Exception as e:
+            logger.error(f"Error measuring manuscript panel source assignments: {str(e)}")
+            self.score = 0.0
+            self.success = False
+            return self.score
+
+    async def a_measure(self, test_case: LLMTestCase):
+        return self.measure(test_case)
+
+    def is_successful(self):
+        return self.success
+
+    @property
+    def name(self):
+        return f"panel_source_{self.score_type}"
+
+def _get_panel_source_metrics():
+    """Get metrics for evaluating panel source assignments."""
+    return [PanelSourceMatchMetric(score_type="manuscript_accuracy", threshold=0.8)]
+
+@pytest.mark.parametrize(
+    "strategy, msid, run",
+    [(f["strategy"], f["msid"], f["run"]) 
+     for f in manuscript_fixtures()
+     if "gpt" in f["strategy"]]  # Only test OpenAI strategies
+)
+def test_panel_source_assignment(strategy, msid, run, results_bag):
+    """Test panel source data assignment for entire manuscript."""
+    try:
+        # Get ground truth figures
+        ground_truth = _get_ground_truth(msid)
+        extract_dir = manuscript_dir / msid
+        
+        # Process all figures in the manuscript
+        test_figures = []
+        for expected_figure in ground_truth["figures"]:
+            # Create Panel objects for this figure
+            input_panels = [
+                Panel(
+                    panel_label=p.get("panel_label", ""),
+                    panel_caption=p.get("panel_caption", ""),
+                    panel_bbox=p.get("panel_bbox", []),
+                    confidence=p.get("confidence", 0.0),
+                    sd_files=[],
+                    ai_response=""
+                ) for p in expected_figure.get("panels", [])
+            ]
+
+            # Get paths for this figure
+            sd_files = expected_figure.get("sd_files", [])
+            full_sd_files = [full_path(str(extract_dir), f) for f in sd_files]
+
+            # Create Figure object
+            test_figure = Figure(
+                figure_label=expected_figure["figure_label"],
+                img_files=expected_figure.get("img_files", []),
+                sd_files=sd_files,
+                _full_sd_files=full_sd_files,
+                panels=input_panels,
+                figure_caption=expected_figure.get("figure_caption", ""),
+                caption_title=expected_figure.get("caption_title", "")
+            )
+            test_figures.append(test_figure)
+
+        # Create ZipStructure with all figures
+        test_zip_structure = ZipStructure(
+            manuscript_id=msid,
+            xml=ground_truth.get("xml", ""),
+            docx=ground_truth.get("docx", ""),
+            pdf=ground_truth.get("pdf", ""),
+            _full_docx=full_path(str(extract_dir), ground_truth["docx"]) if ground_truth.get("docx") else None,
+            _full_pdf=full_path(str(extract_dir), ground_truth["pdf"]) if ground_truth.get("pdf") else None,
+            appendix=ground_truth.get("appendix", []),
+            _full_appendix=[full_path(str(extract_dir), f) for f in ground_truth.get("appendix", [])],
+            figures=test_figures,
+            errors=[],
+            non_associated_sd_files=[]
+        )
+
+        # Process entire manuscript
+        config = _get_base_config()
+        assigner = PanelSourceAssigner(config)
+        actual_zip_structure = assigner.assign_panel_source(test_zip_structure)
+
+        # Convert to comparable dictionaries
+        actual_data = {}
+        expected_data = {}
+        
+        # Build actual data
+        for figure in actual_zip_structure.figures:
+            actual_data[figure.figure_label] = {
+                "panels": [{
+                    "panel_label": p.panel_label,
+                    "sd_files": p.sd_files
+                } for p in figure.panels],
+                "unassigned_sd_files": getattr(figure, "unassigned_sd_files", [])
+            }
+        
+        # Build expected data
+        for figure in ground_truth["figures"]:
+            expected_data[figure["figure_label"]] = {
+                "panels": [{
+                    "panel_label": p["panel_label"],
+                    "sd_files": p.get("sd_files", [])
+                } for p in figure["panels"]],
+                "unassigned_sd_files": figure.get("unassigned_sd_files", [])
+            }
+
+        test_case = LLMTestCase(
+            input=str(test_zip_structure),
+            actual_output=str(actual_data),
+            expected_output=str(expected_data)
+        )
+
+        _fill_results_bag(
+            results_bag,
+            task="panel_source_assignment",
+            strategy=strategy,
+            msid=msid,
+            run=run,
+            metrics=_get_panel_source_metrics(),
+            test_case=test_case,
+            ai_response=str(actual_data)
+        )
+
+        assert_test(test_case, metrics=_get_panel_source_metrics())
+        
+    except Exception as e:
+        logger.error(f"Error in panel source assignment test: {str(e)}")
+        raise
 
 ########################################################################################
 # Report generation
 ########################################################################################
-
 
 def test_synthesis(module_results_df):
     """

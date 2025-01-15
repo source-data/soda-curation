@@ -1,3 +1,7 @@
+
+
+./run_soda_curation_cpu.sh data/EMM-2023-18636.zip  data/output_EMM-2023-18636_html.json
+
 # ./run_soda_curation_cpu.sh data/EMM-2023-18636.zip  data/output_EMM-2023-18636_regex.json
 # ./run_soda_curation_cpu.sh data/EMBOJ-2023-114195.zip  data/output_EMBOJ-2023-114195_regex.json
 # ./run_soda_curation_cpu.sh data/EMBOJ-2023-115257.zip  data/output_EMBOJ-2023-115257_regex.json      

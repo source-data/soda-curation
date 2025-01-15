@@ -100,14 +100,14 @@ class PanelSourceAssigner:
         return figure
 
     def _get_zip_contents(self, zip_path: str) -> List[str]:
-        """Get list of valid files from ZIP archive."""
+        """Get list of valid files from ZIP archive using exact internal paths."""
         try:
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                # Get all files, excluding Mac OS metadata and empty directories
                 return [
                     f for f in zip_ref.namelist()
                     if not f.startswith('__MACOSX')
                     and not f.endswith('.DS_Store')
-                    and not f == ""
                     and not f.endswith('/')
                 ]
         except Exception as e:
@@ -115,10 +115,9 @@ class PanelSourceAssigner:
             return []
 
     def _update_figure_with_assignments(self, figure: Figure, zip_path: str, assignments: Dict[str, List[str]]):
-        """Update figure with source data assignments."""
+        """Update figure with source data assignments using exact ZIP paths."""
         try:
             zip_filename = os.path.basename(zip_path)
-            figure_number = figure.figure_label.split()[-1]
             assigned_files = set()
 
             # Clean existing assignments
@@ -131,7 +130,7 @@ class PanelSourceAssigner:
                 if panel.panel_label in assignments:
                     panel_files = assignments[panel.panel_label]
                     panel.sd_files = [
-                        f"suppl_data/{zip_filename}:Figure {figure_number}/{file}"
+                        f"suppl_data/{zip_filename}:{file}"
                         for file in panel_files
                     ]
                     assigned_files.update(panel.sd_files)
@@ -139,7 +138,7 @@ class PanelSourceAssigner:
             # Add unassigned files
             if 'unassigned' in assignments:
                 unassigned = [
-                    f"suppl_data/{zip_filename}:Figure {figure_number}/{file}"
+                    f"suppl_data/{zip_filename}:{file}"
                     for file in assignments['unassigned']
                 ]
                 figure.unassigned_sd_files = unassigned
@@ -203,7 +202,11 @@ class PanelSourceAssigner:
 
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
             response = messages.data[0].content[0].text.value
-            
+            logger.info(f"****************")
+            logger.info(f"PANEL SOURCE ASSIGNMENT RESPONSE")
+            logger.info(f"****************")
+            logger.info(response)
+
             # Cleanup
             self.client.beta.threads.delete(thread_id=thread.id)
             

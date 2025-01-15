@@ -114,3 +114,8 @@ config.yaml
 
 # Ignore all files in any directory named temp
 temp/
+
+.deepeval_telemtry.txt
+report.html
+logs/
+.hypothesis/

@@ -11,6 +11,8 @@ LOCATE_CAPTIONS_PROMPT = """
 You are a scientific text analyzer focused on finding figure captions in scientific manuscripts. 
     Your task is ONLY to find and return the complete figure-related text content from the manuscript.
     
+The text will be encoded as a `HTML` string and you are required to follow the instructions below, returning
+also `HTML` formatted strings in the answer.
 
 Key Instructions:
 1. Look for figure captions throughout the entire document - they can appear:
@@ -55,7 +57,8 @@ only then return "No figure legends section found."
 
 EXTRACT_CAPTIONS_PROMPT = """
 You are an AI assistant specializing in extracting figure captions from scientific manuscripts. 
-A section containing ALL figure captions has been provided.
+A section containing ALL figure captions has been provided. This section is encoded as a `HTML` string.
+We REQUIRE that the figure captions and titles that you extract are returned also as `HTML` strings.
 
 Your task is to parse these captions into a structured format:
 
@@ -90,10 +93,10 @@ Example output format:
 {
   "Figure 1": {
     "title": "Main descriptive sentence of the figure",
-    "caption": "Figure caption not including title and label, but including all panel descriptions"
+    "caption": "Figure caption not including title and <tag>label</tag>, but including all panel descriptions"
   },
   "Figure 2": {
-    "title": "Analysis of protein expression in response to treatment",
+    "title": "Analysis of protein <tag>expression in response to</tag> treatment",
     "caption": "A) Western blot analysis... B) Quantification of..."
   }
 }
@@ -153,6 +156,9 @@ CLAUDE_LOCATE_CAPTIONS_PROMPT = """
 You are an expert at identifying and extracting complete figure captions from scientific manuscripts.
 Your task is to locate and extract the FULL figure captions, including ALL details and panel descriptions.
 
+The text will be encoded as a `HTML` string and you are required to follow the instructions below, returning
+also `HTML` formatted strings in the answer.
+
 Key Directives:
 1. Extract COMPLETE figure captions, including:
    - Full figure titles
@@ -209,6 +215,9 @@ CLAUDE_EXTRACT_CAPTIONS_PROMPT = """
 You are an AI assistant specializing in extracting figure captions from scientific manuscripts. 
 A section containing ALL figure captions has been provided.
 
+The text will be encoded as a `HTML` string and you are required to follow the instructions below, returning
+also `HTML` formatted strings in the answer.
+
 Your task is to parse these captions into a structured format:
 
 1. You MUST extract EXACTLY $expected_figure_count figure captions from the provided text.
@@ -236,6 +245,8 @@ Your task is to parse these captions into a structured format:
 The figures typically appear as:
 
 Figure X: {Caption Title}. {Caption text}
+
+DO NOT include any explanatory text before or after the JSON.
 
 OUTPUT FORMAT:
 ```json
