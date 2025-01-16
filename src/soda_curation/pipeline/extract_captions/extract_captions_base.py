@@ -281,12 +281,18 @@ class FigureCaptionExtractor(ABC):
         pass
 
     @abstractmethod
-    def extract_captions(self, docx_path: str, zip_structure: ZipStructure, expected_figure_count: int, expected_figure_labels: str) -> ZipStructure:
+    def extract_captions(
+        self,
+        file_content: str,
+        zip_structure: ZipStructure,
+        expected_figure_count: int,
+        expected_figure_labels: str) -> ZipStructure:
+
         """
         Extract captions from the document and update ZipStructure.
         
         Args:
-            docx_path (str): Path to DOCX file
+            file_content (str): DOCX file content
             zip_structure (ZipStructure): Current ZIP structure
             expected_figure_count (int): Expected number of figures
             expected_figure_labels (str): Expected figure labels
