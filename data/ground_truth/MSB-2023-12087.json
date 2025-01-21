@@ -30,6 +30,9 @@
       ]
     }
   ],
-  "data_availability": [],
+  "data_availability": {
+    "section_text": "<p>This study includes no data deposited in external repositories.</p>",
+    "data_sources": []
+  },
   "all_captions": "<p><strong>Figure legends</strong></p>\n<p><strong>Figure 1. Linking metadata sources and digesting them with\nlanguage models to generate structured outputs and representations of\nsimilarity. A) Illustration of Hamming code for error correction in data\ntransmission.</strong> Transmission of data (d) and parity (p) bits\nenables error correction via redundancy\n(https://en.wikipedia.org/wiki/Hamming_code). <strong>B) Diagram showing\nthe different sources of metadata information and how to bundle\nthem.</strong> Three independent resources – the electronic labnotebook,\nthe data-associated metadata, and the publication – are shown as\nredundant entries. An AI language model can be used to extract required\nand standardized data elements for verification, using codewords as a\nmeans of error correction analogous to error correction in\ncommunication. <strong>C) Heatmap display of similarities between\nsources by keyword.</strong> A Jupyter notebook using GPT-4 has been\nused to create a structured output in the form of a CSV file, (see Table\n1). The digestion of a labnotebook entry, a metadata file server file,\nand this manuscript are used to check for keywords. The consistency of\nthe keywords across the sources is displayed in a heatmap using the\ncosine distance for semantic similarity estimation <a href=\"https://spacy.io/api/doc\">(<u>https://spacy.io/api/doc</u>)</a>.</p>"
 }

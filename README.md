@@ -439,7 +439,7 @@ docker run -it \
   -v $(pwd):/app soda-curation-test \
   /bin/bash
 
-STRATEGIES='gpt-4o_temp=0' MANUSCRIPTS=MSB-2023-12087 RUNS=2 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+STRATEGIES='gpt-4o_temp=0' MANUSCRIPTS='EMM-2023-18636' RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 ```
 
 ### Code Formatting and Linting

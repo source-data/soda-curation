@@ -129,6 +129,8 @@ class PanelSourceAssigner:
             for panel in figure.panels:
                 if panel.panel_label in assignments:
                     panel_files = assignments[panel.panel_label]
+                    
+                    # Construct proper paths maintaining the full directory structure
                     panel.sd_files = [
                         f"suppl_data/{zip_filename}:{file}"
                         for file in panel_files

@@ -96,7 +96,7 @@ class ZipStructure:
     non_associated_sd_files: List[str] = field(default_factory=list)
     _full_appendix: List[str] = field(default_factory=list)
     ai_config: Dict[str, Any] = field(default_factory=dict)
-    data_availability: List[Dict] = field(default_factory=list)
+    data_availability: Dict = field(default_factory=dict)
     manuscript_id: str = ""
     xml: str = ""
     docx: str = ""

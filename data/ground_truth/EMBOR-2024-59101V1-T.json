@@ -34,107 +34,107 @@
         {
           "panel_label": "A",
           "panel_caption": "HEK239 cells transiently expressing the 35S-NHK are chased for the indicated time without (lanes 1-3) or with PS341 (lanes 4, 5), PS341/BafA1 (lanes 6, 7), KIF (lanes 8, 9), or KIF/BafA1 (10-11). Radiolabeled NHK is immunoisolated at the end of the indicated chase time and separated in SDS-PAGE. Densitometric quantification of the 35S-NHK band in this representative experiment is shown.",
-          "sd_files": ["suppl_data/Figure 2.zip:2A/gel 35S.tif"]
+          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2A/gel 35S.tif"]
         },
         {
           "panel_label": "B",
           "panel_caption": "Quantification of 35S-NHK after a 10- or 120-min chase in cells mock treated or exposed to PS341 or PS341/BafA1. Individual data points at 120-min (%, normalized to 10’ mock): mock= 49, 37 and 49%; PS341= 73, 55 and 52%; PS341/BafA1= 91, 63 and 68%. N=3 independent experiments, mean +/- SEM is shown.",
-          "sd_files": ["suppl_data/Figure 2.zip:2B/quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2B/quantification.xlsx"]
         },
         {
           "panel_label": "C",
           "panel_caption": "Same as (B) for Kif, KIF/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): mock= 49, 37 and 49%; KIF= 80, 53 and 54%; KIF/BafA1= 99, 64 and 83%. N=3 independent experiments, mean +/- SEM is shown.",
-          "sd_files": ["suppl_data/Figure 2.zip:2C/quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2C/quantification.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "BafA1 does not inhibit clearance of the ERAD client NHK. n=3 for 10- and 120-min; n=2 for 120-min BafA1. mean +/- SEM is shown.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2D/gel 35S.tif",
-            "suppl_data/Figure 2.zip:2D/quantification.xlsx"
+            "suppl_data/Figure 2.zip:Figure 2/2D/gel 35S.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2D/quantification.xlsx"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "ATZ, a canonical ERLAD client accumulates within LAMP1-positive endolysosomes in 3T3 cells exposed to BafA1. Scale bars: 10μM, Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2E/ha.tif",
-            "suppl_data/Figure 2.zip:2E/lamp.tif"
+            "suppl_data/Figure 2.zip:Figure 2/2E/ha.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2E/lamp.tif"
           ]
         },
         {
           "panel_label": "F",
           "panel_caption": "The ERAD client NHK is not delivered within LAMP1-positive endolysosomes. Scale bars: 10μM, Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2F/ha.tif",
-            "suppl_data/Figure 2.zip:2F/lamp.tif"
+            "suppl_data/Figure 2.zip:Figure 2/2F/ha.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2F/lamp.tif"
           ]
         },
         {
           "panel_label": "G",
           "panel_caption": "NHK is delivered and accumulates within endolysosomes inactivated with BafA1 upon ERAD inhibition with KIF. Scale bars: 10μM, Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2F/ha.tif",
-            "suppl_data/Figure 2.zip:2F/lamp.tif"
+            "suppl_data/Figure 2.zip:Figure 2/2F/ha.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2F/lamp.tif"
           ]
         },
         {
           "panel_label": "H",
           "panel_caption": "NHK is delivered and accumulates within endolysosomes inactivated with BafA1 upon ERAD inhibition with PS341. Scale bars: 10μM, Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2H/ha.tif",
-            "suppl_data/Figure 2.zip:2H/lamp.tif"
+            "suppl_data/Figure 2.zip:Figure 2/2H/ha.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2H/lamp.tif"
           ]
         },
         {
           "panel_label": "I",
           "panel_caption": "LysoQuant quantification of ATZ delivery within LAMP1-positive endolysosomes in panel E, and of NHK in panels F-H (n=18, 19, 23 and 13 cells, respectively. mean is shown. N=3 independent experiments. One-way analysis of variance (ANOVA) and Dunnett’s multiple comparison test, ****P<0.0001.",
-          "sd_files": ["suppl_data/Figure 2.zip:2I/Quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2I/Quantification.xlsx"]
         },
         {
           "panel_label": "J",
           "panel_caption": "Analysis of NHK delivery to LAMP1-positive endolysosomes as in (F-H) but with drug incubation of 8h and with additional BafA1 washout conditions. Scale bars: 10μM, Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2J/ha.tif",
-            "suppl_data/Figure 2.zip:2J/lamp.tif"
+            "suppl_data/Figure 2.zip:Figure 2/2J/ha.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2J/lamp.tif"
           ]
         },
         {
           "panel_label": "K",
           "panel_caption": "Analysis of NHK delivery to LAMP1-positive endolysosomes as in (F-H) but with drug incubation of 8h and with additional BafA1 washout conditions. Scale bars: 10μM, Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2K/ha.tif",
-            "suppl_data/Figure 2.zip:2K/lamp.tif"
+            "suppl_data/Figure 2.zip:Figure 2/2K/ha.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2K/lamp.tif"
           ]
         },
         {
           "panel_label": "L",
           "panel_caption": "Analysis of NHK delivery to LAMP1-positive endolysosomes as in (F-H) but with drug incubation of 8h and with additional BafA1 washout conditions. Scale bars: 10μM, Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2L/ha.tif",
-            "suppl_data/Figure 2.zip:2L/lamp.tif"
+            "suppl_data/Figure 2.zip:Figure 2/2L/ha.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2L/lamp.tif"
           ]
         },
         {
           "panel_label": "M",
           "panel_caption": "Analysis of NHK delivery to LAMP1-positive endolysosomes as in (F-H) but with drug incubation of 8h and with additional BafA1 washout conditions. Scale bars: 10μM, Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2M/ha.tif",
-            "suppl_data/Figure 2.zip:2M/lamp.tif"
+            "suppl_data/Figure 2.zip:Figure 2/2M/ha.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2M/lamp.tif"
           ]
         },
         {
           "panel_label": "N",
           "panel_caption": "Analysis of NHK delivery to LAMP1-positive endolysosomes as in (F-H) but with drug incubation of 8h and with additional BafA1 washout conditions. Scale bars: 10μM, Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 2.zip:2N/ha.tif",
-            "suppl_data/Figure 2.zip:2N/lamp.tif"
+            "suppl_data/Figure 2.zip:Figure 2/2N/ha.tif",
+            "suppl_data/Figure 2.zip:Figure 2/2N/lamp.tif"
           ]
         },
         {
           "panel_label": "O",
           "panel_caption": "LysoQuant quantification of NHK accumulation within LAMP1 positive endolysosomes (panels J-N, n=31, 24, 31, 31 and 33 cells respectively. mean is shown. N=3 independent experiments. One-way analysis of variance (ANOVA) and Dunnett’s multiple comparison test, ****P<0.0001.",
-          "sd_files": ["suppl_data/Figure 2.zip:2O/Quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2O/Quantification.xlsx"]
         }
       ]
     },
@@ -148,49 +148,49 @@
         {
           "panel_label": "A",
           "panel_caption": "Western blot showing the efficiency of EDEM1 silencing in HEK293 cells.",
-          "sd_files": ["suppl_data/Figure 3.zip:3A/WB.tif"]
+          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3A/WB.tif"]
         },
         {
           "panel_label": "B",
           "panel_caption": "Delivery of NHK in control cells (upper panels) and in cells with reduced ERAD upon EDEM1 silencing (lower panels). Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 3.zip:3B/ha shCRTL.tif",
-            "suppl_data/Figure 3.zip:3B/lamp shCRTL.tif",
-            "suppl_data/Figure 3.zip:3B/sh edem ha.tif",
-            "suppl_data/Figure 3.zip:3B/sh edem lamp.tif",
-            "suppl_data/Figure 3.zip:3B/shEDEM ha.tif",
-            "suppl_data/Figure 3.zip:3B/shEDEM lamp.tif"
+            "suppl_data/Figure 3.zip:Figure 3/3B/ha shCRTL.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3B/lamp shCRTL.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3B/sh edem ha.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3B/sh edem lamp.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3B/shEDEM ha.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3B/shEDEM lamp.tif"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "LysoQuant quantification of (B). (n=39 and 25 cells, respectively). Mean is shown. N=3 independent experiments. Unpaired t-test, *** P<0.001.",
-          "sd_files": ["suppl_data/Figure 3.zip:3C/Quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3C/Quantification.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "Western blot showing the efficiency of OS9.1/OS9.2 silencing. Two different oligos are used to reduce OS9.1/OS9.2 level. Quantification of OS9.1 and OS9.2 levels, normalized on GAPDH, is shown. ",
           "sd_files": [
-            "suppl_data/Figure 3.zip:3D/WB GAPDH.tif",
-            "suppl_data/Figure 3.zip:3D/WB OS9.tif"
+            "suppl_data/Figure 3.zip:Figure 3/3D/WB GAPDH.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3D/WB OS9.tif"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "Delivery of NHK in control cells (upper panels) and in cells with reduced ERAD upon OS9.1/OS9.2 silencing (lower panels). Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 3.zip:3E/shCTRL_ha.tif",
-            "suppl_data/Figure 3.zip:3E/shCTRL_rab7.tif",
-            "suppl_data/Figure 3.zip:3E/shOS9A_ha.tif",
-            "suppl_data/Figure 3.zip:3E/shOS9A_rab7.tif",
-            "suppl_data/Figure 3.zip:3E/shOS9B_ha.tif",
-            "suppl_data/Figure 3.zip:3E/shOS9B_rab7.tif"
+            "suppl_data/Figure 3.zip:Figure 3/3E/shCTRL_ha.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3E/shCTRL_rab7.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3E/shOS9A_ha.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3E/shOS9A_rab7.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3E/shOS9B_ha.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3E/shOS9B_rab7.tif"
           ]
         },
         {
           "panel_label": "F",
           "panel_caption": "LysoQuant quantification of E (n=35, 36 and 18 cells, respectively).Mean is shown. N=3 independent experiments.Mean is shown. N=3 independent experiments One-way analysis of variance (ANOVA) and Dunnett’s multiple comparison test, ****P<0.0001, ***P<0.001 ",
-          "sd_files": ["suppl_data/Figure 3.zip:3F/Quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3F/Quantification.xlsx"]
         }
       ]
     },
@@ -204,87 +204,87 @@
         {
           "panel_label": "A",
           "panel_caption": "Western blot showing deletion of endogenous FAM134B in MEF and levels of recombinant FAM134B-V5 and FAM134BLIR-V5 upon back-transfection.",
-          "sd_files": ["suppl_data/Figure 4.zip:4A/WB.tif"]
+          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4A/WB.tif"]
         },
         {
           "panel_label": "B",
           "panel_caption": "NHK does not accumulate in LAMP1-positive endolysosomes in wild type (upper panels) and FAM134B-KO cells (lower panels). Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 4.zip:4B/ha CRISPR FAM.tif",
-            "suppl_data/Figure 4.zip:4B/lamp CRISPR FAM.tif",
-            "suppl_data/Figure 4.zip:4B/WT ha.tif",
-            "suppl_data/Figure 4.zip:4B/WT lamp.tif"
+            "suppl_data/Figure 4.zip:Figure 4/4B/ha CRISPR FAM.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/lamp CRISPR FAM.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/WT ha.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/WT lamp.tif"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "LysoQuant quantification of (B) (n=17 and 27 cells, respectively). Mean is shown. N=3 independent experiments, Unpaired t-test, nsP> 0.05. ",
-          "sd_files": ["suppl_data/Figure 4.zip:4C/Quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4C/Quantification.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "NHK is delivered in LAMP1-positive endolysosomes upon ERAD inhibition with KIF in wild type MEF. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 4.zip:4D/ha.tif",
-            "suppl_data/Figure 4.zip:4D/lamp.tif"
+            "suppl_data/Figure 4.zip:Figure 4/4D/ha.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4D/lamp.tif"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "NHK is not delivered in LAMP1-positive endolysosomes upon ERAD inhibition with KIF in MEF lacking FAM134B.  bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4E/ha.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4E/lamp.tif"
+            "suppl_data/Figure 4.zip:Figure 4/4E/ha.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4E/lamp.tif"
           ]
         },
         {
           "panel_label": "F",
           "panel_caption": "Back-transfection of FAM134B in FAM134B-KO MEF restores NHK delivery within endolysosomes. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4F/ha.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4F/lamp.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4F/V5.tif"
+            "suppl_data/Figure 4.zip:Figure 4/4F/ha.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4F/lamp.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4F/V5.tif"
           ]
         },
         {
           "panel_label": "G",
           "panel_caption": "Back-transfection of FAM134BLIR that cannot engage LC3 fails to restore NHK delivery within endolysosomes. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4G/ha.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4G/lamp.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4G/V5.tif"
+            "suppl_data/Figure 4.zip:Figure 4/4G/ha.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4G/lamp.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4G/V5.tif"
           ]
         },
         {
           "panel_label": "H",
           "panel_caption": "Analysis of NHK delivery to LAMP1-positive lysosomes in FAM134B-KO cells as in (E-G), when ERAD is inhibited with PS341. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4H/ha.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4H/lamp.tif"
+            "suppl_data/Figure 4.zip:Figure 4/4H/ha.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4H/lamp.tif"
           ]
         },
         {
           "panel_label": "I",
           "panel_caption": "Analysis of NHK delivery to LAMP1-positive lysosomes in FAM134B-KO cells as in (E-G), when ERAD is inhibited with PS341. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4I/ha.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4I/lamp.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4I/V5.tif"
+            "suppl_data/Figure 4.zip:Figure 4/4I/ha.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4I/lamp.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4I/V5.tif"
           ]
         },
         {
           "panel_label": "J",
           "panel_caption": "Analysis of NHK delivery to LAMP1-positive lysosomes in FAM134B-KO cells as in (E-G), when ERAD is inhibited with PS341. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4J/ha.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4J/lamp.tif",
-            "suppl_data/Figure 4.zip:Figure 4/Figure 4/4J/V5.tif"
+            "suppl_data/Figure 4.zip:Figure 4/4J/ha.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4J/lamp.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4J/V5.tif"
           ]
         },
         {
           "panel_label": "K",
           "panel_caption": "LysoQuant quantification of D-J (n=39, 35, 37, 39, 31, 30 and 35 cells, respectively). Mean is shown. N=2 independent experiments. ",
-          "sd_files": ["suppl_data/Figure 4.zip:4K/Quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4K/Quantification.xlsx"]
         }
       ]
     },
@@ -299,59 +299,59 @@
           "panel_label": "A",
           "panel_caption": "Same as Figs. 2F-2H, in MEF. The ERAD client NHK is not delivered to LAMP1-positive endolysosomes. NHK is delivered and accumulates within endolysosomes inactivated with BafA1 upon ERAD inhibition. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 5.zip:5A/ha.tif",
-            "suppl_data/Figure 5.zip:5A/lamp .tif"
+            "suppl_data/Figure 5.zip:Figure 5/5A/ha.tif",
+            "suppl_data/Figure 5.zip:Figure 5/5A/lamp .tif"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "Same as Figs. 2F-2H, in MEF. The ERAD client NHK is not delivered to LAMP1-positive endolysosomes. NHK is delivered and accumulates within endolysosomes inactivated with BafA1 upon ERAD inhibition with KIF. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 5.zip:Figure 5/Figure 5/5B/ha.tif",
-            "suppl_data/Figure 5.zip:Figure 5/Figure 5/5B/lamp.tif"
+            "suppl_data/Figure 5.zip:Figure 5/5B/ha.tif",
+            "suppl_data/Figure 5.zip:Figure 5/5B/lamp.tif"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "Same as Figs. 2F-2H, in MEF. The ERAD client NHK is not delivered to LAMP1-positive endolysosomes. NHK is delivered and accumulates within endolysosomes inactivated with BafA1 upon ERAD inhibition with PS341. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 5.zip:Figure 5/Figure 5/5C/ha.tif",
-            "suppl_data/Figure 5.zip:Figure 5/Figure 5/5C/lamp.tif"
+            "suppl_data/Figure 5.zip:Figure 5/5C/ha.tif",
+            "suppl_data/Figure 5.zip:Figure 5/5C/lamp.tif"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "Western blots showing deletion of ATG7 (left panels) and defective LC3 lipidation in ATG7-KO upon starvation (right panels).",
           "sd_files": [
-            "suppl_data/Figure 5.zip:5D/WB ATG7.tif",
-            "suppl_data/Figure 5.zip:5D/WB LC3.tif"
+            "suppl_data/Figure 5.zip:Figure 5/5D/WB ATG7.tif",
+            "suppl_data/Figure 5.zip:Figure 5/5D/WB LC3.tif"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "NHK does not accumulate in LAMP1-positive endolysosomes in ATG7-KO cells. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 5.zip:5E/ha.tif",
-            "suppl_data/Figure 5.zip:5E/lamp.tif"
+            "suppl_data/Figure 5.zip:Figure 5/5E/ha.tif",
+            "suppl_data/Figure 5.zip:Figure 5/5E/lamp.tif"
           ]
         },
         {
           "panel_label": "F",
           "panel_caption": "Western blot showing deletion of ATG13 in MEF.",
-          "sd_files": ["suppl_data/Figure 5.zip:5F/WB.tif"]
+          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5F/WB.tif"]
         },
         {
           "panel_label": "G",
           "panel_caption": "NHK delivery within LAMP1-positive endolysosomes is not perturbed in ATG13-KO MEF. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 5.zip:Figure 5/Figure 5/5G/ha.tif",
-            "suppl_data/Figure 5.zip:Figure 5/Figure 5/5G/lamp.tif"
+            "suppl_data/Figure 5.zip:Figure 5/5G/ha.tif",
+            "suppl_data/Figure 5.zip:Figure 5/5G/lamp.tif"
           ]
         },
         {
           "panel_label": "H",
           "panel_caption": "LysoQuant quantification of A-C, E, G (n=17, 57, 29, 46 and 50 cells, respectively). Mean is shown. N=3 independent experiments. One-way analysis of variance (ANOVA) and Dunnett’s multiple comparison test, nsP> 0.05, ****P<0.0001. ",
-          "sd_files": ["suppl_data/Figure 5.zip:5H/Quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5H/Quantification.xlsx"]
         }
       ]
     },
@@ -365,111 +365,111 @@
         {
           "panel_label": "A",
           "panel_caption": "Same as Figs. 2A-2C for BACE457∆. HEK239 cells transiently expressing the 35S- BACE457D are chased for the indicated time without (lanes 1-3) or with PS341 (lanes 4, 5), PS341/BafA1 (lanes 6, 7), KIF (lanes 8, 9), or KIF/BafA1 (10-11). Radiolabelled BACE457D is immunoisolated at the end of the indicated chase time and separated in SDS-PAGE. Densitometric quantification of the 35S-BACE457D band in the representative experiment is shown.",
-          "sd_files": ["suppl_data/Figure 6.zip:6A/gel 35S.tif"]
+          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6A/gel 35S.tif"]
         },
         {
           "panel_label": "B",
           "panel_caption": "Quantification of 35S- BACE457D after a 10- or 120-min chase in cells mock treated, exposed to PS341 or PS341/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): mock= 36 and 54%; PS341= 70 and 84%; PS341/BafA1= 97 and 99%. N=2 independent experiments, mean +/- SEM is shown.",
-          "sd_files": ["suppl_data/Figure 6.zip:6B/quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6B/quantification.xlsx"]
         },
         {
           "panel_label": "C",
           "panel_caption": "Quantification of 35S- BACE457D after a 10- or 120-min chase in cells mock treated, exposed to PS341 or KIF, KIF/BafA1. Individual data points at 120-min (%, normalized to 10-min mock): mock= 36 and 54%; KIF= 72 and 75%; KIF/BafA1= 91 and 85%. N=2 independent experiments, mean +/- SEM is shown.",
-          "sd_files": ["suppl_data/Figure 6.zip:6C/quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6C/quantification.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "The ERAD client BACE457D does not accumulate within LAMP1-positive endolysosomes upon BafA1 exposure in MEF cells. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 6.zip:6D/ha.tif",
-            "suppl_data/Figure 6.zip:6D/lamp.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6D/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6D/lamp.tif"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "BACE457D is delivered and accumulates within endolysosomes upon ERAD inhibition with KIF. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6E/ha.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6E/lamp.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6E/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6E/lamp.tif"
           ]
         },
         {
           "panel_label": "F",
           "panel_caption": "Same as E, when ERAD is inhibited with PS341. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6F/ha.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6F/lamp.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6F/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6F/lamp.tif"
           ]
         },
         {
           "panel_label": "G",
           "panel_caption": "LysoQuant quantification of D-F (n=33, 37 and 17 cells, respectively). Mean is shown. N=2 independent experiments. ",
-          "sd_files": ["suppl_data/Figure 6.zip:6G/Quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6G/Quantification.xlsx"]
         },
         {
           "panel_label": "H",
           "panel_caption": "BACE457D is not delivered in LAMP1-positive endolysosomes in MEF lacking FAM134B. n=24 Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 6.zip:6H/ha.tif",
-            "suppl_data/Figure 6.zip:6H/lamp.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6H/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6H/lamp.tif"
           ]
         },
         {
           "panel_label": "I",
           "panel_caption": "Analysis of BACE457D delivery to LAMP1-positive endolysosomes in FAM134B KO cells treated with BafA1 and KIF. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6I/ha.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6I/lamp.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6I/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6I/lamp.tif"
           ]
         },
         {
           "panel_label": "J",
           "panel_caption": "Analysis of BACE457D delivery to LAMP1-positive endolysosomes in FAM134B KO cells treated with BafA1 and KIF BACE457D is not delivered to endolysosomes in cells with deficient ERAD. Back-transfection of FAM134B. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6J/ha.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6J/lamp.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6J/v5.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6J/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6J/lamp.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6J/v5.tif"
           ]
         },
         {
           "panel_label": "K",
           "panel_caption": "Analysis of BACE457D delivery to LAMP1-positive endolysosomes in FAM134B KO cells treated with BafA1 and PS341. Scale bars: 10μM. Insets are shown with white squares. BACE457D is not delivered to endolysosomes in cells with deficient ERAD. Back-transfection of FAM134B but not FAM134BLIR restores delivery. ",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6K/ha.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6K/lamp.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6K/v5.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6K/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6K/lamp.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6K/v5.tif"
           ]
         },
         {
           "panel_label": "L",
           "panel_caption": "Analysis of BACE457D delivery to LAMP1-positive endolysosomes in FAM134B KO cells treated with BafA1 and PS341. BACE457D is not delivered to endolysosomes in cells with deficient ERAD. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6L/ha.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6L/lamp.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6L/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6L/lamp.tif"
           ]
         },
         {
           "panel_label": "M",
           "panel_caption": "Analysis of BACE457D delivery to LAMP1-positive endolysosomes in FAM134B KO cells treated with BafA1 and PS341. BACE457D is not delivered to endolysosomes in cells with deficient ERAD. Back-transfection of FAM134B. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6M/ha.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6M/lamp.tif",
-            "suppl_data/Figure 6.zip:Figure 6/Figure 6/6M/v5.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6M/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6M/lamp.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6M/v5.tif"
           ]
         },
         {
           "panel_label": "N",
           "panel_caption": "Analysis of BACE457D delivery to LAMP1-positive endolysosomes in FAM134B KO cells treated with BafA1 and PS341. BACE457D is not delivered to endolysosomes in cells with deficient ERAD. Back-transfection of FAM134B but not FAM134BLIR restores delivery. Scale bars: 10μM. Insets are shown with white squares.",
           "sd_files": [
-            "suppl_data/Figure 6.zip:6N/ha.tif",
-            "suppl_data/Figure 6.zip:6N/lamp.tif",
-            "suppl_data/Figure 6.zip:6N/v5.tif"
+            "suppl_data/Figure 6.zip:Figure 6/6N/ha.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6N/lamp.tif",
+            "suppl_data/Figure 6.zip:Figure 6/6N/v5.tif"
           ]
         },
         {
           "panel_label": "O",
           "panel_caption": "LysoQuant quantification of H-N (n=24, 40, 36, 47, 14, 20 and 16 cells, respectively).Mean is shown. N=2 independent experiments.",
-          "sd_files": ["suppl_data/Figure 6.zip:6O/Quantification.xlsx"]
+          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6O/Quantification.xlsx"]
         }
       ]
     },
@@ -488,6 +488,9 @@
       ]
     }
   ],
-  "data_availability": [],
+  "data_availability": {
+    "section_text": "<p>This study includes no data deposited in external repositories.</p>",
+    "data_sources": []
+  },
   "all_captions": "</p>\n<p><strong>Figure 1</strong>-Proteasomal and lysosomal pathways for\nclearance of misfolded proteins from the ER. <strong>A</strong>\nER-associated degradation (ERAD) pathways rely on mannose processing by\nEDEM proteins that interrupts futile folding cycles in the CNX chaperone\nsystem and engages mannose-binding lectins (OS9). Retro-translocation\nmachineries (Dislocons) built around membrane-embedded E3 ubiquitin\nligases ensure client-specific dislocation across the ER membrane and\npoly-ubiquitylation that precedes proteasomal degradation.\n<strong>B</strong> ER-to-lysosome-associated degradation (ERLAD)\npathways. For ATZ and pro-collagen, selection for ERLAD relies on cycles\nof de-/re-glucosylation that prolong CNX binding and lead to association\nwith the FAM134B (Forrester <em>et al.</em>, 2019; Fregno <em>et\nal.</em>, 2018; Fregno <em>et al.</em>, 2021). ERLAD clients are\neventually cleared in endolysosomes or in autolysosomes, where they are\ndelivered via mechanistically distinct pathways shown with arrows\n1-3.</p>\n<p><strong><br />\n</strong></p>\n<p><strong>Figure 2</strong>-The ERAD client NHK is re-directed to\nLAMP1-positive endolysosomes for degradation upon pharmacologic\ninactivation of ERAD. (<strong>A)</strong> HEK239 cells transiently\nexpressing the <sup>35</sup>S-NHK are chased for the indicated time\nwithout (lanes 1-3) or with PS341 (lanes 4, 5), PS341/BafA1 (lanes 6,\n7), KIF (lanes 8, 9), or KIF/BafA1 (10-11). Radiolabeled NHK is\nimmunoisolated at the end of the indicated chase time and separated in\nSDS-PAGE. Densitometric quantification of the <sup>35</sup>S-NHK band in\nthis representative experiment is shown. (<strong>B)</strong>\nQuantification of <sup>35</sup>S-NHK after a 10- or 120-min chase in\ncells mock treated or exposed to PS341 or PS341/BafA1. Individual data\npoints at 120-min (%, normalized to 10’ mock): mock= 49, 37 and 49%;\nPS341= 73, 55 and 52%; PS341/BafA1= 91, 63 and 68%. (<strong>C)</strong>\nSame as (<strong>B)</strong> for Kif, KIF/BafA1. Individual data points\nat 120-min (%, normalized to 10-min mock): mock= 49, 37 and 49%; KIF=\n80, 53 and 54%; KIF/BafA1= 99, 64 and 83%. <strong>(D)</strong> BafA1\ndoes not inhibit clearance of the ERAD client NHK. n=3 for 10- and\n120-min; n=2 for 120-min BafA1. (<strong>E)</strong> ATZ, a canonical\nERLAD client accumulates within LAMP1-positive endolysosomes in 3T3\ncells exposed to BafA1. (<strong>F)</strong> The ERAD client NHK is not\ndelivered within LAMP1-positive endolysosomes. (<strong>G-H)</strong>\nNHK is delivered and accumulates within endolysosomes inactivated with\nBafA1 upon ERAD inhibition with KIF (G) or with PS341 (H).\n(<strong>I)</strong> LysoQuant quantification of ATZ delivery within\nLAMP1-positive endolysosomes in panel <strong>E</strong>, and of NHK in\npanels <strong>F-H</strong> (n=18, 19, 23 and 13 cells, respectively.\n(<strong>J-N)</strong> Analysis of NHK delivery to LAMP1-positive\nendolysosomes as in (F-H) but with drug incubation of 8h and with\nadditional BafA1 washout conditions (L, N).<strong>O</strong> LysoQuant\nquantification of NHK accumulation within LAMP1 positive endolysosomes\n(panels <strong>J-N</strong>, n=31, 24, 31, 31 and 33 cells\nrespectively.</p>\n<p>Data Information: (B, C) N=3 independent experiments, mean +/- SEM is\nshown. (D) mean +/- SEM is shown.(I, O) mean is shown. N=3 independent\nexperiments. One-way analysis of variance (ANOVA) and Dunnett’s multiple\ncomparison test, ****P&lt;0.0001. (E-H, J-N) Scale bars: 10μM, Insets\nare shown with white squares.</p>\n<p><strong><br />\n</strong></p>\n<p><strong>Figure 3</strong>-The ERAD client NHK is re-directed to\nendolysosomes upon genetic inactivation of ERAD. <strong>A</strong>\nWestern blot showing the efficiency of EDEM1 silencing in HEK293 cells.\n<strong>B</strong> Delivery of NHK in control cells (upper panels) and\nin cells with reduced ERAD upon EDEM1 silencing (lower panels).\n<strong>C</strong> LysoQuant quantification of <strong>B</strong> (n=39\nand 25 cells, respectively). <strong>D</strong> Western blot showing the\nefficiency of OS9.1/OS9.2 silencing. Two different oligos are used to\nreduce OS9.1/OS9.2 level. Quantification of OS9.1 and OS9.2 levels,\nnormalized on GAPDH, is shown. <strong>E</strong> Delivery of NHK in\ncontrol cells (upper panels) and in cells with reduced ERAD upon\nOS9.1/OS9.2 silencing (lower panels). <strong>F</strong> LysoQuant\nquantification of <strong>E</strong> (n=35, 36 and 18 cells,\nrespectively).</p>\n<p>Data Information: (C, F) Mean is shown. N=3 independent experiments.\n(C) Unpaired t-test, *** P&lt;0.001. (F) Mean is shown. N=3 independent\nexperiments One-way analysis of variance (ANOVA) and Dunnett’s multiple\ncomparison test, ****P&lt;0.0001, ***P&lt;0.001 (B, E) Scale bars: 10μM.\nInsets are shown with white squares.</p>\n<p><strong><br />\nFigure 4</strong>-FAM134B drives delivery of the ERAD client NHK into\nthe ERLAD pathway. <strong>(A</strong> Western blot showing deletion of\nendogenous FAM134B in MEF and levels of recombinant FAM134B-V5 and\nFAM134BLIR-V5 upon back-transfection. <strong>B</strong> NHK does not\naccumulate in LAMP1-positive endolysosomes in wild type (upper panels)\nand FAM134B-KO cells (lower panels). <strong>C</strong> LysoQuant\nquantification of <strong>B</strong> (n=17 and 27 cells, respectively).\n<strong>D</strong> NHK is delivered in LAMP1-positive endolysosomes upon\nERAD inhibition with KIF in wild type MEF. <strong>E</strong> NHK is not\ndelivered in LAMP1-positive endolysosomes upon ERAD inhibition with KIF\nin MEF lacking FAM134B. <strong>F</strong> Back-transfection of FAM134B\nin FAM134B-KO MEF restores NHK delivery within endolysosomes.\n<strong>G</strong> Back-transfection of FAM134BLIR that cannot engage\nLC3 fails to restore NHK delivery within endolysosomes.\n(<strong>H-J)</strong> Analysis of NHK delivery to LAMP1-positive\nlysosomes in FAM134B-KO cells as in (<strong>E-G)</strong>, when ERAD is\ninhibited with PS341. <strong>K</strong> LysoQuant quantification of\n<strong>D-J</strong> (n=39, 35, 37, 39, 31, 30 and 35 cells,\nrespectively).</p>\n<p>Data Information (C) Mean is shown. N=3 independent experiments,\nUnpaired t-test, <sup>ns</sup>P&gt; 0.05. (K) Mean is shown. N=2\nindependent experiments. (B, D-J) Scale bars: 10μM. Insets are shown\nwith white squares.</p>\n<p><strong><br />\n</strong></p>\n<p><strong>Figure 5</strong>-The LC3 lipidation machinery is involved,\nautophagosome biogenesis is dispensable, for delivery of NHK to\nLAMP1-positive endolysosomes upon ERAD inactivation.\n(<strong>A-C)</strong> Same as <strong>Figs. 2F-2H</strong>, in MEF. (A)\nThe ERAD client NHK is not delivered to LAMP1-positive endolysosomes.\nNHK is delivered and accumulates within endolysosomes inactivated with\nBafA1 upon ERAD inhibition with KIF (B) or with PS341 (C).</p>\n<p><strong>D</strong> Western blots showing deletion of ATG7 (left\npanels) and defective LC3 lipidation in ATG7-KO upon starvation (right\npanels). (<strong>E)</strong> NHK does not accumulate in LAMP1-positive\nendolysosomes in ATG7-KO cells. (<strong>F)</strong> Western blot\nshowing deletion of ATG13 in MEF. (<strong>G)</strong> NHK delivery\nwithin LAMP1-positive endolysosomes is not perturbed in ATG13-KO MEF.\n(<strong>H</strong> ) LysoQuant quantification of <strong>A-C, E,\nG</strong> (n=17, 57, 29, 46 and 50 cells, respectively).</p>\n<p>Data Information: (H) Mean is shown. N=3 independent experiments.\nOne-way analysis of variance (ANOVA) and Dunnett’s multiple comparison\ntest, <sup>ns</sup>P&gt; 0.05, ****P&lt;0.0001. (A-C, E, G) Scale bars:\n10μM. Insets are shown with white squares.</p>\n<p><strong><br />\nFigure 6</strong>-The ERAD client BACE457∆ is re-directed to\nendolysosomes for degradation upon pharmacologic inactivation of ERAD.\n(<strong>A-C)</strong> Same as <strong>Figs. 2A-2C</strong> for\nBACE457∆<strong>.</strong> (<strong>A)</strong> HEK239 cells transiently\nexpressing the <sup>35</sup>S- BACE457∆ are chased for the indicated\ntime without (lanes 1-3) or with PS341 (lanes 4, 5), PS341/BafA1 (lanes\n6, 7), KIF (lanes 8, 9), or KIF/BafA1 (10-11). Radiolabelled BACE457∆ is\nimmunoisolated at the end of the indicated chase time and separated in\nSDS-PAGE. Densitometric quantification of the <sup>35</sup>S-BACE457∆\nband in the representative experiment is shown. (B-C) Quantification of\n<sup>35</sup>S- BACE457∆ after a 10- or 120-min chase in cells mock\ntreated, exposed to PS341 or PS341/BafA1 (B) or to KIF, KIF/BafA1 (C).\nIndividual data points at 120-min (%, normalized to 10-min mock): for\n(B) mock= 36 and 54%; PS341= 70 and 84%; PS341/BafA1= 97 and 99%. For\n(C): mock= 36 and 54%; KIF= 72 and 75%; KIF/BafA1= 91 and 85%.\n<strong>(D)</strong> The ERAD client BACE457∆ does not accumulate within\nLAMP1-positive endolysosomes upon BafA1 exposure in MEF cells.\n(<strong>E)</strong> BACE457∆ is delivered and accumulates within\nendolysosomes upon ERAD inhibition with KIF. (<strong>F)</strong> Same\nas <strong>E</strong>, when ERAD is inhibited with PS341.\n(<strong>G)</strong> LysoQuant quantification of <strong>D-F</strong>\n(n=33, 37 and 17 cells, respectively). (<strong>H)</strong> BACE457∆\\xa0is\nnot delivered in LAMP1-positive endolysosomes in MEF lacking\nFAM134B.</p>\n<p>(<strong>I-N)</strong> Same as <strong>Fig. 4E-J</strong> for\nBACE457∆.\\xa0Analysis of BACE457∆\\xa0delivery to LAMP1-positive endolysosomes\nin FAM134B KO cells treated with BafA1 and KIF (I-K) or BafA1 and PS341\n(L-N). BACE457∆\\xa0is not delivered to endolysosomes in cells with\ndeficient ERAD. Back-transfection of FAM134B (J, M) but not FAM134BLIR\n(K, N) restores delivery<strong>. (O)</strong> LysoQuant quantification\nof <strong>H-N</strong> (n=24, 40, 36, 47, 14, 20 and 16 cells,\nrespectively).</p>\n<p>Data Information: (B, C) N=2 independent experiments, mean +/- SEM is\nshown. (G, O) Mean is shown. N=2 independent experiments. (D-F, H-N)\nScale bars: 10μM. Insets are shown with white squares.</p>\n<p><strong>Figure 7</strong>-Schematic representation of how\npharmacologic (blue) and genetic (red) ERAD perturbation triggers\ncompensatory ERLAD programs. Defective proteasomal clearance of NHK and\nBACE457∆ activates FAM134B-driven ERLAD. Other clients or maintenance of\nER homeostasis in specific tissues may activate other ER-phagy receptors\n(e.g., CCPG1 in the pancreas and FAM134B-2 in the liver).</p>\n"
 }

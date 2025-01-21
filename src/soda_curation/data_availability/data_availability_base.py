@@ -1,73 +1,52 @@
-"""
-This module provides the base class for extracting data availability information from manuscripts.
+"""Base class for data availability extraction."""
 
-It defines an abstract base class that all specific data availability extractor implementations
-should inherit from, ensuring a consistent interface across different extraction methods.
-"""
-
-import json
-import logging
-import re
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
-
-import pandas as pd
-
-logger = logging.getLogger(__name__)
-
-class DataRecord:
-    """Class to represent a data record with database, accession number and URL."""
-    
-    def __init__(self, database: str, accession_number: str, url: str):
-        self.database = database
-        self.accession_number = accession_number 
-        self.url = url
-
-    def to_dict(self) -> Dict:
-        return {
-            "database": self.database,
-            "accession_number": self.accession_number,
-            "url": self.url
-        }
+from typing import Dict
 
 class DataAvailabilityExtractor(ABC):
-    """Abstract base class for extracting data availability information."""
+    """Abstract base class for data availability extractors."""
 
     def __init__(self, config: Dict):
         """Initialize with configuration."""
         self.config = config
-        logger.info(f"Initialized {self.__class__.__name__}")
 
     @abstractmethod
-    def _extract_data_records(self, doc_content: str) -> List[DataRecord]:
+    def extract_data_availability(self, doc_content: str) -> Dict:
         """
-        Extract data records from the data availability section.
-
+        Extract data availability information from document.
+        
         Args:
-            data_section: Text of the data availability section
-
+            doc_content (str): Document content to analyze
+            
         Returns:
-            List of DataRecord objects containing the extracted information
+            Dict: Dictionary containing:
+                section_text (str): Complete text of data availability section
+                data_sources (List[Dict]): List of structured data source information
         """
         pass
 
-    def extract_data_availability(self, doc_content: str) -> List[Dict]:
+    @abstractmethod
+    def _locate_data_availability_section(self, doc_content: str) -> str:
         """
-        Extract data availability information from document content.
+        Locate and extract the data availability section text.
         
         Args:
-            doc_content (str): The document content in HTML format
+            doc_content (str): Document content to analyze
             
         Returns:
-            List[Dict]: List of data availability records with database, accession number and URL
+            str: Complete text of data availability section or empty string if not found
         """
-        try:
-            # Extract records from the section
-            records = self._extract_data_records(doc_content)
-            
-            # Convert to dictionary format
-            return [record.to_dict() for record in records]
+        pass
 
-        except Exception as e:
-            logger.error(f"Error extracting data availability: {str(e)}")
-            return []
+    @abstractmethod
+    def _extract_data_records(self, section_text: str) -> list:
+        """
+        Extract structured data sources from data availability section.
+        
+        Args:
+            section_text (str): Text of data availability section
+            
+        Returns:
+            list: List of dictionaries containing structured data source information
+        """
+        pass

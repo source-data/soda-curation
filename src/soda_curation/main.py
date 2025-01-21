@@ -666,7 +666,6 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
             
     # Initialize content cache
     doc_cache = DocumentContentCache()
-
     # Now proceed with the rest of your application
     logging.info("Application has started.")
 
@@ -754,7 +753,7 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
         data_records = data_extractor.extract_data_availability(doc_content)
         zip_structure.data_availability = data_records
         logging.info("Completed data availability extraction")
-
+        
         # Process panels - create object detector and other components once
         object_detector = create_object_detection(config)
         panel_caption_matcher = MatchPanelCaptionOpenAI(config)

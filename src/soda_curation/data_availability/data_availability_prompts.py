@@ -1,63 +1,62 @@
-"""
-This module provides prompt templates for data availability extraction tasks.
+"""Prompts for data availability extraction."""
 
-It contains predefined prompts that can be used with various AI models to extract
-data availability information from scientific manuscripts.
-"""
+SYSTEM_PROMPT_LOCATE = """You are an expert at locating and extracting Data Availability sections from scientific manuscripts.
+Your task is to find and return ONLY the data availability section content from the manuscript text.
 
-from string import Template
+The section may be found:
+- As a dedicated section titled "Data Availability" 
+- Under "Materials and Methods"
+- Near manuscript end
+- As "Availability of Data and Materials"
+- Within supplementary information
 
-DATA_AVAILABILITY_PROMPT = """You are an expert at analyzing scientific manuscripts and extracting information about data availability.
+Critical instructions:
+1. Return ONLY the content of the section in HTML format, WITHOUT the section title
+2. Include ALL content from this section with HTML tags (e.g., <p>content</p>)
+3. Maintain exact formatting and text
+4. Do not add comments or explanations
+5. Do not modify or summarize the text
 
-Your task is to:
-1. Identify and extract the section that discusses data availability, data access, or data deposition
-2. Extract specific information about:
-   - Database names (e.g., GEO, BioImage Archive, etc.)
-   - Accession numbers
-   - URLs to access the data
-3. Structure this information in a consistent format
+If no data availability section is found OR if no data deposits are mentioned, return exactly:
+<p>This study includes no data deposited in external repositories.</p>"""
 
-Follow these guidelines:
+SYSTEM_PROMPT_EXTRACT = """You are an expert at extracting structured data source information from scientific Data Availability sections.
+Your task is to identify and extract information about databases, accession numbers, and URLs into a specific JSON format.
 
-1. Look for sections marked as:
-   - "Data Availability"
-   - "Data Access"
-   - "Availability of Data"
-   - "Data Deposition"
-   - "Data Resources"
-
-2. For each database mentioned:
-   - Extract the exact database name
-   - Find associated accession numbers
-   - Capture any provided URLs
-   - If URL is missing but you have database name and accession, construct appropriate URL
-
-3. Return data in this JSON format:
+Expected output format:
 [
   {
-    "database": "database name",
-    "accession_number": "ID_NUMBER",
-    "url": "http://url-to-database/ID_NUMBER"
+    "database": "name of database",
+    "accession_number": "exact accession number",
+    "url": "complete URL if provided"
   }
 ]
 
-4. Key rules:
-   - Extract ALL databases and accessions mentioned
-   - Keep original database names and accession numbers exactly as written
-   - Include complete URLs when provided
-   - Skip general repositories without specific accession numbers
-   - Ensure accession numbers match database-specific patterns
-   - Do not hallucinate or infer missing information
+Critical instructions:
+1. Extract EVERY database source mentioned
+2. Use EXACT database names as written
+3. Include COMPLETE accession numbers
+4. Include FULL URLs when present
+5. Output valid JSON array of objects
+6. Return empty array [] if no database sources found
+7. Do not:
+   - Create/guess URLs
+   - Add partial information
+   - Include file paths or other resources
+   - Include explanatory text"""
 
-If no data availability information is found, return an empty array []."""
+def get_locate_data_availability_prompt(manuscript_text: str) -> str:
+    """Generate prompt for locating data availability section."""
+    return f"""Find and extract the content of the Data Availability section from this manuscript:
 
-DATA_AVAILABILITY_EXTRACT_PROMPT = Template("""
-Please analyze this data availability section and extract all database references, accession numbers, and URLs:
+{manuscript_text}
 
-$data_section
+Return ONLY the content in HTML format WITHOUT the section title."""
 
-Return the information in the specified JSON format.""")
+def get_extract_data_sources_prompt(section_text: str) -> str:
+    """Generate prompt for extracting data sources from section."""
+    return f"""Extract all database sources and their details from this Data Availability section:
 
-def get_data_availability_prompt(data_section: str) -> str:
-    """Generate prompt for extracting data availability information."""
-    return DATA_AVAILABILITY_EXTRACT_PROMPT.substitute(data_section=data_section)
+{section_text}
+
+Return ONLY a JSON array of data source objects as specified in the instructions."""
