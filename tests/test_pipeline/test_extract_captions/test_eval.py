@@ -41,14 +41,25 @@ from src.soda_curation.pipeline.assign_panel_source.assign_panel_source_prompts 
 )
 
 import logging
-from typing import Dict, List, Optional, Tuple
-
+from typing import Dict, List, Optional, Tuple, Set
+import numpy as np
 
 ########################################################################################
 # Scoring task results
 ########################################################################################
 
 logger = logging.getLogger(__name__)
+
+def calculate_jaccard_similarity(set1: Set, set2: Set) -> float:
+    """Calculate Jaccard similarity between two sets."""
+    if not set1 and not set2:
+        return 1.0
+    if not set1 or not set2:
+        return 0.0
+    intersection = len(set1.intersection(set2))
+    union = len(set1.union(set2))
+    return intersection / union if union > 0 else 0.0
+
 
 class RougeMetric(BaseMetric):
     def __init__(self, score_type: str = "rouge1", threshold: float = 0.95):
@@ -385,6 +396,12 @@ def _fill_results_bag(
     test_case: LLMTestCase = None,
     ai_response: str = None,
 ):
+    """
+    Fill the results bag with test metrics and metadata.
+    
+    Now includes additional scores for enhanced metrics (exact match and Jaccard similarity).
+    """
+    # Fill basic information
     results_bag.task = task
     results_bag.input = test_case.input
     results_bag.actual = test_case.actual_output
@@ -395,11 +412,22 @@ def _fill_results_bag(
     results_bag.figure_label = figure_label
     results_bag.ai_response = ai_response 
     
+    # Process each metric
     for metric in metrics:
+        # Calculate the main score
         score = metric.measure(test_case)
+        
+        # Store the main score and success status
         setattr(results_bag, metric.name, score)
         setattr(results_bag, f"{metric.name}_success", metric.is_successful())
         setattr(results_bag, f"{metric.name}_threshold", metric.threshold)
+        
+        # Store additional scores if available (for enhanced metrics)
+        if hasattr(metric, 'exact_match_score'):
+            setattr(results_bag, f"{metric.name}_exact", metric.exact_match_score)
+            
+        if hasattr(metric, 'jaccard_score'):
+            setattr(results_bag, f"{metric.name}_jaccard", metric.jaccard_score)
 
 @pytest.mark.parametrize(
     "strategy, msid, run",
@@ -615,29 +643,42 @@ class PanelSourceMatchMetric(BaseMetric):
         self.threshold = threshold
         self.success = False
         self.score = 0.0
+        self.exact_match_score = 0.0
+        self.jaccard_score = 0.0
+
+    def _calculate_panel_scores(self, expected_panel: Dict, actual_panel: Dict) -> Tuple[float, float]:
+        """Calculate both exact match and Jaccard similarity for a panel."""
+        expected_files = set(expected_panel.get('sd_files', []))
+        actual_files = set(actual_panel.get('sd_files', []))
+        
+        # Exact match score (1 if sets are identical, 0 otherwise)
+        exact_match = 1.0 if expected_files == actual_files else 0.0
+        
+        # Jaccard similarity score
+        jaccard = calculate_jaccard_similarity(expected_files, actual_files)
+        
+        return exact_match, jaccard
 
     def measure(self, test_case: LLMTestCase) -> float:
         """
-        Measure accuracy of panel source assignments.
-        Returns score between 0-1 representing proportion of correct assignments.
+        Measure accuracy of panel source assignments using both exact matches and Jaccard similarity.
+        Returns a combined score between 0-1.
         """
         try:
-            # Load JSON strings into Python objects
-            expected_data = loads(test_case.expected_output)  # List of figures
-            actual_data = loads(test_case.actual_output)      # List of figures
+            expected_data = loads(test_case.expected_output)
+            actual_data = loads(test_case.actual_output)
             
             total_figures = 0
-            total_figures_correct = 0
+            exact_match_sum = 0
+            jaccard_sum = 0
             
-            # Track per-figure metrics
+            # Track detailed metrics
             figure_metrics = {}
             
-            # Process each expected figure
             for expected_figure in expected_data:
                 figure_label = expected_figure['figure_label']
                 total_figures += 1
                 
-                # Find matching actual figure
                 actual_figure = next(
                     (f for f in actual_data if f['figure_label'] == figure_label),
                     None
@@ -646,78 +687,84 @@ class PanelSourceMatchMetric(BaseMetric):
                 if not actual_figure:
                     logger.warning(f"No matching actual figure found for {figure_label}")
                     figure_metrics[figure_label] = {
-                        'total_files': 0,
-                        'correct_files': 0,
-                        'score': 0.0
+                        'exact_match': 0.0,
+                        'jaccard': 0.0
                     }
                     continue
 
-                # Track files for this figure
-                total_files = 0
-                correct_files = 0
-
-                # Check each panel's assignments
+                # Process panels
+                figure_exact_matches = []
+                figure_jaccard_scores = []
+                
+                # Match panels
                 expected_panels = expected_figure.get('panels', [])
                 actual_panels = actual_figure.get('panels', [])
-
+                
                 for expected_panel in expected_panels:
                     expected_label = expected_panel['panel_label']
-                    expected_files = set(expected_panel.get('sd_files', []))
-                    total_files += len(expected_files)
-                    
-                    # Find matching actual panel
                     actual_panel = next(
                         (p for p in actual_panels if p['panel_label'] == expected_label),
                         None
                     )
                     
                     if actual_panel:
-                        actual_files = set(actual_panel.get('sd_files', []))
-                        # Only count exact matches
-                        if expected_files == actual_files:
-                            correct_files += len(expected_files)
+                        exact_match, jaccard = self._calculate_panel_scores(expected_panel, actual_panel)
+                        figure_exact_matches.append(exact_match)
+                        figure_jaccard_scores.append(jaccard)
+                    else:
+                        figure_exact_matches.append(0.0)
+                        figure_jaccard_scores.append(0.0)
 
                 # Handle unassigned files
                 expected_unassigned = set(expected_figure.get('unassigned_sd_files', []))
                 actual_unassigned = set(actual_figure.get('unassigned_sd_files', []))
-                total_files += len(expected_unassigned)
                 
-                # Only count if exact match for unassigned
-                if expected_unassigned == actual_unassigned:
-                    correct_files += len(expected_unassigned)
+                unassigned_exact = 1.0 if expected_unassigned == actual_unassigned else 0.0
+                unassigned_jaccard = calculate_jaccard_similarity(expected_unassigned, actual_unassigned)
+                
+                if expected_unassigned or actual_unassigned:
+                    figure_exact_matches.append(unassigned_exact)
+                    figure_jaccard_scores.append(unassigned_jaccard)
 
-                # Calculate figure-level score
-                figure_score = 1.0 if total_files == 0 else correct_files / total_files
+                # Calculate figure-level scores
+                figure_exact_match = np.mean(figure_exact_matches) if figure_exact_matches else 0.0
+                figure_jaccard = np.mean(figure_jaccard_scores) if figure_jaccard_scores else 0.0
+                
+                exact_match_sum += figure_exact_match
+                jaccard_sum += figure_jaccard
+                
                 figure_metrics[figure_label] = {
-                    'total_files': total_files,
-                    'correct_files': correct_files,
-                    'score': figure_score
+                    'exact_match': figure_exact_match,
+                    'jaccard': figure_jaccard
                 }
                 
-                # Track perfectly matched figures
-                if figure_score == 1.0:
-                    total_figures_correct += 1
+                logger.info(f"Figure {figure_label}: Exact={figure_exact_match:.2f}, "
+                          f"Jaccard={figure_jaccard:.2f}")
 
-                logger.info(f"Figure {figure_label}: {correct_files}/{total_files} " 
-                          f"files correct (score: {figure_score:.2f})")
-
-            # Calculate overall manuscript score based on perfectly matched figures
-            self.score = total_figures_correct / total_figures if total_figures > 0 else 0.0
-            self.success = self.score >= self.threshold
+            # Calculate overall scores
+            self.exact_match_score = exact_match_sum / total_figures if total_figures > 0 else 0.0
+            self.jaccard_score = jaccard_sum / total_figures if total_figures > 0 else 0.0
             
+            # Combined score (equal weighting)
+            self.score = (self.exact_match_score + self.jaccard_score) / 2
+            self.success = self.score >= self.threshold
+
             # Log detailed metrics
-            logger.info("\nDetailed Figure Metrics:")
+            logger.info("\nDetailed Metrics:")
             for fig_label, metrics in figure_metrics.items():
-                logger.info(f"{fig_label}: {metrics['correct_files']}/{metrics['total_files']} "
-                          f"files correct (score: {metrics['score']:.2f})")
-            logger.info(f"\nTotal figures perfectly matched: {total_figures_correct}/{total_figures} "
-                       f"(score: {self.score:.2f})")
+                logger.info(f"{fig_label}: Exact={metrics['exact_match']:.2f}, "
+                          f"Jaccard={metrics['jaccard']:.2f}")
+            logger.info(f"\nOverall scores - Exact: {self.exact_match_score:.2f}, "
+                       f"Jaccard: {self.jaccard_score:.2f}, "
+                       f"Combined: {self.score:.2f}")
             
             return self.score
 
         except Exception as e:
             logger.error(f"Error measuring panel source assignments: {str(e)}", exc_info=True)
             self.score = 0.0
+            self.exact_match_score = 0.0
+            self.jaccard_score = 0.0
             self.success = False
             return self.score
 
@@ -731,10 +778,18 @@ class PanelSourceMatchMetric(BaseMetric):
     def name(self):
         return f"panel_source_{self.score_type}"
 
-
 def _get_panel_source_metrics():
     """Get metrics for evaluating panel source assignments."""
-    return [PanelSourceMatchMetric(score_type="manuscript_accuracy", threshold=0.8)]
+    return [
+        PanelSourceMatchMetric(
+            score_type="manuscript_accuracy", 
+            threshold=0.8
+        ),
+        # You might want to add RougeMetric and BleuMetric here if you want those scores too
+        RougeMetric(score_type="rougeL"),
+        BleuMetric(bleu_type="bleu1")
+    ]
+
 
 @file_cache("panel_source_assignment")
 def _assign_panel_sources(strategy, msid, run):
@@ -874,11 +929,34 @@ class DataSourceAccuracyMetric(BaseMetric):
         self.threshold = threshold
         self.success = False
         self.score = 0.0
+        self.exact_match_score = 0.0
+        self.jaccard_score = 0.0
+        
+    def _source_to_tuple(self, source: Dict) -> Tuple[str, str]:
+        """Convert source dict to tuple for comparison."""
+        return (
+            source.get("database", "").lower().strip(),
+            source.get("accession_number", "").lower().strip()
+        )
+        
+    def _calculate_source_similarity(self, source1: Dict, source2: Dict) -> float:
+        """Calculate similarity between two sources using combined field matching."""
+        # Get normalized values
+        db1 = source1.get("database", "").lower().strip()
+        db2 = source2.get("database", "").lower().strip()
+        acc1 = source1.get("accession_number", "").lower().strip()
+        acc2 = source2.get("accession_number", "").lower().strip()
+        
+        # Calculate Jaccard similarity for each field
+        db_jaccard = calculate_jaccard_similarity(set(db1.split()), set(db2.split()))
+        acc_jaccard = calculate_jaccard_similarity(set(acc1.split()), set(acc2.split()))
+        
+        # Return average similarity
+        return (db_jaccard + acc_jaccard) / 2
         
     def measure(self, test_case: LLMTestCase) -> float:
         """
-        Measure accuracy of data source extraction.
-        Score is number of correctly extracted sources divided by total expected sources.
+        Measure accuracy of data source extraction using both exact matches and Jaccard similarity.
         """
         try:
             expected_sources = loads(test_case.expected_output)
@@ -886,25 +964,51 @@ class DataSourceAccuracyMetric(BaseMetric):
             
             if not expected_sources:
                 self.score = 1.0 if not actual_sources else 0.0
+                self.exact_match_score = self.score
+                self.jaccard_score = self.score
                 self.success = self.score >= self.threshold
                 return self.score
             
-            correct_sources = 0
+            # Exact matching
+            exact_matches = 0
             for expected in expected_sources:
-                # Look for matching source in actual results
+                expected_tuple = self._source_to_tuple(expected)
                 for actual in actual_sources:
-                    if (expected.get("database") == actual.get("database") and
-                        expected.get("accession_number") == actual.get("accession_number")):
-                        correct_sources += 1
+                    if self._source_to_tuple(actual) == expected_tuple:
+                        exact_matches += 1
                         break
             
-            self.score = correct_sources / len(expected_sources)
+            # Jaccard similarity matching
+            source_similarities = []
+            for expected in expected_sources:
+                # Find best matching source
+                max_similarity = 0.0
+                for actual in actual_sources:
+                    similarity = self._calculate_source_similarity(expected, actual)
+                    max_similarity = max(max_similarity, similarity)
+                source_similarities.append(max_similarity)
+            
+            # Calculate scores
+            self.exact_match_score = exact_matches / len(expected_sources)
+            self.jaccard_score = sum(source_similarities) / len(expected_sources)
+            
+            # Combined score (equal weighting)
+            self.score = (self.exact_match_score + self.jaccard_score) / 2
             self.success = self.score >= self.threshold
+            
+            # Log detailed metrics
+            logger.info(f"\nData Source Metrics:")
+            logger.info(f"Exact Match Score: {self.exact_match_score:.2f}")
+            logger.info(f"Jaccard Score: {self.jaccard_score:.2f}")
+            logger.info(f"Combined Score: {self.score:.2f}")
+            
             return self.score
             
         except Exception as e:
             logger.error(f"Error measuring data source accuracy: {str(e)}")
             self.score = 0.0
+            self.exact_match_score = 0.0
+            self.jaccard_score = 0.0
             self.success = False
             return self.score
 
@@ -930,7 +1034,12 @@ def _get_data_availability_metrics():
 
 def _get_data_sources_metrics():
     """Get metrics for evaluating data source extraction accuracy."""
-    return [DataSourceAccuracyMetric(threshold=0.8)]
+    return [
+        DataSourceAccuracyMetric(threshold=0.8),
+        # You might want to add RougeMetric and BleuMetric here if you want those scores too
+        RougeMetric(score_type="rougeL"),
+        BleuMetric(bleu_type="bleu1")
+    ]
 
 def _get_data_availability_extractor(strategy):
     """

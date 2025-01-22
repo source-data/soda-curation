@@ -53,22 +53,22 @@
         {
           "panel_label": "A",
           "panel_caption": "Volcano plots visualizing differentially expressed genes in Control-DTP transitions. The volcano blots indicate all genes that were significantly regulated during these transitions (|logFC |<2 and FDR <0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (DUSP6, CDC25A, CDC25C, and SYNJ1) are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). ",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2A/2A..xlsx"]
+          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2A/2A.xlsx"]
         },
         {
           "panel_label": "B",
           "panel_caption": "Volcano plots visualizing differentially expressed genes in DTP-DTEP transitions. The volcano blots indicate all genes that were significantly regulated during these transitions (|logFC |<2 and FDR <0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (DUSP6, CDC25A, CDC25C, and SYNJ1) are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). ",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2B/2B..xlsx"]
+          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2B/2B.xlsx"]
         },
         {
           "panel_label": "C",
           "panel_caption": "Changes in the DUSP6, CDC25A, CDC25C, and SYNJ1 mRNA levels during the acquisition of lapatinib resistance in BT474 cells. Data is based on RNA sequencing analysis (Dataset EV1) and was analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05, **p < 0.01 and ***p < 0.001 were determined (n=3).",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2C/2C..xlsx"]
+          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2C/2C.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "Differential expression of DUSP6, CDC25A, CDC25C, and SYNJ1 in different breast cancer subtypes. Data were extracted from the METABRIC dataset and categorized into five molecular subtypes according to the PAM50 gene expression subtype classification (basal, claudin-low, HER2+, Luminal A, and Luminal B). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test and shown as mean ± standard deviation (SD). Statistically significant values of *p < 0.05, **p < 0.01 and ****p < 0.0001 were determined (basal=209, claudin-low=218, HER2+=224, LumA=700 and LumB=475).",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2D/2D..xlsx"]
+          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2D/2D.xlsx"]
         },
         {
           "panel_label": "E",
@@ -122,17 +122,17 @@
         {
           "panel_label": "D",
           "panel_caption": "Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on cell viability, as measured by WST1 cell viability assay. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. n=3.",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3D/3D..xlsx"]
+          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3D/3D.xlsx"]
         },
         {
           "panel_label": "E",
           "panel_caption": "Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on and apoptosis, as measured by caspase 3/7 activity. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. n=3.",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3E/3E..xlsx"]
+          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3E/3E.xlsx"]
         },
         {
           "panel_label": "F",
           "panel_caption": "Ectopic overexpression of either wild-type DUSP6 (DUSPWT) or ERK binding deficient KIM mutant of DUSP6 (DUSP6MUT) in BT474 cells inhibits lapatinib effects on apoptosis. Shown is a result from a representative experiment from three repeats with similar results. Data were analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined.",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3F/3F..xlsx"]
+          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3F/3F.xlsx"]
         },
         {
           "panel_label": "G",
