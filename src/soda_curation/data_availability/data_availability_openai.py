@@ -70,8 +70,9 @@ class DataAvailabilityExtractorGPT(DataAvailabilityExtractor):
                     {"role": "system", "content": SYSTEM_PROMPT_LOCATE},
                     {"role": "user", "content": get_locate_data_availability_prompt(doc_content)}
                 ],
-                temperature=0.3,
-                max_tokens=2000
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                top_p=self.top_p
             )
                         
             if response.choices:
@@ -97,10 +98,10 @@ class DataAvailabilityExtractorGPT(DataAvailabilityExtractor):
                     {"role": "system", "content": SYSTEM_PROMPT_EXTRACT},
                     {"role": "user", "content": get_extract_data_sources_prompt(section_text)},
                 ],
-                temperature=0.1,
-                max_tokens=1000
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                top_p=self.top_p
             )
-
             if not response.choices:
                 return []
 
