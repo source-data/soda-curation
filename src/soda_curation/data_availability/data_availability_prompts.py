@@ -35,7 +35,7 @@ Expected output format:
 Critical instructions:
 1. Extract EVERY database source mentioned
 2. Use EXACT database names as written
-3. Include COMPLETE accession numbers
+3. Include COMPLETE accession numbers and / or DOIs when present. Include in `accession_number` field.
 4. Include FULL URLs when present
 5. Output valid JSON array of objects
 6. Return empty array [] if no database sources found
