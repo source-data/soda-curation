@@ -14,6 +14,7 @@ from .pipeline.assign_panel_source.assign_panel_source import PanelSourceAssigne
 from .pipeline.extract_captions.extract_captions_claude import (
     FigureCaptionExtractorClaude,
 )
+from .data_availability.data_availability_openai import DataAvailabilityExtractorGPT
 from .pipeline.extract_captions.extract_captions_openai import FigureCaptionExtractorGpt
 from .pipeline.manuscript_structure.exceptions import (
     NoManuscriptFileError,
@@ -649,7 +650,22 @@ def process_zip_structure(zip_structure):
 
 def main(zip_path: str, config_path: str, output_path: str = None) -> str:
     setup_logging(CONFIG)
-
+    logging.info("Application has started.")
+    
+    class DocumentContentCache:
+        """Cache for document content to avoid multiple extractions."""
+        def __init__(self):
+            self._content = {}
+            
+        def get_content(self, doc_path: str, extractor) -> str:
+            """Get document content, extracting only if not already cached."""
+            if doc_path not in self._content:
+                logging.info(f"Extracting content from {doc_path}")
+                self._content[doc_path] = extractor._extract_docx_content(doc_path)
+            return self._content[doc_path]
+            
+    # Initialize content cache
+    doc_cache = DocumentContentCache()
     # Now proceed with the rest of your application
     logging.info("Application has started.")
 
@@ -708,20 +724,35 @@ def main(zip_path: str, config_path: str, output_path: str = None) -> str:
         expected_figure_labels = [fig.figure_label for fig in zip_structure.figures if not re.search(r'EV', fig.figure_label, re.IGNORECASE)]
         logging.info(f"Expected figure count: {expected_figure_count}")
 
-        # Extract captions
-        logging.info("Starting caption extraction process")
+        
+        # Initialize extractors based on AI provider
+        logging.info("Initializing extractors")
         if config["ai"] == "openai":
             caption_extractor = FigureCaptionExtractorGpt(config["openai"])
         elif config["ai"] == "anthropic":
             caption_extractor = FigureCaptionExtractorClaude(config["anthropic"])
         else:
             raise ValueError(f"Unsupported AI provider: {config['ai']}")
-        
+
+        data_extractor = DataAvailabilityExtractorGPT(config)
+        # Extract document content once and cache it
+        logging.info("Extracting document content")
+        doc_content = doc_cache.get_content(zip_structure._full_docx, caption_extractor)
+
+        # Extract captions using cached content
+        logging.info("Starting caption extraction process")
         zip_structure = caption_extractor.extract_captions(
-            zip_structure._full_docx,
+            doc_content,
             zip_structure,
             expected_figure_count,
-            expected_figure_labels=expected_figure_labels)
+            expected_figure_labels=expected_figure_labels
+        )
+
+        # Extract data availability using same cached content
+        logging.info("Starting data availability extraction")
+        data_records = data_extractor.extract_data_availability(doc_content)
+        zip_structure.data_availability = data_records
+        logging.info("Completed data availability extraction")
         
         # Process panels - create object detector and other components once
         object_detector = create_object_detection(config)

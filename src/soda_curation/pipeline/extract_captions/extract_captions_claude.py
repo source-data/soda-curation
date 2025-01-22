@@ -182,15 +182,14 @@ class FigureCaptionExtractorClaude(FigureCaptionExtractor):
             return ""
 
     def extract_captions(self,
-        docx_path: str,
+        file_content: str,
         zip_structure,
         expected_figure_count: int,
         expected_figure_labels: str) -> ZipStructure:
-        """Extract figure captions from document."""
+        """Extract figure captions from document content."""
         
         try:
-            logger.info(f"Processing file: {docx_path}")
-            file_content = self._extract_docx_content(docx_path)
+            logger.info("Processing document content")
             
             logger.info(f"****************")
             logger.info(f"EXTRACTED FILE CONTENT FROM DOCX FILE")

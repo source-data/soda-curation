@@ -23,15 +23,16 @@ from .extract_captions_prompts import (
 logger = logging.getLogger(__name__)
 
 class FigureCaptionExtractorGpt(FigureCaptionExtractor):
-    """A class to extract figure captions using OpenAI's GPT model."""
-    
+    """Implementation of caption extraction using OpenAI's GPT models."""
+
     def __init__(self, config: Dict):
-        """Initialize the extractor with OpenAI configuration."""
-        self.config = config
+        """Initialize with OpenAI configuration."""
+        super().__init__(config)
         self.client = openai.OpenAI(api_key=self.config["api_key"])
+        self.model = self.config.get("model", "gpt-4-1106-preview")
         self.locate_assistant = self._setup_locate_assistant()
         self.extract_assistant = self._setup_extract_assistant()
-        logger.info("FigureCaptionExtractorGpt initialized successfully")
+        logger.info(f"Initialized with model: {self.model}")
 
     def _setup_locate_assistant(self):
         """Set up or retrieve the OpenAI assistant for locating captions."""
@@ -46,14 +47,14 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         )
 
     def _setup_extract_assistant(self):
-        """Set up or retrieve the OpenAI assistant for extracting individual captions."""
+        """Set up or retrieve the OpenAI assistant for extracting captions."""
         assistant_id = self.config.get("caption_extraction_assistant_id")
         if not assistant_id:
             raise ValueError("caption_extraction_assistant_id is not set in configuration")
         
         return self.client.beta.assistants.update(
             assistant_id,
-            model=self.config["model"],
+            model=self.model,
             instructions=EXTRACT_CAPTIONS_PROMPT
         )
 
@@ -192,33 +193,37 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
             return {}
 
-    def extract_captions(self,
-        docx_path: str,
-        zip_structure,
-        expected_figure_count: int,
-        expected_figure_labels: str) -> ZipStructure:
-        """Extract figure captions from document."""
-        
-        try:
-            logger.info(f"Processing file: {docx_path}")
-            file_content = self._extract_docx_content(docx_path)
+    def extract_captions(self, doc_content: str, zip_structure, expected_figure_count: int, expected_figure_labels: str) -> ZipStructure:
+        """
+        Extract figure captions using pre-extracted document content.
 
-            # Locate all captions and store raw response
+        Args:
+            doc_content (str): The pre-extracted document content in HTML format
+            zip_structure: Current ZIP structure
+            expected_figure_count (int): Expected number of figures
+            expected_figure_labels (str): Expected figure labels
+            
+        Returns:
+            ZipStructure: Updated structure with extracted captions
+        """
+        try:
+            logger.info("Processing document content")
+            
+            # First locate the figure captions section
             located_captions = self._locate_figure_captions(
-                file_content,
+                doc_content,
                 expected_figure_count,
                 expected_figure_labels
             )
             
             if not located_captions:
-                logger.error("Failed to locate figure captions")
+                logger.error("Failed to locate figure captions section")
                 return zip_structure
-            
-            # Store raw located captions text and AI response
+                
+            # Store the located captions section
             zip_structure.ai_response_locate_captions = located_captions
-            logger.info(f"Successfully located captions section ({len(located_captions)} characters)")
             
-            # Extract individual captions
+            # Now extract individual captions from the located section
             extracted_captions_response = self._extract_individual_captions(
                 located_captions,
                 expected_figure_count,
@@ -230,10 +235,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             
             # Parse the response into caption dictionary
             captions = self._parse_response(extracted_captions_response)
-            logger.info(f"****************")
             logger.info(f"Extracted {len(captions)} individual captions")
-            logger.info(f"****************")
-            logger.info(captions)
 
             # Process each figure
             for figure in zip_structure.figures:
@@ -245,14 +247,17 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                     caption_text = caption_info["caption"]
                     caption_title = caption_info["title"]
                     
-                    # Validate caption and get diff
-                    is_valid, rouge_score, diff_text = self._validate_caption(docx_path, caption_text)
+                    # Validate caption
+                    is_valid, rouge_score, diff_text = self._validate_caption(
+                        zip_structure._full_docx, 
+                        caption_text
+                    )
                     
                     figure.figure_caption = caption_text
                     figure.caption_title = caption_title
                     figure.rouge_l_score = rouge_score
                     figure.possible_hallucination = not is_valid
-                    figure.diff = diff_text  # Store the diff text
+                    figure.diff = diff_text
                 else:
                     logger.warning(f"No caption found for {figure.figure_label}")
                     figure.figure_caption = "Figure caption not found."
@@ -266,4 +271,3 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         except Exception as e:
             logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
             return zip_structure
-
