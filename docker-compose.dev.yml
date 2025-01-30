@@ -15,3 +15,5 @@ services:
       - .env.dev
     volumes:
       - ./:/app/          # Mount source code directory
+    # <--- Add a "command" to keep the container running in the foreground
+    command: tail -f /dev/null
