@@ -19,6 +19,10 @@ ENV PYTHONUNBUFFERED=1 \
     VIRTUAL_ENV="/app/.venv" \
     PATH="/app/.venv/bin:$PATH"
 
+# Add environment variable for deployment environment (after existing ENV section)
+ENV DEPLOYMENT_ENV=development \
+    CONFIG_DIR=/app/config
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
@@ -94,11 +98,17 @@ RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__versio
 # Development stage
 FROM base as development
 
+# Create config directory and copy environment-specific configs
+COPY config/ /app/config/
+
+# Copy environment files (they will be selected at runtime)
+COPY .env.* /app/
+
 # Set the entrypoint to use Poetry to run the script
 ENTRYPOINT ["poetry", "run", "python", "-m", "soda_curation.main"]
 
 # Set default command (can be overridden)
-CMD ["--zip", "/app/input/sample.zip", "--config", "/app/config.yaml"]
+CMD ["--zip", "/app/input/sample.zip", "--config", "/app/config/config.yaml"]
 
 # Formatting and linting stage
 FROM base as formatting

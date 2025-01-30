@@ -4,7 +4,7 @@ import json
 import logging
 from typing import Optional
 
-from .config import load_config
+from .config import ConfigurationLoader, PipelineStep
 from .logging_config import setup_logging
 from ._main_utils import (
     validate_paths,
@@ -35,9 +35,11 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
     # Validate inputs
     validate_paths(zip_path, config_path, output_path)
     
-    # Load configuration and setup logging
-    config = load_config(config_path)
-    setup_logging(config)
+    # Load configuration
+    config_loader = ConfigurationLoader(config_path)
+    
+    # Setup logging based on environment 
+    setup_logging(config_loader.config)
     logger.info("Starting SODA curation pipeline")
     
     try:
@@ -46,7 +48,10 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
         extract_dir.mkdir(exist_ok=True)
         
         try:
-            # Extract manuscript structure
+            # Extract manuscript structure (first pipeline step)
+            manuscript_config = config_loader.get_pipeline_config(
+                PipelineStep.MANUSCRIPT_STRUCTURE
+            )
             extractor = XMLStructureExtractor(zip_path, str(extract_dir))
             structure = extractor.extract_structure()
                         

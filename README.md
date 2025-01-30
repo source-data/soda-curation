@@ -423,6 +423,26 @@ Make sure to update the `config.yaml` file with your API keys before running the
 To run the model evaluation script, use the following command:
 
 ```bash
+
+# Test environment
+docker-compose -f docker-compose.test.yml build
+docker-compose -f docker-compose.test.yml run --rm soda /bin/bash
+docker-compose -f docker-compose.test.yml run --rm --entrypoint=/bin/bash soda
+
+# Development environment
+docker-compose -f docker-compose.dev.yml build
+#Running the container
+docker-compose -f docker-compose.dev.yml run --rm soda /bin/bash
+# Into containers with entrypoint override and into the console
+docker-compose -f docker-compose.dev.yml run --rm --entrypoint=/bin/bash soda
+
+# Production environment
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml run --rm soda /bin/bash
+docker-compose -f docker-compose.prod.yml run --rm --entrypoint=/bin/bash soda
+
+
+
 docker build -t soda-curation-test . -f Dockerfile.cpu --target testing
 
 docker run -it \

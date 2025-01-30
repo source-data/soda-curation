@@ -1,0 +1,16 @@
+# docker-compose.dev.yml
+version: '3.8'
+services:
+  soda:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+      target: development
+    environment:
+      - DEPLOYMENT_ENV=dev
+      - ENVIRONMENT=dev
+    env_file:
+      - .env.dev
+    volumes:
+      - ./:/app/          # Mount source code directory
+    command: ["--zip", "/app/input/${INPUT_FILE}", "--config", "/app/config/config.yaml"]

@@ -97,12 +97,12 @@ dmypy.json
 .pyre/
 
 # Sensitive or environment-specific files
-*.env
+*.env.*
 *.pem
 *.key
 secrets.yaml
 config.yaml
-
+config.*.yaml
 # Large files or datasets
 *.csv
 *.json
