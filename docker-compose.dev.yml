@@ -1,0 +1,19 @@
+# docker-compose.dev.yml
+version: '3.8'
+services:
+  soda:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+      args:
+        DEPLOYMENT_ENV: dev  # Change to "test" in CI
+      target: development
+    environment:
+      - DEPLOYMENT_ENV=dev
+      - ENVIRONMENT=dev
+    env_file:
+      - .env.dev
+    volumes:
+      - ./:/app/          # Mount source code directory
+    # <--- Add a "command" to keep the container running in the foreground
+    command: tail -f /dev/null

@@ -1,0 +1,62 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - dev
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Create .env.dev File with Secrets
+        run: |
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env.dev
+          echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> .env.dev
+          echo "ENVIRONMENT=dev" >> .env.dev
+          echo "MODEL_PROVIDER=openai" >> .env.dev
+
+      - name: Download Model from Hugging Face
+        run: |
+          mkdir -p data/models
+          curl -L -o data/models/panel_detection_model_no_labels.pt \
+          "https://huggingface.co/datasets/EMBO/SourceData/resolve/main/compound_image_segmentation/panel_detection_model_no_labels.pt"
+
+      - name: Build and Start Development Container
+        run: |
+          docker-compose -f docker-compose.dev.yml --env-file .env.dev up --build -d
+
+      - name: Wait for Container to Start
+        run: |
+          sleep 5  # Give the container time to initialize
+          docker-compose -f docker-compose.dev.yml ps  # Check if it's running
+
+      - name: Verify Model Exists in Docker
+        run: |
+          docker-compose -f docker-compose.dev.yml exec -T soda ls -lh /app/data/models/
+
+      - name: Run Tests Inside the `soda` Container
+        run: |
+          docker-compose -f docker-compose.dev.yml exec -T soda poetry run pytest tests/test_suite/
+
+      - name: Stop and Clean Up Containers
+        if: always()
+        run: |
+          docker-compose -f docker-compose.dev.yml down

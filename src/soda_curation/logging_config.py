@@ -1,20 +1,40 @@
+"""Logging configuration with environment support."""
+
 import logging
 import os
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, Any
 
+def setup_logging(config: Dict[str, Any]) -> None:
+    """
+    Set up logging with environment-specific configuration.
+    
+    Args:
+        config: Configuration dictionary containing logging settings
+    """
+    # Get logging configuration with defaults
+    log_config = config.get("logging", {})
+    log_level = getattr(logging, log_config.get("level", "INFO"))
+    log_format = log_config.get(
+        "format", 
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    date_format = log_config.get("date_format", "%Y-%m-%d %H:%M:%S")
+    
+    # Create logs directory if it doesn't exist
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
 
-def setup_logging(config) -> None:
-    # Create absolute path for logs directory
-    log_dir = os.path.abspath("logs")
-    os.makedirs(log_dir, exist_ok=True)
-
-    # Configure file logging
+    # Create timestamped log file
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_file = os.path.join(log_dir, f"{timestamp}.log")
+    log_file = log_dir / f"{timestamp}.log"
 
+    # Configure logging
     logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=log_level,
+        format=log_format,
+        datefmt=date_format,
         handlers=[
             logging.FileHandler(log_file),
             logging.StreamHandler()
@@ -22,4 +42,3 @@ def setup_logging(config) -> None:
     )
     
     logging.info(f"Logging initialized. Log file: {log_file}")
-

@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?><article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" article-type="Article" dtd-version="1.0" xml:lang="en">
+  <front>
+    <journal-meta>
+      <journal-id journal-id-type="publisher">44318</journal-id>
+      <journal-id journal-id-type="email"/>
+      <journal-title-group>
+        <journal-title>The EMBO Journal</journal-title>
+        <abbrev-journal-title abbrev-type="medline">emboj</abbrev-journal-title>
+      </journal-title-group>
+      <issn pub-type="ppub">0261-4189</issn>
+      <issn pub-type="epub">1460-2075</issn>
+      <publisher>
+        <publisher-name>Springer Nature</publisher-name>
+      </publisher>
+    </journal-meta>
+    <article-meta>
+      <article-id pub-id-type="doi">10.1038/s44318-024-00143-z</article-id>
+      <article-id pub-id-type="publisher-id">EMBOJ-DUMMY-ZIP</article-id>
+      <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+      <article-id assigning-authority="biostudies" pub-id-type="accession">S-SCDT-10_1038-S44318-024-00143-Z</article-id>
+      <article-categories>
+        <subj-group subj-group-type="Article Type">
+          <subject>Article</subject>
+        </subj-group>
+      </article-categories>
+      <title-group>
+        <article-title>LINE-1 RNA triggers matrix formation in bone cells via a PKR-mediated inflammatory response</article-title>
+        <alt-title alt-title-type="left-running">L1-derived dsRNAs trigger mineralization</alt-title>
+      </title-group>
+      <contrib-group>
+        <contrib contrib-type="author">
+          <contrib-id contrib-id-type="orcid">0000-0002-9551-9344</contrib-id>
+          <name name-style="western">
+            <surname>Mangiavacchi</surname>
+            <given-names>Arianna</given-names>
+            <prefix>Dr.</prefix>
+          </name>
+          <email>arianna.mangiavacchi@kaust.edu.sa</email>
+          <role content-type="1"/>
+          <role>Conceptualization</role>
+          <role>Data curation</role>
+          <role>Formal analysis</role>
+          <role>Validation</role>
+          <role>Investigation</role>
+          <role>Visualization</role>
+          <role>Methodology</role>
+          <role>Writing—original draft</role>
+          <role>Project administration</role>
+          <role>Writing—review and editing</role>
+          <xref ref-type="aff" rid="aff1"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <contrib-id contrib-id-type="orcid">0000-0001-6297-6373</contrib-id>
+          <name name-style="western">
+            <surname>Morelli</surname>
+            <given-names>Gabriele</given-names>
+          </name>
+          <email>gabriele.morelli@kaust.edu.sa</email>
+          <role content-type="2"/>
+          <role>Conceptualization</role>
+          <role>Data curation</role>
+          <role>Formal analysis</role>
+          <role>Investigation</role>
+          <role>Methodology</role>
+          <role>Writing—review and editing</role>
+          <xref ref-type="aff" rid="aff2"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <contrib-id contrib-id-type="orcid">0000-0002-4330-5379</contrib-id>
+          <name name-style="western">
+            <surname>Reppe</surname>
+            <given-names>Sjur</given-names>
+          </name>
+          <email>sjur.reppe@medisin.uio.no</email>
+          <role content-type="3"/>
+          <role>Conceptualization</role>
+          <role>Resources</role>
+          <role>Data curation</role>
+          <role>Formal analysis</role>
+          <role>Investigation</role>
+          <role>Writing—review and editing</role>
+          <xref ref-type="aff" rid="aff3"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <name name-style="western">
+            <surname>Saera Vila</surname>
+            <given-names>Alfonso</given-names>
+            <prefix>Mr.</prefix>
+          </name>
+          <email>asaera@sequentiabiotech.com</email>
+          <role content-type="4"/>
+          <role>Conceptualization</role>
+          <role>Data curation</role>
+          <role>Formal analysis</role>
+          <role>Investigation</role>
+          <xref ref-type="aff" rid="aff4"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <name name-style="western">
+            <surname>Liu</surname>
+            <given-names>Peng</given-names>
+          </name>
+          <email>peng.liu@kaust.edu.sa</email>
+          <role content-type="5"/>
+          <role>Conceptualization</role>
+          <role>Investigation</role>
+          <role>Methodology</role>
+          <xref ref-type="aff" rid="aff5"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <name name-style="western">
+            <surname>Eggerschwiler</surname>
+            <given-names>Benjamin</given-names>
+          </name>
+          <email>benjamin.eggerschwiler@bluewin.ch</email>
+          <role content-type="6"/>
+          <role>Conceptualization</role>
+          <role>Resources</role>
+          <role>Formal analysis</role>
+          <role>Methodology</role>
+          <xref ref-type="aff" rid="aff6"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <name name-style="western">
+            <surname>Zhang</surname>
+            <given-names>Huoming</given-names>
+          </name>
+          <email>huoming.zhang@kaust.edu.sa</email>
+          <role content-type="7"/>
+          <role>Conceptualization</role>
+          <role>Methodology</role>
+          <xref ref-type="aff" rid="aff7"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <name name-style="western">
+            <surname>Bensaddek</surname>
+            <given-names>Dalila</given-names>
+          </name>
+          <email>dalila.bensaddek@kaust.edu.sa</email>
+          <role content-type="8"/>
+          <role>Conceptualization</role>
+          <role>Data curation</role>
+          <role>Methodology</role>
+          <xref ref-type="aff" rid="aff8"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <name name-style="western">
+            <surname>Casanova</surname>
+            <given-names>Elisa</given-names>
+          </name>
+          <email>elisa.zimmermann@kispi.uzh.ch</email>
+          <role content-type="9"/>
+          <role>Conceptualization</role>
+          <role>Resources</role>
+          <role>Methodology</role>
+          <xref ref-type="aff" rid="aff9"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <name name-style="western">
+            <surname>Medina-Gomez</surname>
+            <given-names>Carolina</given-names>
+          </name>
+          <email>m.medinagomez@erasmusmc.nl</email>
+          <role content-type="10"/>
+          <role>Conceptualization</role>
+          <role>Resources</role>
+          <xref ref-type="aff" rid="aff10"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <contrib-id contrib-id-type="orcid">0000-0002-9463-3962</contrib-id>
+          <name name-style="western">
+            <surname>Prijatelj</surname>
+            <given-names>Vid</given-names>
+          </name>
+          <email>v.prijatelj@erasmusmc.nl</email>
+          <role content-type="11"/>
+          <role>Conceptualization</role>
+          <role>Resources</role>
+          <xref ref-type="aff" rid="aff11"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <contrib-id contrib-id-type="orcid">0000-0001-9889-1283</contrib-id>
+          <name name-style="western">
+            <surname>della valle</surname>
+            <given-names>francesco</given-names>
+            <prefix>Dr.</prefix>
+          </name>
+          <email>fdellavalle@altoslabs.com</email>
+          <role content-type="12"/>
+          <role>Conceptualization</role>
+          <role>Investigation</role>
+          <xref ref-type="aff" rid="aff12"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <contrib-id contrib-id-type="orcid">0000-0002-9793-340X</contrib-id>
+          <name name-style="western">
+            <surname>Atinbayeva</surname>
+            <given-names>Nazerke</given-names>
+            <prefix>Mrs.</prefix>
+          </name>
+          <email>atinbayeva@ie-freiburg.mpg.de</email>
+          <role content-type="13"/>
+          <role>Conceptualization</role>
+          <role>Investigation</role>
+          <xref ref-type="aff" rid="aff13"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <name name-style="western">
+            <surname>Izpisua Belmonte</surname>
+            <given-names>Juan Carlos</given-names>
+          </name>
+          <email>jcbelmonte@altoslabs.com</email>
+          <role content-type="14"/>
+          <role>Conceptualization</role>
+          <role>Writing—review and editing</role>
+          <xref ref-type="aff" rid="aff14"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <name name-style="western">
+            <surname>Rivadeneira</surname>
+            <given-names>Fernando</given-names>
+          </name>
+          <email>f.rivadeneira@erasmusmc.nl</email>
+          <role content-type="15"/>
+          <role>Conceptualization</role>
+          <role>Resources</role>
+          <xref ref-type="aff" rid="aff15"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <contrib-id contrib-id-type="orcid">0000-0002-0163-9055</contrib-id>
+          <name name-style="western">
+            <surname>Cinelli</surname>
+            <given-names>Paolo</given-names>
+            <prefix>Dr.</prefix>
+          </name>
+          <email>paolo.cinelli@usz.ch</email>
+          <role content-type="16"/>
+          <role>Conceptualization</role>
+          <role>Resources</role>
+          <role>Methodology</role>
+          <role>Writing—review and editing</role>
+          <xref ref-type="aff" rid="aff16"/>
+        </contrib>
+        <contrib contrib-type="author">
+          <contrib-id contrib-id-type="orcid">0000-0002-3458-6113</contrib-id>
+          <name name-style="western">
+            <surname>Gautvik</surname>
+            <given-names>Kaare, Morten</given-names>
+          </name>
+          <email>kmgautvik@gmail.com</email>
+          <role content-type="17"/>
+          <role>Conceptualization</role>
+          <role>Resources</role>
+          <role>Supervision</role>
+          <role>Investigation</role>
+          <role>Methodology</role>
+          <role>Writing—review and editing</role>
+          <xref ref-type="aff" rid="aff17"/>
+        </contrib>
+        <contrib contrib-type="author" corresp="yes">
+          <contrib-id contrib-id-type="orcid">0000-0002-4906-8511</contrib-id>
+          <name name-style="western">
+            <surname>Orlando</surname>
+            <given-names>Valerio</given-names>
+          </name>
+          <email>valerio.orlando@kaust.edu.sa</email>
+          <role content-type="18"/>
+          <role>Conceptualization</role>
+          <role>Resources</role>
+          <role>Supervision</role>
+          <role>Funding acquisition</role>
+          <role>Investigation</role>
+          <role>Project administration</role>
+          <role>Writing—review and editing</role>
+          <xref ref-type="aff" rid="aff18"/>
+        </contrib>
+        <aff id="aff1">
+          <institution>King Abdullah University of Science and Technology</institution>
+          <addr-line content-type="addrline1">4700 KAUST</addr-line>
+          <addr-line content-type="city">Thuwal</addr-line>
+          <addr-line content-type="zipcode">23955-6900</addr-line>
+          <country>Saudi Arabia [SA
+]</country>
+        </aff>
+        <aff id="aff2">
+          <institution>King Abdullah University of Science and Technology</institution>
+          <addr-line content-type="addrline1">4700 KAUST</addr-line>
+          <addr-line content-type="city">Thuwal</addr-line>
+          <addr-line content-type="zipcode">23955-6900</addr-line>
+          <country>Saudi Arabia [SA
+]</country>
+        </aff>
+        <aff id="aff3">
+          <institution>Oslo University Hospital, Ullevaal</institution>
+          <addr-line content-type="addrline1">Department of Medical Biochemistry</addr-line>
+          <addr-line content-type="city">Oslo</addr-line>
+          <addr-line content-type="zipcode">0450 Oslo</addr-line>
+          <country>Norway [NO
+]</country>
+        </aff>
+        <aff id="aff4">
+          <institution>Sequentia Biotech</institution>
+          <addr-line content-type="addrline1">Carrer d'Àlaba, 61</addr-line>
+          <addr-line content-type="city">Barcelona</addr-line>
+          <addr-line content-type="zipcode">08005</addr-line>
+          <country>Spain [ES
+]</country>
+        </aff>
+        <aff id="aff5">
+          <institution>King Abdullah University of Science and Technology</institution>
+          <addr-line content-type="addrline1">4700 KAUST</addr-line>
+          <addr-line content-type="city">Thuwal</addr-line>
+          <addr-line content-type="zipcode">23955-6900</addr-line>
+          <country>Saudi Arabia [SA
+]</country>
+        </aff>
+        <aff id="aff6">
+          <institution>University Hospital Zurich</institution>
+          <addr-line content-type="city">Zurich</addr-line>
+          <country>Switzerland [CH
+]</country>
+        </aff>
+        <aff id="aff7">
+          <institution>King Abdullah University of Science and Technology</institution>
+          <addr-line content-type="addrline1">4700 King Abdullah University of Science and Technology Thuwal 23955-6900 Kingdom of Saudi Arabia</addr-line>
+          <addr-line content-type="state">Thuwal</addr-line>
+          <addr-line content-type="zipcode">23955-6900</addr-line>
+          <country>Saudi Arabia [SA
+]</country>
+        </aff>
+        <aff id="aff8">
+          <institution>King Abdullah University of Science and Technology</institution>
+          <addr-line content-type="addrline1">4700 KAUST</addr-line>
+          <addr-line content-type="city">Thuwal</addr-line>
+          <addr-line content-type="zipcode">23955-6900</addr-line>
+          <country>Saudi Arabia [SA
+]</country>
+        </aff>
+        <aff id="aff9">
+          <institution>University Hospital Zurich</institution>
+          <addr-line content-type="city">Zurich</addr-line>
+          <country>Switzerland [CH
+]</country>
+        </aff>
+        <aff id="aff10">
+          <institution>Erasmus Medical Centre</institution>
+          <addr-line content-type="city">Rotterdam</addr-line>
+          <country>Netherlands [NL
+]</country>
+        </aff>
+        <aff id="aff11">
+          <institution>Erasmus Medical Centre</institution>
+          <addr-line content-type="city">Rotterdam</addr-line>
+          <country>Netherlands [NL
+]</country>
+        </aff>
+        <aff id="aff12">
+          <institution>ALTOS LABS</institution>
+          <addr-line content-type="addrline1">4700 KAUST</addr-line>
+          <addr-line content-type="city">Thuwal</addr-line>
+          <addr-line content-type="zipcode">23955-6900</addr-line>
+          <country>Saudi Arabia [SA
+]</country>
+        </aff>
+        <aff id="aff13">
+          <institution>MPI-IE Freiburg</institution>
+          <addr-line content-type="addrline1">Stübeweg, 51</addr-line>
+          <addr-line content-type="city">Freiburg</addr-line>
+          <country>Germany [DE
+]</country>
+        </aff>
+        <aff id="aff14">
+          <institution>Altos lab</institution>
+          <country>United States [US
+]</country>
+        </aff>
+        <aff id="aff15">
+          <institution>Erasmus University of Rotterdam</institution>
+        </aff>
+        <aff id="aff16">
+          <institution>University of Zurich</institution>
+        </aff>
+        <aff id="aff17">
+          <institution>Lovisenberg Diaconal Hospital</institution>
+          <addr-line content-type="addrline1">Lovisenberggata 17</addr-line>
+          <addr-line content-type="city">Oslo</addr-line>
+          <addr-line content-type="state">Oslo</addr-line>
+          <addr-line content-type="zipcode">0456</addr-line>
+          <country>Norway [NO
+]</country>
+        </aff>
+        <aff id="aff18">
+          <institution>King Abdullah University of Science and Technology</institution>
+          <addr-line content-type="addrline1">4700 KAUST</addr-line>
+          <addr-line content-type="city">Thuwal</addr-line>
+          <addr-line content-type="zipcode">23955-6900</addr-line>
+          <country>Saudi Arabia [SA
+]</country>
+        </aff>
+      </contrib-group>
+      <author-notes>
+        <corresp id="cor1">
+<label>*</label> Corresponding Author; email: <email xlink:type="simple">valerio.orlando@kaust.edu.sa</email>
+</corresp>
+      </author-notes>
+      <history>
+        <date date-type="accepted">
+          <day>23</day>
+          <month>05</month>
+          <year>2024</year>
+        </date>
+        <date date-type="received">
+          <day>08</day>
+          <month>08</month>
+          <year>2023</year>
+        </date>
+        <date date-type="revised">
+          <day>16</day>
+          <month>05</month>
+          <year>2024</year>
+        </date>
+      </history>
+      <permissions>
+        <copyright-statement>Copyright © 2024, The EMBO Journal</copyright-statement>
+        <copyright-year>2024</copyright-year>
+        <license license-type="open-access" xlink:href="http://creativecommons.org/licenses/by/2.0/">
+          <license-p>This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.</license-p>
+        </license>
+      </permissions>
+      <abstract>
+        <p>Transposable elements (TEs) are mobile genetic modules of viral derivation that have been co-opted to become modulators of mammalian gene expression. TEs are a major source of endogenous dsRNAs, signaling molecules able to coordinate inflammatory responses in various physiological processes. Here, we provide evidence for a positive involvement of TEs in inflammation-driven bone repair and mineralization. In newly fractured mice bone, we observed an early transient upregulation of repeats occurring concurrently with the initiation of the inflammatory stage. In human bone biopsies, analysis revealed a significant correlation between repeats expression, mechanical stress and bone mineral density. We investigated a potential link between LINE-1 (L1) expression and bone mineralization by delivering a synthetic L1 RNA to osteoporotic patient-derived mesenchymal stem cells and observed a dsRNA-triggered protein kinase (PKR)-mediated stress response that led to strongly increased mineralization. This response was associated with a strong and transient inflammation, accompanied by a global translation attenuation induced by eIF2 phosphorylation. We demonstrated that L1 transfection reshaped the secretory profile of osteoblasts, triggering a paracrine activity that stimulated the mineralization of recipient cells.</p>
+      </abstract>
+      <funding-group>
+        <award-group>
+          <funding-source>King Abdullah University of Science and Technology (KAUST) <named-content content-type="funder-id">http://dx.doi.org/10.13039/501100004052</named-content>
+</funding-source>
+          <award-id>BAS/1/1037-01-01</award-id>
+          <principal-award-recipient>Valerio Orlando</principal-award-recipient>
+        </award-group>
+        <award-group>
+          <funding-source>European union project OSTEOGENE</funding-source>
+          <award-id>FP6-502491</award-id>
+          <principal-award-recipient>Fernando Rivadeneira</principal-award-recipient>
+        </award-group>
+        <award-group>
+          <funding-source>ZonMw (Netherlands Organisation for Health Research and Development) <named-content content-type="funder-id">http://dx.doi.org/10.13039/501100001826</named-content>
+</funding-source>
+          <award-id>016.136.367</award-id>
+          <principal-award-recipient>Fernando Rivadeneira</principal-award-recipient>
+        </award-group>
+        <award-group>
+          <funding-source>Oslo University Hospital, Ulleval</funding-source>
+          <award-id>29750104</award-id>
+          <principal-award-recipient>Fernando Rivadeneira</principal-award-recipient>
+        </award-group>
+      </funding-group>
+      <counts>
+        <fig-count count="0"/>
+        <table-count count="0"/>
+        <page-count count="0"/>
+      </counts>
+      <custom-meta-group>
+        <custom-meta>
+          <meta-name>editor</meta-name>
+          <meta-value>Ieva Gailite</meta-value>
+        </custom-meta>
+        <custom-meta>
+          <meta-name>typesetter-printer-note-1</meta-name>
+          <meta-value>Category Molecular Biology of Disease [EMBO24], Signal Transduction [EMBO37]</meta-value>
+        </custom-meta>
+        <custom-meta>
+          <meta-name>file_permissions</meta-name>
+          <meta-value>No</meta-value>
+        </custom-meta>
+      </custom-meta-group>
+    </article-meta>
+    <notes>
+      <fig id="3023475" object-type="Figure" orientation="portrait" position="float">
+        <label>Figure 1</label>
+        <long-desc>FIGURE 1.tif</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/graphic/FIGURE 1.tif</object_id>
+      </fig>
+      <fig id="3023476" object-type="Figure" orientation="portrait" position="float">
+        <label>Figure 2</label>
+        <long-desc>FIGURE 2.tif</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/graphic/FIGURE 2.tif</object_id>
+      </fig>
+      <fig id="3023477" object-type="Figure" orientation="portrait" position="float">
+        <label>Figure 3</label>
+        <long-desc>FIGURE 3.tif</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/graphic/FIGURE 3.tif</object_id>
+      </fig>
+      <fig id="3023478" object-type="Figure" orientation="portrait" position="float">
+        <label>Figure 4</label>
+        <long-desc>FIGURE 4.tif</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/graphic/FIGURE 4.tif</object_id>
+      </fig>
+      <fig id="3023479" object-type="Figure" orientation="portrait" position="float">
+        <label>Figure 5</label>
+        <long-desc>FIGURE 5.tif</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/graphic/FIGURE 5.tif</object_id>
+      </fig>
+      <fig id="3023480" object-type="Figure" orientation="portrait" position="float">
+        <label>Figure 6</label>
+        <long-desc>Figure 6.tif</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/graphic/Figure 6.tif</object_id>
+      </fig>
+      <form id="3022372" object-type="Expanded View Content (was Supplementary Information)">
+        <label>Appendix</label>
+        <long-desc>Appendix.pdf</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/suppl_data/Appendix.pdf</object_id>
+      </form>
+      <form id="3033779" object-type="Expanded View Content (was Supplementary Information)">
+        <label>Peer Review File</label>
+        <long-desc>EMBOJ-DUMMY-ZIPR1-Peer Review File.pdf</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/suppl_data/EMBOJ-DUMMY-ZIPR1Peer Review File.pdf</object_id>
+      </form>
+      <form id="3022269" object-type="Figure Source Data Files">
+        <label>Source data checklist</label>
+        <long-desc>EMBOJ-DUMMY-ZIP_SourceData_Checklist.pdf</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/suppl_data/EMBOJ-DUMMY-ZIP_SourceData_Checklist.pdf</object_id>
+      </form>
+      <form id="3028150" object-type="Figure Source Data Files">
+        <label>Figure 3 Source Data</label>
+        <long-desc>EMBOJ-DUMMY-ZIPR-Figure_3-sd.zip</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/suppl_data/EMBOJ-DUMMY-ZIPRFigure_3sd.zip</object_id>
+      </form>
+      <form id="3028145" object-type="Figure Source Data Files">
+        <label>Figure 4 Source Data</label>
+        <long-desc>EMBOJ-DUMMY-ZIPR-Figure_4-sd.zip</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/suppl_data/EMBOJ-DUMMY-ZIPRFigure_4sd.zip</object_id>
+      </form>
+      <form id="3028144" object-type="Figure Source Data Files">
+        <label>Figure 5 Source Data</label>
+        <long-desc>EMBOJ-DUMMY-ZIPR-Figure_5-sd.zip</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/suppl_data/EMBOJ-DUMMY-ZIPRFigure_5sd.zip</object_id>
+      </form>
+      <form id="3028143" object-type="Figure Source Data Files">
+        <label>Figure 6 Source Data</label>
+        <long-desc>EMBOJ-DUMMY-ZIPR-Figure_6-sd.zip</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/suppl_data/EMBOJ-DUMMY-ZIPRFigure_6sd.zip</object_id>
+      </form>
+      <form id="3029897" object-type="Attachment - Production Forms">
+        <label>eTOC Image</label>
+        <long-desc>EMBOJ-DUMMY-ZIPR-eToC.png</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/prod_forms/EMBOJ-DUMMY-ZIPReToC.png</object_id>
+      </form>
+      <form id="3029898" object-type="Attachment - Production Forms">
+        <label>Synopsis Image</label>
+        <long-desc>EMBOJ-DUMMY-ZIPR-Synopsis_Image.png</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/prod_forms/EMBOJ-DUMMY-ZIPRSynopsis_Image.png</object_id>
+      </form>
+      <form id="3029899" object-type="Attachment - Production Forms">
+        <label>eTOC Blurb</label>
+        <long-desc>EMBOJ-115257_eTOC_Blurb.docx</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/prod_forms/EMBOJ115257_eTOC_Blurb.docx</object_id>
+      </form>
+      <form id="3029900" object-type="Attachment - Production Forms">
+        <label>Synopsis</label>
+        <long-desc>EMBOJ-115257-Synopsis.docx</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/prod_forms/EMBOJ115257Synopsis.docx</object_id>
+      </form>
+      <merged_pdf id="3029917" object-type="Merged PDF">
+        <label>Merged PDF</label>
+        <object_id>EMBOJ-DUMMY-ZIP/pdf/EMBOJ-DUMMY-ZIP.pdf</object_id>
+      </merged_pdf>
+      <supplementary-material id="3029901" object-type="Manuscript Text" orientation="portrait" position="float">
+        <label>Manuscript Text</label>
+        <long-desc>EMBOJ-DUMMY-ZIPR1-Manuscript_Text-IG.docx</long-desc>
+        <object_id>EMBOJ-DUMMY-ZIP/Doc/EMBOJ-DUMMY-ZIPR1Manuscript_TextIG.docx</object_id>
+        <title>Manuscript Text</title>
+      </supplementary-material>
+    </notes>
+  </front>
+</article>

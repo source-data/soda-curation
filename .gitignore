@@ -8,6 +8,9 @@ writing
 exporting
 naming
 .vscode/
+.env
+*.env
+!.env.example
 
 # Python
 __pycache__/
@@ -75,7 +78,6 @@ Thumbs.db
 local.properties
 
 # Project specific
-config.yaml
 *.zip
 output/
 
@@ -94,12 +96,10 @@ dmypy.json
 .pyre/
 
 # Sensitive or environment-specific files
-*.env
+*.env.*
 *.pem
 *.key
 secrets.yaml
-config.yaml
-
 # Large files or datasets
 *.csv
 *.json
@@ -119,3 +119,4 @@ temp/
 report.html
 logs/
 .hypothesis/
+project_tree.txt
