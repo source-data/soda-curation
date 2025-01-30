@@ -1,26 +1,75 @@
-ai: "openai" # "openai"
+#################
+#################
+# config/config.yaml
+default: &default
+  # General settings
+  debug:
+    enabled: false
+    debug_dir: logs/debug
+    process_first_figure_only: false
 
-openai:
-  api_key: "your_openai_api_key"
-  model: "gpt-4o-2024-08-06" # "gpt-4-turbo-2024-04-09", "gpt-4o-2024-08-06"
-  max_tokens: 8000
-  top_p: 1.0
-  temperature: 0.5
-  structure_zip_assistant_id: "asst_"
-  caption_extraction_assistant_id: "asst_" # ID for caption extraction assistant
-  panel_source_data_assistant_id: "asst_" # ID for caption extraction assistant
-  caption_location_assistant_id: "asst_"
+  # Provider-specific base configurations
+  providers:
+    openai: &openai_base
+      temperature: 0.3
+      top_p: 1.0
+      max_tokens: 2048
+      
+    anthropic: &anthropic_base
+      temperature: 0.3
+      top_p: 1.0
+      max_tokens_to_sample: 8192
+      top_k: 128
 
-object_detection:
-  model_path: "data/models/panel_detection_model_no_labels.pt"
+  # Pipeline step configurations
+  pipeline:
+    assign_panel_source:
+      openai:
+        <<: *openai_base
+        model: gpt-4
+        system_prompt: "system prompt for panel source assignment"
+      anthropic:
+        <<: *anthropic_base
+        model: claude-3-5-sonnet-20241022
+        system_prompt: "system prompt for panel source assignment"
 
-logging:
-  level: "INFO" # Can be DEBUG, INFO, WARNING, ERROR, CRITICAL
-  file: "logs/soda_curation.log"  # Specify a directory here
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  date_format: "%Y-%m-%d %H:%M:%S"
+    extract_captions:
+      openai:
+        <<: *openai_base
+        model: gpt-4
+        system_prompt: "system prompt for caption extraction"
+      anthropic:
+        <<: *anthropic_base
+        model: claude-3-5-sonnet-20241022
+        system_prompt: "system prompt for caption extraction"
 
-debug:
-  enabled: false
-  debug_dir: "data/output_debug"
-  process_first_figure_only: false
+    match_caption_panel:
+      openai:
+        <<: *openai_base
+        model: gpt-4-vision-preview
+        system_prompt: "system prompt for caption panel matching"
+      anthropic:
+        <<: *anthropic_base
+        model: claude-3-5-sonnet-20241022
+        system_prompt: "system prompt for caption panel matching"
+
+    object_detection:
+      model_path: "data/models/panel_detection_model_no_labels.pt"
+      confidence_threshold: 0.25
+      iou_threshold: 0.1
+      image_size: 512
+      max_detections: 30
+
+test:
+  <<: *default
+  debug:
+    enabled: true
+    debug_dir: logs/debug/test
+    process_first_figure_only: true
+
+production:
+  <<: *default
+  debug:
+    enabled: false
+    debug_dir: logs/debug/prod
+    process_first_figure_only: false
