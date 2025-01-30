@@ -49,27 +49,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             # Extract manuscript structure
             extractor = XMLStructureExtractor(zip_path, str(extract_dir))
             structure = extractor.extract_structure()
-            
-            # Add AI configuration
-            structure.ai_provider = config["ai"]
-            structure.ai_config = {
-                "provider": config["ai"],
-                "model": config[config["ai"]]["model"],
-                "temperature": config[config["ai"]].get("temperature", 0.5),
-                "top_p": config[config["ai"]].get("top_p", 1.0)
-            }
-            
-            # Add provider-specific parameters
-            if config["ai"] == "openai":
-                structure.ai_config.update({
-                    "max_tokens": config["openai"].get("max_tokens", 0)
-                })
-            elif config["ai"] == "anthropic":
-                structure.ai_config.update({
-                    "max_tokens_to_sample": config["anthropic"].get("max_tokens_to_sample", 0),
-                    "top_k": config["anthropic"].get("top_k", 0)
-                })
-            
+                        
             # Convert to JSON
             output_json = json.dumps(
                 structure,

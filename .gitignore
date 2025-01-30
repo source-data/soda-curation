@@ -8,6 +8,9 @@ writing
 exporting
 naming
 .vscode/
+.env
+*.env
+!.env.example
 
 # Python
 __pycache__/
