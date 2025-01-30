@@ -33,6 +33,12 @@ jobs:
           echo "ENVIRONMENT=dev" >> .env.dev
           echo "MODEL_PROVIDER=openai" >> .env.dev
 
+      - name: Download Model from Hugging Face
+        run: |
+          mkdir -p data/models
+          curl -L -o data/models/panel_detection_model_no_labels.pt \
+          "https://huggingface.co/datasets/EMBO/SourceData/resolve/main/compound_image_segmentation/panel_detection_model_no_labels.pt"
+
       - name: Build and Start Development Container
         run: |
           docker-compose -f docker-compose.dev.yml --env-file .env.dev up --build -d
@@ -41,12 +47,6 @@ jobs:
         run: |
           sleep 5  # Give the container time to initialize
           docker-compose -f docker-compose.dev.yml ps  # Check if it's running
-
-      - name: Download Model from Hugging Face
-        run: |
-          mkdir -p data/models
-          curl -L -o data/models/panel_detection_model_no_labels.pt \
-          "https://huggingface.co/datasets/EMBO/SourceData/resolve/main/compound_image_segmentation/panel_detection_model_no_labels.pt"
 
       - name: Verify Model Exists in Docker
         run: |
