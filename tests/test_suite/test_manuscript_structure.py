@@ -21,7 +21,7 @@ INVALID_XML = """<?xml version="1.0" encoding="UTF-8"?>
 @pytest.fixture
 def test_data_dir():
     """Get path to test data directory."""
-    return Path(__file__).parent / "data"
+    return Path(__file__).parent / "test_data"
 
 @pytest.fixture
 def sample_xml_content(test_data_dir):
