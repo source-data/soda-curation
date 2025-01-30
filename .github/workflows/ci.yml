@@ -1,0 +1,31 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and Start Development Container
+        run: |
+          docker-compose -f docker-compose.dev.yml up --build -d
+
+      - name: Run Tests Inside the `soda` Container
+        run: |
+          docker-compose -f docker-compose.dev.yml exec -T soda poetry run pytest tests/test_suite/
+
+      - name: Stop and Clean Up Containers
+        if: always()
+        run: |
+          docker-compose -f docker-compose.dev.yml down
