@@ -5,7 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.cpu
-      target: development
+      args:
+        DEPLOYMENT_ENV: prod  # Change to "test" in CI
+      target: production
     environment:
       - DEPLOYMENT_ENV=prod
       - ENVIRONMENT=prod
@@ -13,4 +15,3 @@ services:
       - .env.prod
     volumes:
       - ./:/app/          # Mount source code directory
-    command: ["--zip", "/app/input/${INPUT_FILE}", "--config", "/app/config/config.yaml"]

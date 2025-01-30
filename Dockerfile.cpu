@@ -76,7 +76,8 @@ RUN poetry run pip install --upgrade pip \
     
 
 # Copy the config file
-COPY config.yaml /app/config.yaml
+ARG DEPLOYMENT_ENV=dev  # Default to "dev" if not provided
+COPY config.${DEPLOYMENT_ENV}.yaml /app/config.yaml
 
 # Set PYTHONPATH
 ENV PYTHONPATH=/app/src:$PYTHONPATH

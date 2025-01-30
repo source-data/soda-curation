@@ -78,7 +78,6 @@ Thumbs.db
 local.properties
 
 # Project specific
-config.yaml
 *.zip
 output/
 
@@ -101,8 +100,6 @@ dmypy.json
 *.pem
 *.key
 secrets.yaml
-config.yaml
-config.*.yaml
 # Large files or datasets
 *.csv
 *.json
