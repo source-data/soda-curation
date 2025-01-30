@@ -591,10 +591,17 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 - Allow for storage of evaluation and model performance
 - Prompts defined in the configuration file, now keeping configuration separately for each pipeline step
 
-### v0.2.2 (2024-12-02)
+### v0.2.2 (2025-01-30)
 
-- The text output is now given as `html` format to keep all the information present int he DOCX manuscripts
-- Improved logging, generating now a log file each time the program is run and adding AI responses for possible analysis on errors
+This tag is the stable version of the soda-curation package to extract the following information of papers using OpenAI
+
+- XML manifest and structure
+- Figure legends
+- Figure panels
+- Associate each figure panel to the corresponding caption test
+- Associate source data at a panel level
+- Extraction of the data availability section
+- Includes model benchmarking on ten annotated ground truth manuscripts
 
 ### v0.2.1 (2024-12-02)
 
