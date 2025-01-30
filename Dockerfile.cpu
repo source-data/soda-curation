@@ -47,7 +47,8 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 # Copy project files
 COPY pyproject.toml poetry.lock* ./
 COPY src ./src
-COPY data/models/panel_detection_model_no_labels.pt ./data/models/
+COPY ./data/models/panel_detection_model_no_labels.pt /app/data/models/
+
 
 # Install dependencies and the package
 RUN poetry config virtualenvs.create false \
@@ -82,9 +83,6 @@ COPY config.${DEPLOYMENT_ENV}.yaml /app/config.yaml
 # Set PYTHONPATH
 ENV PYTHONPATH=/app/src:$PYTHONPATH
 
-# Create a directory for input files
-RUN mkdir /app/input
-
 # Verify key package installations
 RUN poetry run python -c "import yaml; print(yaml.__file__)"
 RUN poetry run python -c "import openai; print(openai.__file__)"
@@ -92,7 +90,6 @@ RUN poetry run python -c "import cv2; print(cv2.__file__)"
 RUN poetry run python -c "from ultralytics import YOLOv10; print(YOLOv10)"
 RUN poetry run python -c "import fitz; print(fitz.__file__)"
 RUN poetry run python -c "import pdf2image; print(pdf2image.__file__)"
-RUN mkdir -p /app/input /app/output
 RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 
 
