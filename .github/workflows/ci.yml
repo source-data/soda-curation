@@ -26,9 +26,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
+      - name: Create .env.dev File with Secrets
+        run: |
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env.dev
+          echo "ENVIRONMENT=dev" >> .env.dev
+          echo "MODEL_PROVIDER=openai" >> .env.dev
+
       - name: Build and Start Development Container
         run: |
-          docker-compose -f docker-compose.dev.yml up --build -d
+          docker-compose -f docker-compose.dev.yml --env-file .env.dev up --build -d
 
       - name: Run Tests Inside the `soda` Container
         run: |
