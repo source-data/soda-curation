@@ -1,0 +1,26 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.1.0  # or the latest version
+    hooks:
+      - id: black
+        # Example arguments:
+        args: [--line-length=88]
+        # If you want Black to automatically fix code, just omit `--check`.
+        # By default, Black *fixes* code. If you only want to check, add `--check`.
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0  # or the latest version
+    hooks:
+      - id: flake8
+        args: 
+          - --max-line-length=88
+          - --ignore=E203,W503,W291,W293
+          # E203, W503 are commonly ignored to match Black's style preferences.
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0  # or the latest
+    hooks:
+      - id: isort
+        args:
+          - --profile=black
+          # This ensures isort’s formatting is compatible with Black’s style.

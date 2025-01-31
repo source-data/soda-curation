@@ -105,10 +105,8 @@ Example output format:
 
 
 def get_locate_captions_prompt(
-    manuscript_text: str,
-    expected_figure_count: str,
-    expected_figure_labels: str
-    ) -> str:
+    manuscript_text: str, expected_figure_count: str, expected_figure_labels: str
+) -> str:
     """
     Get the prompt for locating figure captions in a document.
     """
@@ -125,32 +123,36 @@ def get_locate_captions_prompt(
     ).substitute(
         manuscript_text=manuscript_text,
         expected_figure_count=expected_figure_count,
-        expected_figure_labels=expected_figure_labels
+        expected_figure_labels=expected_figure_labels,
     )
+
 
 def get_extract_captions_prompt(
     figure_captions: str,
     expected_figure_count: str = "",
-    expected_figure_labels: str = ""
-    ) -> str:
+    expected_figure_labels: str = "",
+) -> str:
     """
     Generate a prompt for extracting figure captions from the located captions text.
 
     Returns:
         str: A formatted prompt string for AI models to extract figure captions.
     """
-    return Template("""
+    return Template(
+        """
         Figure captions of the document: $figure_captions
 
         Expected figure count: $expected_figure_count
 
         Expected labels: $expected_figure_labels
-    """).substitute(
+    """
+    ).substitute(
         figure_captions=figure_captions,
         expected_figure_count=expected_figure_count,
-        expected_figure_labels=expected_figure_labels
+        expected_figure_labels=expected_figure_labels,
     )
-    
+
+
 # Claude-specific Prompts
 CLAUDE_LOCATE_CAPTIONS_PROMPT = """
 You are an expert at identifying and extracting complete figure captions from scientific manuscripts.
@@ -263,11 +265,10 @@ OUTPUT FORMAT:
 ```
 """
 
+
 def get_claude_locate_captions_prompt(
-    manuscript_text: str,
-    expected_figure_count: str,
-    expected_figure_labels: str
-    ) -> str:
+    manuscript_text: str, expected_figure_count: str, expected_figure_labels: str
+) -> str:
     """
     Get the prompt for locating figure captions in a document.
     """
@@ -284,21 +285,21 @@ def get_claude_locate_captions_prompt(
     ).substitute(
         manuscript_text=manuscript_text,
         expected_figure_count=expected_figure_count,
-        expected_figure_labels=expected_figure_labels
+        expected_figure_labels=expected_figure_labels,
     )
 
+
 def get_claude_extract_captions_prompt(
-    figure_captions: str,
-    expected_figure_count: str,
-    expected_figure_labels: str
-    ) -> str:
+    figure_captions: str, expected_figure_count: str, expected_figure_labels: str
+) -> str:
     """
     Generate a prompt for extracting figure captions from the located captions text.
 
     Returns:
         str: A formatted prompt string for AI models to extract figure captions.
     """
-    return Template("""
+    return Template(
+        """
         Figure captions of the document: $figure_captions
 
         Expected figure count: $expected_figure_count
@@ -306,8 +307,9 @@ def get_claude_extract_captions_prompt(
         Expected labels: $expected_figure_labels
 
         Please extract both the title and complete caption for each figure and format the output as specified in the instructions.
-    """).substitute(
+    """
+    ).substitute(
         figure_captions=figure_captions,
         expected_figure_count=expected_figure_count,
-        expected_figure_labels=expected_figure_labels
+        expected_figure_labels=expected_figure_labels,
     )

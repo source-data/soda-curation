@@ -45,6 +45,7 @@ Critical instructions:
    - Include file paths or other resources
    - Include explanatory text"""
 
+
 def get_locate_data_availability_prompt(manuscript_text: str) -> str:
     """Generate prompt for locating data availability section."""
     return f"""Find and extract the content of the Data Availability section from this manuscript:
@@ -52,6 +53,7 @@ def get_locate_data_availability_prompt(manuscript_text: str) -> str:
 {manuscript_text}
 
 Return ONLY the content in HTML format WITHOUT the section title."""
+
 
 def get_extract_data_sources_prompt(section_text: str) -> str:
     """Generate prompt for extracting data sources from section."""

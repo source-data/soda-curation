@@ -1,17 +1,10 @@
-import json
 import logging
-import os
-import re
 import time
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional
 
 import openai
-from docx import Document
-from fuzzywuzzy import fuzz
-from openai.types.beta import Thread
-from openai.types.file_object import FileObject
 
-from ..manuscript_structure.manuscript_structure import Figure, ZipStructure
+from ..manuscript_structure.manuscript_structure import ZipStructure
 from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import (
     EXTRACT_CAPTIONS_PROMPT,
@@ -21,6 +14,7 @@ from .extract_captions_prompts import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 class FigureCaptionExtractorGpt(FigureCaptionExtractor):
     """Implementation of caption extraction using OpenAI's GPT models."""
@@ -38,30 +32,32 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         """Set up or retrieve the OpenAI assistant for locating captions."""
         assistant_id = self.config.get("caption_location_assistant_id")
         if not assistant_id:
-            raise ValueError("caption_location_assistant_id is not set in configuration")
-        
+            raise ValueError(
+                "caption_location_assistant_id is not set in configuration"
+            )
+
         return self.client.beta.assistants.update(
             assistant_id,
             model=self.config["model"],
-            instructions=LOCATE_CAPTIONS_PROMPT
+            instructions=LOCATE_CAPTIONS_PROMPT,
         )
 
     def _setup_extract_assistant(self):
         """Set up or retrieve the OpenAI assistant for extracting captions."""
         assistant_id = self.config.get("caption_extraction_assistant_id")
         if not assistant_id:
-            raise ValueError("caption_extraction_assistant_id is not set in configuration")
-        
+            raise ValueError(
+                "caption_extraction_assistant_id is not set in configuration"
+            )
+
         return self.client.beta.assistants.update(
-            assistant_id,
-            model=self.model,
-            instructions=EXTRACT_CAPTIONS_PROMPT
+            assistant_id, model=self.model, instructions=EXTRACT_CAPTIONS_PROMPT
         )
 
     def _cleanup_thread(self, thread_id: str):
         """
         Helper method to clean up a thread and its messages.
-        
+
         Args:
             thread_id: The ID of the thread to clean up
         """
@@ -72,18 +68,20 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         except Exception as e:
             logger.error(f"Error cleaning up thread {thread_id}: {str(e)}")
 
-    def _locate_figure_captions(self,
+    def _locate_figure_captions(
+        self,
         doc_string: str,
         expected_figure_count: int = None,
-        expected_figure_labels: str = "") -> Optional[str]:
+        expected_figure_labels: str = "",
+    ) -> Optional[str]:
         """
         Locate figure captions using AI, optionally using both DOCX and PDF files.
-        
+
         Args:
             docx_path (str): Path to DOCX file
             pdf_path (str): Optional path to PDF file
             expected_figure_count (int): Expected number of figures (from Figure 1 to X)
-            
+
         Returns:
             Optional[str]: Found captions text or None
         """
@@ -94,17 +92,16 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 expected_figure_count=expected_figure_count,
                 expected_figure_labels=expected_figure_labels,
             )
-            
+
             thread = self.client.beta.threads.create(
-                messages = [
+                messages=[
                     {"role": "user", "content": message_content},
                 ]
             )
 
             # Rest of the assistant communication code...
             run = self.client.beta.threads.runs.create(
-                thread_id=thread.id,
-                assistant_id=self.locate_assistant.id
+                thread_id=thread.id, assistant_id=self.locate_assistant.id
             )
 
             # Wait for completion with timeout
@@ -114,44 +111,42 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 if time.time() - start_time > timeout:
                     logger.error("Assistant run timed out")
                     return None
-                    
+
                 time.sleep(1)
                 run = self.client.beta.threads.runs.retrieve(
-                    thread_id=thread.id,
-                    run_id=run.id
+                    thread_id=thread.id, run_id=run.id
                 )
-                
+
                 if run.status == "failed":
                     logger.error(f"Assistant run failed: {run.last_error}")
                     return None
 
             # Get response
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
-            
+
             if messages.data:
-                located_captions =  messages.data[0].content[0].text.value
+                located_captions = messages.data[0].content[0].text.value
                 self._cleanup_thread(thread.id)
                 return located_captions
             return None
         except Exception as e:
             logger.error(f"Error locating figure captions: {str(e)}")
             return None
-        
-    def _extract_individual_captions(self,
-        all_captions: str,
-        expected_figure_count: int,
-        expected_figure_labels: str) -> Dict[str, str]:
+
+    def _extract_individual_captions(
+        self, all_captions: str, expected_figure_count: int, expected_figure_labels: str
+    ) -> Dict[str, str]:
         """Extract individual figure captions using AI."""
         try:
             # Create thread for extraction
             message_content = get_extract_captions_prompt(
                 figure_captions=all_captions,
                 expected_figure_count=expected_figure_count,
-                expected_figure_labels=expected_figure_labels
-                )
-            
+                expected_figure_labels=expected_figure_labels,
+            )
+
             thread = self.client.beta.threads.create(
-                messages = [
+                messages=[
                     # {"role": "system", "content": EXTRACT_CAPTIONS_PROMPT},
                     {"role": "user", "content": message_content},
                 ]
@@ -159,8 +154,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
             # Run the assistant
             run = self.client.beta.threads.runs.create(
-                thread_id=thread.id,
-                assistant_id=self.extract_assistant.id
+                thread_id=thread.id, assistant_id=self.extract_assistant.id
             )
 
             # Wait for completion with timeout
@@ -170,20 +164,19 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                 if time.time() - start_time > timeout:
                     logger.error("Assistant run timed out")
                     return {}
-                    
+
                 time.sleep(1)
                 run = self.client.beta.threads.runs.retrieve(
-                    thread_id=thread.id,
-                    run_id=run.id
+                    thread_id=thread.id, run_id=run.id
                 )
-                
+
                 if run.status == "failed":
                     logger.error(f"Assistant run failed: {run.last_error}")
                     return {}
 
             # Get response
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
-            
+
             if messages.data:
                 self._cleanup_thread(thread.id)
                 return messages.data[0].content[0].text.value
@@ -193,7 +186,13 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
 
             return {}
 
-    def extract_captions(self, doc_content: str, zip_structure, expected_figure_count: int, expected_figure_labels: str) -> ZipStructure:
+    def extract_captions(
+        self,
+        doc_content: str,
+        zip_structure,
+        expected_figure_count: int,
+        expected_figure_labels: str,
+    ) -> ZipStructure:
         """
         Extract figure captions using pre-extracted document content.
 
@@ -202,37 +201,33 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             zip_structure: Current ZIP structure
             expected_figure_count (int): Expected number of figures
             expected_figure_labels (str): Expected figure labels
-            
+
         Returns:
             ZipStructure: Updated structure with extracted captions
         """
         try:
             logger.info("Processing document content")
-            
+
             # First locate the figure captions section
             located_captions = self._locate_figure_captions(
-                doc_content,
-                expected_figure_count,
-                expected_figure_labels
+                doc_content, expected_figure_count, expected_figure_labels
             )
-            
+
             if not located_captions:
                 logger.error("Failed to locate figure captions section")
                 return zip_structure
-                
+
             # Store the located captions section
             zip_structure.ai_response_locate_captions = located_captions
-            
+
             # Now extract individual captions from the located section
             extracted_captions_response = self._extract_individual_captions(
-                located_captions,
-                expected_figure_count,
-                expected_figure_labels
+                located_captions, expected_figure_count, expected_figure_labels
             )
-            
+
             # Store the raw response from caption extraction
             zip_structure.ai_response_extract_captions = extracted_captions_response
-            
+
             # Parse the response into caption dictionary
             captions = self._parse_response(extracted_captions_response)
             logger.info(f"Extracted {len(captions)} individual captions")
@@ -241,18 +236,17 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             for figure in zip_structure.figures:
                 normalized_label = self.normalize_figure_label(figure.figure_label)
                 logger.info(f"Processing {normalized_label}")
-                
+
                 if normalized_label in captions:
                     caption_info = captions[normalized_label]
                     caption_text = caption_info["caption"]
                     caption_title = caption_info["title"]
-                    
+
                     # Validate caption
                     is_valid, rouge_score, diff_text = self._validate_caption(
-                        zip_structure._full_docx, 
-                        caption_text
+                        zip_structure._full_docx, caption_text
                     )
-                    
+
                     figure.figure_caption = caption_text
                     figure.caption_title = caption_title
                     figure.rouge_l_score = rouge_score
@@ -265,9 +259,9 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
                     figure.rouge_l_score = 0.0
                     figure.possible_hallucination = True
                     figure.diff = ""
-            
+
             return zip_structure
-            
+
         except Exception as e:
             logger.error(f"Error in caption extraction: {str(e)}", exc_info=True)
             return zip_structure

@@ -37,6 +37,7 @@ $figure_caption
 Based on the image content and the caption text, identify which panel this represents and provide its specific caption maintaining scientific accuracy and completeness."""
 )
 
+
 def get_match_panel_caption_prompt(figure_caption: str) -> str:
     """
     Generate a prompt for matching panel captions.

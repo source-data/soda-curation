@@ -1,15 +1,15 @@
 """Logging configuration with environment support."""
 
 import logging
-import os
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
 
 def setup_logging(config: Dict[str, Any]) -> None:
     """
     Set up logging with environment-specific configuration.
-    
+
     Args:
         config: Configuration dictionary containing logging settings
     """
@@ -17,11 +17,10 @@ def setup_logging(config: Dict[str, Any]) -> None:
     log_config = config.get("logging", {})
     log_level = getattr(logging, log_config.get("level", "INFO"))
     log_format = log_config.get(
-        "format", 
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        "format", "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
     date_format = log_config.get("date_format", "%Y-%m-%d %H:%M:%S")
-    
+
     # Create logs directory if it doesn't exist
     log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
@@ -35,10 +34,7 @@ def setup_logging(config: Dict[str, Any]) -> None:
         level=log_level,
         format=log_format,
         datefmt=date_format,
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler()
-        ]
+        handlers=[logging.FileHandler(log_file), logging.StreamHandler()],
     )
-    
+
     logging.info(f"Logging initialized. Log file: {log_file}")

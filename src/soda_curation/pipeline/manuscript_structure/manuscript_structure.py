@@ -7,13 +7,15 @@ import json
 import logging
 import os
 from abc import ABC, abstractmethod
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
+
 def full_path(extract_dir: str, file_path: str) -> str:
     return os.path.join(extract_dir, file_path)
+
 
 @dataclass
 class Panel:
@@ -28,12 +30,14 @@ class Panel:
         ai_response (Optional[str]): The raw AI response for this panel.
         sd_files (List[str]): Source data files for the panel.
     """
+
     panel_label: str
     panel_caption: str
     panel_bbox: List[float]
     confidence: float
     ai_response: Optional[str] = None
     sd_files: List[str] = field(default_factory=list)
+
 
 @dataclass
 class Figure:
@@ -54,6 +58,7 @@ class Figure:
         _full_img_files (List[str]): Full paths to image files.
         _full_sd_files (List[str]): Full paths to source data files.
     """
+
     figure_label: str
     img_files: List[str]
     sd_files: List[str]
@@ -70,6 +75,7 @@ class Figure:
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
     diff: str = ""  # New field for diff output
+
 
 @dataclass
 class ZipStructure:
@@ -90,6 +96,7 @@ class ZipStructure:
         _full_pdf (str): Full path to PDF file.
         _full_appendix (List[str]): Full paths to appendix files.
     """
+
     appendix: List[str] = field(default_factory=list)
     figures: List[Figure] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
@@ -106,10 +113,10 @@ class ZipStructure:
     _full_docx: str = ""
     _full_pdf: str = ""
     ai_provider: str = ""
-    
+
     def __post_init__(self):
         """Initialize any attributes that might be missing."""
-        if not hasattr(self, '_full_appendix'):
+        if not hasattr(self, "_full_appendix"):
             self._full_appendix = []
 
 
@@ -122,7 +129,11 @@ class CustomJSONEncoder(json.JSONEncoder):
             # Convert to dict and filter out private fields (starting with _)
             dict_obj = {k: v for k, v in vars(obj).items() if not k.startswith("_")}
             # Remove any None values and empty collections
-            return {k: v for k, v in dict_obj.items() if v is not None and v != {} and v != []}
+            return {
+                k: v
+                for k, v in dict_obj.items()
+                if v is not None and v != {} and v != []
+            }
         return super().default(obj)
 
     def serialize_dataclass(self, obj):
@@ -132,6 +143,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         elif isinstance(obj, Figure):
             return {k: v for k, v in obj.__dict__.items() if not k.startswith("_")}
         return super().default(obj)
+
 
 class XMLStructureExtractor(ABC):
     """Abstract base class for processing ZIP file structures."""
@@ -145,8 +157,15 @@ class XMLStructureExtractor(ABC):
         """Convert a JSON string to a ZipStructure object."""
         try:
             data = json.loads(json_str)
-            required_fields = ["manuscript_id", "xml", "docx", "pdf", "appendix", "figures"]
-            
+            required_fields = [
+                "manuscript_id",
+                "xml",
+                "docx",
+                "pdf",
+                "appendix",
+                "figures",
+            ]
+
             if not all(field in data for field in required_fields):
                 logger.error("Missing required fields in JSON response")
                 return None
@@ -161,9 +180,13 @@ class XMLStructureExtractor(ABC):
                             sd_files=fig["sd_files"],
                             figure_caption=fig.get("figure_caption", ""),
                             panels=fig.get("panels", []),
-                            ai_response_locate_captions=fig.get("ai_response_locate_captions"),
-                            ai_response_extract_captions=data.get("ai_response_extract_captions"),
-                            rouge_l_score=fig.get("rouge_l_score", 0.0)
+                            ai_response_locate_captions=fig.get(
+                                "ai_response_locate_captions"
+                            ),
+                            ai_response_extract_captions=data.get(
+                                "ai_response_extract_captions"
+                            ),
+                            rouge_l_score=fig.get("rouge_l_score", 0.0),
                         )
                     )
 
@@ -185,9 +208,9 @@ class XMLStructureExtractor(ABC):
                 appendix=appendix,
                 figures=figures,
                 ai_response_locate_captions=data.get("ai_response_locate_captions"),
-                ai_response_extract_captions=data.get("ai_response_extract_captions")
+                ai_response_extract_captions=data.get("ai_response_extract_captions"),
             )
-            
+
         except json.JSONDecodeError:
             logger.error("Invalid JSON response from AI")
             return None

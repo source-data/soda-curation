@@ -3,7 +3,6 @@
 import re
 from typing import Dict, List, Optional
 
-import pypandoc
 from bs4 import BeautifulSoup
 
 from ..manuscript_structure.manuscript_structure import ZipStructure
@@ -170,7 +169,6 @@ def extract_figures(
 
 
 class FigureCaptionExtractorRegex(FigureCaptionExtractor):
-
     def _locate_figure_captions(
         self, doc_string: str, expected_figure_count: int, expected_figure_labels: str
     ) -> Optional[str]:

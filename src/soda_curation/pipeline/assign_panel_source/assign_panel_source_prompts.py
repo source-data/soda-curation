@@ -46,6 +46,9 @@ $file_list
 Assign each file to the most appropriate panel based on filename patterns, data types, and logical relationships. Provide a JSON object where keys are panel labels (or 'unassigned') and values are lists of filenames with their paths. Include ALL files in your response."""
 )
 
-def get_assign_panel_source_prompt(figure_label: str, panel_labels: str, file_list: str) -> str:
+
+def get_assign_panel_source_prompt(
+    figure_label: str, panel_labels: str, file_list: str
+) -> str:
     """Generate a prompt for assigning panel source data."""
     return USER_PROMPT.substitute(panel_labels=panel_labels, file_list=file_list)
