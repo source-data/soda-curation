@@ -119,3 +119,5 @@ temp/
 report.html
 logs/
 .hypothesis/
+.env.*
+project_tree.txt
