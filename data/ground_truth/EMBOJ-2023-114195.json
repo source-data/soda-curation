@@ -1,12 +1,12 @@
 {
   "manuscript_id": "EMBOJ-2023-114195",
-  "xml": "EMBOJ-2023-114195.xml",
-  "docx": "Doc/EMBOJ2023114195R1Manuscript_TextIG.docx",
+  "xml": "EMBOJ-2023-114195/EMBOJ-2023-114195.xml",
+  "docx": "EMBOJ-2023-114195/Doc/EMBOJ2023114195R1Manuscript_TextIG.docx",
   "pdf": "pdf/EMBOJ-2023-114195.pdf",
   "appendix": [
-    "suppl_data/Appendix.pdf",
-    "suppl_data/Dataset EV1.docx",
-    "suppl_data/supplemental_data1.docx"
+    "EMBOJ-2023-114195/suppl_data/Appendix.pdf",
+    "EMBOJ-2023-114195/suppl_data/Dataset EV1.docx",
+    "EMBOJ-2023-114195/suppl_data/supplemental_data1.docx"
   ],
   "figures": [
     {
