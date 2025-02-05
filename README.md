@@ -285,71 +285,57 @@ In debug mode, the pipeline can be configured to process only the first figure, 
 
 The soda-curation pipeline generates a JSON output that represents the structured manuscript data. Here's an example of the output schema:
 
-````json
+## Output Schema
+
+The soda-curation pipeline generates a JSON output that represents the structured manuscript data. Here's the detailed schema:
+
+```json
 {
-  "type": "object",
-  "properties": {
-    "manuscript_id": { "type": "string" },
-    "xml": { "type": "string" },
-    "docx": { "type": "string" },
-    "pdf": { "type": "string" },
-    "appendix": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "figures": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "figure_label": { "type": "string" },
-          "img_files": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "sd_files": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "figure_caption": { "type": "string" },
-          "panels": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "panel_label": { "type": "string" },
-                "panel_caption": { "type": "string" },
-                "panel_bbox": {
-                  "type": "array",
-                  "items": { "type": "number" },
-                  "minItems": 4,
-                  "maxItems": 4
-                },
-                "confidence": { "type": "number" },
-                "ai_response": { "type": "string" },
-                "sd_files": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                }
-              }
-            }
-          },
-          "duplicated_panels": { "type": "string" },
-          "ai_response_panel_source_assign": { "type": "string" }
-        }
+  "manuscript_id": "string",
+  "xml": "string",
+  "docx": "string",
+  "pdf": "string",
+  "appendix": ["string"],
+  "figures": [{
+    "figure_label": "string",
+    "img_files": ["string"],
+    "sd_files": ["string"],
+    "panels": [{
+      "panel_label": "string",
+      "panel_caption": "string",
+      "panel_bbox": [number, number, number, number],
+      "confidence": number,
+      "ai_response": "string",
+      "sd_files": ["string"]
+    }],
+    "unassigned_sd_files": ["string"],
+    "duplicated_panels": "string",
+    "ai_response_panel_source_assign": "string",
+    "possible_hallucination": boolean,
+    "rouge_l_score": number,
+    "figure_caption": "string",
+    "caption_title": "string",
+    "diff": "string"
+  }],
+  "ai_config": {
+    "provider": "string",
+    "model": "string",
+    "temperature": number,
+    "top_p": number,
+    "max_tokens": number
+  },
+  "data_availability": {
+    "section_text": "string",
+    "data_sources": [
+      {
+        "database": "string",
+        "accession_number": "string",
+        "url": "string"
       }
-    },
-    "errors": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "ai_response": { "type": "string" },
-    "non_associated_sd_files": {
-      "type": "array",
-      "items": { "type": "string" }
-    }
+    ]
   }
-}```
+}
+```
 
 ### Schema Explanation
 
@@ -370,11 +356,24 @@ The soda-curation pipeline generates a JSON output that represents the structure
     - `confidence`: Confidence score of the panel detection
     - `ai_response`: Raw AI response for this panel
     - `sd_files`: List of source data files specific to this panel
+  - `unassigned_sd_files`: Source data files not assigned to specific panels
   - `duplicated_panels`: Indicates if the figure contains duplicate panels ("true" or "false")
-  - `ai_response_panel_source_assign`: AI response for panel source assignment
+  - `ai_response_panel_source_assign`: AI response for panel source assignment 
+  - `possible_hallucination`: Flag indicating potential AI hallucination **To be deprecated**
+  - `rouge_l_score`: ROUGE-L score for caption extraction accuracy **To be deprecated**
+  - `figure_caption`: Complete caption for the figure
+  - `caption_title`: Title of the figure caption
+  - `diff`: Difference analysis output () **To be deprecated**
 - `errors`: List of error messages encountered during processing
 - `ai_response`: Overall AI response for the manuscript
 - `non_associated_sd_files`: List of source data files not associated with any specific figure or panel
+- `ai_config`: Configuration details of the AI processing
+- `data_availability`: Information about data availability
+  - `section_text`: Text describing the data availability section
+  - `data_sources`: List of data sources with database, accession number, and URL
+   - `database`: Name of the database
+    - `accession_number`: Accession number or identifier
+    - `url`: URL to the data source. **It can also be a DOI in case that is the identifier**
 
 ## Testing
 
@@ -434,10 +433,7 @@ docker run -it \
   poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 
   # Add the following to be able to entry in the container afterwards
-docker run -it \
-  --name soda-curation-test \
-  -v $(pwd):/app soda-curation-test \
-  /bin/bash
+docker run -it --name soda-curation-test -v $(pwd):/app soda-curation-test /bin/bash
 
 STRATEGIES='openai_gpt-4o-mini_temp=0.1' MANUSCRIPTS='EMM-2023-18636' RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 
@@ -483,6 +479,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### v0.2.3 (2024-02-05)
+- Updated output schema documentation to match actual output structure
+- Improved panel source data assignment with full path preservation
+- Enhanced error handling in panel caption matching
+- Updated AI configuration handling
 
 ### v0.2.2 (2024-12-02)
 
