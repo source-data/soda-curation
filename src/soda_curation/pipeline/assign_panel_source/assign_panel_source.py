@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Union
 
 import openai
 
+from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import Figure, ZipStructure
 from .assign_panel_source_prompts import SYSTEM_PROMPT, get_assign_panel_source_prompt
 
@@ -20,6 +21,7 @@ class PanelSourceAssigner:
         self.config = config
         self.client = openai.OpenAI(api_key=self.config["openai"]["api_key"])
         self.assistant = self._setup_assistant()
+        self.zip_structure = None
         logger.info("PanelSourceAssigner initialized successfully")
 
     def _setup_assistant(self):
@@ -40,9 +42,10 @@ class PanelSourceAssigner:
             )
 
     def assign_panel_source(
-        self, input_obj: Union[ZipStructure, Figure]
+        self, input_obj: Union[Figure], zip_structure: ZipStructure
     ) -> Union[ZipStructure, Figure]:
         logger.info("Starting panel source assignment process")
+        self.zip_structure = zip_structure
 
         if isinstance(input_obj, ZipStructure):
             return self._assign_to_zip_structure(input_obj)
@@ -75,37 +78,37 @@ class PanelSourceAssigner:
             return figure
 
         for zip_file in zip_files:
-            try:
-                file_list = self._get_zip_contents(zip_file)
-                if not file_list:
-                    continue
+            # try:
+            file_list = self._get_zip_contents(zip_file)
+            if not file_list:
+                continue
 
-                panel_labels = [
-                    panel.panel_label for panel in figure.panels if panel.panel_label
-                ]
-                if not panel_labels:
-                    continue
+            panel_labels = [
+                panel.panel_label for panel in figure.panels if panel.panel_label
+            ]
+            if not panel_labels:
+                continue
 
-                # Get AI response and assignments
-                prompt = get_assign_panel_source_prompt(
-                    figure.figure_label, ", ".join(panel_labels), "\n".join(file_list)
-                )
-                ai_response = self._call_openai_api(prompt)
-                if not ai_response:
-                    continue
+            # Get AI response and assignments
+            prompt = get_assign_panel_source_prompt(
+                figure.figure_label, ", ".join(panel_labels), "\n".join(file_list)
+            )
+            ai_response = self._call_openai_api(prompt)
+            if not ai_response:
+                continue
 
-                assignments = self._parse_response(ai_response)
-                if not assignments:
-                    continue
+            assignments = self._parse_response(ai_response)
+            if not assignments:
+                continue
 
-                # Update figure with assignments
-                self._update_figure_with_assignments(figure, zip_file, assignments)
-                figure.ai_response_panel_source_assign = ai_response
+            # Update figure with assignments
+            self._update_figure_with_assignments(figure, zip_file, assignments)
+            figure.ai_response_panel_source_assign = ai_response
 
-            except Exception as e:
-                logger.error(
-                    f"Error processing ZIP file {zip_file} for {figure.figure_label}: {str(e)}"
-                )
+            # except Exception as e:
+            #     logger.error(
+            #         f"Error processing ZIP file {zip_file} for {figure.figure_label}: {str(e)}"
+            #     )
 
         return figure
 
@@ -214,17 +217,24 @@ class PanelSourceAssigner:
                 thread_id=thread.id, role="user", content=prompt
             )
 
-            run = self.client.beta.threads.runs.create(
+            run_ = self.client.beta.threads.runs.create(
                 thread_id=thread.id,
                 assistant_id=self.assistant.id,
             )
 
-            while run.status != "completed":
-                run = self.client.beta.threads.runs.retrieve(
-                    thread_id=thread.id, run_id=run.id
+            while run_.status != "completed":
+                run_ = self.client.beta.threads.runs.retrieve(
+                    thread_id=thread.id, run_id=run_.id
                 )
 
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+            # Track token usage
+            update_token_usage(
+                self.zip_structure.cost.assign_panel_source,
+                run_,
+                self.config["openai"]["model"],
+            )
+
             response = messages.data[0].content[0].text.value
             logger.info("****************")
             logger.info("PANEL SOURCE ASSIGNMENT RESPONSE")
