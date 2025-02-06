@@ -78,6 +78,27 @@ class Figure:
 
 
 @dataclass
+class TokenUsage:
+    """Represents token usage for a specific AI operation."""
+
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+    cost: float = 0.0
+
+
+@dataclass
+class ProcessingCost:
+    """Tracks token usage and costs across different processing steps."""
+
+    extract_captions: TokenUsage = field(default_factory=TokenUsage)
+    extract_individual_captions: TokenUsage = field(default_factory=TokenUsage)
+    assign_panel_source: TokenUsage = field(default_factory=TokenUsage)
+    match_caption_panel: TokenUsage = field(default_factory=TokenUsage)
+    total: TokenUsage = field(default_factory=TokenUsage)
+
+
+@dataclass
 class ZipStructure:
     """
     Represents the structure of a ZIP file containing manuscript data.
@@ -110,6 +131,7 @@ class ZipStructure:
     pdf: str = ""
     ai_response_locate_captions: Optional[str] = None
     ai_response_extract_captions: Optional[str] = None
+    cost: ProcessingCost = field(default_factory=ProcessingCost)
     _full_docx: str = ""
     _full_pdf: str = ""
     ai_provider: str = ""
@@ -119,14 +141,39 @@ class ZipStructure:
         if not hasattr(self, "_full_appendix"):
             self._full_appendix = []
 
+    def update_total_cost(self):
+        """Update total cost by summing all processing steps."""
+        total = self.cost.total
+
+        # Reset total values first
+        total.prompt_tokens = 0
+        total.completion_tokens = 0
+        total.total_tokens = 0
+        total.cost = 0.0
+
+        # Add up each component
+        for component in [
+            self.cost.extract_captions,
+            self.cost.extract_individual_captions,
+            self.cost.assign_panel_source,
+            self.cost.match_caption_panel,
+        ]:
+            total.prompt_tokens += component.prompt_tokens
+            total.completion_tokens += component.completion_tokens
+            total.total_tokens += component.total_tokens
+            total.cost += component.cost
+
+        # Verify total_tokens equals sum of prompt and completion
+        total.total_tokens = total.prompt_tokens + total.completion_tokens
+
 
 class CustomJSONEncoder(json.JSONEncoder):
     """Custom JSON encoder for ZipStructure and related objects."""
 
     def default(self, obj):
         """Convert dataclass objects to dictionaries, excluding private fields."""
-        if isinstance(obj, (ZipStructure, Figure, Panel)):
-            # Convert to dict and filter out private fields (starting with _)
+        if isinstance(obj, (ZipStructure, Figure, Panel, ProcessingCost, TokenUsage)):
+            # Convert to dict and filter out private fields
             dict_obj = {k: v for k, v in vars(obj).items() if not k.startswith("_")}
             # Remove any None values and empty collections
             return {
@@ -138,10 +185,10 @@ class CustomJSONEncoder(json.JSONEncoder):
 
     def serialize_dataclass(self, obj):
         """Serialize a dataclass object, excluding private fields."""
-        if isinstance(obj, ZipStructure):
+        if isinstance(obj, (ZipStructure, Figure)):
             return {k: v for k, v in obj.__dict__.items() if not k.startswith("_")}
-        elif isinstance(obj, Figure):
-            return {k: v for k, v in obj.__dict__.items() if not k.startswith("_")}
+        elif isinstance(obj, (ProcessingCost, TokenUsage)):
+            return {k: v for k, v in obj.__dict__.items()}
         return super().default(obj)
 
 

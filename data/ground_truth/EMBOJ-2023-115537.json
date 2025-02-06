@@ -1,66 +1,86 @@
 {
   "manuscript_id": "EMBOJ-2023-115537",
   "docx": "Doc/EMBOJ2023115537R1Manuscript_Textmstxt_wdt.docx",
+  "pdf": "EMBOJ-2023-115537/pdf/EMBOJ-2023-115537.pdf",
+  "xml": "EMBOJ-2023-115537/EMBOJ-2023-115537.xml",
+  "appendix": [
+      "EMBOJ-2023-115537/suppl_data/Movie EV1.zip",
+      "EMBOJ-2023-115537/suppl_data/Movie EV2.zip",
+      "EMBOJ-2023-115537/suppl_data/SourceData_allEV.zip",
+      "EMBOJ-2023-115537/suppl_data/EMBOJ2023115537_Reagents_Tools_Table.docx"
+  ],
+  "sd_files": [
+      "EMBOJ-2023-115537/suppl_data/Figure1.zip",
+      "EMBOJ-2023-115537/suppl_data/Figure2.zip",
+      "EMBOJ-2023-115537/suppl_data/Figure4.zip",
+      "EMBOJ-2023-115537/suppl_data/Figure5.zip",
+      "EMBOJ-2023-115537/suppl_data/Figure6.zip"
+  ],
   "figures": [
     {
       "figure_caption": "(A and B) Representative images (left) and spline graphs of theintensity profiles along the indicated arrows (from position 0) in therespective images (right) of wild-type HeLa cells expressing one of theGFP-tagged autophagy adaptors or ubiquitin, mRuby–Omp25, andHaloTag7–LC3B at 45 min after CCCP treatment. Separate mitochondriawithout contacting other mitochondria or isolation membranes (A; Mt) ormitochondria with an isolation membrane (B; Mt–IM) are shown. They-axis in each of the graphs indicates the fluorescenceintensity. Scale bars indicate 1 μm.(C) The relative intensity of GFP-tagged adaptors or ubiquitin (a andb) in LC3B-positive areas compared with LC3B-negative areas in panel B.GFP signals were normalized to the mRuby–Omp25 signals (a′ and b′) usingthe formula Relative Intensity = (a/b)/(a′/b′), where a and a′ representthe intensities in the LC3B-positive area, and b and b′ represent theintensities in the LC3B-negative area. Solid horizontal bars indicatethe means, and dots indicate the data from five structures. Differenceswere statistically analyzed by one-way analysis of variance withDunnett’s post-hoc test.(D) Immunostaining of endogenous OPTN or NDP52 in wild-type HeLacells expressing mRuby–Omp25 and HaloTag7–LC3B at 45 min after CCCPtreatment. Scale bars indicate 4 µm and 1 µm (magnified images).(E) Representative images (left) and spline graphs of the intensityprofiles along the indicated arrows (from position 0) in the respectiveimages (right) of HeLa cells lacking all five autophagy adaptors (pentaKO cells) expressing indicated GFP-tagged autophagy adaptors,mRuby–Omp25, and HaloTag7–LC3B at 45 min after CCCP treatment.Mitochondria with an isolation membrane (Mt–IM) are shown. They-axis in each of the graphs indicates the fluorescenceintensity. Scale bars indicate 1 μm.(F) The relative intensity of GFP-tagged adaptors or ubiquitin (a andb) in LC3B-positive areas compared with LC3B-negative areas in panel E.Relative intensities were calculated as in (C). Solid horizontal barsindicate the means, and dots indicate the data from five structures.Differences were statistically analyzed by one-way analysis of variancewith Dunnett’s post-hoc test.",
       "figure_label": "Figure 1",
+<<<<<<< HEAD
       "caption_title": "Autophagy adaptors show distinct distributionsduring Parkin-mediated mitophagy.",
+=======
+      "caption_title": "Autophagy adaptors show distinct distributions\nduring Parkin-mediated mitophagy.",
+      "sd_files": ["EMBOJ-2023-115537/suppl_data/Figure1.zip"],
+>>>>>>> main
       "panels": [
         {
           "panel_caption": "Representative images (left) and spline graphs of the intensity profiles along the indicated arrows (from position 0) in the respective images (right) of wild-type HeLa cells expressing one of the GFP-tagged autophagy adaptors or ubiquitin, mRuby-Omp25, and HaloTag7-LC3B at 45 min after CCCP treatment. Separate mitochondria without contacting other mitochondria or isolation membranes (A; Mt) are shown. The y-axis in each of the graphs indicates the fluorescence intensity. Scale bars indicate 1 \u03bcm.",
           "panel_label": "A",
           "sd_files":[
-            "suppl_data/Figure1.zip:Figure1/Figure1A/NBR1.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1A/NDP52.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1A/OPTN.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1A/p62.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1A/TAX1BP1.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1A/Ub.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1A/NBR1.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1A/NDP52.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1A/OPTN.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1A/p62.tif",
+            "EMBOJ-2023-115537/uppl_data/Figure1.zip:Figure1/Figure1A/TAX1BP1.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1A/Ub.tif"
           ]
         },
         {
           "panel_caption": "Representative images (left) and spline graphs of the intensity profiles along the indicated arrows (from position 0) in the respective images (right) of wild-type HeLa cells expressing one of the GFP-tagged autophagy adaptors or ubiquitin, mRuby-Omp25, and HaloTag7-LC3B at 45 min after CCCP treatment. Separate mitochondria with an isolation membrane (B; Mt-IM) are shown. The y-axis in each of the graphs indicates the fluorescence intensity. Scale bars indicate 1 \u03bcm.",
           "panel_label": "B",
           "sd_files":[
-            "suppl_data/Figure1.zip:Figure1/Figure1B/NBR1.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1B/NDP52.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1B/OPTN.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1B/p62.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1B/TAX1BP1.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1B/Ub.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1B/NBR1.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1B/NDP52.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1B/OPTN.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1B/p62.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1B/TAX1BP1.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1B/Ub.tif"
           ]
         },
         {
           "panel_caption": "The relative intensity of GFP-tagged adaptors or ubiquitin (a and b) in LC3B-positive areas compared with LC3B-negative areas in panel B. GFP signals were normalized to the mRuby-Omp25 signals (a\u2032 and b\u2032) using the formula Relative Intensity = (a/b)/(a\u2032/b\u2032), where a and a\u2032 represent the intensities in the LC3B-positive area, and b and b\u2032 represent the intensities in the LC3B-negative area. Solid horizontal bars indicate the means, and dots indicate the data from five structures. Differences were statistically analyzed by one-way analysis of variance with Dunnett's post-hoc test.",
           "panel_label": "C",
           "sd_files":[
-            "suppl_data/Figure1.zip:Figure1/Figure1C/Distribution in Mit-LC3 in WT.xlsx"
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1C/Distribution in Mit-LC3 in WT.xlsx"
           ]
         },
         {
           "panel_caption": "Immunostaining of endogenous OPTN or NDP52 in wild-type HeLa cells expressing mRuby-Omp25 and HaloTag7-LC3B at 45 min after CCCP treatment. Scale bars indicate 4 \u00b5m and 1 \u00b5m (magnified images).",
           "panel_label": "D",
           "sd_files":[
-            "suppl_data/Figure1.zip:Figure1/Figure1D/Anti-NDP52.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1D/Anti-OPTN.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1D/Anti-NDP52.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1D/Anti-OPTN.tif"
           ]
         },
         {
           "panel_caption": "Representative images (left) and spline graphs of the intensity profiles along the indicated arrows (from position 0) in the respective images (right) of HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing indicated GFP-tagged autophagy adaptors, mRuby-Omp25, and HaloTag7-LC3B at 45 min after CCCP treatment. Mitochondria with an isolation membrane (Mt-IM) are shown. The y-axis in each of the graphs indicates the fluorescence intensity. Scale bars indicate 1 \u03bcm.",
           "panel_label": "E",
           "sd_files":[
-            "suppl_data/Figure1.zip:Figure1/Figure1E/Distribution-Mit-LC3.xlsx",
-            "suppl_data/Figure1.zip:Figure1/Figure1E/NDP52.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1E/OPTN.tif",
-            "suppl_data/Figure1.zip:Figure1/Figure1E/TAX1BP1.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1E/Distribution-Mit-LC3.xlsx",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1E/NDP52.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1E/OPTN.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1E/TAX1BP1.tif"
           ]
         },
         {
           "panel_caption": "The relative intensity of GFP-tagged adaptors or ubiquitin (a and b) in LC3B-positive areas compared with LC3B-negative areas in panel E. Relative intensities were calculated as in (C). Solid horizontal bars indicate the means, and dots indicate the data from five structures. Differences were statistically analyzed by one-way analysis of variance with Dunnett's post-hoc test.",
           "panel_label": "F",
           "sd_files":[
-            "suppl_data/Figure1.zip:Figure1/Figure1F/Distribution-Mit-LC3 in PKO.xlsx"
+            "EMBOJ-2023-115537/suppl_data/Figure1.zip:Figure1/Figure1F/Distribution-Mit-LC3 in PKO.xlsx"
           ]
         }
       ]
@@ -68,48 +88,53 @@
     {
       "figure_caption": "(A–D) Representative images (A and C) and quantification (B and D) ofGFP fluorescence recovery after photobleaching (FRAP) on separatemitochondria (Mt) (A and B) or on mitochondria with an isolationmembrane (Mt–IM) (C and D) in HeLa cells lacking all five autophagyadaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at45 min after CCCP treatment. The photobleached areas are indicated bydotted lines. The magnified panels display time-lapse images of thephotobleached areas. Scale bars indicate 2 μm and 1 μm (magnifiedimages). Data were collected from four structures and were fitted to theequation y = a*(1 − exp(−b*x)). Thedark shaded areas represent the 95% confidence intervals, and the lightshaded areas represent the 95% prediction intervals.(E) Penta KO cells expressing GFP–OPTN and GFP–NDP52 at 45 min aftertreatment with CCCP and wortmannin. Wortmannin was added to inhibitautophagosome formation so that OPTN is not sequestered in a closedcompartment. Images of cells before (upper panels) and 2 min after(lower panels) the addition of 10% 1,6-hexanediol are displayed. Scalebars, 5 μm and 2 μm (magnified images).",
       "figure_label": "Figure 2",
+<<<<<<< HEAD
       "caption_title": "OPTN and NDP52 show a dynamic exchange between themitochondrial surface and cytosol.",
+=======
+      "caption_title": "OPTN and NDP52 show a dynamic exchange between the\nmitochondrial surface and cytosol.",
+      "sd_files": ["EMBOJ-2023-115537/suppl_data/Figure2.zip"],
+>>>>>>> main
       "panels": [
         {
           "panel_caption": "Representative images of GFP fluorescence recovery after photobleaching (FRAP) on separate mitochondria (Mt) in HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at 45 min after CCCP treatment. The photobleached areas are indicated by dotted lines. The magnified panels display time-lapse images of the photobleached areas. Scale bars indicate 2 \u03bcm and 1 \u03bcm (magnified images).",
           "panel_label": "A",
           "sd_files":[
-            "suppl_data/Figure2.zip:Figure2/Figure2A/NDP52.tif",
-            "suppl_data/Figure2.zip:Figure2/Figure2A/OPTN.tif",
-            "suppl_data/Figure2.zip:Figure2/Figure2A/p62.tif",
-            "suppl_data/Figure2.zip:Figure2/Figure2A/Ub.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2A/NDP52.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2A/OPTN.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2A/p62.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2A/Ub.tif"
           ]
         },
         {
           "panel_caption": "quantification of GFP fluorescence recovery after photobleaching (FRAP) on separate mitochondria (Mt) in HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at 45 min after CCCP treatment. Data were collected from four structures and were fitted to the equation y = a*(1 \u2212 exp(\u2212b*x)). The dark shaded areas represent the 95% confidence intervals, and the light shaded areas represent the 95% prediction intervals.",
           "panel_label": "B",
           "sd_files":[
-            "suppl_data/Figure2.zip:Figure2/Figure2B/FRAP_PKO_Mit.xlsx"
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2B/FRAP_PKO_Mit.xlsx"
           ]
         },
         {
           "panel_caption": "Representative images of GFP fluorescence recovery after photobleaching (FRAP) on mitochondria with an isolation membrane (Mt-IM) in HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at 45 min after CCCP treatment. The photobleached areas are indicated by dotted lines. The magnified panels display time-lapse images of the photobleached areas. Scale bars indicate 2 \u03bcm and 1 \u03bcm (magnified images). ",
           "panel_label": "C",
           "sd_files":[
-            "suppl_data/Figure2.zip:Figure2/Figure2C/NDP52.tif",
-            "suppl_data/Figure2.zip:Figure2/Figure2C/OPTN.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2C/NDP52.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2C/OPTN.tif"
           ]
         },
         {
           "panel_caption": "quantification of GFP fluorescence recovery after photobleaching (FRAP) on mitochondria with an isolation membrane (Mt-IM) in HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing GFP-tagged adaptors or ubiquitin at 45 min after CCCP treatment. Data were collected from four structures and were fitted to the equation y = a*(1 \u2212 exp(\u2212b*x)). The dark shaded areas represent the 95% confidence intervals, and the light shaded areas represent the 95% prediction intervals.",
           "panel_label": "D",
           "sd_files":[
-            "suppl_data/Figure2.zip:Figure2/Figure2D/FRAP_PKO_IM.xlsx"
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2D/FRAP_PKO_IM.xlsx"
           ]
         },
         {
           "panel_caption": "Penta KO cells expressing GFP-OPTN and GFP-NDP52 at 45 min after treatment with CCCP and wortmannin. Wortmannin was added to inhibit autophagosome formation so that OPTN is not sequestered in a closed compartment. Images of cells before (upper panels) and 2 min after (lower panels) the addition of 10% 1,6-hexanediol are displayed. Scale bars, 5 \u03bcm and 2 \u03bcm (magnified images).",
           "panel_label": "E",
           "sd_files":[
-            "suppl_data/Figure2.zip:Figure2/Figure2E/ndp52.tif",
-            "suppl_data/Figure2.zip:Figure2/Figure2E/ndp52_hex_2min.tif",
-            "suppl_data/Figure2.zip:Figure2/Figure2E/optn.tif",
-            "suppl_data/Figure2.zip:Figure2/Figure2E/optn_hex_2min.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2E/ndp52.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2E/ndp52_hex_2min.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2E/optn.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure2.zip:Figure2/Figure2E/optn_hex_2min.tif"
           ]
         }
       ]
@@ -152,48 +177,49 @@
     {
       "figure_caption": "(A–D) Time-lapse images (A and C) and spline graphs (B and D) of twoseparate mitochondria approaching and contacting each other. Events ofthe attachment of two mitochondria with comparable sizes (A and B) andwith differing sizes (C and D) were observed. The line graphs representthe intensity profiles along the indicated arrows (from position 0) inthe respective images shown (B and D). The arrowheads indicateredistributed OPTN signals filling the cleft between two adjacentmitochondria. Scale bars indicate 1 μm. See also Movie EV1 for thetime-lapse video corresponding to (C).(E and F) Time-lapse images (E) and a spline graph (F) of amitochondrion with an isolation membrane elongating on its surface. Thearrowhead indicates the elongating isolation membrane. The line graphrepresent the intensity profiles along the indicated arrows (fromposition 0) in the respective images shown. Scale bars indicate 1 μm.See also Movie EV2 for the time-lapse video corresponding to (E).",
       "figure_label": "Figure 4",
-      "caption_title": "OPTN condensates redistribute upon contact withmembranes.",
+      "caption_title": "OPTN condensates redistribute upon contact with\nmembranes.",
+      "sd_files": ["EMBOJ-2023-115537/suppl_data/Figure4.zip"],
       "panels": [
         {
           "panel_caption": "Time-lapse images of two separate mitochondria approaching and contacting each other. Events of the attachment of two mitochondria with comparable sizes (A) were observed. The arrowheads indicate redistributed OPTN signals filling the cleft between two adjacent mitochondria. Scale bars indicate 1 \u03bcm.",
           "panel_label": "A",
           "sd_files":[
-            "suppl_data/Figure4.zip:Figure4/Figure4A/OPTN_same size.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure4.zip:Figure4/Figure4A/OPTN_same size.tif"
           ]
         },
         {
           "panel_caption": "spline graphs of two separate mitochondria approaching and contacting each other. Events of the attachment of two mitochondria with comparable sizes were observed. The line graphs represent the intensity profiles along the indicated arrows (from position 0) in the respective images shown.",
           "panel_label": "B",
           "sd_files":[
-            "suppl_data/Figure4.zip:Figure4/Figure4B/Gray_ value.xlsx"
+            "EMBOJ-2023-115537/suppl_data/Figure4.zip:Figure4/Figure4B/Gray_ value.xlsx"
           ]
         },
         {
           "panel_caption": "Time-lapse images of two separate mitochondria approaching and contacting each other. Events of the attachment of two mitochondria with differing sizes were observed. The arrowheads indicate redistributed OPTN signals filling the cleft between two adjacent mitochondria. Scale bars indicate 1 \u03bcm.",
           "panel_label": "C",
           "sd_files":[
-            "suppl_data/Figure4.zip:Figure4/Figure4C/OPTN_different size.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure4.zip:Figure4/Figure4C/OPTN_different size.tif"
           ]
         },
         {
           "panel_caption": "spline graphs of two separate mitochondria approaching and contacting each other. Events of the attachment of two mitochondria with differing sizes were observed. The line graphs represent the intensity profiles along the indicated arrows (from position 0) in the respective images shown.",
           "panel_label": "D",
           "sd_files":[
-            "suppl_data/Figure4.zip:Figure4/Figure4D/Gray value.xlsx"
+            "EMBOJ-2023-115537/suppl_data/Figure4.zip:Figure4/Figure4D/Gray value.xlsx"
           ]
         },
         {
           "panel_caption": "Time-lapse images of a mitochondrion with an isolation membrane elongating on its surface. The arrowhead indicates the elongating isolation membrane. Scale bars indicate 1 \u03bcm.",
           "panel_label": "E",
           "sd_files":[
-            "suppl_data/Figure4.zip:Figure4/Figure4E/OPTN_Mit-IM.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure4.zip:Figure4/Figure4E/OPTN_Mit-IM.tif"
           ]
         },
         {
           "panel_caption": "spline graph of a mitochondrion with an isolation membrane elongating on its surface. The line graph represent the intensity profiles along the indicated arrows (from position 0) in the respective images shown.",
           "panel_label": "F",
           "sd_files":[
-            "suppl_data/Figure4.zip:Figure4/Figure4F/Gray Value.xlsx"
+            "EMBOJ-2023-115537/suppl_data/Figure4.zip:Figure4/Figure4F/Gray Value.xlsx"
           ]
         }
       ]
@@ -201,16 +227,21 @@
     {
       "figure_caption": "(A) HeLa cells lacking all five autophagy adaptors (penta KO cells)expressing both GPF–OPTN and mRuby–Ub (i), both GPF–OPTN and anti-GFPnanobody–mRuby–Ub (ii), boh GFP–OPTNΔUBAN and mRuby–Ub (iii), or bothGFP–OPTNΔUBAN and anti-GFP nanobody–mRuby–Ub (iv) at 45 min after CCCPtreatment. Time-lapse images of GFP FRAP are shown. Photobleached areasare circled by dotted lines. Scale bars indicate 4 μm and 2 μm(magnified images).(B) Interaction between GFP–OPTN and OPTN mutants and FLAG–Ub orFLAG–nanobody–Ub was investigated by immunoprecipitation with ananti-FLAG antibody and immunoblotting with an anti-GFP antibody.(C) Quantification of GFP FRAP on separate mitochondria (Mt) in pentaKO cells expressing both GFP–OPTN and mRuby–Ub (i; gray), both GFP–OPTNand anti-GFP nanobody–mRuby–Ub (ii; red), or both GFP–OPTNΔUBAN andanti-GFP nanobody–mRuby–Ub (iv; blue) at 45 min after CCCP treatment.Data were collected from four structures and were fitted to the equationy = a*(1 − exp(−b*x)). The dark shading represents the 95% confidenceintervals, and the light shading represents the 95% predictionintervals.(D and E) Representative data (D) and quantification (E) of HaloTag(Halo) processing assay using cells expressing the indicated OPTN and Ubconstructs. Cells expressing the mtHalo–SNAP mitophagy reporter weretreated without (0 h) and with oligomycin and antimycin for 18 h. Theamount of processed Halo (proc. Halo) indicates the relative amount ofmitochondria degraded in lysosomes. Solid horizontal bars indicate themeans, and dots indicate the data from at least three independentcultures. Differences were statistically analyzed by one-way analysis ofvariance with Dunnett’s post-hoc test.",
       "figure_label": "Figure 5",
+<<<<<<< HEAD
       "caption_title": "Liquid-like property of OPTN condensates isrequired for mitophagy.",
+=======
+      "sd_files": ["EMBOJ-2023-115537/suppl_data/Figure5.zip"],
+      "caption_title": "Liquid-like property of OPTN condensates is\nrequired for mitophagy.",
+>>>>>>> main
       "panels": [
         {
           "panel_caption": "HeLa cells lacking all five autophagy adaptors (penta KO cells) expressing both GPF-OPTN and mRuby-Ub (i), both GPF-OPTN and anti-GFP nanobody-mRuby-Ub (ii), boh GFP-OPTN\u0394UBAN and mRuby-Ub (iii), or both GFP-OPTN\u0394UBAN and anti-GFP nanobody-mRuby-Ub (iv) at 45 min after CCCP treatment. Time-lapse images of GFP FRAP are shown. Photobleached areas are circled by dotted lines. Scale bars indicate 4 \u03bcm and 2 \u03bcm (magnified images).",
           "panel_label": "A",
           "sd_files":[
-            "suppl_data/Figure5.zip:Figure5/Figure5A/OPTN+nano-Ub.tif",
-            "suppl_data/Figure5.zip:Figure5/Figure5A/OPTN+Ub.tif",
-            "suppl_data/Figure5.zip:Figure5/Figure5A/OPTN-uban-del+ub.tif",
-            "suppl_data/Figure5.zip:Figure5/Figure5A/OPTN-udan-del+nanoUb.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5A/OPTN+nano-Ub.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5A/OPTN+Ub.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5A/OPTN-uban-del+ub.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5A/OPTN-udan-del+nanoUb.tif"
 
           ]
         },
@@ -218,33 +249,33 @@
           "panel_caption": "Interaction between GFP-OPTN and OPTN mutants and FLAG-Ub or FLAG-nanobody-Ub was investigated by immunoprecipitation with an anti-FLAG antibody and immunoblotting with an anti-GFP antibody.",
           "panel_label": "B",
           "sd_files":[
-            "suppl_data/Figure5.zip:Figure5/Figure5B/Anti-FLAG-Ub-short exposure.Tif",
-            "suppl_data/Figure5.zip:Figure5/Figure5B/Anti-FLAG-Ub-short expoure-2.Tif",  
-            "suppl_data/Figure5.zip:Figure5/Figure5B/Anti-FLAG-Ub.Tif",  
-            "suppl_data/Figure5.zip:Figure5/Figure5B/Anti-GFP-optn.Tif",  
-            "suppl_data/Figure5.zip:Figure5/Figure5B/IP .tif"
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5B/Anti-FLAG-Ub-short exposure.Tif",
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5B/Anti-FLAG-Ub-short expoure-2.Tif",  
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5B/Anti-FLAG-Ub.Tif",  
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5B/Anti-GFP-optn.Tif",  
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5B/IP .tif"
           ]
         },
         {
           "panel_caption": "Quantification of GFP FRAP on separate mitochondria (Mt) in penta KO cells expressing both GFP-OPTN and mRuby-Ub (i; gray), both GFP-OPTN and anti-GFP nanobody-mRuby-Ub (ii; red), or both GFP-OPTN\u0394UBAN and anti-GFP nanobody-mRuby-Ub (iv; blue) at 45 min after CCCP treatment. Data were collected from four structures and were fitted to the equation y = a*(1 \u2212 exp(\u2212b*x)). The dark shading represents the 95% confidence intervals, and the light shading represents the 95% prediction intervals.",
           "panel_label": "C",
           "sd_files":[
-            "suppl_data/Figure5.zip:Figure5/Figure5C/FRAP-Summary.xlsx"
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5C/FRAP-Summary.xlsx"
           ]
         },
         {
           "panel_caption": "Representative data of HaloTag (Halo) processing assay using cells expressing the indicated OPTN and Ub constructs. Cells expressing the mtHalo-SNAP mitophagy reporter were treated without (0 h) and with oligomycin and antimycin for 18 h. The amount of processed Halo (proc. Halo) indicates the relative amount of mitochondria degraded in lysosomes. Solid horizontal bars indicate the means, and dots indicate the data from at least three independent cultures. Differences were statistically analyzed by one-way analysis of variance with Dunnett's post-hoc test.",
           "panel_label": "D",
           "sd_files":[
-            "suppl_data/Figure5.zip:Figure5/Figure5D/halo.Tif.Tif",
-            "suppl_data/Figure5.zip:Figure5/Figure5D/hsp.Tif"
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5D/halo.Tif.Tif",
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5D/hsp.Tif"
           ]
         },
         {
           "panel_caption": "quantification of HaloTag (Halo) processing assay using cells expressing the indicated OPTN and Ub constructs. Cells expressing the mtHalo-SNAP mitophagy reporter were treated without (0 h) and with oligomycin and antimycin for 18 h. The amount of processed Halo (proc. Halo) indicates the relative amount of mitochondria degraded in lysosomes. Solid horizontal bars indicate the means, and dots indicate the data from at least three independent cultures. Differences were statistically analyzed by one-way analysis of variance with Dunnett's post-hoc test.",
           "panel_label": "E",
           "sd_files":[
-            "suppl_data/Figure5.zip:Figure5/Figure5E/mitophagy-activity_combined.xlsx"
+            "EMBOJ-2023-115537/suppl_data/Figure5.zip:Figure5/Figure5E/mitophagy-activity_combined.xlsx"
           ]
         }     
       ]
@@ -252,16 +283,21 @@
     {
       "figure_caption": "(A and B) Localization of ATG9 vesicles under normal (CCCP−) ormitophagy-inducing conditions (CCCP+, 60 min) (A) and quantification (B)of ATG9A colocalization with mitochondria. Endogenous ATG9 wasimmunostained in penta KO cells expressing both GFP–OPTN and mRuby–Ub orboth GFP–OPTNΔUBAN and anti-GFP nanobody–mRuby–Ub (nano–mRuby–Ub)together with mitochondrially targeted Halo–SNAP (mtHalo–SNAP). Scalebars indicate 4 μm and 2 μm (magnified images). Solid horizontal barsindicate the means, each dot indicates the mean value from one field ofview with ≥10 cells (n=15). Differences were statistically analyzed byWelch's two-tailed t test.(C and D) Representative data (C) and quantification (D; p=0.99) oforganelle immunoprecipitation in cells expressing GFP–OPTN orGFP–OPTNΔUBAN in the presence or absence of FLAG-ATG9A. ATG9 vesicleswere immunoprecipitated by FLAG M2 beads and GFP was blotted to detectthe interaction between GFP–OPTN (WT or ΔUBAN) and ATG9 vesicles at 60min after CCCP treatment. Solid horizontal bars indicate the means, anddots indicate the data from five independent experiments. Differenceswere statistically analyzed by Welch's two-tailed t test.(E) The models of ATG9 vesicle recruitment (left) and isolationmembrane elongation (right) mediated by liquid-like OPTN condensates.Partial or complete wetting of phase-separated OPTN enables therecruitment of ATG9 vesicles to ubiquitinated mitochondria (left).Wetting of OPTN on mitochondria and isolation membranes also facilitatesthe engulfment of mitochondria by the isolation membranes (right).",
       "figure_label": "Figure 6",
+<<<<<<< HEAD
       "caption_title": "Liquid-like property of OPTN condensates isrequired for the recruitment of ATG9 vesicles.",
+=======
+      "sd_files": ["EMBOJ-2023-115537/suppl_data/Figure6.zip"],
+      "caption_title": "Liquid-like property of OPTN condensates is\nrequired for the recruitment of ATG9 vesicles.",
+>>>>>>> main
       "panels": [
         {
           "panel_caption": "Localization of ATG9 vesicles under normal (CCCP\u2212) or mitophagy-inducing conditions (CCCP+, 60 min) of ATG9A colocalization with mitochondria. Endogenous ATG9 was immunostained in penta KO cells expressing both GFP-OPTN and mRuby-Ub or both GFP-OPTN\u0394UBAN and anti-GFP nanobody-mRuby-Ub (nano-mRuby-Ub) together with mitochondrially targeted Halo-SNAP (mtHalo-SNAP). Scale bars indicate 4 \u03bcm and 2 \u03bcm (magnified images).",
           "panel_label": "A",
           "sd_files":[
-            "suppl_data/Figure6.zip:Figure6/Figure6A/With CCCP/OPTN-uban-del+nano-Ub+CCCP.tif",
-            "suppl_data/Figure6.zip:Figure6/Figure6A/With CCCP/optn+ub+cccp_0010.tif",
-            "suppl_data/Figure6.zip:Figure6/Figure6A/Without CCCP/optn+ub-No cccp.tif",
-            "suppl_data/Figure6.zip:Figure6/Figure6A/Without CCCP/optn-uban-del+nanoub-No cccp.tif"
+            "EMBOJ-2023-115537/suppl_data/Figure6.zip:Figure6/Figure6A/With CCCP/OPTN-uban-del+nano-Ub+CCCP.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure6.zip:Figure6/Figure6A/With CCCP/optn+ub+cccp_0010.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure6.zip:Figure6/Figure6A/Without CCCP/optn+ub-No cccp.tif",
+            "EMBOJ-2023-115537/suppl_data/Figure6.zip:Figure6/Figure6A/Without CCCP/optn-uban-del+nanoub-No cccp.tif"
           ]
         },
         {
@@ -276,15 +312,15 @@
           "panel_caption": "Representative data of organelle immunoprecipitation in cells expressing GFP-OPTN or GFP-OPTN\u0394UBAN in the presence or absence of FLAG-ATG9A. ATG9 vesicles were immunoprecipitated by FLAG M2 beads and GFP was blotted to detect the interaction between GFP-OPTN (WT or \u0394UBAN) and ATG9 vesicles at 60 min after CCCP treatment.",
           "panel_label": "C",
           "sd_files":[
-            "suppl_data/Figure6.zip:Figure6/Figure6C/Figure6C.zip"
+            "EMBOJ-2023-115537/suppl_data/Figure6.zip:Figure6/Figure6C/Figure6C.zip"
           ]
         },
         {
           "panel_caption": "Representative quantification (D; p=0.99) of organelle immunoprecipitation in cells expressing GFP-OPTN or GFP-OPTN\u0394UBAN in the presence or absence of FLAG-ATG9A. ATG9 vesicles were immunoprecipitated by FLAG M2 beads and GFP was blotted to detect the interaction between GFP-OPTN (WT or \u0394UBAN) and ATG9 vesicles at 60 min after CCCP treatment. Solid horizontal bars indicate the means, and dots indicate the data from five independent experiments. Differences were statistically analyzed by Welch's two-tailed t test.",
           "panel_label": "D",
           "sd_files":[
-            "suppl_data/Figure6.zip:Figure6/Figure6D/IP quantification.xlsx",
-            "suppl_data/Figure6.zip:Figure6/Stats_Fig.6BandD.pzfx"
+            "EMBOJ-2023-115537/suppl_data/Figure6.zip:Figure6/Figure6D/IP quantification.xlsx",
+            "EMBOJ-2023-115537/suppl_data/Figure6.zip:Figure6/Stats_Fig.6BandD.pzfx"
           ]
         },
         {

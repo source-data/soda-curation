@@ -16,7 +16,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import openai
 from PIL import Image
 
-from ..manuscript_structure.manuscript_structure import Figure, Panel
+from ..cost_tracking import update_token_usage
+from ..manuscript_structure.manuscript_structure import Figure, Panel, ZipStructure
 from ..object_detection.object_detection import convert_to_pil_image
 from .match_caption_panel_base import MatchPanelCaption
 from .match_caption_panel_prompts import SYSTEM_PROMPT, get_match_panel_caption_prompt
@@ -80,7 +81,7 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         logger.debug(f"Extract directory: {self.extract_dir}")
         logger.info(f"Process first figure only: {self.process_first_figure_only}")
 
-    def match_captions(self, figure: Figure) -> Figure:
+    def match_captions(self, figure: Figure, zip_structure: ZipStructure) -> Figure:
         """Match panel captions with their corresponding images within a figure.
 
         Args:
@@ -90,6 +91,7 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             Figure: Updated figure with matched panel captions
         """
         logger.info(f"Matching captions for figure {figure.figure_label}")
+        self.zip_structure = zip_structure
 
         # Skip if no valid caption
         if (
@@ -285,39 +287,46 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             logger.error("Encoded image is empty, skipping API call")
             return ""
 
-        try:
-            prompt = get_match_panel_caption_prompt(figure_caption)
+        # try:
+        prompt = get_match_panel_caption_prompt(figure_caption)
 
-            response = self.client.chat.completions.create(
-                model=self.openai_config.get("model", "gpt-4-vision-preview"),
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": prompt},
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": f"data:image/png;base64,{encoded_image}"
-                                },
+        response = self.client.chat.completions.create(
+            model=self.openai_config.get("model", "gpt-4-vision-preview"),
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{encoded_image}"
                             },
-                        ],
-                    },
-                ],
-                max_tokens=2048,  # Increased token limit for longer captions
-                temperature=0.3,  # Lower temperature for more consistent results
-            )
+                        },
+                    ],
+                },
+            ],
+            max_tokens=2048,  # Increased token limit for longer captions
+            temperature=0.3,  # Lower temperature for more consistent results
+        )
 
-            if response.choices:
-                return response.choices[0].message.content
+        # Track token usage
+        update_token_usage(
+            self.zip_structure.cost.match_caption_panel,
+            response,
+            self.openai_config["model"],
+        )
 
-            logger.warning("Empty response from OpenAI API")
-            return ""
+        if response.choices:
+            return response.choices[0].message.content
 
-        except Exception as e:
-            logger.error(f"OpenAI API error: {str(e)}")
-            return ""
+        logger.warning("Empty response from OpenAI API")
+        return ""
+
+        # except Exception as e:
+        #     logger.error(f"OpenAI API error: {str(e)}")
+        #     return ""
 
     def _parse_response(self, response: str) -> Tuple[str, str]:
         """

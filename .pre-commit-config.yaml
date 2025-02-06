@@ -23,4 +23,3 @@ repos:
       - id: isort
         args:
           - --profile=black
-          # This ensures isort’s formatting is compatible with Black’s style.

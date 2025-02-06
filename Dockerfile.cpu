@@ -128,3 +128,134 @@ RUN poetry install --with dev
 # Run tests
 CMD ["poetry", "run", "pytest", "-v", "--cov=soda_curation", "--cov-report=term-missing"]
 
+#########
+##########
+# # Use a CPU-only Python image as the base image
+# FROM python:3.8-slim-bullseye as base
+
+# # Set work directory
+# WORKDIR /app
+
+# # Set environment variables
+# ENV PYTHONUNBUFFERED=1 \
+#     PYTHONDONTWRITEBYTECODE=1 \
+#     PIP_NO_CACHE_DIR=off \
+#     PIP_DISABLE_PIP_VERSION_CHECK=on \
+#     PIP_DEFAULT_TIMEOUT=100 \
+#     POETRY_VERSION=1.8.0 \
+#     POETRY_HOME="/opt/poetry" \
+#     POETRY_VIRTUALENVS_IN_PROJECT=true \
+#     POETRY_NO_INTERACTION=1 \
+#     PYSETUP_PATH="/app" \
+#     VENV_PATH="/app/.venv" \
+#     VIRTUAL_ENV="/app/.venv" \
+#     PATH="/app/.venv/bin:$PATH"
+
+# # Add environment variable for deployment environment (after existing ENV section)
+# ENV DEPLOYMENT_ENV=development \
+#     CONFIG_DIR=/app/config
+
+# # Install system dependencies
+# RUN apt-get update && apt-get install -y \
+#     curl \
+#     build-essential \
+#     libgl1-mesa-glx \
+#     libglib2.0-0 \
+#     libsm6 \
+#     libxext6 \
+#     libxrender-dev \
+#     git \
+#     ghostscript \
+#     poppler-utils \
+#     libgomp1 \
+#     && rm -rf /var/lib/apt/lists/*
+
+# # Install Poetry
+# RUN curl -sSL https://install.python-poetry.org | python3 - --version ${POETRY_VERSION}
+
+# # Add Poetry to PATH
+# ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
+# # Copy project files
+# COPY pyproject.toml poetry.lock* ./
+# COPY src ./src
+# COPY ./data/models/panel_detection_model_no_labels.pt /app/data/models/
+
+
+# # Install dependencies and the package
+# RUN poetry config virtualenvs.create false \
+#     && poetry install --no-interaction --no-ansi
+
+# # Install PyTorch for ARM/CPU
+# RUN poetry run pip install --no-cache-dir \
+#     torch==2.0.0 \
+#     torchvision==0.15.1 \
+#     --extra-index-url https://download.pytorch.org/whl/cpu
+
+# # Set environment variables to manage threading and memory
+# ENV OMP_NUM_THREADS=1 \
+#     MKL_NUM_THREADS=1 \
+#     GOMP_STACKSIZE_MAX=32768 
+#     # LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1
+
+# # Install additional packages
+# RUN poetry run pip install --upgrade pip \
+#     && poetry run pip install opencv-python==4.8.0.74 \
+#     && poetry run pip install -q git+https://github.com/THU-MIG/yolov10.git \
+#     && poetry run pip install opencv-fixer==0.2.5 \
+#     && poetry run pip install jupyterlab \
+#     && poetry run pip install PyMuPDF pdf2image \
+#     && poetry run python -c "from opencv_fixer import AutoFix; AutoFix()"
+    
+
+# # Copy the config file
+# ARG DEPLOYMENT_ENV=dev  # Default to "dev" if not provided
+# COPY config.${DEPLOYMENT_ENV}.yaml /app/config.yaml
+
+# # Set PYTHONPATH
+# ENV PYTHONPATH=/app/src:$PYTHONPATH
+
+# # Verify key package installations
+# RUN poetry run python -c "import yaml; print(yaml.__file__)"
+# RUN poetry run python -c "import openai; print(openai.__file__)"
+# RUN poetry run python -c "import cv2; print(cv2.__file__)"
+# RUN poetry run python -c "from ultralytics import YOLOv10; print(YOLOv10)"
+# RUN poetry run python -c "import fitz; print(fitz.__file__)"
+# RUN poetry run python -c "import pdf2image; print(pdf2image.__file__)"
+# RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
+
+
+# # Development stage
+# FROM base as development
+
+# # Create config directory and copy environment-specific configs
+# COPY config/ /app/config/
+
+# # Copy environment files (they will be selected at runtime)
+# COPY .env.* /app/
+
+# # Formatting and linting stage
+# FROM base as formatting
+
+# # Install development dependencies (including formatting tools)
+# RUN poetry install --with dev
+
+# # Copy the formatting script and flake8 config
+# COPY format_and_lint.sh /app/format_and_lint.sh
+# COPY .flake8 /app/.flake8
+# RUN chmod +x /app/format_and_lint.sh
+
+# # Set the entrypoint to the formatting script
+# ENTRYPOINT ["/app/format_and_lint.sh"]
+
+# # Testing stage
+# FROM base as testing
+
+# # Copy test files
+# COPY tests ./tests
+
+# # Install test dependencies
+# RUN poetry install --with dev
+
+# # Run tests
+# CMD ["poetry", "run", "pytest", "-v", "--cov=soda_curation", "--cov-report=term-missing"]

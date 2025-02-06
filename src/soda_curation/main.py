@@ -55,6 +55,8 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             # )
             extractor = XMLStructureExtractor(zip_path, str(extract_dir))
             structure = extractor.extract_structure()
+            # Update total costs before returning results
+            # zip_structure.update_total_cost()
 
             # Convert to JSON
             output_json = json.dumps(

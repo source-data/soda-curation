@@ -21,14 +21,8 @@ from soda_curation.config import load_config
 from soda_curation.data_availability.data_availability_openai import (
     DataAvailabilityExtractorGPT,
 )
-from soda_curation.pipeline.extract_captions.extract_captions_claude import (
-    FigureCaptionExtractorClaude,
-)
 from soda_curation.pipeline.extract_captions.extract_captions_openai import (
     FigureCaptionExtractorGpt,
-)
-from soda_curation.pipeline.extract_captions.extract_captions_regex import (
-    FigureCaptionExtractorRegex,
 )
 from src.soda_curation.pipeline.assign_panel_source.assign_panel_source import (
     PanelSourceAssigner,
@@ -182,16 +176,93 @@ def _parse_env_list(env_var, all_value, all_indicator="all", delimiter=","):
     return val.split(delimiter)
 
 
-def _strategies():
-    def model_strats(model, temps=["0", "0.1", "0.5"], top_ps=["0", "0.1", "0.5"]):
-        return [f"{model}_temp={temp}" for temp in temps] + [
-            f"{model}_top_p={top_p}" for top_p in top_ps
-        ]
+def _check_config(config: dict) -> dict:
+    """Validate and configure OpenAI settings."""
+    if "openai" not in config:
+        raise ValueError("OpenAI configuration missing")
 
-    all_strategies = (
-        ["regex"] + model_strats("gpt-4o") + model_strats("claude-3-5-sonnet")
-    )
+    required_fields = [
+        "api_key",
+        "caption_extraction_assistant_id",
+        "panel_source_data_assistant_id",
+        "caption_location_assistant_id",
+    ]
+
+    for field in required_fields:
+        if field not in config["openai"]:
+            raise ValueError(f"Missing required OpenAI config: {field}")
+
+    # Set other defaults if not present
+    config["openai"].setdefault("max_tokens", 96000)
+    config["openai"].setdefault("top_p", 1.0)
+    config["openai"].setdefault("temperature", 0.5)
+
+    return config
+
+
+# Modify _get_base_config
+@lru_cache(maxsize=1)
+def _get_base_config():
+    config_path = "config.yaml"
+    config = load_config(config_path)
+    if "openai" not in config:
+        raise ValueError("Missing openai configuration")
+    return config
+
+
+def _configure_openai_settings(
+    config: dict, model: str, config_type: str, config_value: float
+) -> dict:
+    """Configure OpenAI settings in config."""
+    config["openai"]["model"] = model
+    if config_type == "temp":
+        config["openai"]["temperature"] = config_value
+    else:
+        config["openai"]["top_p"] = config_value
+    return config
+
+
+VALID_MODELS = {
+    "openai": {"gpt-4o": "gpt-4o-2024-08-06", "gpt-4o-mini": "gpt-4o-mini-2024-07-18"}
+}
+
+
+def _strategies():
+    """Return list of OpenAI model strategies to test."""
+
+    def model_strats(models, temps=["0.1", "0.5"], top_ps=["0", "1."]):
+        strats = []
+        for model in models:
+            strats.extend([f"openai_{model}_temp={temp}" for temp in temps])
+            strats.extend([f"openai_{model}_top_p={top_p}" for top_p in top_ps])
+        return strats
+
+    all_strategies = model_strats(["gpt-4o", "gpt-4o-mini"])
     return _parse_env_list("STRATEGIES", all_strategies)
+
+
+def _validate_strategy(strategy: str) -> tuple:
+    """Validate and parse OpenAI strategy string."""
+    try:
+        provider, model_alias, config = strategy.split("_")
+        config_type, config_value = config.split("=")
+
+        if provider != "openai":
+            raise ValueError(
+                f"Invalid provider: {provider}. Only 'openai' is supported."
+            )
+
+        if model_alias not in VALID_MODELS["openai"]:
+            raise ValueError(f"Invalid model alias: {model_alias}")
+
+        if config_type not in ["temp", "top_p"]:
+            raise ValueError(f"Invalid config type: {config_type}")
+
+        actual_model = VALID_MODELS["openai"][model_alias]
+        return actual_model, config_type, float(config_value)
+
+    except (ValueError, KeyError) as e:
+        raise ValueError(f"Invalid strategy format: {strategy}. Error: {str(e)}")
 
 
 def _manuscripts():
@@ -250,35 +321,12 @@ def figure_fixtures():
 ########################################################################################
 
 
-@lru_cache(maxsize=1)
-def _get_base_config():
-    config_path = "config.yaml"
-    return load_config(config_path)
-
-
 def _get_extractor(strategy):
-    is_openai = "gpt" in strategy
-    is_anthropic = "claude" in strategy
-
-    config_id = "openai" if is_openai else "anthropic" if is_anthropic else strategy
-    config = _get_base_config().get(config_id, {})
-
-    if is_openai or is_anthropic:
-        config_id = strategy.split("_")[1]
-        if config_id.startswith("temp="):
-            config["temperature"] = float(config_id.split("=")[1])
-        elif config_id.startswith("top_p="):
-            config["top_p"] = float(config_id.split("=")[1])
-
-    if is_openai:
-        extractor_cls = FigureCaptionExtractorGpt
-    elif is_anthropic:
-        extractor_cls = FigureCaptionExtractorClaude
-    else:
-        extractor_cls = {
-            "regex": FigureCaptionExtractorRegex,
-        }.get(strategy)
-    return extractor_cls(config)
+    """Get OpenAI extractor with validated configuration."""
+    model, config_type, config_value = _validate_strategy(strategy)
+    config = _get_base_config()
+    config = _configure_openai_settings(config, model, config_type, config_value)
+    return FigureCaptionExtractorGpt(config)
 
 
 @lru_cache
@@ -824,6 +872,14 @@ def _get_panel_source_metrics():
     ]
 
 
+def _get_panel_source_assigner(strategy):
+    """Get panel source assigner with validated configuration."""
+    model, config_type, config_value = _validate_strategy(strategy)
+    config = _get_base_config()
+    config = _configure_openai_settings(config, model, config_type, config_value)
+    return PanelSourceAssigner(config)
+
+
 @file_cache("panel_source_assignment")
 def _assign_panel_sources(strategy, msid, run):
     """Process panel source assignment with caching, returning only essential data."""
@@ -920,11 +976,7 @@ def _assign_panel_sources(strategy, msid, run):
 
 @pytest.mark.parametrize(
     "strategy, msid, run",
-    [
-        (f["strategy"], f["msid"], f["run"])
-        for f in manuscript_fixtures()
-        if "gpt" in f["strategy"]
-    ],
+    [(f["strategy"], f["msid"], f["run"]) for f in manuscript_fixtures()],
 )
 def test_panel_source_assignment(strategy, msid, run, results_bag):
     """Test panel source data assignment accuracy using ground truth data."""
@@ -933,18 +985,15 @@ def test_panel_source_assignment(strategy, msid, run, results_bag):
             strategy, msid, run
         )
 
-        # Convert outputs to JSON strings for test case
         actual_json = dumps(actual_output)
         expected_json = dumps(expected_output)
 
-        # Create test case with minimal input and JSON outputs
         test_case = LLMTestCase(
-            input=dumps(minimal_input),  # Convert minimal input to JSON string
+            input=dumps(minimal_input),
             actual_output=actual_json,
             expected_output=expected_json,
         )
 
-        # Record results
         _fill_results_bag(
             results_bag,
             task="panel_source_assignment",
@@ -956,7 +1005,6 @@ def test_panel_source_assignment(strategy, msid, run, results_bag):
             ai_response=actual_json,
         )
 
-        # Run test assertions
         assert_test(test_case, metrics=_get_panel_source_metrics())
 
     except Exception as e:
@@ -1090,31 +1138,10 @@ def _get_data_sources_metrics():
 
 
 def _get_data_availability_extractor(strategy):
-    """
-    Get GPT-based data availability extractor with appropriate configuration.
-
-    Args:
-        strategy (str): The strategy name (e.g., 'gpt-4o_temp=0')
-
-    Returns:
-        DataAvailabilityExtractorGPT: Configured GPT extractor instance
-
-    Raises:
-        ValueError: If strategy is not a GPT-based strategy
-    """
-    if "gpt" not in strategy:
-        raise ValueError(
-            f"Only GPT strategies supported for data availability extraction. Got: {strategy}"
-        )
-
+    """Get data availability extractor with validated configuration."""
+    model, config_type, config_value = _validate_strategy(strategy)
     config = _get_base_config()
-
-    # Configure temperature or top_p if specified in strategy
-    config_id = strategy.split("_")[1]
-    if config_id.startswith("temp="):
-        config["openai"]["temperature"] = float(config_id.split("=")[1])
-    elif config_id.startswith("top_p="):
-        config["openai"]["top_p"] = float(config_id.split("=")[1])
+    config = _configure_openai_settings(config, model, config_type, config_value)
 
     return DataAvailabilityExtractorGPT(config)
 
@@ -1159,10 +1186,8 @@ def _extract_data_sources(strategy, msid, run):
 @pytest.mark.parametrize(
     "strategy, msid, run",
     [
-        (f["strategy"], f["msid"], f["run"])
-        for f in manuscript_fixtures()
-        if "gpt" in f["strategy"]
-    ],
+        (f["strategy"], f["msid"], f["run"]) for f in manuscript_fixtures()
+    ],  # Remove the if "gpt" filter
 )
 def test_extract_data_availability_section(strategy, msid, run, results_bag):
     """Test extraction of the data availability section from manuscripts."""
@@ -1207,10 +1232,8 @@ def test_extract_data_availability_section(strategy, msid, run, results_bag):
 @pytest.mark.parametrize(
     "strategy, msid, run",
     [
-        (f["strategy"], f["msid"], f["run"])
-        for f in manuscript_fixtures()
-        if "gpt" in f["strategy"]
-    ],
+        (f["strategy"], f["msid"], f["run"]) for f in manuscript_fixtures()
+    ],  # Remove the if "gpt" filter
 )
 def test_extract_data_sources(strategy, msid, run, results_bag):
     """Test extraction of data sources from data availability section."""

@@ -4,6 +4,7 @@ from typing import Dict, Optional
 
 import openai
 
+from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
 from .extract_captions_base import FigureCaptionExtractor
 from .extract_captions_prompts import (
@@ -26,6 +27,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         self.model = self.config.get("model", "gpt-4-1106-preview")
         self.locate_assistant = self._setup_locate_assistant()
         self.extract_assistant = self._setup_extract_assistant()
+        self.zip_structure = None  # Initialize to None
         logger.info(f"Initialized with model: {self.model}")
 
     def _setup_locate_assistant(self):
@@ -100,29 +102,33 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             )
 
             # Rest of the assistant communication code...
-            run = self.client.beta.threads.runs.create(
+            run_ = self.client.beta.threads.runs.create(
                 thread_id=thread.id, assistant_id=self.locate_assistant.id
             )
 
             # Wait for completion with timeout
             start_time = time.time()
             timeout = 300  # 5 minutes timeout
-            while run.status not in ["completed", "failed"]:
+            while run_.status not in ["completed", "failed"]:
                 if time.time() - start_time > timeout:
                     logger.error("Assistant run timed out")
                     return None
 
                 time.sleep(1)
-                run = self.client.beta.threads.runs.retrieve(
-                    thread_id=thread.id, run_id=run.id
+                run_ = self.client.beta.threads.runs.retrieve(
+                    thread_id=thread.id, run_id=run_.id
                 )
 
-                if run.status == "failed":
-                    logger.error(f"Assistant run failed: {run.last_error}")
+                if run_.status == "failed":
+                    logger.error(f"Assistant run failed: {run_.last_error}")
                     return None
 
             # Get response
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+            # Track token usage
+            update_token_usage(
+                self.zip_structure.cost.extract_captions, run_, self.model
+            )
 
             if messages.data:
                 located_captions = messages.data[0].content[0].text.value
@@ -153,29 +159,33 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             )
 
             # Run the assistant
-            run = self.client.beta.threads.runs.create(
+            run_ = self.client.beta.threads.runs.create(
                 thread_id=thread.id, assistant_id=self.extract_assistant.id
             )
 
             # Wait for completion with timeout
             start_time = time.time()
             timeout = 300  # 5 minutes timeout
-            while run.status not in ["completed", "failed"]:
+            while run_.status not in ["completed", "failed"]:
                 if time.time() - start_time > timeout:
                     logger.error("Assistant run timed out")
                     return {}
 
                 time.sleep(1)
-                run = self.client.beta.threads.runs.retrieve(
-                    thread_id=thread.id, run_id=run.id
+                run_ = self.client.beta.threads.runs.retrieve(
+                    thread_id=thread.id, run_id=run_.id
                 )
 
-                if run.status == "failed":
-                    logger.error(f"Assistant run failed: {run.last_error}")
+                if run_.status == "failed":
+                    logger.error(f"Assistant run failed: {run_.last_error}")
                     return {}
 
             # Get response
             messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+            # Track token usage
+            update_token_usage(
+                self.zip_structure.cost.extract_individual_captions, run_, self.model
+            )
 
             if messages.data:
                 self._cleanup_thread(thread.id)
@@ -205,6 +215,7 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         Returns:
             ZipStructure: Updated structure with extracted captions
         """
+        self.zip_structure = zip_structure
         try:
             logger.info("Processing document content")
 
@@ -224,7 +235,6 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
             extracted_captions_response = self._extract_individual_captions(
                 located_captions, expected_figure_count, expected_figure_labels
             )
-
             # Store the raw response from caption extraction
             zip_structure.ai_response_extract_captions = extracted_captions_response
 
