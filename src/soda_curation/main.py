@@ -62,10 +62,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             caption_extractor = FigureCaptionExtractorOpenAI(
                 config_loader.config, prompt_handler
             )
-            (
-                figure_legends,
-                zip_structure,
-            ) = caption_extractor.extract_individual_captions(
+            zip_structure = caption_extractor.extract_individual_captions(
                 doc_content=manuscript_content, zip_structure=zip_structure
             )
 
