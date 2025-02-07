@@ -6,13 +6,15 @@ from typing import Dict
 
 logger = logging.getLogger(__name__)
 
+SUPPORTED_PROVIDERS = ["openai", "anthropic"]
+
 
 class PromptHandler:
     """
     Handle prompt loading and template substitution for pipeline components.
 
-    This class manages prompts for pipeline steps, handling template substitution
-    and providing a consistent interface for prompt access.
+    Each pipeline step has a single set of 'system' and 'user' prompts,
+    under a provider-specific config block (e.g., `openai`, `anthropic`).
     """
 
     def __init__(self, pipeline_config: Dict):
@@ -20,101 +22,107 @@ class PromptHandler:
         Initialize with pipeline configuration.
 
         Args:
-            pipeline_config: Pipeline configuration containing steps and their prompts
+            pipeline_config (Dict): A dict where keys are step names,
+                                    and values contain provider config, e.g.:
+                                    {
+                                      "extract_individual_captions": {
+                                        "openai": {
+                                          "model": "...",
+                                          "prompts": {
+                                            "system": "some system prompt",
+                                            "user": "some user prompt"
+                                          }
+                                        }
+                                      },
+                                      ...
+                                    }
         """
-        self.pipeline_config = pipeline_config
+        self.pipeline_config = pipeline_config or {}
         self.validate_prompts()
 
-    def get_prompt(self, step: str, task: str, variables: Dict) -> Dict[str, str]:
+    def get_prompt(self, step: str, variables: Dict) -> Dict[str, str]:
         """
-        Get system and user prompts for a specific pipeline step and task.
+        Retrieve the system/user prompts for a given step, substituting variables.
 
         Args:
-            step: Pipeline step (e.g., 'extract_captions', 'match_caption_panel')
-            task: Specific task within the step
-            variables: Dictionary of variables to substitute in templates
+            step (str): Pipeline step name (e.g., "extract_individual_captions").
+            variables (Dict): Template variables to substitute.
 
         Returns:
-            Dict with 'system' and 'user' prompts
+            Dict[str, str]: { "system": "...", "user": "..." }
 
         Raises:
-            KeyError: If prompts for step/task not found in config
+            KeyError: If step not found or if prompts are missing.
         """
-        try:
-            # Get step configuration
-            step_config = self.pipeline_config[step]
-            if not step_config:
-                raise KeyError(f"No configuration found for step: {step}")
+        # Get the step configuration
+        step_config = self.pipeline_config.get(step)
+        if not step_config:
+            raise KeyError(f"No configuration found for step: '{step}'")
 
-            # Get provider config (e.g., openai, anthropic)
-            provider_config = next(
-                iter(v for k, v in step_config.items() if k in ["openai", "anthropic"])
-            )
+        # Identify the provider config (e.g., "openai" or "anthropic")
+        provider_config = self._get_provider_config(step_config)
+        if not provider_config:
+            raise KeyError(f"No recognized provider config found for step '{step}'")
 
-            # Get prompts for task
-            prompts = provider_config.get("prompts", {}).get(task, {})
-            if not prompts:
-                raise KeyError(f"No prompts found for task: {task} in step: {step}")
+        # Get the single system/user prompt pair
+        prompts = provider_config.get("prompts", {})
+        if not prompts:
+            raise KeyError(f"No prompts found in step '{step}' under provider config")
 
-            # Substitute variables in templates
-            return {
-                "system": Template(prompts.get("system", "")).safe_substitute(
-                    variables
-                ),
-                "user": Template(prompts.get("user", "")).safe_substitute(variables),
-            }
+        system_str = prompts.get("system", "")
+        user_str = prompts.get("user", "")
 
-        except Exception as e:
-            logger.error(f"Error getting prompts for {step}.{task}: {str(e)}")
-            raise
+        return {
+            "system": Template(system_str).safe_substitute(variables),
+            "user": Template(user_str).safe_substitute(variables),
+        }
 
     def validate_prompts(self) -> None:
         """
         Validate that all required prompts are present and well-formed.
 
         Raises:
-            ValueError: If prompts are missing or malformed
+            ValueError: If prompts are missing or malformed.
         """
         if not self.pipeline_config:
             raise ValueError("No pipeline configuration provided")
 
-        # Check each pipeline step
-        for step, step_config in self.pipeline_config.items():
-            # Skip non-AI steps like object_detection
-            if step == "object_detection":
-                continue
-
-            # Get provider config
-            provider_config = next(
-                iter(v for k, v in step_config.items() if k in ["openai", "anthropic"]),
-                None,
-            )
+        for step_name, step_config in self.pipeline_config.items():
+            # Skip steps that have no recognized provider (like object_detection, etc.)
+            provider_config = self._get_provider_config(step_config)
             if not provider_config:
-                raise ValueError(f"No provider configuration found for step {step}")
+                continue  # Not an AI step or no recognized provider, skip
 
-            # Check prompts structure
-            prompts = provider_config.get("prompts", {})
-            if not prompts:
-                raise ValueError(f"No prompts defined for step {step}")
+            # Check there's a 'prompts' dictionary with at least system and user
+            prompts = provider_config.get("prompts")
+            if not isinstance(prompts, dict):
+                raise ValueError(
+                    f"No valid 'prompts' dict in step '{step_name}' under provider config"
+                )
 
-            # Check each task's prompts
-            for task, task_prompts in prompts.items():
-                if not isinstance(task_prompts, dict):
-                    raise ValueError(f"Invalid structure for task {task} in {step}")
+            # We expect exactly "system" and "user"
+            if "system" not in prompts or "user" not in prompts:
+                raise ValueError(
+                    f"Missing required 'system'/'user' prompts in step '{step_name}'"
+                )
 
-                # Check required prompt types exist
-                required_types = ["system", "user"]
-                missing = [t for t in required_types if t not in task_prompts]
-                if missing:
+            # Validate templates by trying to compile them
+            for prompt_type in ["system", "user"]:
+                template_str = prompts[prompt_type]
+                try:
+                    Template(template_str)
+                except Exception as e:
                     raise ValueError(
-                        f"Missing required prompts {missing} for {step}.{task}"
+                        f"Invalid template in step '{step_name}' -> '{prompt_type}': {e}"
                     )
 
-                # Validate templates
-                for prompt_type, template in task_prompts.items():
-                    try:
-                        Template(template)
-                    except Exception as e:
-                        raise ValueError(
-                            f"Invalid template in {step}.{task}.{prompt_type}: {str(e)}"
-                        )
+    @staticmethod
+    def _get_provider_config(step_config: Dict) -> Dict:
+        """
+        Return the first recognized provider config (e.g., 'openai', 'anthropic')
+        within the step config. If none found, returns an empty dict.
+        """
+        for provider in SUPPORTED_PROVIDERS:
+            if provider in step_config:
+                return step_config[provider]
+        return {}

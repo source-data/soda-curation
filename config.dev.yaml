@@ -1,110 +1,188 @@
+##########################################################
+#  Default Profile
+##########################################################
 default: &default
-  # General settings
-  debug:
-    enabled: false
-    debug_dir: logs/debug
-    process_first_figure_only: false
-
-  # Provider-specific base configurations
-  providers:
-    openai: &openai_base
-      model: "gpt-4o"
-      temperature: 0.1
-      top_p: 1.0
-      max_tokens: 2048
-      frequency_penalty: 0.0
-      presence_penalty: 0.0
-      json_mode: true
-      
-    anthropic: &anthropic_base
-      temperature: 0.3
-      top_p: 1.0
-      max_tokens_to_sample: 8192
-      top_k: 128
-
-  # Pipeline step configurations
   pipeline:
-    extract_captions:
+    ##########################################################
+    # 1) Locate Captions Step
+    ##########################################################
+    locate_captions:
       openai:
-        <<: *openai_base
-        model: gpt-4
+        # OpenAI-specific parameters for this step only
+        model: "gpt-4o"
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
         prompts:
-          locate_captions:
-            system: |
-              You are a scientific text analyzer focused on finding figure captions in scientific manuscripts. 
-              Your task is ONLY to find and return the complete figure-related text content from the manuscript.
-              
-              Key Instructions:
-              1. Look for figure captions throughout the entire document
-              2. Find ALL figure captions, including main figures and supplementary
-              3. Return the COMPLETE TEXT found, preserving all formatting
-              4. DO NOT modify or rewrite the text
+          # This "locate_captions" key is the "task" name used in PromptHandler.get_prompt(...)
+          system: |
+            You are a scientific text analyzer focused on finding figure captions in scientific manuscripts. 
+                Your task is ONLY to find and return the complete figure-related text content from the manuscript.
+                
+            The text will be encoded as a `HTML` string and you are required to follow the instructions below, returning
+            also `HTML` formatted strings in the answer.
 
-            user: |
-              Expected figures: ${expected_figure_count}
-              Expected figure labels: ${expected_figure_labels}
-              
-              Manuscript text: ${manuscript_text}
-              
-              Return ONLY the found figure-related text, exactly as it appears in the document.
+            Key Instructions:
+            1. Look for figure captions throughout the entire document - they can appear:
+              - In a dedicated section marked as "Figure Legends", "Figure Captions", etc.
+              - Embedded in the results section
+              - At the end of the manuscript
+              - In an appendix section
+              - Or anywhere else in the document
 
-          extract_individual_captions:
-            system: |
-              You are an AI assistant specializing in extracting figure captions from scientific manuscripts.
-              Parse these captions into a structured format:
+            2. Find ALL figure captions, including:
+              - Main figures (Figure 1, Figure 2, etc.)
+              - Expanded View figures (EV Figures)
+              - Supplementary figures
+              - Figure legends
+              - Figure descriptions
 
-              1. You MUST extract EXACTLY ${expected_figure_count} figure captions
-              2. For each caption (Figure 1 through Figure N):
-                 - Extract the TITLE (main descriptive sentence)
-                 - Copy the ENTIRE caption text EXACTLY
-                 - Include ALL subsections (A, B, C, etc.)
-                 - Maintain ALL formatting and special characters
+            3. IMPORTANT: Return the COMPLETE TEXT found, preserving:
+              - All formatting and special characters
+              - Statistical information
+              - Scale bars and measurements
+              - Panel labels and descriptions
+              - Source references
 
-              Format as JSON:
-              {
-                "Figure X": {
-                  "title": "Main descriptive sentence",
-                  "caption": "Complete caption excluding title"
-                }
+            4. DO NOT:
+              - Modify or rewrite the text
+              - Summarize or shorten descriptions
+              - Skip any figure-related content
+              - Add any explanatory text of your own
+
+            INPUT: Expected figures: $expected_figure_count
+
+            Expected figure labels: $expected_figure_labels
+
+            Manuscript_text: $manuscript_text
+
+            OUTPUT: Return ONLY the found figure-related text, exactly as it appears in the document. 
+            If you find multiple sections with figure descriptions, concatenate them all.
+
+            If you truly cannot find ANY figure captions or descriptions in the document, 
+            only then return "No figure legends section found."
+          user: |
+            Expected figures: $expected_figure_count
+
+            Expected figure labels: $expected_figure_labels
+            
+            Manuscript_text: $manuscript_text
+
+            Return ONLY the found figure-related text, exactly as it appears in the document.
+
+    ##########################################################
+    # 2) Extract Individual Captions Step
+    ##########################################################
+    extract_individual_captions:
+      openai:
+        # Potentially different parameters here, if desired
+        model: "gpt-4o-mini"
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            You are an AI assistant specializing in extracting figure captions from scientific manuscripts. 
+            A section containing ALL figure captions has been provided. This section is encoded as a `HTML` string.
+            We REQUIRE that the figure captions and titles that you extract are returned also as `HTML` strings.
+
+            Your task is to parse these captions into a structured format:
+
+            1. You MUST extract EXACTLY $expected_figure_count figure captions from the provided text.
+
+            2. For each caption (Figure 1 through Figure $expected_figure_count):
+              - Extract the TITLE of the figure (the main descriptive sentence before any panel descriptions)
+              - Copy the ENTIRE caption text EXACTLY as it appears
+              - Include ALL subsections (A, B, C, etc.)
+              - Maintain ALL formatting, punctuation, and special characters
+              - DO NOT modify or summarize the text
+
+            3. Create a JSON object where:
+              - Keys are "Figure 1", "Figure 2", etc. (up to $expected_figure_count)
+              - Values are objects containing:
+                * "title": The main descriptive sentence of the figure
+                * "caption": The complete, exact caption text
+
+            4. RULES:
+              - Include ONLY main figures (1,2,3...)
+              - Skip EV figures or supplementary figures
+              - Maintain consecutive numbering
+              - Keep all statistical information and references
+              - Do not include the title in the caption text
+
+            The figures typically appear as:
+
+            Figure X: {Caption Title}. {Caption text}
+
+            Example output format:
+            ```json
+            [
+              "Figure 1": {
+                "title": "Main descriptive sentence of the figure",
+                "caption": "Figure caption not including title and <tag>label</tag>, but including all panel descriptions"
+              },
+              "Figure 2": {
+                "title": "Analysis of protein <tag>expression in response to</tag> treatment",
+                "caption": "A) Western blot analysis... B) Quantification of..."
               }
+            ]
+            ```
 
-            user: |
-              Figure captions section:
-              ${caption_text}
-              
-              Extract ${expected_figure_count} figure captions with their titles and format as specified.
+          user: |
+            Figure captions of the document: $figure_captions
 
+            Expected figure count: $expected_figure_count
+
+            Expected labels: $expected_figure_labels
+
+    ##########################################################
+    # 3) Match Caption Panel Step
+    ##########################################################
     match_caption_panel:
       openai:
-        <<: *openai_base
-        model: gpt-4-vision-preview
+        model: "gpt-4-vision-preview"
+        temperature: 0.3
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
         prompts:
-          # Prompts for panel matching...
+          system: |
+            # System instructions for matching panels to captions...
+          user: |
+            # User prompt template for matching panels...
 
+    ##########################################################
+    # 4) Assign Panel Source Step
+    ##########################################################
     assign_panel_source:
       openai:
-        <<: *openai_base
-        model: gpt-4
+        model: "gpt-4"
+        temperature: 0.3
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
         prompts:
-          # Prompts for panel source assignment...
+          system: |
+            # System instructions for assigning panel sources...
+          user: |
+            # User prompt template for assigning panel sources...
 
+    ##########################################################
+    # 5) Object Detection Step (non-AI)
+    ##########################################################
     object_detection:
       model_path: "data/models/panel_detection_model_no_labels.pt"
       confidence_threshold: 0.25
       iou_threshold: 0.1
       image_size: 512
       max_detections: 30
-
-test:
-  <<: *default
-  debug:
-    enabled: true
-    debug_dir: logs/debug/test
-    process_first_figure_only: true
-
-production:
-  <<: *default
-  debug:
-    enabled: false
-    debug_dir: logs/debug/prod
-    process_first_figure_only: false

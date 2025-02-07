@@ -1,5 +1,6 @@
 """OpenAI implementation of caption extraction."""
 
+import json
 import logging
 import os
 from typing import Dict, List
@@ -7,6 +8,7 @@ from typing import Dict, List
 import openai
 from pydantic import BaseModel
 
+from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
 
 # from ..prompt_handler import PromptHandler
@@ -42,50 +44,57 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             raise ValueError("OPENAI_API_KEY environment variable is not set")
 
         self.client = openai.OpenAI(api_key=api_key)
-        self.model = self.config.get("model", "gpt-4o")
-
-        logger.info(f"Initialized with model: {self.model}")
 
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
         # Validate model
         valid_models = ["gpt-4o", "gpt-4o-mini"]
-        if self.model not in valid_models:
-            raise ValueError(
-                f"Invalid model: {self.model}. Must be one of {valid_models}"
-            )
+        for step_ in ["locate_captions", "extract_individual_captions"]:
+            config_ = self.config["pipeline"][step_]["openai"]
+            model_ = config_.get("model", "gpt-4o")
+            if model_ not in valid_models:
+                raise ValueError(
+                    f"Invalid model: {model_}. Must be one of {valid_models}"
+                )
 
-        # Validate numerical parameters
-        if not 0 <= self.config.get("temperature", 0.1) <= 2:
-            raise ValueError("Temperature must be between 0 and 2")
-        if not 0 <= self.config.get("top_p", 1.0) <= 1:
-            raise ValueError("Top_p must be between 0 and 1")
-        if (
-            "frequency_penalty" in self.config
-            and not -2 <= self.config["frequency_penalty"] <= 2
-        ):
-            raise ValueError("Frequency penalty must be between -2 and 2")
-        if (
-            "presence_penalty" in self.config
-            and not -2 <= self.config["presence_penalty"] <= 2
-        ):
-            raise ValueError("Presence penalty must be between -2 and 2")
+            # Validate numerical parameters
+            if not 0 <= config_.get("temperature", 0.1) <= 2:
+                raise ValueError(
+                    f"Temperature must be between 0 and 2 for step: `{step_}`, value: `{config_.get('temperature', 1.0)}`"
+                )
+            if not 0 <= config_.get("top_p", 1.0) <= 1:
+                raise ValueError(
+                    f"Top_p must be between 0 and 1 for step: `{step_}`, value: `{config_.get('top_p', 1.0)}`"
+                )
+            if (
+                "frequency_penalty" in config_
+                and not -2 <= config_["frequency_penalty"] <= 2
+            ):
+                raise ValueError(
+                    f"Frequency penalty must be between -2 and 2 for step: `{step_}`, value: `{config_.get('frequency_penalty', 0.)}`"
+                )
+            if (
+                "presence_penalty" in config_
+                and not -2 <= config_["presence_penalty"] <= 2
+            ):
+                raise ValueError(
+                    f"Presence penalty must be between -2 and 2 for step: `{step_}`, value: `{config_.get('presence_penalty', 0.)}`"
+                )
 
     def locate_captions(
         self,
         doc_content: str,
         zip_structure: ZipStructure,
-        expected_figure_count: int,
-        expected_figure_labels: str,
-    ) -> str:
+    ) -> (str, ZipStructure):
         """Call OpenAI API to locate figure captions."""
         # Get prompts with variables substituted
         prompts = self.prompt_handler.get_prompt(
-            component="extract_captions",
-            task="locate_captions",
+            step="locate_captions",
             variables={
-                "expected_figure_count": expected_figure_count,
-                "expected_figure_labels": expected_figure_labels,
+                "expected_figure_count": len(zip_structure.figures),
+                "expected_figure_labels": [
+                    figure.figure_label for figure in zip_structure.figures
+                ],
                 "manuscript_text": doc_content,
             },
         )
@@ -95,35 +104,48 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             {"role": "system", "content": prompts["system"]},
             {"role": "user", "content": prompts["user"]},
         ]
-
+        config_ = self.config["pipeline"]["locate_captions"]["openai"]
+        model_ = config_.get("model", "gpt-4o")
         response = self.client.beta.chat.completions.parse(
-            model=self.model,
+            model=model_,
             messages=messages,
             response_format=LocateFigureCaptions,
-            temperature=self.config["openai"].get("temperature", 0.1),
-            top_p=self.config["openai"].get("top_p", 1.0),
-            frequency_penalty=self.config["openai"].get("frequency_penalty", 0),
-            presence_penalty=self.config["openai"].get("presence_penalty", 0),
+            temperature=config_.get("temperature", 0.1),
+            top_p=config_.get("top_p", 1.0),
+            frequency_penalty=config_.get("frequency_penalty", 0),
+            presence_penalty=config_.get("presence_penalty", 0),
         )
 
-        return response.choices[0].message.content
+        # Updating the token usage
+        update_token_usage(zip_structure.cost.locate_captions, response, model_)
+
+        # Update the `zip_structure` object wit the answer
+        zip_structure.ai_response_locate_captions = response.choices[0].message.content
+
+        return (
+            json.loads(response.choices[0].message.content)["figure_legends"],
+            zip_structure,
+        )
 
     def extract_individual_captions(
         self,
-        caption_section: str,
+        doc_content: str,
         zip_structure: ZipStructure,
-        expected_figure_count: int,
-        expected_figure_labels: str,
     ) -> dict:
         """Call OpenAI API to extract individual captions."""
+
+        caption_section, zip_structure = self.locate_captions(
+            doc_content, zip_structure
+        )
         # Get prompts with variables substituted
         prompts = self.prompt_handler.get_prompt(
-            component="extract_captions",
-            task="extract_individual_captions",
+            step="extract_individual_captions",
             variables={
-                "expected_figure_count": expected_figure_count,
-                "expected_figure_labels": expected_figure_labels,
-                "caption_text": caption_section,
+                "expected_figure_count": len(zip_structure.figures),
+                "expected_figure_labels": [
+                    figure.figure_label for figure in zip_structure.figures
+                ],
+                "figure_captions": caption_section,
             },
         )
 
@@ -132,18 +154,39 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             {"role": "system", "content": prompts["system"]},
             {"role": "user", "content": prompts["user"]},
         ]
+        config_ = self.config["pipeline"]["extract_individual_captions"]["openai"]
+        model_ = config_.get("model", "gpt-4o")
 
         response = self.client.beta.chat.completions.parse(
-            model=self.model,
+            model=model_,
             messages=messages,
             response_format=ExtractIndividualCaptions,
-            temperature=self.config["openai"].get("temperature", 0.1),
-            top_p=self.config["openai"].get("top_p", 1.0),
-            frequency_penalty=self.config["openai"].get("frequency_penalty", 0),
-            presence_penalty=self.config["openai"].get("presence_penalty", 0),
+            temperature=config_.get("temperature", 0.1),
+            top_p=config_.get("top_p", 1.0),
+            frequency_penalty=config_.get("frequency_penalty", 0),
+            presence_penalty=config_.get("presence_penalty", 0),
         )
 
-        return response.choices[0].message.content
+        # Updating the token usage
+        update_token_usage(
+            zip_structure.cost.extract_individual_captions, response, model_
+        )
+
+        # Updating the figure captions
+        import pdb
+
+        pdb.set_trace()
+        self._update_figures_with_captions(
+            zip_structure, json.loads(response.choices[0].message.content)["figures"]
+        )
+        zip_structure.ai_response_extract_individual_captions = response.choices[
+            0
+        ].message.content
+
+        return (
+            json.loads(response.choices[0].message.content)["figures"],
+            zip_structure,
+        )
 
 
 # import logging
