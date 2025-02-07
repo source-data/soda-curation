@@ -49,8 +49,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
     try:
         # Setup extraction directory
-        extract_dir = setup_extract_dir(zip_path)
-        extract_dir.mkdir(exist_ok=True)
+        extract_dir = setup_extract_dir()
 
         try:
             # Extract manuscript structure (first pipeline step)
@@ -58,6 +57,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             zip_structure = extractor.extract_structure()
 
             # Extract captions from figures (second pipeline step)
+            # import pdb; pdb.set_trace()
             # caption_extractor = FigureCaptionExtractorOpenAI(config_loader.config, prompt_handler)
             # Update total costs before returning results
             # zip_structure.update_total_cost()

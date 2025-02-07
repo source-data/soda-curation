@@ -107,7 +107,7 @@ def mock_structure():
 def test_main_creates_output_directory(
     mock_zip_content, mock_config, mock_structure, tmp_path
 ):
-    """Test main creates output directory if it doesn't exist."""
+    """Test main creates output directory and handles temporary extraction correctly."""
     # Create output path in nonexistent directory
     output_dir = tmp_path / "nonexistent" / "nested" / "path"
     output_path = str(output_dir / "result.json")
@@ -121,12 +121,24 @@ def test_main_creates_output_directory(
         # Run main
         main(mock_zip_content, mock_config, output_path)
 
-        # Check that directory and file were created
+        # Check that output directory and file were created
         assert output_dir.exists()
         assert Path(output_path).exists()
 
-        # Verify mock was called correctly
-        mock_extractor.assert_called_once_with(mock_zip_content, str(tmp_path / "test"))
+        # Verify extractor was called correctly
+        assert mock_extractor.call_count == 1
+        actual_call = mock_extractor.call_args
+        assert len(actual_call.args) == 2
+        assert actual_call.args[0] == mock_zip_content  # First arg should be zip path
+
+        # Second arg should be temporary directory path
+        temp_dir = actual_call.args[1]
+        assert isinstance(temp_dir, str)
+        assert "soda_curation_" in temp_dir
+
+        # Verify temporary directory was created and cleaned up
+        temp_path = Path(temp_dir)
+        assert not temp_path.exists()  # Should be cleaned up by now
 
 
 def test_main_successful_run(mock_zip_content, mock_config, mock_structure):

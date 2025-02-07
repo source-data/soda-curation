@@ -123,7 +123,7 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             variables={
                 "expected_figure_count": expected_figure_count,
                 "expected_figure_labels": expected_figure_labels,
-                # "caption_text": caption_text,
+                "caption_text": caption_section,
             },
         )
 

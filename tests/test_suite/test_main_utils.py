@@ -1,5 +1,8 @@
 """Tests for main utility functions."""
 
+import os
+import shutil
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -20,6 +23,21 @@ def mock_paths(tmp_path):
         "config_path": str(tmp_path / "config.yaml"),
         "output_path": str(tmp_path / "output.json"),
     }
+
+
+@pytest.fixture
+def mock_zip_with_docx(tmp_path):
+    """Create a test ZIP file with a DOCX in manuscript ID directory structure."""
+    zip_path = tmp_path / "test.zip"
+    manuscript_id = "TEST-2023-12345"
+    docx_content = b"test docx content"
+
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        # Add files preserving manuscript ID prefix
+        zf.writestr(f"{manuscript_id}/Doc/manuscript.docx", docx_content)
+        zf.writestr(f"{manuscript_id}.xml", "<xml>test</xml>")
+
+    return zip_path, manuscript_id, docx_content
 
 
 def test_validate_paths_missing_zip():
@@ -60,13 +78,22 @@ def test_validate_paths_creates_output_dir(mock_paths, tmp_path):
     assert nested_output.parent.exists()
 
 
-def test_setup_extract_dir(tmp_path):
-    """Test extract directory setup."""
-    zip_path = tmp_path / "test.zip"
-    extract_dir = setup_extract_dir(str(zip_path))
+def test_setup_extract_dir():
+    """Test temporary directory creation."""
+    extract_dir = setup_extract_dir()
+    try:
+        assert extract_dir.exists()
+        assert extract_dir.is_dir()
+        assert "soda_curation_" in extract_dir.name
 
-    assert extract_dir.name == "test"
-    assert extract_dir.parent == zip_path.parent
+        # Verify we can write to it
+        test_file = extract_dir / "test.txt"
+        test_file.write_text("test")
+        assert test_file.exists()
+
+    finally:
+        cleanup_extract_dir(extract_dir)
+        assert not extract_dir.exists()
 
 
 def test_write_output_success(tmp_path):
@@ -99,7 +126,58 @@ def test_cleanup_extract_dir(tmp_path):
     assert not extract_dir.exists()
 
 
-def test_cleanup_extract_dir_nonexistent(tmp_path):
-    """Test cleanup of nonexistent directory."""
-    extract_dir = tmp_path / "nonexistent"
-    cleanup_extract_dir(extract_dir)  # Should not raise
+def test_cleanup_nonexistent_dir():
+    """Test cleanup of nonexistent directory doesn't raise."""
+    cleanup_extract_dir(Path("/nonexistent/path"))
+
+
+def test_extract_and_find_docx(mock_zip_with_docx):
+    """Test extracting ZIP and finding DOCX with manuscript ID prefix."""
+    zip_path, manuscript_id, docx_content = mock_zip_with_docx
+    extract_dir = setup_extract_dir()
+
+    try:
+        # Extract ZIP contents
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            zf.extractall(extract_dir)
+
+        # Verify DOCX exists at expected path with manuscript ID
+        docx_path = extract_dir / manuscript_id / "Doc/manuscript.docx"
+        assert docx_path.exists()
+        assert docx_path.read_bytes() == docx_content
+
+        # Verify direct path from manuscript ID prefix works
+        docx_relative = f"{manuscript_id}/Doc/manuscript.docx"
+        docx_full = extract_dir / docx_relative
+        assert docx_full.exists()
+        assert docx_full.read_bytes() == docx_content
+
+    finally:
+        cleanup_extract_dir(extract_dir)
+        assert not extract_dir.exists()
+
+
+def test_extract_dir_cleanup_handles_permission_error(tmp_path):
+    """Test cleanup handles permission errors gracefully."""
+    extract_dir = setup_extract_dir()
+    try:
+        # Create nested structure
+        nested_dir = extract_dir / "nested"
+        nested_dir.mkdir()
+        test_file = nested_dir / "test.txt"
+        test_file.write_text("test")
+
+        # Make directory read-only on Unix-like systems
+        if os.name != "nt":  # Skip on Windows
+            nested_dir.chmod(0o555)
+
+        cleanup_extract_dir(extract_dir)
+        # Even with permission error, should not raise
+
+    finally:
+        # Ensure cleanup in case of test failure
+        if extract_dir.exists():
+            # Reset permissions to allow cleanup
+            if os.name != "nt":
+                nested_dir.chmod(0o755)
+            shutil.rmtree(extract_dir)

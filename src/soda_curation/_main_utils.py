@@ -3,6 +3,7 @@
 import logging
 import os
 import shutil
+import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -41,22 +42,19 @@ def validate_paths(
         logger.info(f"Ensured output directory exists: {output_dir}")
 
 
-def setup_extract_dir(zip_path: str) -> Path:
+def setup_extract_dir() -> Path:
     """
-    Create and return extraction directory path.
-    Maintains the original directory structure including manuscript ID.
-
-    Args:
-        zip_path: Path to ZIP file
+    Create and return a temporary extraction directory.
 
     Returns:
-        Path to extraction directory
+        Path to temporary extraction directory
+
+    Note:
+        The caller is responsible for cleaning up this directory using cleanup_extract_dir
     """
-    # Create extraction directory as sibling to ZIP file
-    zip_file = Path(zip_path)
-    extract_dir = zip_file.parent / zip_file.stem
-    extract_dir.mkdir(exist_ok=True)
-    logger.info(f"Created extraction directory: {extract_dir}")
+    temp_dir = tempfile.mkdtemp(prefix="soda_curation_")
+    extract_dir = Path(temp_dir)
+    logger.info(f"Created temporary extraction directory: {extract_dir}")
     return extract_dir
 
 
@@ -79,14 +77,14 @@ def write_output(output_json: str, output_path: str) -> None:
 
 def cleanup_extract_dir(extract_dir: Path) -> None:
     """
-    Clean up extraction directory.
+    Clean up temporary extraction directory.
 
     Args:
-        extract_dir: Path to extraction directory
+        extract_dir: Path to temporary extraction directory
     """
-    if extract_dir.exists():
+    if extract_dir and extract_dir.exists():
         try:
             shutil.rmtree(extract_dir)
-            logger.info(f"Cleaned up extracted files in {extract_dir}")
+            logger.info(f"Cleaned up temporary directory: {extract_dir}")
         except Exception as e:
-            logger.warning(f"Failed to clean up extraction directory: {str(e)}")
+            logger.warning(f"Failed to clean up temporary directory: {str(e)}")
