@@ -57,9 +57,10 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             zip_structure = extractor.extract_structure()
 
             # Extract captions from figures (second pipeline step)
-            # import pdb; pdb.set_trace()
+            # manuscript_content = extractor.extract_docx_content(zip_structure.docx)
+
             # caption_extractor = FigureCaptionExtractorOpenAI(config_loader.config, prompt_handler)
-            # Update total costs before returning results
+            # Update total costs before returning resultss
             # zip_structure.update_total_cost()
 
             # Convert to JSON

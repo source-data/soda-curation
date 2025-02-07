@@ -13,6 +13,9 @@ from src.soda_curation._main_utils import (
     validate_paths,
     write_output,
 )
+from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
+    XMLStructureExtractor,
+)
 
 
 @pytest.fixture
@@ -181,3 +184,45 @@ def test_extract_dir_cleanup_handles_permission_error(tmp_path):
             if os.name != "nt":
                 nested_dir.chmod(0o755)
             shutil.rmtree(extract_dir)
+
+
+def test_extraction_preserves_manuscript_structure(tmp_path):
+    """Test that files are extracted to manuscript ID subdirectory."""
+    # Create test ZIP with manuscript structure
+    zip_path = tmp_path / "test.zip"
+    manuscript_id = "TEST-2023-12345"
+
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        # Add XML file
+        zf.writestr(f"{manuscript_id}.xml", "<xml>test content</xml>")
+
+        # Add files with and without manuscript ID prefix
+        zf.writestr(f"{manuscript_id}/Doc/manuscript.docx", "test docx")
+        zf.writestr(f"{manuscript_id}/graphic/Figure 1.tif", "test image")
+        zf.writestr("suppl_data/source.zip", "test data")
+
+    # Extract files
+    extract_dir = tmp_path / "extract"
+    extractor = XMLStructureExtractor(str(zip_path), str(extract_dir))
+
+    # Verify structure
+    manuscript_dir = extract_dir / manuscript_id
+    assert manuscript_dir.exists()
+
+    # Check paths relative to manuscript directory
+    assert (manuscript_dir / "Doc/manuscript.docx").exists()
+    assert (manuscript_dir / "graphic/Figure 1.tif").exists()
+    assert (manuscript_dir / "suppl_data/source.zip").exists()
+
+    # Verify file contents are preserved
+    with open(manuscript_dir / "Doc/manuscript.docx") as f:
+        assert f.read() == "test docx"
+
+    # Check that XML file is accessible
+    assert extractor.manuscript_id == manuscript_id
+
+    # Test full path resolution
+    test_path = "Doc/manuscript.docx"
+    full_path = extractor.get_full_path(test_path)
+    assert full_path == manuscript_dir / test_path
+    assert full_path.exists()

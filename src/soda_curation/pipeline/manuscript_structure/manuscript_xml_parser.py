@@ -8,9 +8,12 @@ used to create a structured representation of the manuscript.
 
 import logging
 import os
+import shutil
 import zipfile
+from pathlib import Path
 from typing import List
 
+import pypandoc
 from lxml import etree
 
 from .exceptions import NoManuscriptFileError, NoXMLFileFoundError
@@ -42,18 +45,57 @@ class XMLStructureExtractor:
             extract_dir: Directory to extract contents to
         """
         self.zip_path = zip_path
-        self.extract_dir = extract_dir
+        self.extract_dir = Path(extract_dir)
 
-        # Extract ZIP contents
+        # Create extraction directory
+        self.extract_dir.mkdir(parents=True, exist_ok=True)
+
+        # First extract just the XML to get manuscript ID
         with zipfile.ZipFile(self.zip_path, "r") as zip_ref:
-            zip_ref.extractall(self.extract_dir)
+            xml_files = [f for f in zip_ref.namelist() if f.endswith(".xml")]
+            if not xml_files:
+                raise NoXMLFileFoundError("No XML file found in the root directory")
+            xml_file = xml_files[0]
 
-        # Now process XML
-        self.xml_content = self._extract_xml_content()
-        self.manuscript_id = self._get_manuscript_id()
-        logger.info(
-            f"Initialized XMLStructureExtractor with manuscript_id: {self.manuscript_id}"
-        )
+            # Get manuscript ID from XML filename
+            self.manuscript_id = Path(xml_file).stem
+            manuscript_dir = self.extract_dir / self.manuscript_id
+            manuscript_dir.mkdir(parents=True, exist_ok=True)
+            logger.info(f"Created manuscript directory: {manuscript_dir}")
+
+            # Extract XML first to get content
+            zip_ref.extract(xml_file, self.extract_dir)
+            xml_path = self.extract_dir / xml_file
+
+            # Parse XML content
+            self.xml_content = etree.parse(xml_path).getroot()
+
+            # Now extract everything to manuscript_id subdirectory
+            for item in zip_ref.namelist():
+                # Skip XML file as we already extracted it
+                if item == xml_file:
+                    continue
+
+                # Extract other files to manuscript_id subdirectory
+                if not item.endswith("/"):  # Skip directories
+                    # Remove manuscript ID prefix if it exists
+                    item_path = Path(item)
+                    if item_path.parts[0] == self.manuscript_id:
+                        relative_path = Path(*item_path.parts[1:])
+                    else:
+                        relative_path = item_path
+
+                    # Extract to manuscript_id subdirectory
+                    target_path = manuscript_dir / relative_path
+                    target_path.parent.mkdir(parents=True, exist_ok=True)
+
+                    # Extract file
+                    with zip_ref.open(item) as source, open(
+                        target_path, "wb"
+                    ) as target:
+                        shutil.copyfileobj(source, target)
+
+            logger.info(f"Extracted contents to {manuscript_dir}")
 
     def _extract_xml_content(self) -> etree._Element:
         """Extract and parse XML content."""
@@ -78,7 +120,7 @@ class XMLStructureExtractor:
         Get the DOCX manuscript file path from XML and verify it exists in ZIP.
 
         Returns:
-            str: Path to DOCX file
+            str: Path to DOCX file as referenced in XML (with manuscript ID prefix)
 
         Raises:
             NoManuscriptFileError: If DOCX file is not found or there's a mismatch
@@ -94,16 +136,13 @@ class XMLStructureExtractor:
 
         manuscript_elements = self.xml_content.xpath(xpath_query)
         docx_path = None
+        raw_path = None
 
         for element in manuscript_elements:
             object_id = element.xpath(".//object_id")
             if object_id and object_id[0].text.lower().endswith(".docx"):
-                # Clean and normalize the path
                 raw_path = object_id[0].text
                 docx_path = self._clean_path(raw_path)
-                # If the path starts with the manuscript ID, remove it
-                if docx_path.startswith(f"{self.manuscript_id}/"):
-                    docx_path = docx_path[len(f"{self.manuscript_id}/") :]
                 break
 
         if not docx_path:
@@ -120,7 +159,7 @@ class XMLStructureExtractor:
             # Otherwise, file is referenced but missing
             raise NoManuscriptFileError("DOCX file referenced in XML not found in ZIP")
 
-        return raw_path
+        return raw_path  # Return the original path from XML
 
     def _get_source_data_files(self, figure_label: str) -> List[str]:
         """Get source data files for a specific figure."""
@@ -256,3 +295,19 @@ class XMLStructureExtractor:
                 )
             )
         return figures
+
+    def extract_docx_content(self, docx_path: str) -> str:
+        """Extract content from DOCX file."""
+        try:
+            full_path = self.extract_dir / docx_path
+            if not full_path.exists():
+                raise NoManuscriptFileError(f"DOCX file not found at {full_path}")
+
+            return pypandoc.convert_file(str(full_path), "html")
+        except Exception as e:
+            logger.error(f"Error extracting DOCX content: {str(e)}")
+            raise
+
+    def get_full_path(self, relative_path: str) -> Path:
+        """Get full path including manuscript ID directory."""
+        return self.extract_dir / self.manuscript_id / relative_path
