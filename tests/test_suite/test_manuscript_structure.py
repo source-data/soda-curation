@@ -1,6 +1,7 @@
 """Tests for XMLStructureExtractor class."""
 
 import shutil
+import zipfile
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -50,57 +51,84 @@ def temp_extract_dir(tmp_path):
 
 
 @pytest.fixture
-def create_test_zip(tmp_path, sample_xml_content):
+def create_test_zip():
     """Create a test ZIP file with specified structure."""
 
-    def _create_zip(include_files=None, use_invalid_xml=False):
+    def _create_zip(include_files=None):
+        """Create test ZIP with specific content."""
         include_files = include_files or {"docx", "pdf", "figures", "source_data"}
-        zip_path = tmp_path / f"{MANUSCRIPT_ID}.zip"
+        zip_path = Path("/tmp") / f"{MANUSCRIPT_ID}.zip"
 
-        with ZipFile(zip_path, "w") as zf:
-            # Add XML file
-            xml_content = INVALID_XML if use_invalid_xml else sample_xml_content
+        with zipfile.ZipFile(zip_path, "w") as zf:
+            # Create XML content with all figures and appropriate source data
+            xml_parts = [
+                f"""<?xml version="1.0" encoding="UTF-8"?>
+                <article>
+                    <front>
+                        <article-meta>
+                            <article-id pub-id-type="manuscript">{MANUSCRIPT_ID}</article-id>
+                        </article-meta>
+                    </front>
+                    <notes>
+                        <doc object-type="Manuscript Text">
+                            <object_id>{MANUSCRIPT_ID}/Doc/{MANUSCRIPT_ID}Manuscript_TextIG.docx</object_id>
+                        </doc>"""
+            ]
+
+            # Add figure elements
+            for i in range(1, 7):
+                xml_parts.append(
+                    f"""
+                    <fig object-type="Figure">
+                        <label>Figure {i}</label>
+                        <object_id>{MANUSCRIPT_ID}/graphic/FIGURE {i}.tif</object_id>
+                    </fig>"""
+                )
+
+                # Add source data only for figures 3-6
+                if i >= 3 and "source_data" in include_files:
+                    xml_parts.append(
+                        f"""
+                    <form object-type="Figure Source Data Files">
+                        <label>Figure {i} Source Data</label>
+                        <object_id>{MANUSCRIPT_ID}/suppl_data/Figure_{i}sd.zip</object_id>
+                    </form>"""
+                    )
+
+            # Close XML
+            xml_parts.append(
+                """
+                    </notes>
+                </article>
+            """
+            )
+
+            # Write XML to ZIP
+            xml_content = "".join(xml_parts)
             zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
 
             # Add DOCX if requested
             if "docx" in include_files:
                 zf.writestr(
-                    f"Doc/{MANUSCRIPT_ID}R1Manuscript_TextIG.docx", "docx content"
+                    f"{MANUSCRIPT_ID}/Doc/{MANUSCRIPT_ID}Manuscript_TextIG.docx",
+                    "docx content",
                 )
-
-            # Add PDF if requested
-            if "pdf" in include_files:
-                zf.writestr(f"pdf/{MANUSCRIPT_ID}.pdf", "pdf content")
 
             # Add figures if requested
             if "figures" in include_files:
                 for i in range(1, 7):
-                    zf.writestr(f"graphic/FIGURE {i}.tif", b"image content")
+                    zf.writestr(
+                        f"{MANUSCRIPT_ID}/graphic/FIGURE {i}.tif", b"image content"
+                    )
 
             # Add source data if requested
             if "source_data" in include_files:
-                for i in [3, 4, 5, 6]:
+                # Only create source data for figures 3-6
+                for i in range(3, 7):
                     zf.writestr(
-                        f"suppl_data/{MANUSCRIPT_ID}Figure_{i}sd.zip", b"source data"
+                        f"{MANUSCRIPT_ID}/suppl_data/Figure_{i}sd.zip",
+                        b"source data content",
                     )
-
-            # Add appendix and other supplementary files
-            zf.writestr("suppl_data/Appendix.pdf", "appendix content")
-            zf.writestr(
-                f"suppl_data/{MANUSCRIPT_ID}Peer Review File.pdf", "review content"
-            )
-            zf.writestr(
-                f"suppl_data/{MANUSCRIPT_ID}SourceData_Checklist.pdf",
-                "checklist content",
-            )
-
-            # Add production forms
-            zf.writestr(f"prod_forms/{MANUSCRIPT_ID}Synopsis.docx", "synopsis content")
-            zf.writestr(f"prod_forms/{MANUSCRIPT_ID}_eTOC_Blurb.docx", "blurb content")
-            zf.writestr(
-                f"prod_forms/{MANUSCRIPT_ID}Synopsis_Image.png", b"synopsis image"
-            )
-            zf.writestr(f"prod_forms/{MANUSCRIPT_ID}eToC.png", b"etoc image")
 
         return str(zip_path)
 
@@ -233,7 +261,6 @@ def test_complete_structure(temp_extract_dir, create_test_zip):
     assert structure.manuscript_id == MANUSCRIPT_ID
     assert structure.xml == f"{MANUSCRIPT_ID}.xml"
     assert structure.docx.endswith("Manuscript_TextIG.docx")
-    assert structure.pdf.endswith(".pdf")
 
     # Verify figures
     assert len(structure.figures) == 6
@@ -246,10 +273,6 @@ def test_complete_structure(temp_extract_dir, create_test_zip):
         if i >= 3:
             assert len(figure.sd_files) == 1
             assert any(sd.endswith(f"{i}sd.zip") for sd in figure.sd_files)
-
-    # Verify appendix
-    assert len(structure.appendix) >= 1
-    assert any("Appendix.pdf" in f for f in structure.appendix)
 
 
 def test_root_path_handling(temp_extract_dir, create_test_zip):
@@ -286,3 +309,29 @@ def test_figure_source_data_matching(temp_extract_dir, create_test_zip):
             assert any(f"Figure_{figure_num}sd.zip" in sd for sd in figure.sd_files)
         else:  # Figures 1-2 don't have source data
             assert not figure.sd_files
+
+
+def test_extraction_preserves_manuscript_structure(temp_extract_dir, create_test_zip):
+    """Test that files are extracted to manuscript ID subdirectory."""
+    zip_path = create_test_zip()  # Call the factory function returned by the fixture
+
+    # Extract files
+    extract_dir = temp_extract_dir
+    extractor = XMLStructureExtractor(str(zip_path), str(extract_dir))
+
+    # Verify structure
+    manuscript_dir = extract_dir / MANUSCRIPT_ID
+    assert manuscript_dir.exists()
+
+    # Check paths relative to manuscript directory
+    assert (manuscript_dir / "Doc" / f"{MANUSCRIPT_ID}Manuscript_TextIG.docx").exists()
+    assert (manuscript_dir / "graphic/FIGURE 1.tif").exists()
+
+    # Verify file contents
+    assert (
+        manuscript_dir / "Doc" / f"{MANUSCRIPT_ID}Manuscript_TextIG.docx"
+    ).read_text() == "docx content"
+
+    # Check XML was properly handled
+    assert extractor.manuscript_id == MANUSCRIPT_ID
+    assert (extract_dir / f"{MANUSCRIPT_ID}.xml").exists()

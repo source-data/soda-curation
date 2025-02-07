@@ -53,7 +53,6 @@ class Figure:
         duplicated_panels (str): Flag indicating if panels are duplicated.
         ai_response_panel_source_assign (Optional[str]): AI response for panel source assignment.
         possible_hallucination (bool): Flag indicating if caption might be hallucinated.
-        rouge_l_score (float): ROUGE-L F-measure score between extracted and original caption.
         unassigned_sd_files (List[str]): Source data files not assigned to specific panels.
         _full_img_files (List[str]): Full paths to image files.
         _full_sd_files (List[str]): Full paths to source data files.
@@ -68,13 +67,8 @@ class Figure:
     _full_sd_files: List[str] = field(default_factory=list)
     duplicated_panels: str = "false"
     ai_response_panel_source_assign: Optional[str] = None
-    possible_hallucination: bool = False
-    ai_response_locate_captions: Optional[str] = None
-    ai_response_extract_captions: Optional[str] = None
-    rouge_l_score: float = 0.0
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
-    diff: str = ""  # New field for diff output
 
 
 @dataclass
@@ -91,7 +85,7 @@ class TokenUsage:
 class ProcessingCost:
     """Tracks token usage and costs across different processing steps."""
 
-    extract_captions: TokenUsage = field(default_factory=TokenUsage)
+    locate_captions: TokenUsage = field(default_factory=TokenUsage)
     extract_individual_captions: TokenUsage = field(default_factory=TokenUsage)
     assign_panel_source: TokenUsage = field(default_factory=TokenUsage)
     match_caption_panel: TokenUsage = field(default_factory=TokenUsage)
@@ -130,7 +124,7 @@ class ZipStructure:
     docx: str = ""
     pdf: str = ""
     ai_response_locate_captions: Optional[str] = None
-    ai_response_extract_captions: Optional[str] = None
+    ai_response_extract_individual_captions: Optional[str] = None
     cost: ProcessingCost = field(default_factory=ProcessingCost)
     _full_docx: str = ""
     _full_pdf: str = ""
@@ -153,7 +147,7 @@ class ZipStructure:
 
         # Add up each component
         for component in [
-            self.cost.extract_captions,
+            self.cost.locate_captions,
             self.cost.extract_individual_captions,
             self.cost.assign_panel_source,
             self.cost.match_caption_panel,

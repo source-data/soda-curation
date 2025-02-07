@@ -12,8 +12,12 @@ from ._main_utils import (
 )
 from .config import ConfigurationLoader
 from .logging_config import setup_logging
+from .pipeline.extract_captions.extract_captions_openai import (
+    FigureCaptionExtractorOpenAI,
+)
 from .pipeline.manuscript_structure.manuscript_structure import CustomJSONEncoder
 from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
+from .pipeline.prompt_handler import PromptHandler
 
 logger = logging.getLogger(__name__)
 
@@ -45,18 +49,25 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
     try:
         # Setup extraction directory
-        extract_dir = setup_extract_dir(zip_path)
-        extract_dir.mkdir(exist_ok=True)
+        extract_dir = setup_extract_dir()
 
         try:
             # Extract manuscript structure (first pipeline step)
-            # manuscript_config = config_loader.get_pipeline_config(
-            #     PipelineStep.MANUSCRIPT_STRUCTURE
-            # )
             extractor = XMLStructureExtractor(zip_path, str(extract_dir))
             zip_structure = extractor.extract_structure()
+
+            # Extract captions from figures (second pipeline step)
+            manuscript_content = extractor.extract_docx_content(zip_structure.docx)
+            prompt_handler = PromptHandler(config_loader.config["pipeline"])
+            caption_extractor = FigureCaptionExtractorOpenAI(
+                config_loader.config, prompt_handler
+            )
+            zip_structure = caption_extractor.extract_individual_captions(
+                doc_content=manuscript_content, zip_structure=zip_structure
+            )
+
             # Update total costs before returning results
-            # zip_structure.update_total_cost()
+            zip_structure.update_total_cost()
 
             # Convert to JSON
             output_json = json.dumps(
