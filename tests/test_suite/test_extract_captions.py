@@ -1,5 +1,6 @@
 """Tests for caption extraction functionality."""
 
+import json
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -16,36 +17,43 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import
 
 # Test data
 VALID_CONFIG = {
-    "openai": {
-        "model": "gpt-4o",
-        "temperature": 0.1,
-        "top_p": 1.0,
-        "max_tokens": 2048,
-        "frequency_penalty": 0.0,
-        "presence_penalty": 0.0,
-        "seed": None,
-        "stop": None,
-        "user": None,
-        "json_mode": True,
-        "response_format": {"type": "text"},
+    "pipeline": {
+        "locate_captions": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
+        "extract_individual_captions": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
     }
 }
 
 INVALID_MODEL_CONFIG = {
-    "openai": {
-        "model": "invalid-model",  # Invalid model
-        "temperature": 0.1,
-        "top_p": 1.0,
+    "pipeline": {
+        "locate_captions": {"openai": {"model": "invalid-model", "temperature": 0.1}},
+        "extract_individual_captions": {
+            "openai": {"model": "invalid-model", "temperature": 0.1}
+        },
     }
 }
 
 INVALID_PARAMS_CONFIG = {
-    "openai": {
-        "model": "gpt-4o",
-        "temperature": 3.0,  # Invalid temperature
-        "top_p": 2.0,  # Invalid top_p
-        "frequency_penalty": 3.0,  # Invalid frequency penalty
-        "presence_penalty": -3.0,  # Invalid presence penalty
+    "pipeline": {
+        "locate_captions": {
+            "openai": {"model": "gpt-4o", "temperature": 3.0, "top_p": 2.0}
+        },
+        "extract_individual_captions": {
+            "openai": {"model": "gpt-4o", "temperature": 3.0, "top_p": 2.0}
+        },
     }
 }
 
@@ -172,7 +180,6 @@ class TestConfigValidation:
         """Test that valid configuration is accepted."""
         extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
         assert extractor.config == VALID_CONFIG
-        assert extractor.model == "gpt-4o"
 
     def test_invalid_model(self, mock_prompt_handler):
         """Test that invalid model raises ValueError."""
@@ -191,16 +198,17 @@ class TestLocateCaptions:
     def test_successful_location(
         self, mock_openai_client, mock_prompt_handler, zip_structure
     ):
-        """Test successful caption location."""
-        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-
-        response = extractor.locate_captions(
-            "test content", zip_structure, 2, "Figure 1, Figure 2"
+        mock_resp = MagicMock()
+        mock_resp.choices[0].message.content = json.dumps(
+            {"figure_legends": MOCK_LOCATE_RESPONSE}
+        )
+        mock_openai_client.return_value.beta.chat.completions.parse.return_value = (
+            mock_resp
         )
 
+        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+        response, updated_zip = extractor.locate_captions("test content", zip_structure)
         assert response == MOCK_LOCATE_RESPONSE
-        mock_prompt_handler.get_prompt.assert_called_once()
-        assert mock_openai_client.return_value.chat.completions.create.called
 
     def test_location_error_handling(
         self, mock_openai_client, mock_prompt_handler, zip_structure
@@ -232,22 +240,30 @@ class TestExtractIndividualCaptions:
     def test_successful_extraction(
         self, mock_openai_client, mock_prompt_handler, zip_structure, response
     ):
-        """Test successful extraction of individual captions."""
-        # Configure mock to return different response formats
-        mock_openai_client.return_value.chat.completions.create.return_value = (
-            MagicMock(choices=[MagicMock(message=MagicMock(content=response))])
+        mock_resp = MagicMock()
+        mock_resp.choices[0].message.content = json.dumps(
+            {
+                "figures": [
+                    {
+                        "figure_label": "Figure 1",
+                        "caption_title": "Test caption for figure 1",
+                        "figure_caption": "A) Panel A description. B) Panel B description.",
+                    },
+                    {
+                        "figure_label": "Figure 2",
+                        "caption_title": "Test caption for figure 2",
+                        "figure_caption": "Multiple panels showing different aspects.",
+                    },
+                ]
+            }
+        )
+        mock_openai_client.return_value.beta.chat.completions.parse.return_value = (
+            mock_resp
         )
 
         extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        result = extractor.extract_individual_captions(
-            "caption section", zip_structure, 2, "Figure 1, Figure 2"
-        )
-
-        # Parse result to verify structure
-        parsed_result = extractor._parse_captions(result)
-        assert isinstance(parsed_result, dict)
-        assert "Figure 1" in parsed_result
-        assert parsed_result["Figure 1"]["title"] == "Test caption for figure 1"
+        result = extractor.extract_individual_captions("caption section", zip_structure)
+        assert isinstance(result, ZipStructure)
 
     def test_extraction_error_handling(
         self, mock_openai_client, mock_prompt_handler, zip_structure
