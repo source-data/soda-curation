@@ -1,6 +1,3 @@
-#################
-#################
-# config/config.yaml
 default: &default
   # General settings
   debug:
@@ -11,9 +8,13 @@ default: &default
   # Provider-specific base configurations
   providers:
     openai: &openai_base
-      temperature: 0.3
+      model: "gpt-4o"
+      temperature: 0.1
       top_p: 1.0
       max_tokens: 2048
+      frequency_penalty: 0.0
+      presence_penalty: 0.0
+      json_mode: true
       
     anthropic: &anthropic_base
       temperature: 0.3
@@ -23,35 +24,69 @@ default: &default
 
   # Pipeline step configurations
   pipeline:
-    assign_panel_source:
-      openai:
-        <<: *openai_base
-        model: gpt-4
-        system_prompt: "system prompt for panel source assignment"
-      anthropic:
-        <<: *anthropic_base
-        model: claude-3-5-sonnet-20241022
-        system_prompt: "system prompt for panel source assignment"
-
     extract_captions:
       openai:
         <<: *openai_base
         model: gpt-4
-        system_prompt: "system prompt for caption extraction"
-      anthropic:
-        <<: *anthropic_base
-        model: claude-3-5-sonnet-20241022
-        system_prompt: "system prompt for caption extraction"
+        prompts:
+          locate_captions:
+            system: |
+              You are a scientific text analyzer focused on finding figure captions in scientific manuscripts. 
+              Your task is ONLY to find and return the complete figure-related text content from the manuscript.
+              
+              Key Instructions:
+              1. Look for figure captions throughout the entire document
+              2. Find ALL figure captions, including main figures and supplementary
+              3. Return the COMPLETE TEXT found, preserving all formatting
+              4. DO NOT modify or rewrite the text
+
+            user: |
+              Expected figures: ${expected_figure_count}
+              Expected figure labels: ${expected_figure_labels}
+              
+              Manuscript text: ${manuscript_text}
+              
+              Return ONLY the found figure-related text, exactly as it appears in the document.
+
+          extract_individual_captions:
+            system: |
+              You are an AI assistant specializing in extracting figure captions from scientific manuscripts.
+              Parse these captions into a structured format:
+
+              1. You MUST extract EXACTLY ${expected_figure_count} figure captions
+              2. For each caption (Figure 1 through Figure N):
+                 - Extract the TITLE (main descriptive sentence)
+                 - Copy the ENTIRE caption text EXACTLY
+                 - Include ALL subsections (A, B, C, etc.)
+                 - Maintain ALL formatting and special characters
+
+              Format as JSON:
+              {
+                "Figure X": {
+                  "title": "Main descriptive sentence",
+                  "caption": "Complete caption excluding title"
+                }
+              }
+
+            user: |
+              Figure captions section:
+              ${caption_text}
+              
+              Extract ${expected_figure_count} figure captions with their titles and format as specified.
 
     match_caption_panel:
       openai:
         <<: *openai_base
         model: gpt-4-vision-preview
-        system_prompt: "system prompt for caption panel matching"
-      anthropic:
-        <<: *anthropic_base
-        model: claude-3-5-sonnet-20241022
-        system_prompt: "system prompt for caption panel matching"
+        prompts:
+          # Prompts for panel matching...
+
+    assign_panel_source:
+      openai:
+        <<: *openai_base
+        model: gpt-4
+        prompts:
+          # Prompts for panel source assignment...
 
     object_detection:
       model_path: "data/models/panel_detection_model_no_labels.pt"

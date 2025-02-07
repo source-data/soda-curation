@@ -44,6 +44,7 @@ def validate_paths(
 def setup_extract_dir(zip_path: str) -> Path:
     """
     Create and return extraction directory path.
+    Maintains the original directory structure including manuscript ID.
 
     Args:
         zip_path: Path to ZIP file
@@ -51,8 +52,12 @@ def setup_extract_dir(zip_path: str) -> Path:
     Returns:
         Path to extraction directory
     """
+    # Create extraction directory as sibling to ZIP file
     zip_file = Path(zip_path)
-    return zip_file.parent / zip_file.stem
+    extract_dir = zip_file.parent / zip_file.stem
+    extract_dir.mkdir(exist_ok=True)
+    logger.info(f"Created extraction directory: {extract_dir}")
+    return extract_dir
 
 
 def write_output(output_json: str, output_path: str) -> None:

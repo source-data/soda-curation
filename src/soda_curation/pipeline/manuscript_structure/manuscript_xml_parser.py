@@ -120,7 +120,7 @@ class XMLStructureExtractor:
             # Otherwise, file is referenced but missing
             raise NoManuscriptFileError("DOCX file referenced in XML not found in ZIP")
 
-        return docx_path
+        return raw_path
 
     def _get_source_data_files(self, figure_label: str) -> List[str]:
         """Get source data files for a specific figure."""
@@ -142,16 +142,9 @@ class XMLStructureExtractor:
 
         files = []
         if sd_files:
-            files.extend(
-                [self._clean_path(sd.xpath(".//object_id")[0].text) for sd in sd_files]
-            )
+            files.extend([sd.xpath(".//object_id")[0].text for sd in sd_files])
         if dataset_files:
-            files.extend(
-                [
-                    self._clean_path(ds.xpath(".//object_id")[0].text)
-                    for ds in dataset_files
-                ]
-            )
+            files.extend([ds.xpath(".//object_id")[0].text for ds in dataset_files])
 
         return files
 
@@ -166,12 +159,10 @@ class XMLStructureExtractor:
         )
 
         appendix = self.xml_content.xpath(xpath_query)
-        return [self._clean_path(app.xpath(".//object_id")[0].text) for app in appendix]
+        return [app.xpath(".//object_id")[0].text for app in appendix]
 
     def _clean_path(self, path: str) -> str:
-        """Clean file path by removing manuscript ID prefix if present."""
-        if self.manuscript_id and path.startswith(f"{self.manuscript_id}/"):
-            path = path[len(self.manuscript_id) + 1 :]
+        """Clean file path without removing manuscript ID prefix."""
         return path
 
     def extract_structure(self) -> ZipStructure:
@@ -218,7 +209,7 @@ class XMLStructureExtractor:
         """Get PDF file path from XML."""
         pdf = self.xml_content.xpath("//merged_pdf[@object-type='Merged PDF']")
         if pdf:
-            return self._clean_path(pdf[0].xpath(".//object_id")[0].text)
+            return pdf[0].xpath(".//object_id")[0].text
         logger.warning("No PDF file found")
         return ""
 
@@ -251,7 +242,7 @@ class XMLStructureExtractor:
 
             # Normalize the figure label
             label = self.normalize_figure_label(raw_label)
-            img_files = [self._clean_path(fig.xpath(".//object_id")[0].text)]
+            img_files = [fig.xpath(".//object_id")[0].text]
             sd_files = self._get_source_data_files(label)
 
             logger.info(f"Processing figure: {label}")

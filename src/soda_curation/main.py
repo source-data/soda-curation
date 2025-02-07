@@ -12,6 +12,10 @@ from ._main_utils import (
 )
 from .config import ConfigurationLoader
 from .logging_config import setup_logging
+
+# from .pipeline.extract_captions.extract_captions_openai import (
+#     FigureCaptionExtractorOpenAI,
+# )
 from .pipeline.manuscript_structure.manuscript_structure import CustomJSONEncoder
 from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
 
@@ -50,11 +54,11 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
         try:
             # Extract manuscript structure (first pipeline step)
-            # manuscript_config = config_loader.get_pipeline_config(
-            #     PipelineStep.MANUSCRIPT_STRUCTURE
-            # )
             extractor = XMLStructureExtractor(zip_path, str(extract_dir))
             zip_structure = extractor.extract_structure()
+
+            # Extract captions from figures (second pipeline step)
+            # caption_extractor = FigureCaptionExtractorOpenAI(config_loader.config, prompt_handler)
             # Update total costs before returning results
             # zip_structure.update_total_cost()
 
