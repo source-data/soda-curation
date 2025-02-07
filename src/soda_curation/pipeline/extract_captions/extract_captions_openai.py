@@ -128,56 +128,73 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         )
 
     def extract_individual_captions(
-        self,
-        doc_content: str,
-        zip_structure: ZipStructure,
-    ) -> dict:
-        """Call OpenAI API to extract individual captions."""
+        self, doc_content: str, zip_structure: ZipStructure
+    ) -> ZipStructure:
+        """Extract captions from document content and update the ZipStructure.
 
-        caption_section, zip_structure = self.locate_captions(
-            doc_content, zip_structure
-        )
-        # Get prompts with variables substituted
-        prompts = self.prompt_handler.get_prompt(
-            step="extract_individual_captions",
-            variables={
-                "expected_figure_count": len(zip_structure.figures),
-                "expected_figure_labels": [
-                    figure.figure_label for figure in zip_structure.figures
-                ],
-                "figure_captions": caption_section,
-            },
-        )
+        Args:
+            doc_content: Document content to analyze
+            zip_structure: Current ZIP structure to update
 
-        # Prepare messages
-        messages = [
-            {"role": "system", "content": prompts["system"]},
-            {"role": "user", "content": prompts["user"]},
-        ]
-        config_ = self.config["pipeline"]["extract_individual_captions"]["openai"]
-        model_ = config_.get("model", "gpt-4o")
+        Returns:
+            Updated ZipStructure with extracted captions
+        """
+        try:
+            caption_section, zip_structure = self.locate_captions(
+                doc_content, zip_structure
+            )
 
-        response = self.client.beta.chat.completions.parse(
-            model=model_,
-            messages=messages,
-            response_format=ExtractIndividualCaptions,
-            temperature=config_.get("temperature", 0.1),
-            top_p=config_.get("top_p", 1.0),
-            frequency_penalty=config_.get("frequency_penalty", 0),
-            presence_penalty=config_.get("presence_penalty", 0),
-        )
+            # Get prompts with variables substituted
+            prompts = self.prompt_handler.get_prompt(
+                step="extract_individual_captions",
+                variables={
+                    "expected_figure_count": len(zip_structure.figures),
+                    "expected_figure_labels": [
+                        figure.figure_label for figure in zip_structure.figures
+                    ],
+                    "figure_captions": caption_section,
+                },
+            )
 
-        # Updating the token usage
-        update_token_usage(
-            zip_structure.cost.extract_individual_captions, response, model_
-        )
+            # Prepare messages
+            messages = [
+                {"role": "system", "content": prompts["system"]},
+                {"role": "user", "content": prompts["user"]},
+            ]
 
-        # Updating the figure captions
-        self._update_figures_with_captions(
-            zip_structure, json.loads(response.choices[0].message.content)["figures"]
-        )
-        zip_structure.ai_response_extract_individual_captions = response.choices[
-            0
-        ].message.content
+            config_ = self.config["pipeline"]["extract_individual_captions"]["openai"]
+            model_ = config_.get("model", "gpt-4o")
 
-        return zip_structure
+            response = self.client.beta.chat.completions.parse(
+                model=model_,
+                messages=messages,
+                response_format=ExtractIndividualCaptions,
+                temperature=config_.get("temperature", 0.1),
+                top_p=config_.get("top_p", 1.0),
+                frequency_penalty=config_.get("frequency_penalty", 0),
+                presence_penalty=config_.get("presence_penalty", 0),
+            )
+
+            # Update token usage
+            update_token_usage(
+                zip_structure.cost.extract_individual_captions, response, model_
+            )
+
+            # Parse response and update figures
+            response_data = json.loads(response.choices[0].message.content)
+            zip_structure = self._update_figures_with_captions(
+                zip_structure, response_data["figures"]
+            )
+
+            # Store raw response
+            zip_structure.ai_response_extract_individual_captions = response.choices[
+                0
+            ].message.content
+
+            return zip_structure
+
+        except Exception as e:
+            logger.error(
+                f"Error extracting individual captions: {str(e)}", exc_info=True
+            )
+            return zip_structure

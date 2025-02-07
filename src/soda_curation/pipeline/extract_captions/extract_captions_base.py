@@ -117,11 +117,39 @@ class FigureCaptionExtractor(ABC):
             return {}
 
     def _update_figures_with_captions(
-        self, zip_structure: ZipStructure, caption_dict: Dict
-    ) -> None:
-        """Update figures in ZipStructure with extracted captions."""
+        self, zip_structure: ZipStructure, caption_data: list
+    ) -> ZipStructure:
+        """Update figures in ZipStructure with extracted captions.
+
+        Args:
+            zip_structure: The ZipStructure to update
+            caption_data: List of dictionaries containing caption information
+                Each dict should have:
+                - figure_label: The label of the figure
+                - caption_title: The title of the figure
+                - figure_caption: The full caption text
+
+        Returns:
+            Updated ZipStructure with captions added to figures
+        """
+        # Create a mapping of figure labels to caption data for easier lookup
+        caption_map = {
+            item["figure_label"]: {
+                "caption": item["figure_caption"],
+                "title": item["caption_title"],
+            }
+            for item in caption_data
+        }
+
+        # Update each figure in place
         for figure in zip_structure.figures:
-            if figure.figure_label in caption_dict:
-                caption_info = caption_dict[figure.figure_label]
-                figure.figure_caption = caption_info.get("caption", "")
-                figure.caption_title = caption_info.get("title", "")
+            if figure.figure_label in caption_map:
+                caption_info = caption_map[figure.figure_label]
+                figure.figure_caption = caption_info["caption"]
+                figure.caption_title = caption_info["title"]
+            else:
+                logger.warning(f"No caption found for figure {figure.figure_label}")
+                figure.figure_caption = "Figure caption not found."
+                figure.caption_title = ""
+
+        return zip_structure

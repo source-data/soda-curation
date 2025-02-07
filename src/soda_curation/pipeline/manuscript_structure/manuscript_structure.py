@@ -53,7 +53,6 @@ class Figure:
         duplicated_panels (str): Flag indicating if panels are duplicated.
         ai_response_panel_source_assign (Optional[str]): AI response for panel source assignment.
         possible_hallucination (bool): Flag indicating if caption might be hallucinated.
-        rouge_l_score (float): ROUGE-L F-measure score between extracted and original caption.
         unassigned_sd_files (List[str]): Source data files not assigned to specific panels.
         _full_img_files (List[str]): Full paths to image files.
         _full_sd_files (List[str]): Full paths to source data files.
@@ -68,11 +67,8 @@ class Figure:
     _full_sd_files: List[str] = field(default_factory=list)
     duplicated_panels: str = "false"
     ai_response_panel_source_assign: Optional[str] = None
-    possible_hallucination: bool = False
-    rouge_l_score: float = 0.0
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
-    diff: str = ""  # New field for diff output
 
 
 @dataclass

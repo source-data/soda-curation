@@ -124,16 +124,17 @@ default: &default
             ```json
             [
               "Figure 1": {
-                "title": "Main descriptive sentence of the figure",
-                "caption": "Figure caption not including title and <tag>label</tag>, but including all panel descriptions"
+                "figure_label": "Figure 1",
+                "caption_title": "Main descriptive sentence of the figure",
+                "figure_caption": "Figure caption not including title and <tag>label</tag>, but including all panel descriptions"
               },
-              "Figure 2": {
-                "title": "Analysis of protein <tag>expression in response to</tag> treatment",
-                "caption": "A) Western blot analysis... B) Quantification of..."
+              {
+                "figure_label": "Figure 2"
+                "caption_title": "Analysis of protein <tag>expression in response to</tag> treatment",
+                "figure_caption": "A) Western blot analysis... B) Quantification of..."
               }
             ]
             ```
-
           user: |
             Figure captions of the document: $figure_captions
 

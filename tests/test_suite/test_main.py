@@ -78,12 +78,25 @@ def mock_config(tmp_path):
     config_path = tmp_path / "config.yaml"
     config_path.write_text(
         """
-    ai: openai
-    openai:
-        api_key: dummy_key
-        model: gpt-4
-        temperature: 0.5
-        top_p: 1.0
+        default: &default
+            pipeline:
+                locate_captions:
+                    openai:
+                        model: gpt-4o
+                        temperature: 0.1
+                        prompts:
+                            system: "System prompt"
+                            user: "User prompt"
+                extract_individual_captions:
+                    openai:
+                        model: gpt-4o
+                        temperature: 0.1
+                        prompts:
+                            system: "System prompt"
+                            user: "User prompt"
+
+        dev:
+            <<: *default
     """
     )
     return str(config_path)
