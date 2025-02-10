@@ -4,7 +4,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
-from ..manuscript_structure.manuscript import ZipStructure
+from ..manuscript_structure.manuscript_structure import ZipStructure
 
 logger = logging.getLogger(__name__)
 

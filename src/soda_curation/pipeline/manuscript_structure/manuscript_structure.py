@@ -89,6 +89,8 @@ class ProcessingCost:
     extract_individual_captions: TokenUsage = field(default_factory=TokenUsage)
     assign_panel_source: TokenUsage = field(default_factory=TokenUsage)
     match_caption_panel: TokenUsage = field(default_factory=TokenUsage)
+    locate_data_availability: TokenUsage = field(default_factory=TokenUsage)
+    extract_data_sources: TokenUsage = field(default_factory=TokenUsage)
     total: TokenUsage = field(default_factory=TokenUsage)
 
 
