@@ -437,7 +437,9 @@ docker run -it --name soda-curation-test -v $(pwd):/app soda-curation-test /bin/
 
 STRATEGIES='openai_gpt-4o-mini_temp=0.1' MANUSCRIPTS='EMM-2023-18636' RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 
-STRATEGIES='all' MANUSCRIPTS='all' RUNS=5 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
+sh run_soda_curation_cpu.sh
+
+STRATEGIES='openai_gpt-4o-mini_temp=0.1,openai_gpt-4o-mini_temp=0.5,openai_gpt-4o_temp=0.1,openai_gpt-4o_temp=0.5' MANUSCRIPTS='all' RUNS=3 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
 ```
 
 ### Code Formatting and Linting

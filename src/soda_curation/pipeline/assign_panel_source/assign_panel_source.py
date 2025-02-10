@@ -210,45 +210,46 @@ class PanelSourceAssigner:
 
     def _call_openai_api(self, prompt: str) -> str:
         """Call the OpenAI API and get response."""
-        try:
-            thread = self.client.beta.threads.create()
+        # try:
+        thread = self.client.beta.threads.create()
 
-            self.client.beta.threads.messages.create(
-                thread_id=thread.id, role="user", content=prompt
+        self.client.beta.threads.messages.create(
+            thread_id=thread.id, role="user", content=prompt
+        )
+
+        run_ = self.client.beta.threads.runs.create(
+            thread_id=thread.id,
+            assistant_id=self.assistant.id,
+        )
+
+        while run_.status != "completed":
+            run_ = self.client.beta.threads.runs.retrieve(
+                thread_id=thread.id, run_id=run_.id
             )
 
-            run_ = self.client.beta.threads.runs.create(
-                thread_id=thread.id,
-                assistant_id=self.assistant.id,
-            )
-
-            while run_.status != "completed":
-                run_ = self.client.beta.threads.runs.retrieve(
-                    thread_id=thread.id, run_id=run_.id
-                )
-
-            messages = self.client.beta.threads.messages.list(thread_id=thread.id)
-            # Track token usage
+        messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+        # Track token usage
+        if self.zip_structure:
             update_token_usage(
                 self.zip_structure.cost.assign_panel_source,
                 run_,
                 self.config["openai"]["model"],
             )
 
-            response = messages.data[0].content[0].text.value
-            logger.info("****************")
-            logger.info("PANEL SOURCE ASSIGNMENT RESPONSE")
-            logger.info("****************")
-            logger.info(response)
+        response = messages.data[0].content[0].text.value
+        logger.info("****************")
+        logger.info("PANEL SOURCE ASSIGNMENT RESPONSE")
+        logger.info("****************")
+        logger.info(response)
 
-            # Cleanup
-            self.client.beta.threads.delete(thread_id=thread.id)
+        # Cleanup
+        self.client.beta.threads.delete(thread_id=thread.id)
 
-            return response
+        return response
 
-        except Exception as e:
-            logger.error(f"Error in OpenAI API call: {str(e)}")
-            return ""
+        # except Exception as e:
+        #     logger.error(f"Error in OpenAI API call: {str(e)}")
+        #     return ""
 
     def _parse_response(self, response: str) -> Dict[str, List[str]]:
         """Parse JSON response from OpenAI."""

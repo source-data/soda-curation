@@ -95,6 +95,7 @@ class ProcessingCost:
     extract_individual_captions: TokenUsage = field(default_factory=TokenUsage)
     assign_panel_source: TokenUsage = field(default_factory=TokenUsage)
     match_caption_panel: TokenUsage = field(default_factory=TokenUsage)
+    assign_source_data: TokenUsage = field(default_factory=TokenUsage)
     total: TokenUsage = field(default_factory=TokenUsage)
 
 
@@ -135,6 +136,7 @@ class ZipStructure:
     _full_docx: str = ""
     _full_pdf: str = ""
     ai_provider: str = ""
+    cost: ProcessingCost = field(default_factory=ProcessingCost)
 
     def __post_init__(self):
         """Initialize any attributes that might be missing."""
@@ -157,6 +159,7 @@ class ZipStructure:
             self.cost.extract_individual_captions,
             self.cost.assign_panel_source,
             self.cost.match_caption_panel,
+            self.cost.assign_source_data,
         ]:
             total.prompt_tokens += component.prompt_tokens
             total.completion_tokens += component.completion_tokens

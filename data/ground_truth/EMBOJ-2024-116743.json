@@ -1,20 +1,20 @@
 {
     "manuscript_id": "EMBOJ-2024-116743",
-    "docx": "EMBOJ-2024-116743/Doc/EMBOJ2024116743R1Manuscript_TextIG.docx",
-    "xml": "EMBOJ-2024-116743/EMBOJ-2024-116743.xml",
-    "pdf": "EMBOJ-2024-116743/pdf/EMBOJ-2024-116743.pdf",
+    "docx": "Doc/EMBOJ2024116743R1Manuscript_TextIG.docx",
+    "xml": "EMBOJ-2024-116743.xml",
+    "pdf": "pdf/EMBOJ-2024-116743.pdf",
     "appendix": [
-        "EMBOJ-2024-116743/suppl_data/EMBOJ2024116743R1Appendixsupp.pdf",
-        "EMBOJ-2024-116743/suppl_data/EMBOJ2024116743R1Peer Review File_figs in.pdf",
-        "EMBOJ-2024-116743/suppl_data/Reagent and tool table_092324.docx",
+        "suppl_data/EMBOJ2024116743R1Appendixsupp.pdf",
+        "suppl_data/EMBOJ2024116743R1Peer Review File_figs in.pdf",
+        "suppl_data/Reagent and tool table_092324.docx"
     ],
     "sd_files": [
-        "EMBOJ-2024-116743/suppl_data/Figure 2.zip",
-        "EMBOJ-2024-116743/suppl_data/Figure 3.zip",
-        "EMBOJ-2024-116743/suppl_data/Figure 4.zip",
-        "EMBOJ-2024-116743/suppl_data/Figure 5.zip",
-        "EMBOJ-2024-116743/suppl_data/Figure 6.zip",
-        "EMBOJ-2024-116743/suppl_data/Figure 7.zip"
+        "suppl_data/Figure 2.zip",
+        "suppl_data/Figure 3.zip",
+        "suppl_data/Figure 4.zip",
+        "suppl_data/Figure 5.zip",
+        "suppl_data/Figure 6.zip",
+        "suppl_data/Figure 7.zip"
     ],
     "figures": [
         {
@@ -76,11 +76,11 @@
             ]
           },
           {
-            "figure_caption": "<p><strong>Figure 2. Tubular aggregates in fast twitch muscles of GS mice.</strong></p>",
+            "figure_caption": "<p>A and B) Representative Gomori trichrome images of EDL muscles from 12M (A) and 18M (B) old WT (<em>left</em>) and GS (<em>right</em>) mice. TAs are visualized as pink/purple inclusions as indicated by red arrows.</p> <p>C and D) Representative EM images of cross sections of EDL (C) and FDB (D) muscles from 8M old WT (<em>left</em>) and GS (<em>right</em>) mice. Images were taken from different muscle fibers. TAs (colored in green for the GS EDL fiber shown in panel C) exhibit a honeycomb-like structure.</p> <p>E-G) Average (±SEM) percentage of fibers with TAs (E), number of TAs/fiber (F), and TA size (G) in EDL (<em>left</em>), FDB (<em>middle</em>), and <em>tibialis anterior</em> (<em>right</em>) muscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS mice in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. The exact <em>p</em>-value is labeled in the figure when adjusted <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 2A-G</p>",
             "figure_label": "Figure 2",
-            "caption_title": "<p>A and B) Representative Gomori trichrome images of EDL muscles from 12M (A) and 18M (B) old WT (<em>left</em>) and GS (<em>right</em>) mice. TAs are visualized as pink/purple inclusions as indicated by red arrows.</p> <p>C and D) Representative EM images of cross sections of EDL (C) and FDB (D) muscles from 8M old WT (<em>left</em>) and GS (<em>right</em>) mice. Images were taken from different muscle fibers. TAs (colored in green for the GS EDL fiber shown in panel C) exhibit a honeycomb-like structure.</p> <p>E-G) Average (±SEM) percentage of fibers with TAs (E), number of TAs/fiber (F), and TA size (G) in EDL (<em>left</em>), FDB (<em>middle</em>), and <em>tibialis anterior</em> (<em>right</em>) muscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS mice in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. The exact <em>p</em>-value is labeled in the figure when adjusted <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 2A-G</p>",
+            "caption_title": "<p><strong>Figure 2. Tubular aggregates in fast twitch muscles of GS mice.</strong></p>",
             "sd_files": [
-              "EMBOJ-2024-116743/suppl_data/Figure 2.zip"
+              "suppl_data/Figure 2.zip"
             ],
             "panels": [
                 {
@@ -155,7 +155,7 @@
             "figure_label": "Figure 3",
             "figure_caption": "<p>A) <em>In vivo</em> behavioral studies of average (±SEM) normalized grip strength in 8M old WT (n=9) and GS mice (n=11). Significance was calculated using student’s t-test. The exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>B and C) <em>In vivo</em> behavioral studies of treadmill endurance (B) and rotarod endurance (C) tests in 8M old WT (n=7) and GS (n=9) mice where averaged (±SEM) cumulative rest/fall were plotted. Significance was calculated using multiple t-test. * indicates adjusted <em>p</em>&lt;0.05 (adjusted <em>p</em>=0.0316, 0.0088, 0.0006, 0.0001, &lt;0.0001, &lt;0.0001 in sequential order for figure B and adjusted <em>p</em>=0.0114, 0.0025, 0.0005, &lt;0.0001, &lt;0.0001, &lt;0.0001 in sequential order for figure C).</p> <p>D-F) Average (±SEM) specific force-frequency curves (D), maximum rates of force production (∆rise) and relaxation (∆decline) during stimulation at 150 Hz (E), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (F) in EDL muscles from 8M old WT (n=9) and GS (n=9) mice. Significance was calculated using either multiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test (for the bar graph). For the bar graph, the exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, * indicates adjusted <em>p</em>&lt;0.05 (for figure D, all adjusted <em>p</em>&lt;0.0001, except at 50Hz, the adjusted <em>p</em>=0.0015; for figure F, adjusted <em>p</em>=0.0216, 0.0028, 0.0008, 0.0012, 0.0033, 0.0149 in sequential order, starting from the 5<sup>th</sup> stimulation.).</p> <p>G-I) Average (±SEM) specific force-frequency curves (G), maximum rates of force production (∆rise) and relaxation (∆decline) during stimulation at 150 Hz (H), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (I) in SOL muscles from 8M old WT (n=8) and GS (n=7) mice. Significance was calculated using either multiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test (for the bar graph). For the bar graph, the exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, * indicates adjusted <em>p</em>&lt;0.05 (for figure G, adjusted <em>p</em>=0.0279, 0.0031, 0.0014, 0.0013, 0.0012, 0.0012, 0.0012 in sequential order; for figure I, adjusted <em>p</em>=0.0465-0.0089, starting from the 36<sup>th</sup> stimulation.).</p> <p>J and K) Normalized average (±SEM) specific force traces elicited during sustained 150 Hz stimulation (<em>left)</em>, peak specific force (<em>middle left</em>), time to 50% relaxation (<em>middle right</em>), and maximum rate of contractile decay (<em>right</em>) of EDL (J) and SOL (K) muscles from 8M old WT and GS mice. For EDL muscle, n =7 and 9 for WT and GS groups, respectively. For SOL muscle, n=5 and 8 for WT and GS groups, respectively. Significance was calculated using either multiple t-test (for line graphs) or student’s t-test (for bar graphs). For the bar graphs, the exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, * indicates adjusted <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 3A-K</p>",
             "sd_files": [
-              "EMBOJ-2024-116743/suppl_data/Figure 3.zip"
+              "suppl_data/Figure 3.zip"
             ],
             "panels": [
                 {
@@ -246,7 +246,7 @@
             "figure_label": "Figure 4",
             "caption_title": "<p><strong>Figure 4. Constitutive and store-operated Ca<sup>2+</sup> entry.</strong></p>",
             "sd_files": [
-              "EMBOJ-2024-116743/suppl_data/Figure 4.zip"
+              "suppl_data/Figure 4.zip"
             ],
             "panels": [
                 {
@@ -306,7 +306,7 @@
             "figure_label": "Figure 5",
             "caption_title": "<p><strong>Figure 5. CASQ, STIM1, and ORAI1 protein expression.</strong></p>",
             "sd_files": [
-              "EMBOJ-2024-116743/suppl_data/Figure 5.zip"
+              "suppl_data/Figure 5.zip"
             ],
             "panels": [
                 {
@@ -393,7 +393,7 @@
             "figure_label": "Figure 7",
             "caption_title": "<p><strong>Figure 7. Morphological and functional assessment of mitochondrial damage in 8M GS mice.</strong></p>",
             "sd_files": [
-              "EMBOJ-2024-116743/suppl_data/Figure 7.zip"
+              "suppl_data/Figure 7.zip"
             ],
             "panels": [
                 {

@@ -8,7 +8,7 @@ writing
 exporting
 naming
 .vscode/
-
+config.yaml
 # Python
 __pycache__/
 *.py[cod]

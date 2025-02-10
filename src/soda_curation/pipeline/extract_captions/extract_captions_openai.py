@@ -87,114 +87,115 @@ class FigureCaptionExtractorGpt(FigureCaptionExtractor):
         Returns:
             Optional[str]: Found captions text or None
         """
-        try:
-            # Create message with enhanced prompt that mentions all available files
-            message_content = get_locate_captions_prompt(
-                manuscript_text=doc_string,
-                expected_figure_count=expected_figure_count,
-                expected_figure_labels=expected_figure_labels,
+        # try:
+        # Create message with enhanced prompt that mentions all available files
+        message_content = get_locate_captions_prompt(
+            manuscript_text=doc_string,
+            expected_figure_count=expected_figure_count,
+            expected_figure_labels=expected_figure_labels,
+        )
+
+        thread = self.client.beta.threads.create(
+            messages=[
+                {"role": "user", "content": message_content},
+            ]
+        )
+
+        # Rest of the assistant communication code...
+        run_ = self.client.beta.threads.runs.create(
+            thread_id=thread.id, assistant_id=self.locate_assistant.id
+        )
+
+        # Wait for completion with timeout
+        start_time = time.time()
+        timeout = 300  # 5 minutes timeout
+        while run_.status not in ["completed", "failed"]:
+            if time.time() - start_time > timeout:
+                logger.error("Assistant run timed out")
+                return None
+
+            time.sleep(1)
+            run_ = self.client.beta.threads.runs.retrieve(
+                thread_id=thread.id, run_id=run_.id
             )
 
-            thread = self.client.beta.threads.create(
-                messages=[
-                    {"role": "user", "content": message_content},
-                ]
-            )
+            if run_.status == "failed":
+                logger.error(f"Assistant run failed: {run_.last_error}")
+                return None
 
-            # Rest of the assistant communication code...
-            run_ = self.client.beta.threads.runs.create(
-                thread_id=thread.id, assistant_id=self.locate_assistant.id
-            )
-
-            # Wait for completion with timeout
-            start_time = time.time()
-            timeout = 300  # 5 minutes timeout
-            while run_.status not in ["completed", "failed"]:
-                if time.time() - start_time > timeout:
-                    logger.error("Assistant run timed out")
-                    return None
-
-                time.sleep(1)
-                run_ = self.client.beta.threads.runs.retrieve(
-                    thread_id=thread.id, run_id=run_.id
-                )
-
-                if run_.status == "failed":
-                    logger.error(f"Assistant run failed: {run_.last_error}")
-                    return None
-
-            # Get response
-            messages = self.client.beta.threads.messages.list(thread_id=thread.id)
-            # Track token usage
+        # Get response
+        messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+        # Track token usage
+        if self.zip_structure:
             update_token_usage(
                 self.zip_structure.cost.extract_captions, run_, self.model
             )
 
-            if messages.data:
-                located_captions = messages.data[0].content[0].text.value
-                self._cleanup_thread(thread.id)
-                return located_captions
-            return None
-        except Exception as e:
-            logger.error(f"Error locating figure captions: {str(e)}")
-            return None
+        if messages.data:
+            located_captions = messages.data[0].content[0].text.value
+            self._cleanup_thread(thread.id)
+            return located_captions
+        return None
+        # except Exception as e:
+        #     logger.error(f"Error locating figure captions: {str(e)}")
+        #     return None
 
     def _extract_individual_captions(
         self, all_captions: str, expected_figure_count: int, expected_figure_labels: str
     ) -> Dict[str, str]:
         """Extract individual figure captions using AI."""
-        try:
-            # Create thread for extraction
-            message_content = get_extract_captions_prompt(
-                figure_captions=all_captions,
-                expected_figure_count=expected_figure_count,
-                expected_figure_labels=expected_figure_labels,
+        # try:
+        # Create thread for extraction
+        message_content = get_extract_captions_prompt(
+            figure_captions=all_captions,
+            expected_figure_count=expected_figure_count,
+            expected_figure_labels=expected_figure_labels,
+        )
+
+        thread = self.client.beta.threads.create(
+            messages=[
+                {"role": "user", "content": message_content},
+            ]
+        )
+
+        # Run the assistant
+        run_ = self.client.beta.threads.runs.create(
+            thread_id=thread.id, assistant_id=self.extract_assistant.id
+        )
+
+        # Wait for completion with timeout
+        start_time = time.time()
+        timeout = 300  # 5 minutes timeout
+        while run_.status not in ["completed", "failed"]:
+            if time.time() - start_time > timeout:
+                logger.error("Assistant run timed out")
+                return {}
+
+            time.sleep(1)
+            run_ = self.client.beta.threads.runs.retrieve(
+                thread_id=thread.id, run_id=run_.id
             )
 
-            thread = self.client.beta.threads.create(
-                messages=[
-                    # {"role": "system", "content": EXTRACT_CAPTIONS_PROMPT},
-                    {"role": "user", "content": message_content},
-                ]
-            )
+            if run_.status == "failed":
+                logger.error(f"Assistant run failed: {run_.last_error}")
+                return {}
 
-            # Run the assistant
-            run_ = self.client.beta.threads.runs.create(
-                thread_id=thread.id, assistant_id=self.extract_assistant.id
-            )
-
-            # Wait for completion with timeout
-            start_time = time.time()
-            timeout = 300  # 5 minutes timeout
-            while run_.status not in ["completed", "failed"]:
-                if time.time() - start_time > timeout:
-                    logger.error("Assistant run timed out")
-                    return {}
-
-                time.sleep(1)
-                run_ = self.client.beta.threads.runs.retrieve(
-                    thread_id=thread.id, run_id=run_.id
-                )
-
-                if run_.status == "failed":
-                    logger.error(f"Assistant run failed: {run_.last_error}")
-                    return {}
-
-            # Get response
-            messages = self.client.beta.threads.messages.list(thread_id=thread.id)
-            # Track token usage
+        # Get response
+        messages = self.client.beta.threads.messages.list(thread_id=thread.id)
+        # Track token usage
+        if self.zip_structure:
             update_token_usage(
                 self.zip_structure.cost.extract_individual_captions, run_, self.model
             )
 
-            if messages.data:
-                self._cleanup_thread(thread.id)
-                return messages.data[0].content[0].text.value
+        if messages.data:
+            self._cleanup_thread(thread.id)
+            return messages.data[0].content[0].text.value
 
-        except Exception as e:
-            logger.error(f"Error extracting individual captions: {str(e)}")
+        # except Exception as e:
+        #     logger.error(f"Error extracting individual captions: {str(e)}")
 
-            return {}
+        # return {}
 
     def extract_captions(
         self,

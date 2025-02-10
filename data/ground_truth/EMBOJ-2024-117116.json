@@ -1,27 +1,27 @@
 {
     "manuscript_id": "EMBOJ-2024-117116",
-    "docx": "EMBOJ-2024-117116/Doc/EMBOJ2024117116R1Manuscript_Textmstxt.docx",
-    "xml": "EMBOJ-2024-117116/EMBOJ-2024-117116.xml",
-    "pdf": "EMBOJ-2024-117116/pdf/EMBOJ-2024-117116.pdf",
+    "docx": "Doc/EMBOJ2024117116R1Manuscript_Textmstxt.docx",
+    "xml": "EMBOJ-2024-117116.xml",
+    "pdf": "pdf/EMBOJ-2024-117116.pdf",
     "appendix": [
-        "EMBOJ-2024-117116/suppl_data/Expanded View Dataset 1.zip",
-        "EMBOJ-2024-117116/suppl_data/Expanded_View_Dataset_2_ENA_GEO_with_legend.xlsx",
-        "EMBOJ-2024-117116/suppl_data/Expanded_View_Dataset_1_.xls",
-        "EMBOJ-2024-117116/suppl_data/EMBOJ2024117116R1Appendixsupp.pdf"
+        "suppl_data/Expanded View Dataset 1.zip",
+        "suppl_data/Expanded_View_Dataset_2_ENA_GEO_with_legend.xlsx",
+        "suppl_data/Expanded_View_Dataset_1_.xls",
+        "suppl_data/EMBOJ2024117116R1Appendixsupp.pdf"
     ],
   
 
     "sd_files": [
-        "EMBOJ-2024-117116/suppl_data/Figure 1.zip",
-        "EMBOJ-2024-117116/suppl_data/Figure 2.zip",
-        "EMBOJ-2024-117116/suppl_data/Figure 3.zip",
-        "EMBOJ-2024-117116/suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
-        "EMBOJ-2024-117116/suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz",
-        "EMBOJ-2024-117116/suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
-        "EMBOJ-2024-117116/suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
-        "EMBOJ-2024-117116/suppl_data/Figure 4.zip",
-        "EMBOJ-2024-117116/suppl_data/Figure 5.zip",
-        "EMBOJ-2024-117116/suppl_data/Figure 6.zip"
+        "suppl_data/Figure 1.zip",
+        "suppl_data/Figure 2.zip",
+        "suppl_data/Figure 3.zip",
+        "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
+        "suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz",
+        "suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
+        "suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
+        "suppl_data/Figure 4.zip",
+        "suppl_data/Figure 5.zip",
+        "suppl_data/Figure 6.zip"
     ],
     "figures": [
         {
@@ -29,64 +29,64 @@
             "figure_label": "Figure 1",
             "caption_title": "<p><strong>Figure 1.</strong> mRNA nuclear export reveals cytoplasmic deadenylation and decay dynamics.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 1.zip"
+                "suppl_data/Figure 1.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1A README.txt"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1A README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1B README.txt"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1B README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/FIGURE 1C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/MTH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/MTH.ods",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/how_to_read_the_MTH_file.txt"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/FIGURE 1C README.txt",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/MTH.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/MTH.ods",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repA.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repB.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repH.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/how_to_read_the_MTH_file.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1D/FIGURE 1D README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1D/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1D/FIGURE 1D README.txt",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1D/Mex67AA_e_model_global.csv"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "FEMBOJ-2024-117116/suppl_data/igure 1/Figure 1E/FIGURE 1E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1E/HL_Chan2018.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxn.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxnAnnot.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1E/Mex67AA_e_model_global.csv",
+                        "Fsuppl_data/igure 1/Figure 1E/FIGURE 1E README.txt",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1E/HL_Chan2018.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxn.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxnAnnot.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1E/Mex67AA_e_model_global.csv"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1F/FIGURE 1F README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1F/HLtxn.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1F/HLtxnAnnot.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1F/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1F/FIGURE 1F README.txt",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1F/HLtxn.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1F/HLtxnAnnot.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1F/Mex67AA_e_model_global.csv"
                     ]
                   }
             ]
@@ -96,64 +96,64 @@
             "figure_label": "Figure 2",
             "caption_title": "<p><strong>Figure 2.</strong> mRNA groups exhibit various deadenylation rates.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 2.zip"
+                "suppl_data/Figure 2.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2A/FIGURE 2A README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repH.csv"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2A/FIGURE 2A README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repA.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repH.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2B/FIGURE 2B README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2B/Mex67 time course greyscale for quantification (1).tif"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2B/FIGURE 2B README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2B/Mex67 time course greyscale for quantification (1).tif"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/FIGURE 2C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/VinyaRepressed_Mex67list.csv"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/FIGURE 2C README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repA.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repH.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/VinyaRepressed_Mex67list.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2D/FIGURE 2D README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2D/Mex67_low_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2D/Mex67_low_abundance_ORFS_repB.csv"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2D/FIGURE 2D README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2D/Mex67_low_abundance_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2D/Mex67_low_abundance_ORFS_repB.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/FIGURE 2E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_NON_RPG_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_NON_RPG_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_RPG_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_RPG_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_high_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_high_abundance_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_low_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_low_abundance_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repH.csv"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/FIGURE 2E README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_NON_RPG_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_NON_RPG_ORFS_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_RPG_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_RPG_ORFS_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_high_abundance_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_high_abundance_ORFS_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_low_abundance_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_low_abundance_ORFS_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repA.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repH.csv"
                     ]
                 }
             ]
@@ -163,52 +163,52 @@
             "figure_label": "Figure 3",
             "figure_caption": "<strong>A.</strong> Global distribution of pA-tail lengths of RNAs isolated from control, Dcp2- or Xrn1-depleted cells. Gray areas delineate the pA-tail lengths underestimated in the DRS library, as previously reported (Tudek et al, 2021). <strong>B.</strong> pA-tail length distribution of <em>HCH1</em> and <em>YMR122W-A</em> mRNAs in control and Dcp2- or Xrn1-depleted cells. <strong>C.</strong> pA-tail length distribution of <em>DED81</em>, <em>GAS1</em>, <em>HHF1</em>, <em>HTA1</em>, <em>MCH5,</em> and <em>DCP2</em> mRNAs in control cells compared to strains depleted of Pab1 using the AID system for 1 or 2 hours. The mRNAs are ranked by half-life time. The number of reads contributing to each distribution is indicated in the panel with n='control'/'1h depletion'/'2h depletion'. The gray boxes show the range of adenosines added <em>de novo</em> in the nucleus by the polyA-polymerase Pap1 on pre-mRNAs (Turtola et al, 2021). <strong>D.</strong> Comparison of log2 fold-change in mRNA abundance to absolute change in mean pA-tail length for 2h Pab1-depleted cells compared to control. <strong>E.</strong> Schematic illustrating that one Pab1 can bind from 20-30 adenosines, therefore newly synthesized mRNA pA-tail bear di- or trimers of Pab1. Depending on the number of Pab1 attached to the pA-tail the mRNA is either susceptible to deadenylation of decapping.</p>",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 3.zip",
-                "EMBOJ-2024-117116/suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
-                "EMBOJ-2024-117116/suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz"
+                "suppl_data/Figure 3.zip",
+                "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
+                "suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz"
                 ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3A/DCP2XRN1AID.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3A/FIGURE 3A README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3A/ORFs_DCP2_XRN1_AID_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz"
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3A/DCP2XRN1AID.csv",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3A/FIGURE 3A README.txt",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3A/ORFs_DCP2_XRN1_AID_.csv",
+                        "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3B/DCP2XRN1AID.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3B/README FIGURE 3B.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz"
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3B/DCP2XRN1AID.csv",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3B/README FIGURE 3B.txt",
+                        "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3C/DCP2Pab1AID.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3C/README FIGURE 3C.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz"
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3C/DCP2Pab1AID.csv",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3C/README FIGURE 3C.txt",
+                        "suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3D/Pab1AID.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3D/README FIGURE 3D.txt"
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3D/Pab1AID.csv",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3D/README FIGURE 3D.txt"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/FIGURE 3E README.txt"
+                        "suppl_data/Figure 3.zip:Figure 3/FIGURE 3E README.txt"
                     ]
                 }
             ]
@@ -218,134 +218,134 @@
             "figure_label": "Figure 4",
             "caption_title": "<p><strong>Figure 4.</strong> The modified gamma model predicts mRNA pA-tail lengths distributions.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 4.zip"
+                "suppl_data/Figure 4.zip"
                 ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/FIGURE 4A README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repH.csv"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/FIGURE 4A README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repH.csv"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4B README.txt"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4B README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/FIGURE 4C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAMMA_tanh_res.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAS1_Mex67_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAS1_Mex67_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/HHF1_Mex67_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/HHF1_Mex67_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_NON_RPG_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_NON_RPG_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_RPG_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_RPG_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_high_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_high_abundance_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_low_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_low_abundance_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Modified_R_code_output_file_Mex67_depletion_chase_ .pdf",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL36A_Mex67_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL36A_Mex67_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Rcode_modified_gamma_shape_rate_estimation_ .txt"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/FIGURE 4C README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAMMA_tanh_res.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAS1_Mex67_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAS1_Mex67_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/HHF1_Mex67_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/HHF1_Mex67_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_NON_RPG_ORFS_.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_NON_RPG_ORFS_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_RPG_ORFS_.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_RPG_ORFS_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_high_abundance_ORFS_.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_high_abundance_ORFS_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_low_abundance_ORFS_.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_low_abundance_ORFS_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Modified_R_code_output_file_Mex67_depletion_chase_ .pdf",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repH.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL36A_Mex67_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL36A_Mex67_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Rcode_modified_gamma_shape_rate_estimation_ .txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/FIGURE 4H README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H.zip"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/FIGURE 4H README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repH.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H.zip"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/FIGURE 4I README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/Figure_EV3B_pAplus_RNA_recovered_from_total_Mex67AA.pdf",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/JP4AT-local_40-79.pdf",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/RNA_concetration_chase_.pdf",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/pAplus_RNA_recovered_from_total_Mex67AA_Rcode.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I.zip"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/FIGURE 4I README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/Figure_EV3B_pAplus_RNA_recovered_from_total_Mex67AA.pdf",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/JP4AT-local_40-79.pdf",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repH.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/RNA_concetration_chase_.pdf",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/pAplus_RNA_recovered_from_total_Mex67AA_Rcode.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I.zip"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "J",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/FIGURE 4J README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repH.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/FIGURE 4J README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repH.csv"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "K",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4K README.txt"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4K README.txt"
                     ]
                   }
             ]
@@ -355,89 +355,89 @@
             "figure_label": "Figure 5",
             "caption_title": "<p><strong>Figure 5.</strong> At steady-state, deadenylation and decay rates correlate.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 5.zip"
+                "suppl_data/Figure 5.zip"
                 ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/FIGURE 5A README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repH.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repA.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repB.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repH.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/FIGURE 5A README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repA.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repB.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repH.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/FIGURE 5B README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repH.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/FIGURE 5B README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repA.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repB.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repH.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5C/FIGURE 5C README.txt"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5C/FIGURE 5C README.txt"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5D/FIGURE 5D README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5D/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5D/FIGURE 5D README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5D/Mex67AA_e_model_global.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5E/FIGURE 5E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5E/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5E/FIGURE 5E README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5E/Mex67AA_e_model_global.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5F/FIGURE 5F README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5F/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5F/FIGURE 5F README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5F/Mex67AA_e_model_global.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5G/FIGURE 5G README.txt"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5G/FIGURE 5G README.txt"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/FIGURE 5H README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/GO_term_supplemental_table.csv.gz",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/FIGURE 5H README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/GO_term_supplemental_table.csv.gz",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/Mex67AA_e_model_global.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/FIGURE 5I README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/CodonOptimality.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/translation_table.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/FIGURE 5I README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/CodonOptimality.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/translation_table.csv"
                     ]
                 }
             ]
@@ -447,129 +447,129 @@
             "figure_label": "Figure 6",
             "caption_title": "<p><strong>Figure 6.</strong> Deadenylation stimulates decay but is not a prerequisite for RPG mRNA decapping under stress conditions.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
-                "EMBOJ-2024-117116/suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
-                "EMBOJ-2024-117116/suppl_data/Figure 6.zip"
+                "suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
+                "suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
+                "suppl_data/Figure 6.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6A README.txt"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6A README.txt"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/FIGURES 6B and 6C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HS_global_e_model.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THL_global_e_model.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/VinyaRepressed_Mex67list.csv"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/FIGURES 6B and 6C README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HS_global_e_model.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repH.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THL_global_e_model.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/VinyaRepressed_Mex67list.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/FIGURES 6B and 6C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HS_global_e_model.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THL_global_e_model.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/VinyaRepressed_Mex67list.csv"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/FIGURES 6B and 6C README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HS_global_e_model.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repH.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THL_global_e_model.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/VinyaRepressed_Mex67list.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/FIGURES 6D and 6E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepD.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67AA_HS.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/pan2ccr4_HS.csv"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/FIGURES 6D and 6E README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepD.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67AA_HS.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repH.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/pan2ccr4_HS.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/FIGURES 6D and 6E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepD.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67AA_HS.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/pan2ccr4_HS.csv"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/FIGURES 6D and 6E README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepD.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67AA_HS.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repH.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/pan2ccr4_HS.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/FIGURE 6F README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/022-06-09_RPS5-[Phosphor].tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/06-09_RPS5-[Phosphor]_with_displayed_lanes_marked.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/2022-06-11_SCR1_RPGs-top_HSP104-bottom-[Phosphor]2.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/2022-06-11_SCR1_RPGs-top_HSP104-bottom-[Phosphor]2_with_lanes_displayed_marked.tif"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/FIGURE 6F README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/022-06-09_RPS5-[Phosphor].tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/06-09_RPS5-[Phosphor]_with_displayed_lanes_marked.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/2022-06-11_SCR1_RPGs-top_HSP104-bottom-[Phosphor]2.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/2022-06-11_SCR1_RPGs-top_HSP104-bottom-[Phosphor]2_with_lanes_displayed_marked.tif"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/FIGURE 6G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-04_RPS5_gel2-[Phosphor].tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-04_RPS5_gel2-[Phosphor]_with_displayed_lanes_marked.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-05_SCR1_gel2-[Phosphor].tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-05_SCR1_gel2-[Phosphor]_with_displayed_lanes_marked.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/FIGURE 6G README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-04_RPS5_gel2-[Phosphor].tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-04_RPS5_gel2-[Phosphor]_with_displayed_lanes_marked.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-05_SCR1_gel2-[Phosphor].tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-05_SCR1_gel2-[Phosphor]_with_displayed_lanes_marked.tif"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6H/FIGURE 6H README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6H/WTccr4pop2pan2delta.csv"
+                        "suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
+                        "suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6H/FIGURE 6H README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6H/WTccr4pop2pan2delta.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/FIGURE 6I README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_18C_010.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_25C_012.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/02072022_spottest_wtpan2ccr4double_30C_013.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_37C_011.tif"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/FIGURE 6I README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_18C_010.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_25C_012.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/02072022_spottest_wtpan2ccr4double_30C_013.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_37C_011.tif"
                     ]
                 },
                 {
