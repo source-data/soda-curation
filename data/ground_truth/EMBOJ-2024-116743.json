@@ -6,7 +6,7 @@
     "appendix": [
         "EMBOJ-2024-116743/suppl_data/EMBOJ2024116743R1Appendixsupp.pdf",
         "EMBOJ-2024-116743/suppl_data/EMBOJ2024116743R1Peer Review File_figs in.pdf",
-        "EMBOJ-2024-116743/suppl_data/Reagent and tool table_092324.docx",
+        "EMBOJ-2024-116743/suppl_data/Reagent and tool table_092324.docx"
     ],
     "sd_files": [
         "EMBOJ-2024-116743/suppl_data/Figure 2.zip",
@@ -76,9 +76,9 @@
             ]
           },
           {
-            "figure_caption": "<p><strong>Figure 2. Tubular aggregates in fast twitch muscles of GS mice.</strong></p>",
+            "caption_title": "<p><strong>Figure 2. Tubular aggregates in fast twitch muscles of GS mice.</strong></p>",
             "figure_label": "Figure 2",
-            "caption_title": "<p>A and B) Representative Gomori trichrome images of EDL muscles from 12M (A) and 18M (B) old WT (<em>left</em>) and GS (<em>right</em>) mice. TAs are visualized as pink/purple inclusions as indicated by red arrows.</p> <p>C and D) Representative EM images of cross sections of EDL (C) and FDB (D) muscles from 8M old WT (<em>left</em>) and GS (<em>right</em>) mice. Images were taken from different muscle fibers. TAs (colored in green for the GS EDL fiber shown in panel C) exhibit a honeycomb-like structure.</p> <p>E-G) Average (±SEM) percentage of fibers with TAs (E), number of TAs/fiber (F), and TA size (G) in EDL (<em>left</em>), FDB (<em>middle</em>), and <em>tibialis anterior</em> (<em>right</em>) muscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS mice in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. The exact <em>p</em>-value is labeled in the figure when adjusted <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 2A-G</p>",
+            "figure_caption": "<p>A and B) Representative Gomori trichrome images of EDL muscles from 12M (A) and 18M (B) old WT (<em>left</em>) and GS (<em>right</em>) mice. TAs are visualized as pink/purple inclusions as indicated by red arrows.</p> <p>C and D) Representative EM images of cross sections of EDL (C) and FDB (D) muscles from 8M old WT (<em>left</em>) and GS (<em>right</em>) mice. Images were taken from different muscle fibers. TAs (colored in green for the GS EDL fiber shown in panel C) exhibit a honeycomb-like structure.</p> <p>E-G) Average (±SEM) percentage of fibers with TAs (E), number of TAs/fiber (F), and TA size (G) in EDL (<em>left</em>), FDB (<em>middle</em>), and <em>tibialis anterior</em> (<em>right</em>) muscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS mice in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. The exact <em>p</em>-value is labeled in the figure when adjusted <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 2A-G</p>",
             "sd_files": [
               "EMBOJ-2024-116743/suppl_data/Figure 2.zip"
             ],
