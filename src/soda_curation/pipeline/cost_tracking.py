@@ -26,7 +26,7 @@ def calculate_cost(model: str, prompt_tokens: int, completion_tokens: int) -> fl
 def update_token_usage(token_usage, response, model):
     """Update TokenUsage object with data from API response."""
     if not isinstance(response, dict):
-        response = response.dict()
+        response = response.model_dump()
     if "usage" in response:
         # Accumulate token counts
         token_usage.prompt_tokens += response["usage"]["prompt_tokens"]

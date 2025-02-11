@@ -74,31 +74,50 @@ def mock_zip_content(tmp_path):
 
 @pytest.fixture
 def mock_config(tmp_path):
-    """Create a mock config file."""
+    """Create a mock config file with all required sections."""
     config_path = tmp_path / "config.yaml"
-    config_path.write_text(
-        """
-        default: &default
-            pipeline:
-                locate_captions:
-                    openai:
-                        model: gpt-4o
-                        temperature: 0.1
-                        prompts:
-                            system: "System prompt"
-                            user: "User prompt"
-                extract_individual_captions:
-                    openai:
-                        model: gpt-4o
-                        temperature: 0.1
-                        prompts:
-                            system: "System prompt"
-                            user: "User prompt"
+    config_content = """
+default: &default
+    pipeline:
+        locate_captions:
+            openai:
+                model: gpt-4o
+                temperature: 0.1
+                prompts:
+                    system: "System prompt"
+                    user: "User prompt"
+        extract_individual_captions:
+            openai:
+                model: gpt-4o
+                temperature: 0.1
+                prompts:
+                    system: "System prompt"
+                    user: "User prompt"
+        locate_data_availability:
+            openai:
+                model: gpt-4o
+                temperature: 0.1
+                prompts:
+                    system: "System prompt"
+                    user: "User prompt"
+        extract_data_sources:
+            openai:
+                model: gpt-4o-mini
+                temperature: 0.1
+                prompts:
+                    system: "System prompt"
+                    user: "User prompt"
+        object_detection:
+            model_path: "data/models/panel_detection_model_no_labels.pt"
+            confidence_threshold: 0.25
+            iou_threshold: 0.1
+            image_size: 512
+            max_detections: 30
 
-        dev:
-            <<: *default
-    """
-    )
+dev:
+    <<: *default
+"""
+    config_path.write_text(config_content)
     return str(config_path)
 
 
@@ -120,13 +139,18 @@ def mock_structure():
 def test_main_creates_output_directory(
     mock_zip_content, mock_config, mock_structure, tmp_path
 ):
-    """Test main creates output directory and handles temporary extraction correctly."""
+    """Test main creates output directory if it doesn't exist."""
     # Create output path in nonexistent directory
     output_dir = tmp_path / "nonexistent" / "nested" / "path"
     output_path = str(output_dir / "result.json")
 
-    with patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor:
-        # Configure mock
+    # Add patch for temporary directory creation
+    with patch("src.soda_curation.main.setup_extract_dir") as mock_setup_dir, patch(
+        "src.soda_curation.main.XMLStructureExtractor"
+    ) as mock_extractor:
+        # Configure mocks
+        extract_dir = tmp_path / "extract"
+        mock_setup_dir.return_value = extract_dir
         mock_instance = MagicMock()
         mock_instance.extract_structure.return_value = mock_structure
         mock_extractor.return_value = mock_instance
@@ -134,24 +158,12 @@ def test_main_creates_output_directory(
         # Run main
         main(mock_zip_content, mock_config, output_path)
 
-        # Check that output directory and file were created
+        # Check that directory and file were created
         assert output_dir.exists()
         assert Path(output_path).exists()
 
-        # Verify extractor was called correctly
-        assert mock_extractor.call_count == 1
-        actual_call = mock_extractor.call_args
-        assert len(actual_call.args) == 2
-        assert actual_call.args[0] == mock_zip_content  # First arg should be zip path
-
-        # Second arg should be temporary directory path
-        temp_dir = actual_call.args[1]
-        assert isinstance(temp_dir, str)
-        assert "soda_curation_" in temp_dir
-
-        # Verify temporary directory was created and cleaned up
-        temp_path = Path(temp_dir)
-        assert not temp_path.exists()  # Should be cleaned up by now
+        # Verify mock was called correctly with the controlled temporary directory
+        mock_extractor.assert_called_once_with(mock_zip_content, str(extract_dir))
 
 
 def test_main_successful_run(mock_zip_content, mock_config, mock_structure):

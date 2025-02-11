@@ -12,6 +12,9 @@ from ._main_utils import (
 )
 from .config import ConfigurationLoader
 from .logging_config import setup_logging
+from .pipeline.data_availability.data_availability_openai import (
+    DataAvailabilityExtractorOpenAI,
+)
 from .pipeline.extract_captions.extract_captions_openai import (
     FigureCaptionExtractorOpenAI,
 )
@@ -63,6 +66,14 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 config_loader.config, prompt_handler
             )
             zip_structure = caption_extractor.extract_individual_captions(
+                doc_content=manuscript_content, zip_structure=zip_structure
+            )
+
+            # Extract data availability information (third pipeline step)
+            data_availability_extractor = DataAvailabilityExtractorOpenAI(
+                config_loader.config, prompt_handler
+            )
+            zip_structure = data_availability_extractor.extract_data_availability(
                 doc_content=manuscript_content, zip_structure=zip_structure
             )
 
