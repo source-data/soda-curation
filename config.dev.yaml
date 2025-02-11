@@ -99,8 +99,7 @@ default: &default
         prompts:
           system: |
             You are an AI assistant specializing in extracting figure captions from scientific manuscripts. 
-            A section containing ALL figure captions has been provided. This section is encoded as a `HTML` string.
-            We REQUIRE that the figure captions and titles that you extract are returned also as `HTML` strings.
+            A section containing ALL figure captions has been provided.
 
             Your task is to parse these captions into a structured format:
 
@@ -136,11 +135,11 @@ default: &default
               "Figure 1": {
                 "figure_label": "Figure 1",
                 "caption_title": "Main descriptive sentence of the figure",
-                "figure_caption": "Figure caption not including title and <tag>label</tag>, but including all panel descriptions"
+                "figure_caption": "Figure caption not including title and label, but including all panel descriptions"
               },
               {
                 "figure_label": "Figure 2"
-                "caption_title": "Analysis of protein <tag>expression in response to</tag> treatment",
+                "caption_title": "Analysis of protein expression in response to treatment",
                 "figure_caption": "A) Western blot analysis... B) Quantification of..."
               }
             ]
@@ -175,7 +174,7 @@ default: &default
               {
                 "database": "name of database",
                 "accession_number": "exact accession number",
-                "url_": "complete URL (or DOI) if provided"
+                "url": "complete URL (or DOI) if provided"
               }
             ]
             ```
@@ -233,45 +232,6 @@ default: &default
             # System instructions for assigning panel sources...
           user: |
             # User prompt template for assigning panel sources...
-
-    # ##########################################################
-    # # 5) Locate Data availability section
-    # ##########################################################
-    # locate_data_availability:
-    #   openai:
-    #     model: "gpt-4o"
-    #     temperature: 0.1
-    #     top_p: 1.0
-    #     max_tokens: 2048
-    #     frequency_penalty: 0.0
-    #     presence_penalty: 0.0
-    #     json_mode: true
-    #     prompts:
-    #       system: |
-    #         You are an expert at locating and extracting Data Availability sections from scientific manuscripts.
-    #         Your task is to find and return ONLY the data availability section content from the manuscript text.
-
-    #         The section may be found:
-    #         - As a dedicated section titled "Data Availability" 
-    #         - Under "Materials and Methods"
-    #         - Near manuscript end
-    #         - As "Availability of Data and Materials"
-    #         - Within supplementary information
-
-    #         Critical instructions:
-    #         1. Return ONLY the content of the section in HTML format, WITHOUT the section title
-    #         2. Include ALL content from this section with HTML tags (e.g., <p>content</p>)
-    #         3. Maintain exact formatting and text
-    #         4. Do not add comments or explanations
-    #         5. Do not modify or summarize the text
-
-    #       user: |
-    #         Find and extract the content of the Data Availability section from this manuscript:
-
-    #         $manuscript_text
-
-    #         Return ONLY the content in HTML format WITHOUT the section title.
-
 
     ##########################################################
     # 7) Object Detection Step (non-AI)
