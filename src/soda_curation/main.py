@@ -4,6 +4,10 @@ import json
 import logging
 from typing import Optional
 
+from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (
+    SectionExtractorOpenAI,
+)
+
 from ._main_utils import (
     cleanup_extract_dir,
     setup_extract_dir,
@@ -62,19 +66,33 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             # Extract captions from figures (second pipeline step)
             manuscript_content = extractor.extract_docx_content(zip_structure.docx)
             prompt_handler = PromptHandler(config_loader.config["pipeline"])
+
+            # Extract relevant sections for the pipeline
+            section_extractor = SectionExtractorOpenAI(
+                config_loader.config, prompt_handler
+            )
+            (
+                figure_legends,
+                data_availability_text,
+                zip_structure,
+            ) = section_extractor.extract_sections(
+                doc_content=manuscript_content, zip_structure=zip_structure
+            )
+
+            # Extract individual captions from figure legends
             caption_extractor = FigureCaptionExtractorOpenAI(
                 config_loader.config, prompt_handler
             )
             zip_structure = caption_extractor.extract_individual_captions(
-                doc_content=manuscript_content, zip_structure=zip_structure
+                doc_content=figure_legends, zip_structure=zip_structure
             )
 
-            # Extract data availability information (third pipeline step)
+            # Extract data sources from data availability section
             data_availability_extractor = DataAvailabilityExtractorOpenAI(
                 config_loader.config, prompt_handler
             )
-            zip_structure = data_availability_extractor.extract_data_availability(
-                doc_content=manuscript_content, zip_structure=zip_structure
+            zip_structure = data_availability_extractor.extract_data_sources(
+                section_text=data_availability_text, zip_structure=zip_structure
             )
 
             # Update total costs before returning results

@@ -1,21 +1,21 @@
-"""OpenAI implementation of caption extraction."""
+"""OpenAI implementation for extracting manuscript sections."""
 
 import json
 import logging
 import os
-from typing import Dict
+from typing import Dict, Tuple
 
 import openai
 
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
-from .extract_captions_base import ExtractedCaptions, FigureCaptionExtractor
+from .extract_sections_base import ExtractedSections, SectionExtractor
 
 logger = logging.getLogger(__name__)
 
 
-class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
-    """Implementation of caption extraction using OpenAI's GPT models."""
+class SectionExtractorOpenAI(SectionExtractor):
+    """Implementation of section extraction using OpenAI's GPT models."""
 
     def __init__(self, config: Dict, prompt_handler):
         """Initialize with OpenAI configuration."""
@@ -32,7 +32,7 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         """Validate OpenAI configuration parameters."""
         # Validate model
         valid_models = ["gpt-4o", "gpt-4o-mini"]
-        config_ = self.config["pipeline"]["extract_individual_captions"]["openai"]
+        config_ = self.config["pipeline"]["extract_sections"]["openai"]
         model = config_.get("model", "gpt-4o")
         if model not in valid_models:
             raise ValueError(f"Invalid model: {model}. Must be one of {valid_models}")
@@ -58,22 +58,22 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
                 f"Presence penalty must be between -2 and 2, value: `{config_.get('presence_penalty', 0.)}`"
             )
 
-    def extract_individual_captions(
+    def extract_sections(
         self,
         doc_content: str,
         zip_structure: ZipStructure,
-    ) -> ZipStructure:
-        """Extract captions from the figure legends section."""
+    ) -> Tuple[str, str, ZipStructure]:
+        """Extract figure legends and data availability sections."""
         try:
-            # Get prompts for caption extraction
+            # Get prompts with variables substituted
             prompts = self.prompt_handler.get_prompt(
-                step="extract_individual_captions",
+                step="extract_sections",
                 variables={
                     "expected_figure_count": len(zip_structure.figures),
                     "expected_figure_labels": [
                         figure.figure_label for figure in zip_structure.figures
                     ],
-                    "figure_captions": doc_content,
+                    "manuscript_text": doc_content,
                 },
             )
 
@@ -83,77 +83,45 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
                 {"role": "user", "content": prompts["user"]},
             ]
 
-            config_ = self.config["pipeline"]["extract_individual_captions"]["openai"]
+            config_ = self.config["pipeline"]["extract_sections"]["openai"]
             model_ = config_.get("model", "gpt-4o")
 
             response = self.client.beta.chat.completions.parse(
                 model=model_,
                 messages=messages,
-                response_format=ExtractedCaptions,
+                response_format=ExtractedSections,
                 temperature=config_.get("temperature", 0.1),
                 top_p=config_.get("top_p", 1.0),
                 frequency_penalty=config_.get("frequency_penalty", 0),
                 presence_penalty=config_.get("presence_penalty", 0),
             )
 
-            # Update token usage
+            # Update token usage - we'll split the cost between the two tasks
+            usage_cost = response.usage.total_tokens  # Split cost evenly
             update_token_usage(
-                zip_structure.cost.extract_individual_captions,
-                response,
+                zip_structure.cost.extract_sections,
+                {
+                    "usage": {
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": usage_cost,
+                    }
+                },
                 model_,
             )
 
-            # Parse response and update figures
-            response_data = json.loads(response.choices[0].message.content)
-            zip_structure = self._update_figures_with_captions(
-                zip_structure, response_data["figures"]
+            # Store response in both relevant places for backward compatibility
+            response_content = response.choices[0].message.content
+
+            # Parse and return the sections
+            result = json.loads(response_content)
+            zip_structure.ai_response_locate_captions = result["figure_legends"]
+            return (
+                result["figure_legends"],
+                result["data_availability"],
+                zip_structure,
             )
 
-            # Store raw response
-            zip_structure.ai_response_extract_individual_captions = response.choices[
-                0
-            ].message.content
-
-            return zip_structure
-
         except Exception as e:
-            logger.error(f"Error extracting individual captions: {str(e)}")
-            return zip_structure
-
-    def _update_figures_with_captions(
-        self, zip_structure: ZipStructure, caption_data: list
-    ) -> ZipStructure:
-        """Update figures in ZipStructure with extracted captions.
-
-        Args:
-            zip_structure: The ZipStructure to update
-            caption_data: List of dictionaries containing caption information
-                Each dict should have:
-                - figure_label: The label of the figure
-                - caption_title: The title of the figure
-                - figure_caption: The full caption text
-
-        Returns:
-            Updated ZipStructure with captions added to figures
-        """
-        # Create a mapping of figure labels to caption data for easier lookup
-        caption_map = {
-            item["figure_label"]: {
-                "caption": item["figure_caption"],
-                "title": item["caption_title"],
-            }
-            for item in caption_data
-        }
-
-        # Update each figure in place
-        for figure in zip_structure.figures:
-            if figure.figure_label in caption_map:
-                caption_info = caption_map[figure.figure_label]
-                figure.figure_caption = caption_info["caption"]
-                figure.caption_title = caption_info["title"]
-            else:
-                logger.warning(f"No caption found for figure {figure.figure_label}")
-                figure.figure_caption = "Figure caption not found."
-                figure.caption_title = ""
-
-        return zip_structure
+            logger.error(f"Error extracting sections: {str(e)}")
+            return "", "", zip_structure

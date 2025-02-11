@@ -4,9 +4,21 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
+from pydantic import BaseModel
+
 from ..manuscript_structure.manuscript_structure import ZipStructure
 
 logger = logging.getLogger(__name__)
+
+
+class DataSource(BaseModel):
+    database: str
+    accession_number: str
+    url: str
+
+
+class ExtractDataSources(BaseModel):
+    sources: List[DataSource]
 
 
 class DataAvailabilityExtractor(ABC):
@@ -41,52 +53,18 @@ class DataAvailabilityExtractor(ABC):
         pass
 
     @abstractmethod
-    def extract_data_availability(
-        self, doc_content: str, zip_structure: ZipStructure
+    def extract_data_sources(
+        self, section_text: str, zip_structure: ZipStructure
     ) -> ZipStructure:
         """
         Extract data availability information from document content.
 
         Args:
-            doc_content: Document content to analyze
+            section_text: Data availability section
             zip_structure: Current ZIP structure to update
 
         Returns:
             Updated ZipStructure with data availability information
-        """
-        pass
-
-    @abstractmethod
-    def _locate_data_availability_section(self, doc_content: str) -> str:
-        """
-        Locate and extract the data availability section text.
-
-        Args:
-            doc_content: Document content to analyze
-
-        Returns:
-            Complete text of data availability section
-        """
-        pass
-
-    @abstractmethod
-    def _extract_data_sources(self, section_text: str) -> List[Dict]:
-        """
-        Extract structured data source information from section text.
-
-        Args:
-            section_text: Text of data availability section
-
-        Returns:
-            List of dictionaries containing structured data source information:
-            [
-                {
-                    "database": str,
-                    "accession_number": str,
-                    "url": Optional[str]
-                },
-                ...
-            ]
         """
         pass
 
