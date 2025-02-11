@@ -73,7 +73,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             data_availability_extractor = DataAvailabilityExtractorOpenAI(
                 config_loader.config, prompt_handler
             )
-            zip_structure = data_availability_extractor.extract_individual_captions(
+            zip_structure = data_availability_extractor.extract_data_availability(
                 doc_content=manuscript_content, zip_structure=zip_structure
             )
 
