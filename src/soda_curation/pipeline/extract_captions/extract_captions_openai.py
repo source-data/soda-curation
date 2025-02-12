@@ -3,12 +3,13 @@
 import json
 import logging
 import os
-from typing import Dict
+from typing import Any, Dict
 
 import openai
 
 from ..cost_tracking import update_token_usage
-from ..manuscript_structure.manuscript_structure import ZipStructure
+from ..manuscript_structure.manuscript_structure import Panel, ZipStructure
+from ..prompt_handler import PromptHandler
 from .extract_captions_base import ExtractedCaptions, FigureCaptionExtractor
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
     """Implementation of caption extraction using OpenAI's GPT models."""
 
-    def __init__(self, config: Dict, prompt_handler):
+    def __init__(self, config: Dict[str, Any], prompt_handler: PromptHandler):
         """Initialize with OpenAI configuration."""
         super().__init__(config, prompt_handler)
 
@@ -118,12 +119,15 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
 
         except Exception as e:
             logger.error(f"Error extracting individual captions: {str(e)}")
+            zip_structure.ai_response_extract_individual_captions = (
+                ""  # Ensure this is set to an empty string
+            )
             return zip_structure
 
     def _update_figures_with_captions(
         self, zip_structure: ZipStructure, caption_data: list
     ) -> ZipStructure:
-        """Update figures in ZipStructure with extracted captions.
+        """Update figures in ZipStructure with extracted captions and panels.
 
         Args:
             zip_structure: The ZipStructure to update
@@ -132,15 +136,17 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
                 - figure_label: The label of the figure
                 - caption_title: The title of the figure
                 - figure_caption: The full caption text
+                - panels: List of panel objects with "panel_label" and "panel_caption"
 
         Returns:
-            Updated ZipStructure with captions added to figures
+            Updated ZipStructure with captions and panels added to figures
         """
         # Create a mapping of figure labels to caption data for easier lookup
         caption_map = {
             item["figure_label"]: {
                 "caption": item["figure_caption"],
                 "title": item["caption_title"],
+                "panels": item.get("panels", []),
             }
             for item in caption_data
         }
@@ -151,9 +157,17 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
                 caption_info = caption_map[figure.figure_label]
                 figure.figure_caption = caption_info["caption"]
                 figure.caption_title = caption_info["title"]
+                figure.panels = [
+                    Panel(
+                        panel_label=panel["panel_label"],
+                        panel_caption=panel["panel_caption"],
+                    )
+                    for panel in caption_info["panels"]
+                ]
             else:
                 logger.warning(f"No caption found for figure {figure.figure_label}")
                 figure.figure_caption = "Figure caption not found."
                 figure.caption_title = ""
+                figure.panels = []
 
         return zip_structure

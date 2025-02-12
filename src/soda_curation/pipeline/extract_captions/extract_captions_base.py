@@ -2,13 +2,21 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from pydantic import BaseModel
 
 from ..manuscript_structure.manuscript_structure import ZipStructure
+from ..prompt_handler import PromptHandler
 
 logger = logging.getLogger(__name__)
+
+
+class PanelList(BaseModel):
+    """Model for a list of panels."""
+
+    panel_label: str
+    panel_caption: str
 
 
 class IndividualCaption(BaseModel):
@@ -17,6 +25,7 @@ class IndividualCaption(BaseModel):
     figure_label: str
     caption_title: str
     figure_caption: str
+    panels: List[PanelList]
 
 
 class ExtractedCaptions(BaseModel):
@@ -33,13 +42,16 @@ class FigureCaptionExtractor(ABC):
     figure caption extractors should implement.
     """
 
-    def __init__(self, config: Dict, prompt_handler):
+    def __init__(self, config: Dict[str, Any], prompt_handler: PromptHandler):
         """
         Initialize with configuration and prompt handler.
 
         Args:
             config: Configuration dictionary for the extractor
             prompt_handler: Handler for managing prompts
+
+        Raises:
+            ValueError: If configuration is invalid
         """
         self.config = config
         self.prompt_handler = prompt_handler

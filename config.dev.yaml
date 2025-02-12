@@ -92,7 +92,7 @@ default: &default
         model: "gpt-4o-mini"
         temperature: 0.1
         top_p: 1.0
-        max_tokens: 2048
+        max_tokens: 4092
         frequency_penalty: 0.0
         presence_penalty: 0.0
         json_mode: true
@@ -108,7 +108,10 @@ default: &default
             2. For each caption (Figure 1 through Figure $expected_figure_count):
               - Extract the TITLE of the figure (the main descriptive sentence before any panel descriptions)
               - Copy the ENTIRE caption text EXACTLY as it appears
-              - Include ALL subsections (A, B, C, etc.)
+              - Extract panel information, including:
+                * Panel labels (e.g., A, B, C)
+                * Panel captions
+                * Keep the panel captions EXACTLY as they are in the text
               - Maintain ALL formatting, punctuation, and special characters
               - DO NOT modify or summarize the text
 
@@ -117,6 +120,7 @@ default: &default
               - Values are objects containing:
                 * "title": The main descriptive sentence of the figure
                 * "caption": The complete, exact caption text
+                * "panels": A list of panel objects with "panel_label" and "panel_caption"
 
             4. RULES:
               - Include ONLY main figures (1,2,3...)
@@ -135,12 +139,20 @@ default: &default
               "Figure 1": {
                 "figure_label": "Figure 1",
                 "caption_title": "Main descriptive sentence of the figure",
-                "figure_caption": "Figure caption not including title and label, but including all panel descriptions"
+                "figure_caption": "Figure caption not including title and label, but including all panel descriptions",
+                "panels": [
+                  {"panel_label": "A", "panel_caption": "Description of panel A"},
+                  {"panel_label": "B", "panel_caption": "Description of panel B"}
+                ]
               },
               {
                 "figure_label": "Figure 2"
                 "caption_title": "Analysis of protein expression in response to treatment",
-                "figure_caption": "A) Western blot analysis... B) Quantification of..."
+                "figure_caption": "A) Western blot analysis... B) Quantification of...",
+                "panels": [
+                  {"panel_label": "A", "panel_caption": "Western blot analysis"},
+                  {"panel_label": "B", "panel_caption": "Quantification of..."}
+                ]
               }
             ]
             ```

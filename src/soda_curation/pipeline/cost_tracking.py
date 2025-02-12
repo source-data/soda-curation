@@ -1,5 +1,9 @@
 """Token usage and cost tracking utilities."""
 
+from typing import Any
+
+from ..pipeline.manuscript_structure.manuscript_structure import TokenUsage
+
 pricing = {
     "gpt-4o": {"input_tokens": 5.00, "output_tokens": 10.00},
     "gpt-4o-mini": {"input_tokens": 0.15, "output_tokens": 0.60},
@@ -23,7 +27,9 @@ def calculate_cost(model: str, prompt_tokens: int, completion_tokens: int) -> fl
     return total_cost
 
 
-def update_token_usage(token_usage, response, model):
+def update_token_usage(
+    token_usage: TokenUsage, response: Any, model: str
+) -> TokenUsage:
     """Update TokenUsage object with data from API response."""
     if not isinstance(response, dict):
         response = response.model_dump()
@@ -40,3 +46,4 @@ def update_token_usage(token_usage, response, model):
             response["usage"]["completion_tokens"],
         )
         token_usage.cost += call_cost
+    return token_usage
