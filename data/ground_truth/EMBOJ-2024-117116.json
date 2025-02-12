@@ -1,71 +1,71 @@
 {
     "manuscript_id": "EMBOJ-2024-117116",
-    "docx": "EMBOJ-2024-117116/Doc/EMBOJ2024117116R1Manuscript_Textmstxt.docx",
-    "xml": "EMBOJ-2024-117116/EMBOJ-2024-117116.xml",
-    "pdf": "EMBOJ-2024-117116/pdf/EMBOJ-2024-117116.pdf",
+    "docx": "Doc/EMBOJ2024117116R1Manuscript_Textmstxt.docx",
+    "xml": "EMBOJ-2024-117116.xml",
+    "pdf": "pdf/EMBOJ-2024-117116.pdf",
     "appendix": [
-        "EMBOJ-2024-117116/suppl_data/Expanded View Dataset 1.zip",
-        "EMBOJ-2024-117116/suppl_data/Expanded_View_Dataset_2_ENA_GEO_with_legend.xlsx",
-        "EMBOJ-2024-117116/suppl_data/Expanded_View_Dataset_1_.xls",
-        "EMBOJ-2024-117116/suppl_data/EMBOJ2024117116R1Appendixsupp.pdf"
+        "suppl_data/Expanded View Dataset 1.zip",
+        "suppl_data/Expanded_View_Dataset_2_ENA_GEO_with_legend.xlsx",
+        "suppl_data/Expanded_View_Dataset_1_.xls",
+        "suppl_data/EMBOJ2024117116R1Appendixsupp.pdf"
     ],
   
 
     "sd_files": [
-        "EMBOJ-2024-117116/suppl_data/Figure 1.zip",
-        "EMBOJ-2024-117116/suppl_data/Figure 2.zip",
-        "EMBOJ-2024-117116/suppl_data/Figure 3.zip",
-        "EMBOJ-2024-117116/suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
-        "EMBOJ-2024-117116/suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz",
-        "EMBOJ-2024-117116/suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
-        "EMBOJ-2024-117116/suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
-        "EMBOJ-2024-117116/suppl_data/Figure 4.zip",
-        "EMBOJ-2024-117116/suppl_data/Figure 5.zip",
-        "EMBOJ-2024-117116/suppl_data/Figure 6.zip"
+        "suppl_data/Figure 1.zip",
+        "suppl_data/Figure 2.zip",
+        "suppl_data/Figure 3.zip",
+        "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
+        "suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz",
+        "suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
+        "suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
+        "suppl_data/Figure 4.zip",
+        "suppl_data/Figure 5.zip",
+        "suppl_data/Figure 6.zip"
     ],
     "figures": [
         {
-            "figure_caption": "<strong>A</strong>. Schematic showing the theoretical experimental set-up. <strong>B</strong>. Overview of collected time-points and their relevance for decay or deadenylation modeling. <strong>C.</strong> Time-dependent abundance change of <em>HHF1</em> or <em>RPL18B</em> mRNAs following Mex67-depletion in DRS datasets (dot) or by reverse-transcription coupled with qPCR (ring). A fitted line represents the decay factor calculated from DRS data. <strong>D.</strong> mRNA and ncRNA half-life distribution calculated from the Mex67-depletion time course. <strong>E.</strong> Comparison of mRNA half-life estimations from various studies visualized as a matrix of Spearman rho coefficients (Miller et al, 2011; Neymotin et al, 2014; Presnyak et al, 2015; Chan et al, 2018). <strong>F.</strong> Correlation between half-life values in Mex67-depleted sample and half-life values from Miller et al, (2011).</p>",
+            "figure_caption": "A. Schematic showing the theoretical experimental set-up. B. Overview of collected time-points and their relevance for decay or deadenylation modeling. C. Time-dependent abundance change of HHF1 or RPL18B mRNAs following Mex67-depletion in DRS datasets (dot) or by reverse-transcription coupled with qPCR (ring). A fitted line represents the decay factor calculated from DRS data. D. mRNA and ncRNA half-life distribution calculated from the Mex67-depletion time course. E. Comparison of mRNA half-life estimations from various studies visualized as a matrix of Spearman rho coefficients (Miller et al, 2011; Neymotin et al, 2014; Presnyak et al, 2015; Chan et al, 2018). F. Correlation between half-life values in Mex67-depleted sample and half-life values from Miller et al, (2011).",
             "figure_label": "Figure 1",
-            "caption_title": "<p><strong>Figure 1.</strong> mRNA nuclear export reveals cytoplasmic deadenylation and decay dynamics.",
+            "caption_title": "mRNA nuclear export reveals cytoplasmic deadenylation and decay dynamics.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 1.zip"
+                "suppl_data/Figure 1.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1A README.txt"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1A README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1B README.txt"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1B README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/FIGURE 1C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/MTH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/MTH.ods",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1C/how_to_read_the_MTH_file.txt"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/FIGURE 1C README.txt",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/MTH.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/MTH.ods",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repA.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repB.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/Mex67repH.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1C/how_to_read_the_MTH_file.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1D/FIGURE 1D README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1D/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1D/FIGURE 1D README.txt",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1D/Mex67AA_e_model_global.csv"
                     ]
                   },
                   {
@@ -73,503 +73,503 @@
                     "panel_label": "E",
                     "sd_files":[
                         "FEMBOJ-2024-117116/suppl_data/igure 1/Figure 1E/FIGURE 1E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1E/HL_Chan2018.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxn.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxnAnnot.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1E/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1E/HL_Chan2018.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxn.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxnAnnot.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1E/Mex67AA_e_model_global.csv"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1F/FIGURE 1F README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1F/HLtxn.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1F/HLtxnAnnot.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 1.zip:Figure 1/Figure 1F/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1F/FIGURE 1F README.txt",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1F/HLtxn.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1F/HLtxnAnnot.csv",
+                        "suppl_data/Figure 1.zip:Figure 1/Figure 1F/Mex67AA_e_model_global.csv"
                     ]
                   }
             ]
           },
           {
-            "figure_caption": "<strong>A.</strong> Global distribution of mRNA pA-tail lengths during the Mex67-chase experiment. DRS data are presented in a density plot (left) or violin plot (right). Replicates, shown separately in Figure EV1E, were merged. The number of transcripts (pA-tail estimates) in each density plot is given on the panel. As in Fig. 1B the violin plot also highlights in gray the time-points used for deadenylation rate modeling. The latter time-points were discarded due to occurrence of mRNA hyperadenylation; a phenotype specific to very few newly-made mRNAs in nuclear export-block conditions (Jensen et al, 2001). These scarce species only significantly impact the overall pA-tail distribution after most cytoplasmic mRNA have been deadenylated and degraded. <strong>B.</strong> Autoradiogram depicting the global distribution of pA-tail lengths in selected Mex67 chase samples used to construct the sequencing library. <strong>C.</strong> Log2 mRNA abundance compared to mean pA-tail length for control Mex67-AA cells, with highly abundant and RPG mRNAs as gold and blue dots, respectively. A bar plot summarizes the read fraction for each transcript category. <strong>D.</strong> Global distribution of pA-tail lengths of low abundance mRNAs. The number of transcripts in each density plot is given on the panel. <strong>E.</strong> Time-dependent changes in median pA-tail length across the entire coding transcriptome and four large mRNA groups: high-low abundance, and RPG-non-RPG. Local regression trend lines are shown with a 95 % confidence interval. The number of pA-tail estimates used to calculate the median for each point is given in legends of Fig. 2A, 2D, EV1E, EV1H and EV1J. Replicates were merged to produce 9 median estimates for various time-points.</p>",
+            "figure_caption": "A. Global distribution of mRNA pA-tail lengths during the Mex67-chase experiment. DRS data are presented in a density plot (left) or violin plot (right). Replicates, shown separately in Figure EV1E, were merged. The number of transcripts (pA-tail estimates) in each density plot is given on the panel. As in Fig. 1B the violin plot also highlights in gray the time-points used for deadenylation rate modeling. The latter time-points were discarded due to occurrence of mRNA hyperadenylation; a phenotype specific to very few newly-made mRNAs in nuclear export-block conditions (Jensen et al, 2001). These scarce species only significantly impact the overall pA-tail distribution after most cytoplasmic mRNA have been deadenylated and degraded. B. Autoradiogram depicting the global distribution of pA-tail lengths in selected Mex67 chase samples used to construct the sequencing library. C. Log2 mRNA abundance compared to mean pA-tail length for control Mex67-AA cells, with highly abundant and RPG mRNAs as gold and blue dots, respectively. A bar plot summarizes the read fraction for each transcript category. D. Global distribution of pA-tail lengths of low abundance mRNAs. The number of transcripts in each density plot is given on the panel. E. Time-dependent changes in median pA-tail length across the entire coding transcriptome and four large mRNA groups: high-low abundance, and RPG-non-RPG. Local regression trend lines are shown with a 95 % confidence interval. The number of pA-tail estimates used to calculate the median for each point is given in legends of Fig. 2A, 2D, EV1E, EV1H and EV1J. Replicates were merged to produce 9 median estimates for various time-points.",
             "figure_label": "Figure 2",
-            "caption_title": "<p><strong>Figure 2.</strong> mRNA groups exhibit various deadenylation rates.",
+            "caption_title": "mRNA groups exhibit various deadenylation rates.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 2.zip"
+                "suppl_data/Figure 2.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2A/FIGURE 2A README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repH.csv"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2A/FIGURE 2A README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repA.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2A/ORFs_repH.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2B/FIGURE 2B README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2B/Mex67 time course greyscale for quantification (1).tif"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2B/FIGURE 2B README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2B/Mex67 time course greyscale for quantification (1).tif"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/FIGURE 2C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2C/VinyaRepressed_Mex67list.csv"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/FIGURE 2C README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repA.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/Mex67repH.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2C/VinyaRepressed_Mex67list.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2D/FIGURE 2D README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2D/Mex67_low_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2D/Mex67_low_abundance_ORFS_repB.csv"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2D/FIGURE 2D README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2D/Mex67_low_abundance_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2D/Mex67_low_abundance_ORFS_repB.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/FIGURE 2E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_NON_RPG_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_NON_RPG_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_RPG_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_RPG_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_high_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_high_abundance_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_low_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_low_abundance_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repH.csv"
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/FIGURE 2E README.txt",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_NON_RPG_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_NON_RPG_ORFS_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_RPG_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_RPG_ORFS_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_high_abundance_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_high_abundance_ORFS_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_low_abundance_ORFS_.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/Mex67_low_abundance_ORFS_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repA.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repB.csv",
+                        "suppl_data/Figure 2.zip:Figure 2/Figure 2E/ORFs_repH.csv"
                     ]
                 }
             ]
           },
           {
-            "caption_title": "<p><strong>Figure 3.</strong> Pab1 controls deadenylation and decapping.",
+            "caption_title": "Pab1 controls deadenylation and decapping.",
             "figure_label": "Figure 3",
-            "figure_caption": "<strong>A.</strong> Global distribution of pA-tail lengths of RNAs isolated from control, Dcp2- or Xrn1-depleted cells. Gray areas delineate the pA-tail lengths underestimated in the DRS library, as previously reported (Tudek et al, 2021). <strong>B.</strong> pA-tail length distribution of <em>HCH1</em> and <em>YMR122W-A</em> mRNAs in control and Dcp2- or Xrn1-depleted cells. <strong>C.</strong> pA-tail length distribution of <em>DED81</em>, <em>GAS1</em>, <em>HHF1</em>, <em>HTA1</em>, <em>MCH5,</em> and <em>DCP2</em> mRNAs in control cells compared to strains depleted of Pab1 using the AID system for 1 or 2 hours. The mRNAs are ranked by half-life time. The number of reads contributing to each distribution is indicated in the panel with n='control'/'1h depletion'/'2h depletion'. The gray boxes show the range of adenosines added <em>de novo</em> in the nucleus by the polyA-polymerase Pap1 on pre-mRNAs (Turtola et al, 2021). <strong>D.</strong> Comparison of log2 fold-change in mRNA abundance to absolute change in mean pA-tail length for 2h Pab1-depleted cells compared to control. <strong>E.</strong> Schematic illustrating that one Pab1 can bind from 20-30 adenosines, therefore newly synthesized mRNA pA-tail bear di- or trimers of Pab1. Depending on the number of Pab1 attached to the pA-tail the mRNA is either susceptible to deadenylation of decapping.</p>",
+            "figure_caption": "A. Global distribution of pA-tail lengths of RNAs isolated from control, Dcp2- or Xrn1-depleted cells. Gray areas delineate the pA-tail lengths underestimated in the DRS library, as previously reported (Tudek et al, 2021). B. pA-tail length distribution of HCH1 and YMR122W-A mRNAs in control and Dcp2- or Xrn1-depleted cells. C. pA-tail length distribution of DED81, GAS1, HHF1, HTA1, MCH5, and DCP2 mRNAs in control cells compared to strains depleted of  Pab1 using the AID system for 1 or 2 hours. The mRNAs are ranked by half-life time. The number of reads contributing to each distribution is indicated in the panel with n='control'/'1h depletion'/'2h depletion'. The gray boxes show the range of adenosines added de novo in the nucleus by the polyA-polymerase Pap1 on pre-mRNAs (Turtola et al, 2021). D. Comparison of log2 fold-change in mRNA abundance to absolute change in mean pA-tail length for 2h Pab1-depleted cells compared to control. E. Schematic illustrating that one Pab1 can bind from 20-30 adenosines, therefore newly synthesized mRNA pA-tail bear di- or trimers of Pab1. Depending on the number of Pab1 attached to the pA-tail the mRNA is either susceptible to deadenylation of decapping.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 3.zip",
-                "EMBOJ-2024-117116/suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
-                "EMBOJ-2024-117116/suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz"
+                "suppl_data/Figure 3.zip",
+                "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
+                "suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz"
                 ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3A/DCP2XRN1AID.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3A/FIGURE 3A README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3A/ORFs_DCP2_XRN1_AID_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz"
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3A/DCP2XRN1AID.csv",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3A/FIGURE 3A README.txt",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3A/ORFs_DCP2_XRN1_AID_.csv",
+                        "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3B/DCP2XRN1AID.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3B/README FIGURE 3B.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz"
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3B/DCP2XRN1AID.csv",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3B/README FIGURE 3B.txt",
+                        "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3C/DCP2Pab1AID.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3C/README FIGURE 3C.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz"
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3C/DCP2Pab1AID.csv",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3C/README FIGURE 3C.txt",
+                        "suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3D/Pab1AID.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/Figure 3D/README FIGURE 3D.txt"
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3D/Pab1AID.csv",
+                        "suppl_data/Figure 3.zip:Figure 3/Figure 3D/README FIGURE 3D.txt"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 3.zip:Figure 3/FIGURE 3E README.txt"
+                        "suppl_data/Figure 3.zip:Figure 3/FIGURE 3E README.txt"
                     ]
                 }
             ]
           },
           {
-            "figure_caption": "<strong>A.</strong> The probability of protection against decapping in function of pA-tail length is represented by the red line. Gray dots show experimental pA-tail length distributions from all Mex67-chase time-points. The number of reads summing up to form the distribution is indicated in Fig. 2A. The presumed number of Pab1 subunits on a pA-tail of a given length is displayed. <strong>B.</strong> Conceptual scheme illustrating the modified gamma distribution parameters (see main text). <em>γ_rate</em> corresponds to the exponential coefficient of the right arm of the pA-tail distribution, whereas <em>γ_shape</em>+1 represents the number of critical events leading to complete mRNA decay. <strong>C.</strong> Using gray dots, three density plots show experimental pA-tail length distribution for whole mRNA transcriptome in control cells for replicate A and in control samples for <em>RPL4A</em> and <em>HHF1</em> mRNAs. Black lines represent fitted modified gamma distributions. Estimation of new mRNA production (by log-fitting) is shown using blue lines. The red line represents the sum of the modified gamma and transcription estimate distributions <strong>D.-E.</strong> Changes in the value of <em>γ_shape</em> (D.) and <em>γ_rate</em> (E.) parameters of the modified gamma probability distribution over time for all mRNAs or those of low and high abundance separately (RPG and non-RPG are omitted for clarity). The parameters are given as full colored dots supplemented with vertical standard error bars. Each estimate was derived from distributions shown in Fig. 2A, 2D, EV1A, EV1H.-J. (refer to those panels for number of reads). Continuous functions, which were fitted are shown with the equations given. The number of dataset points considered for estimation of the functions’ equation is indicated on each panel. Those functions were used in subsequent modeling (Figure 4F.-G.and EV2F.-J.). <strong>F.-G.</strong> Time-dependent evolution of whole-transcriptome pA-tail length distribution (E.) or median (G.) based on functions described in Figure 4D.-E. <strong>H.</strong> Modified gamma model of whole transcriptome deadenylation over time in three-dimension shown as a continuous surface colored according to population density. Black dots show experimental pA-tail distributions. The number of reads summing up to form the distribution is indicated in Fig. 2A. <strong>I.</strong> As red triangles with vertical error bars are plotted terminal adenosine half-lives calculated independently for each position relative to their rank in the pA-tail, calculated from distributions adjusted for mRNA decapping (Figure EV3B). A continuous exponential function is fitted with a 0.95 confidence interval. <strong>J.</strong> Experimental pA-tail distributions (same as in Figure 4A) displayed on a normal-logarithmic scale (gray dots). The linear distribution between pA-tail lengths 25-60 (yellow box) is highlighted. The slope of the function represents the correction factor used to calculate microscopic enzymatic deadenylation speed from the apparent one. <strong>K.</strong> Table summarizing the steps of the deadenylation modeling performed using the modified gamma distribution.</p>",
+            "figure_caption": "A. The probability of protection against decapping in function of pA-tail length is represented by the red line. Gray dots show experimental pA-tail length distributions from all Mex67-chase time-points. The number of reads summing up to form the distribution is indicated in Fig. 2A. The presumed number of Pab1 subunits on a pA-tail of a given length is displayed. B. Conceptual scheme illustrating the modified gamma distribution parameters (see main text). γ_rate corresponds to the exponential coefficient of the right arm of the pA-tail distribution, whereas γ_shape+1 represents the number of critical events leading to complete mRNA decay. C. Using gray dots, three density plots show experimental pA-tail length distribution for whole mRNA transcriptome in control cells for replicate A and in control samples for RPL4A and HHF1 mRNAs. Black lines represent fitted modified gamma distributions. Estimation of new mRNA production (by log-fitting) is shown using blue lines. The red line represents the sum of the modified gamma and transcription estimate distributions D.-E. Changes in the value of γ_shape (D.) and γ_rate (E.) parameters of the modified gamma probability distribution over time for all mRNAs or those of low and high abundance separately (RPG and non-RPG are omitted for clarity). The parameters are given as full colored dots supplemented with vertical standard error bars. Each estimate was derived from distributions shown in Fig. 2A, 2D, EV1A, EV1H.-J. (refer to those panels for number of reads). Continuous functions, which were fitted are shown with the equations given. The number of dataset points considered for estimation of the functions’ equation is indicated on each panel. Those functions were used in subsequent modeling (Figure 4F.-G.and EV2F.-J.). F.-G. Time-dependent evolution of whole-transcriptome pA-tail length distribution (E.) or median (G.) based on functions described in Figure 4D.-E. H. Modified gamma model of whole transcriptome deadenylation over time in three-dimension shown as a continuous surface colored according to population density. Black dots show experimental pA-tail distributions. The number of reads summing up to form the distribution is indicated in Fig. 2A. I. As red triangles with vertical error bars are plotted terminal adenosine half-lives calculated independently for each position relative to their rank in the pA-tail, calculated from distributions adjusted for mRNA decapping (Figure EV3B). A continuous exponential function is fitted with a 0.95 confidence interval. J. Experimental pA-tail distributions (same as in Figure 4A) displayed on a normal-logarithmic scale (gray dots). The linear distribution between pA-tail lengths 25-60 (yellow box) is highlighted. The slope of the function represents the correction factor used to calculate microscopic enzymatic deadenylation speed from the apparent one. K.  Table summarizing the steps of the deadenylation modeling performed using the modified gamma distribution.",
             "figure_label": "Figure 4",
-            "caption_title": "<p><strong>Figure 4.</strong> The modified gamma model predicts mRNA pA-tail lengths distributions.",
+            "caption_title": "The modified gamma model predicts mRNA pA-tail lengths distributions.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 4.zip"
+                "suppl_data/Figure 4.zip"
                 ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/FIGURE 4A README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repH.csv"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/FIGURE 4A README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4A/ORFs_repH.csv"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4B README.txt"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4B README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/FIGURE 4C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAMMA_tanh_res.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAS1_Mex67_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAS1_Mex67_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/HHF1_Mex67_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/HHF1_Mex67_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_NON_RPG_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_NON_RPG_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_RPG_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_RPG_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_high_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_high_abundance_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_low_abundance_ORFS_.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_low_abundance_ORFS_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Modified_R_code_output_file_Mex67_depletion_chase_ .pdf",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL36A_Mex67_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL36A_Mex67_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Rcode_modified_gamma_shape_rate_estimation_ .txt"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/FIGURE 4C README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAMMA_tanh_res.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAS1_Mex67_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/GAS1_Mex67_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/HHF1_Mex67_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/HHF1_Mex67_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_NON_RPG_ORFS_.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_NON_RPG_ORFS_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_RPG_ORFS_.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_RPG_ORFS_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_high_abundance_ORFS_.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_high_abundance_ORFS_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_low_abundance_ORFS_.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Mex67_low_abundance_ORFS_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Modified_R_code_output_file_Mex67_depletion_chase_ .pdf",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/ORFs_repH.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL36A_Mex67_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL36A_Mex67_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Rcode_modified_gamma_shape_rate_estimation_ .txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/FIGURE 4D 4E 4F 4G README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGUREs 4D 4E 4F and 4G/GAMMA_tanh_res_corr.ods"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/FIGURE 4H README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4H.zip"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/FIGURE 4H README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H/ORFs_repH.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4H.zip"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/FIGURE 4I README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/Figure_EV3B_pAplus_RNA_recovered_from_total_Mex67AA.pdf",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/JP4AT-local_40-79.pdf",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/RNA_concetration_chase_.pdf",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/pAplus_RNA_recovered_from_total_Mex67AA_Rcode.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4I.zip"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/FIGURE 4I README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/Figure_EV3B_pAplus_RNA_recovered_from_total_Mex67AA.pdf",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/JP4AT-local_40-79.pdf",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/ORFs_repH.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/RNA_concetration_chase_.pdf",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I/pAplus_RNA_recovered_from_total_Mex67AA_Rcode.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4I.zip"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "J",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/FIGURE 4J README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repH.csv"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/FIGURE 4J README.txt",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repA.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repB.csv",
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4J/ORFs_repH.csv"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "K",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 4.zip:Figure 4/FIGURE 4K README.txt"
+                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4K README.txt"
                     ]
                   }
             ]
           },
           {
-            "figure_caption": "<strong>A.</strong> Time-dependent change in quantile pA-tail lengths (as color-coded by quantile dots: upper – 75-80-85-90-95<sup>th</sup>; median - 50<sup>th</sup>; and lower – 15-10-5<sup>th</sup>) for the entire coding transcriptome distribution in each replicate. Fitted continuous lines represent the quantile deadenylation coefficient calculated based on the upper quantiles. <strong>B.</strong> Distribution of adenosine half-lives relative to pA-tail length in each quantile. The terminal adenosine half-life of 39 +/- 7 sec was calculated by averaging the half-lives obtained from quantiles 75-95<sup>th</sup> (blue area). <strong>C.</strong> Table summarizes key differences between the modified gamma and quantile methods for calculating deadenylation rate. <strong>D.</strong> Histogram displaying the distribution of single mRNA terminal adenosine half-lives for the entire coding transcriptome (light-red bars) or mRNAs of high abundance (gray bars). Vertical lines indicate the group median. <strong>E.-F.</strong> Comparison of decay and quantile deadenylation rates (E.) or log2-scaled mRNA half-life to terminal adenosine half-life (F.). Density plot represents all mRNAs, whereas mRNAs with at least 70 reads in replicate A are shown as individual dots with a blue regression line. Spearman’s rho correlations and p-values were calculated separately for each set using the cor() function in R. <strong>G.</strong> Schematic highlighting the strong, potentially causal link between deadenylation and decapping inferred from data presented in Figures 5E.-F. <strong>H.</strong> Comparison of decay and quantile deadenylation rates for various gene ontology groups (see also EV4D). <strong>I.</strong> Percentage of optimal codons compared to: log2 mRNA abundance, mean mRNA pA-tail length, log2 decay, or quantile deadenylation rates.</p>",
+            "figure_caption": "A. Time-dependent change in quantile pA-tail lengths (as color-coded by quantile dots: upper – 75-80-85-90-95th; median - 50th; and lower – 15-10-5th) for the entire coding transcriptome distribution in each replicate. Fitted continuous lines represent the quantile deadenylation coefficient calculated based on the upper quantiles. B. Distribution of adenosine half-lives relative to pA-tail length in each quantile. The terminal adenosine half-life of 39 +/- 7 sec was calculated by averaging the half-lives obtained from quantiles 75-95th (blue area). C. Table summarizes key differences between the modified gamma and quantile methods for calculating deadenylation rate. D. Histogram displaying the distribution of single mRNA terminal adenosine half-lives for the entire coding transcriptome (light-red bars) or mRNAs of high abundance (gray bars). Vertical lines indicate the group median. E.-F. Comparison of decay and quantile deadenylation rates (E.) or log2-scaled mRNA half-life to terminal adenosine half-life (F.). Density plot represents all mRNAs, whereas mRNAs with at least 70 reads in replicate A are shown as individual dots with a blue regression line. Spearman’s rho correlations and p-values were calculated separately for each set using the cor() function in R. G. Schematic highlighting the strong, potentially causal link between deadenylation and decapping inferred from data presented in Figures 5E.-F. H. Comparison of decay and quantile deadenylation rates for various gene ontology groups (see also EV4D). I. Percentage of optimal codons compared to: log2 mRNA abundance, mean mRNA pA-tail length, log2 decay, or quantile deadenylation rates.",
             "figure_label": "Figure 5",
-            "caption_title": "<p><strong>Figure 5.</strong> At steady-state, deadenylation and decay rates correlate.",
+            "caption_title": "At steady-state, deadenylation and decay rates correlate.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 5.zip"
+                "suppl_data/Figure 5.zip"
                 ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/FIGURE 5A README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repH.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repA.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repB.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Expanded View 4A/Mex67repH.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/FIGURE 5A README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repA.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repB.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5A/ORFs_repH.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/FIGURE 5B README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repH.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/FIGURE 5B README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repA.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repB.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5B/ORFs_repH.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5C/FIGURE 5C README.txt"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5C/FIGURE 5C README.txt"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5D/FIGURE 5D README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5D/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5D/FIGURE 5D README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5D/Mex67AA_e_model_global.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5E/FIGURE 5E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5E/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5E/FIGURE 5E README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5E/Mex67AA_e_model_global.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5F/FIGURE 5F README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5F/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5F/FIGURE 5F README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5F/Mex67AA_e_model_global.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5G/FIGURE 5G README.txt"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5G/FIGURE 5G README.txt"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/FIGURE 5H README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/GO_term_supplemental_table.csv.gz",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/Mex67AA_e_model_global.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/FIGURE 5H README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/GO_term_supplemental_table.csv.gz",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5H/Mex67AA_e_model_global.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/FIGURE 5I README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/CodonOptimality.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/translation_table.csv"
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/FIGURE 5I README.txt",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/CodonOptimality.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 5.zip:Figure 5/FIGURE 5I/translation_table.csv"
                     ]
                 }
             ]
           },
           {
-            "figure_caption": "<strong>A.</strong> Time-points collected for the thiolutin 25 °C and heat stress 37 °C chase experiments. Colored surfaces designate the utility of each time frame. Dot contours represent data points excluded from the analysis. <strong>B.-C.</strong> Distribution of mRNA half-lives (B.) or terminal adenosine half-lives (C.) in Mex67-depletion, thiolutin, and heat stress chase datasets for RPG and non-RPG mRNAs transcriptionally down-regulated during heat stress according to Vinayachandran et al, (2018). The number of estimates in each group is indicated next to the figure legend. <strong>D.</strong> Time-dependent change in levels of RPG mRNAs in Mex67-depletion, thiolutin, and heat stress time course normalized to control. Fitted lines show the group trend with a 95% confidence interval in gray. Data points normalized to corresponding controls obtained for 13 min heat stress of a double <em>ccr4Δ pan2Δ</em> mutant (black triangle) or Mex67-AA strain treated or not with rapamycin 3 min prior to heat stress for 13 min at 37 °C. For these data, the median is shown along with the data-point density contour. Experiment legend is listed next to panel 6E. <strong>E.</strong> Time-dependent changes in pA-tail length values of the 95-90-85-80-75<sup>th</sup> quantiles normalized to the control sample for the same samples as in Fig. 6D. Normalization allows direct comparison of all changes within the group without grouping transcripts by control pA-tail length. <strong>F.-G.</strong> Northern blot showing <em>RPS5</em> levels during a Mex67-depletion time course (F.) or heat stress at 37 °C and thiolutin treatment at 25 °C (G.). <strong>H.</strong> Normalized pA-tail density plot showing the whole transcriptome adenylation profiles in wild-type cells compared to single <em>ccr4Δ</em> or <em>pan2Δ</em> mutants and a double <em>ccr4Δ pan2Δ</em> strain. The gray box shows the range of adenylation produced <em>de novo</em> in the nucleus by the polyA-polymerase Pap1 on pre-mRNAs (Turtola et al, 2021). <strong>I.</strong> Spot tests comparing wild-type cells to <em>ccr4Δ</em>, <em>pan2Δ,</em> and double <em>ccr4Δ pan2Δ</em> mutant at indicated temperatures. <strong>J.</strong> Scheme illustrating the role of deadenylation in mRNA decapping and decay. For most mRNAs, deadenylation is a rate-limiting factor that dictates the onset of decapping. RPG transcripts are a special group for which deadenylation can accelerate decay in conditions such as heat stress, but ultimately, decapping and decay are activated by an unknown factor linked to nuclear export.</p>",
+            "figure_caption": "A. Time-points collected for the thiolutin 25 °C and heat stress 37 °C chase experiments. Colored surfaces designate the utility of each time frame. Dot contours represent data points excluded from the analysis. B.-C. Distribution of mRNA half-lives (B.) or terminal adenosine half-lives (C.) in Mex67-depletion, thiolutin, and heat stress chase datasets for RPG and non-RPG mRNAs transcriptionally down-regulated during heat stress according to Vinayachandran et al, (2018). The number of estimates in each group is indicated next to the figure legend. D. Time-dependent change in levels of RPG mRNAs in Mex67-depletion, thiolutin, and heat stress time course normalized to control. Fitted lines show the group trend with a 95% confidence interval in gray. Data points normalized to corresponding controls obtained for 13 min heat stress of a double ccr4Δ pan2Δ mutant (black triangle) or Mex67-AA strain treated or not with rapamycin 3 min prior to heat stress for 13 min at 37 °C. For these data, the median is shown along with the data-point density contour. Experiment legend is listed next to panel 6E. E. Time-dependent changes in pA-tail length values of the 95-90-85-80-75th quantiles normalized to the control sample for the same samples as in Fig. 6D. Normalization allows direct comparison of all changes within the group without grouping transcripts by control pA-tail length. F.-G. Northern blot showing RPS5 levels during a Mex67-depletion time course (F.) or heat stress at 37 °C and thiolutin treatment at 25 °C (G.). H. Normalized pA-tail density plot showing the whole transcriptome adenylation profiles in wild-type cells compared to single ccr4Δ or pan2Δ mutants and a double ccr4Δ pan2Δ strain. The gray box shows the range of adenylation produced de novo in the nucleus by the polyA-polymerase Pap1 on pre-mRNAs (Turtola et al, 2021). I. Spot tests comparing wild-type cells to ccr4Δ, pan2Δ, and double ccr4Δ pan2Δ mutant at indicated temperatures. J. Scheme illustrating the role of deadenylation in mRNA decapping and decay. For most mRNAs, deadenylation is a rate-limiting factor that dictates the onset of decapping. RPG transcripts are a special group for which deadenylation can accelerate decay in conditions such as heat stress, but ultimately, decapping and decay are activated by an unknown factor linked to nuclear export.",
             "figure_label": "Figure 6",
-            "caption_title": "<p><strong>Figure 6.</strong> Deadenylation stimulates decay but is not a prerequisite for RPG mRNA decapping under stress conditions.",
+            "caption_title": "Deadenylation stimulates decay but is not a prerequisite for RPG mRNA decapping under stress conditions.",
             "sd_files": [
-                "EMBOJ-2024-117116/suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
-                "EMBOJ-2024-117116/suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
-                "EMBOJ-2024-117116/suppl_data/Figure 6.zip"
+                "suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
+                "suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
+                "suppl_data/Figure 6.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6A README.txt"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6A README.txt"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/FIGURES 6B and 6C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HS_global_e_model.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THL_global_e_model.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/VinyaRepressed_Mex67list.csv"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/FIGURES 6B and 6C README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HS_global_e_model.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repH.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THL_global_e_model.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/VinyaRepressed_Mex67list.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/FIGURES 6B and 6C README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HS_global_e_model.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67AA_e_model_global.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THL_global_e_model.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/VinyaRepressed_Mex67list.csv"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/FIGURES 6B and 6C README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HS_global_e_model.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/HSrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67AA_e_model_global.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/Mex67repH.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THL_global_e_model.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/THLrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6B and 6C/VinyaRepressed_Mex67list.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/FIGURES 6D and 6E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepD.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67AA_HS.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/pan2ccr4_HS.csv"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/FIGURES 6D and 6E README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepD.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67AA_HS.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repH.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/pan2ccr4_HS.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/FIGURES 6D and 6E README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepD.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67AA_HS.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repH.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepA.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepB.csv",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/pan2ccr4_HS.csv"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/FIGURES 6D and 6E README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/HSrepD.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67AA_HS.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/Mex67repH.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepA.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/THLrepB.csv",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6D and 6E/pan2ccr4_HS.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/FIGURE 6F README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/022-06-09_RPS5-[Phosphor].tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/06-09_RPS5-[Phosphor]_with_displayed_lanes_marked.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/2022-06-11_SCR1_RPGs-top_HSP104-bottom-[Phosphor]2.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/2022-06-11_SCR1_RPGs-top_HSP104-bottom-[Phosphor]2_with_lanes_displayed_marked.tif"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/FIGURE 6F README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/022-06-09_RPS5-[Phosphor].tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/06-09_RPS5-[Phosphor]_with_displayed_lanes_marked.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/2022-06-11_SCR1_RPGs-top_HSP104-bottom-[Phosphor]2.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6F/2022-06-11_SCR1_RPGs-top_HSP104-bottom-[Phosphor]2_with_lanes_displayed_marked.tif"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/FIGURE 6G README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-04_RPS5_gel2-[Phosphor].tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-04_RPS5_gel2-[Phosphor]_with_displayed_lanes_marked.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-05_SCR1_gel2-[Phosphor].tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-05_SCR1_gel2-[Phosphor]_with_displayed_lanes_marked.tif"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/FIGURE 6G README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-04_RPS5_gel2-[Phosphor].tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-04_RPS5_gel2-[Phosphor]_with_displayed_lanes_marked.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-05_SCR1_gel2-[Phosphor].tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6G/2022-05-05_SCR1_gel2-[Phosphor]_with_displayed_lanes_marked.tif"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6H/FIGURE 6H README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6H/WTccr4pop2pan2delta.csv"
+                        "suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
+                        "suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6H/FIGURE 6H README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6H/WTccr4pop2pan2delta.csv"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/FIGURE 6I README.txt",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_18C_010.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_25C_012.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/02072022_spottest_wtpan2ccr4double_30C_013.tif",
-                        "EMBOJ-2024-117116/suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_37C_011.tif"
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/FIGURE 6I README.txt",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_18C_010.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_25C_012.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/02072022_spottest_wtpan2ccr4double_30C_013.tif",
+                        "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_37C_011.tif"
                     ]
                 },
                 {
@@ -582,7 +582,7 @@
           }
     ],
     "data_availability": {
-      "section_text": "<p>The datasets produced in this study are available in the following databases:</p> <ul> <li><p>Basecalled nanopore sequencing data: Gene Expression Omnibus\\xa0GSE272785 (<a href=\"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE272785\">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE272785</a>, consult the Dataset EV2 for sample accession numbers).</p></li> <li><p>Raw nanopore sequencing data: European Nucleotide Archive (consult the Dataset EV2 for sample accession numbers).</p></li> <li><p>Source data underlying each figure panel, R code to calculate <em>γ_rate</em> and <em>γ_shape</em>, are deposited at Mendeley Data, doi: 10.17632/2j3hh37zzs.1. Additionally, the R code is also listed in the Appendix section 5.</p></li> </ul>",
+      "section_text": "The datasets produced in this study are available in the following databases:\n\nBasecalled nanopore sequencing data: Gene Expression Omnibus GSE272785 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE272785, consult the Dataset EV2 for sample accession numbers).\n\nRaw nanopore sequencing data: European Nucleotide Archive (consult the Dataset EV2 for sample accession numbers).\n\nSource data underlying each figure panel, R code to calculate γ_rate and  γ_shape, are deposited at Mendeley Data, doi: 10.17632/2j3hh37zzs.1. Additionally, the R code is also listed in the Appendix section 5.",
       "data_sources": [
         {
             "database": "Gene Expression Omnibus",
@@ -596,11 +596,11 @@
         },
         {
             "database": "Mendeley Data",
-            "accession_number": "",
-            "url": "10.17632/2j3hh37zzs.1"
+            "accession_number": "10.17632/2j3hh37zzs.1",
+            "url": ""
         }
       ]
     },
-    "all_captions": "<p><strong>Figure 1. Phenotypic characterization of 8M old GS mice.</strong></p> <p>A) GS mice showed a similar physical appearance as WT mice at 8M of age.</p> <p>B) Kaplan–Meier survival curves of WT and GS mice from a total of 76 8M old WT mice and 73 8M old GS mice.</p> <p>C) Average (±SEM) body mass of 8M old WT (n=20) and GS (n=15) mice. Significance was calculated using student’s t-test. The exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>D) Average (±SEM) whole blood iCa<sup>2+</sup> level of 8M old WT (n=10) and GS (n=11) mice. Significance was calculated using student’s t-test. The exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>E) Average (±SEM) serum CK level in 8M old WT (n=5) and GS (n=6) mice. Significance was calculated using Mann Whitney test. The exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>F) Representative H&amp;E staining images of EDL muscle cross sections showed a similar percentage of central nucleation between 8M WT and GS mice. Average (±SEM) percentage of fibers with central nuclei was quantified from the position of nuclei in 300 muscle fibers/genotype.</p> <p>G and H) Average (±SEM) cross-sectional area (CSA) of different muscle fiber types in EDL (G) and SOL (H) muscles of 8M old WT and GS mice. For EDL muscle, n =2 and 4 for WT and GS group respectively. For SOL muscle, n=5 for both WT and GS group.</p> <p>I and J) Average (±SEM) fiber type distribution of EDL (I) and SOL (J) muscles of 8M WT and GS mice. For SOL muscle, n =2 and 4 for WT and GS group respectively. For EDL muscle, n=5 for both WT and GS group.</p> <p>K) Average (±SEM) tail bleeding time in 8M WT (n=8) and GS (n=9) mice.</p> <p>Source data: available online for Figure 1B-K <strong><br /> </strong></p> <p><strong>Figure 2. Tubular aggregates in fast twitch muscles of GS mice.</strong></p> <p>A and B) Representative Gomori trichrome images of EDL muscles from 12M (A) and 18M (B) old WT (<em>left</em>) and GS (<em>right</em>) mice. TAs are visualized as pink/purple inclusions as indicated by red arrows.</p> <p>C and D) Representative EM images of cross sections of EDL (C) and FDB (D) muscles from 8M old WT (<em>left</em>) and GS (<em>right</em>) mice. Images were taken from different muscle fibers. TAs (colored in green for the GS EDL fiber shown in panel C) exhibit a honeycomb-like structure.</p> <p>E-G) Average (±SEM) percentage of fibers with TAs (E), number of TAs/fiber (F), and TA size (G) in EDL (<em>left</em>), FDB (<em>middle</em>), and <em>tibialis anterior</em> (<em>right</em>) muscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS mice in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. The exact <em>p</em>-value is labeled in the figure when adjusted <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 2A-G</p> <p><strong>Figure 3. Increased muscle weakness and exercise intolerance of 8M old GS mice.</strong></p> <p>A) <em>In vivo</em> behavioral studies of average (±SEM) normalized grip strength in 8M old WT (n=9) and GS mice (n=11). Significance was calculated using student’s t-test. The exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>B and C) <em>In vivo</em> behavioral studies of treadmill endurance (B) and rotarod endurance (C) tests in 8M old WT (n=7) and GS (n=9) mice where averaged (±SEM) cumulative rest/fall were plotted. Significance was calculated using multiple t-test. * indicates adjusted <em>p</em>&lt;0.05 (adjusted <em>p</em>=0.0316, 0.0088, 0.0006, 0.0001, &lt;0.0001, &lt;0.0001 in sequential order for figure B and adjusted <em>p</em>=0.0114, 0.0025, 0.0005, &lt;0.0001, &lt;0.0001, &lt;0.0001 in sequential order for figure C).</p> <p>D-F) Average (±SEM) specific force-frequency curves (D), maximum rates of force production (∆rise) and relaxation (∆decline) during stimulation at 150 Hz (E), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (F) in EDL muscles from 8M old WT (n=9) and GS (n=9) mice. Significance was calculated using either multiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test (for the bar graph). For the bar graph, the exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, * indicates adjusted <em>p</em>&lt;0.05 (for figure D, all adjusted <em>p</em>&lt;0.0001, except at 50Hz, the adjusted <em>p</em>=0.0015; for figure F, adjusted <em>p</em>=0.0216, 0.0028, 0.0008, 0.0012, 0.0033, 0.0149 in sequential order, starting from the 5<sup>th</sup> stimulation.).</p> <p>G-I) Average (±SEM) specific force-frequency curves (G), maximum rates of force production (∆rise) and relaxation (∆decline) during stimulation at 150 Hz (H), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (I) in SOL muscles from 8M old WT (n=8) and GS (n=7) mice. Significance was calculated using either multiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test (for the bar graph). For the bar graph, the exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, * indicates adjusted <em>p</em>&lt;0.05 (for figure G, adjusted <em>p</em>=0.0279, 0.0031, 0.0014, 0.0013, 0.0012, 0.0012, 0.0012 in sequential order; for figure I, adjusted <em>p</em>=0.0465-0.0089, starting from the 36<sup>th</sup> stimulation.).</p> <p>J and K) Normalized average (±SEM) specific force traces elicited during sustained 150 Hz stimulation (<em>left)</em>, peak specific force (<em>middle left</em>), time to 50% relaxation (<em>middle right</em>), and maximum rate of contractile decay (<em>right</em>) of EDL (J) and SOL (K) muscles from 8M old WT and GS mice. For EDL muscle, n =7 and 9 for WT and GS groups, respectively. For SOL muscle, n=5 and 8 for WT and GS groups, respectively. Significance was calculated using either multiple t-test (for line graphs) or student’s t-test (for bar graphs). For the bar graphs, the exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, * indicates adjusted <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 3A-K</p> <p><strong>Figure 4. Constitutive and store-operated Ca<sup>2+</sup> entry.</strong></p> <p>A) Representative Mn<sup>2+</sup> quench of fura-2 fluorescence traces (<em>left</em>) in the absence of store depletion in naïve HEK293 cells transfected with mouse cDNA for WT <em>Orai1</em> (WT, blue, n=2), G100S <em>Orai1</em> (G100S, red, n=2), or a 1:1 ratio of WT and G100S (WT+G100S, green, n=2). Average (±SEM) maximum rate of Mn<sup>2+</sup> quench (<em>right</em>) in the absence of store depletion for HEK293 cells expression WT (blue), G100S (red), or a 1:1 ratio of WT and G100S (green). Significance was calculated using 1-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. The exact <em>p</em>-value is labeled in the figure when adjusted <em>p</em>&lt;0.05.</p> <p>B and C) Representative traces of Mn<sup>2+</sup> quench of fura-2 fluorescence in the absence of store depletion (constitutive Ca<sup>2+</sup> entry) in FDB fibers isolated from 2WK (B) and 8M (C) old WT (black) and GS (pink) mice.</p> <p>D) Average (±SEM) maximum rate of Mn<sup>2+</sup> quench in the absence of store depletion (constitutive Ca<sup>2+</sup> entry) in myotubes and myofibers from WT (black) and GS (pink) mice. n=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS mice at the given ages in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. * indicates adjusted <em>p</em>&lt;0.05 where all adjusted <em>p</em>&lt;0.0001 except ‘Fiber 5WKS’ group whose <em>p</em>=0.0001.</p> <p>E and F) Representative traces of Mn<sup>2+</sup> quench of fura-2 fluorescence following store depletion (SOCE) in FDB fibers isolated from 2WK (E) and 8M (F) old WT (black) and GS (pink) mice.</p> <p>G) Average (±SEM) maximum rate of Mn<sup>2+</sup> quench following store depletion (SOCE) in myotubes and myofibers from WT (black) and GS (pink) mice. n=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS mice at the given ages in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. * indicates adjusted <em>p</em>&lt;0.05 where all adjusted <em>p</em>&lt;0.0001 except ‘Fiber 5WKS’ group whose <em>p</em>=0.0012.</p> <p>Source data: available online for Figure 4A-G</p> <p><strong>Figure 5. CASQ, STIM1, and ORAI1 protein expression.</strong></p> <p>A) Representative western blots of STIM1L and STIM1S (<em>upper blot</em>) and CASQ1 (<em>lower blot</em>) in <em>tibialis anterior</em> muscles from 2WK (<em>left</em>) and 8M old (<em>right</em>) WT (n=4) and GS (n=3) mice.</p> <p>B) Average (±SEM) CASQ1 and STIM1 expression in <em>tibialis anterior</em> muscles from 2WK (<em>left</em>) and 8M (<em>right</em>) old WT (n=4) and GS (n=3) mice. STIM1 expression was measured as the sum of STIM1S and STIM1L. Protein expression levels were normalized to Ponceau S.</p> <p>C-E) Knock-in mice with a V5-3xHA epitope added to the extreme ORAI1 C-terminus <em>(Orai1<sup>V5HA/+</sup></em> or V5HA mice) exhibit similar physical appearance (C), SOCE activity (D), and ORAI1 subcellular localization (E) as age-matched WT mice.</p> <p>F) Representative western blot of quadricep muscle lysates from WT and V5HA/+ mice probed with rat HA antibody.</p> <p>G and H) Representative western blots (<em>left</em>) and average (±SEM) bar graphs (<em>right</em>) for ORAI1 expression probed with rat HA antibody in <em>tibialis anterior</em> muscles from 2WK (G) and 8M (H) old V5HA/+ and V5HA/GS mice. For 2WK condition, n =6 and 5 for WT and GS group respectively. For 8M condition, n=6 and 7 for WT and GS group respectively. ORAI1 expression level was measured as the sum of upper and lower bands. Protein expression levels were normalized to Ponceau S. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. The exact <em>p</em>-value is labeled in the figure when adjusted <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 5A-B and D-H.</p> <p><strong>Figure 6. Proteome analyses of <em>tibialis anterior</em> muscle from 2WK and 8M old WT and GS mice.</strong> A and B) Pie charts (<em>upper</em>) and volcano plots (<em>lower</em>) of normalized abundance data depicting the proportion of significantly up (<em>red</em>) and down (<em>blue</em>) regulated proteins in <em>tibialis anterior</em> muscles of 2WK (A) and 8M (B) old WT and GS mice. Data were collected from 2 WT and 4 GS 2WK old mice and 3 WT and 4 GS 8M old mice.</p> <p>C) Venn analysis of proteins that were significantly up-regulated (<em>upper panel</em>) and down-regulated (<em>lower panel</em>) in <em>tibialis anterior</em> muscles of 2WK and 8M old WT and GS mice.</p> <p>D-G) Top 20 altered GO Cellular Component pathways (D and F) and associated network analyses (E and G) from proteomic analyses of <em>tibialis anterior</em> muscles from 2WK and 8M old WT and GS mice. Data were collected from 2 WT and 4 GS 2 WK old mice and 3 WT and 4 GS 8M old mice.</p> <p><strong>Figure 7. Morphological and functional assessment of mitochondrial damage in 8M GS mice.</strong></p> <p>A) Representative EM images of longitudinal sections of EDL muscles from 8M old WT and GS mice. Arrows: mitochondria at I band; M: severely altered mitochondria; *: mitochondrion at the A band.</p> <p>B) Average (±SEM) <em>16S rRNA</em> transcript level in 8M WT (n=6) and GS (n=6) <em>tibialis anterior</em> muscles using RT-qPCR. <em>16S</em> is a mitochondria specific ribosomal RNA. Significance was calculated using student’s t-test. The exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>C) Representative western blots (<em>left</em>) and average (±SEM) bar graphs (<em>right</em>) for VDAC expression in <em>tibialis anterior</em> muscles from 8M old WT (n=6) and GS (n=6) mice. Protein expression levels were normalized to Ponceau S. Significance was calculated using student’s t-test. The exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>D) Normalized average (±SEM) TMRE fluorescence (normalized to the final 40<sup>th</sup> measurement, ∆F/F<sub>40</sub>) of single FDB fibers from 8M old WT (n=6) and GS (n=6) mice before and during application of 1 µM FCCP (black bar). Significance was calculated using student’s t-test. * indicates adjusted <em>p</em>&lt;0.05 (adjusted <em>p</em>=0.000035, 0.000035, 0.00004, 0.000034, 0.000028, 0.000003, 0.000018 in sequential order).</p> <p>E) Normalized average (±SEM) delta MitoSOX fluorescence over 10 min using FDB fibers from 8M WT and GS mice. MitoSOX is a mitochondrial specific superoxide indicator, used to indicate mitochondrial oxidative stress level. Significance was calculated using Mann Whitney test. The exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>F) Average (±SEM) enzyme activity of proteins involved in electron transport chain (Complex I-V) using purified mitochondria from skeletal muscle of 8M old WT and GS mice. For Complex I activity, n =5 and 6 WT and GS mice, respectively. For complex II-V, n=6 WT and n=6 GS mice. Significance was calculated using either Mann Whitney test (Complex I and III activity) or student’s t-test (Complex activity). The exact <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>G) Representative Clark’s electrode oxygen consumption traces using purified mitochondria from 8M WT (black) and GS (pink) skeletal muscle.</p> <p>H and I) Average (±SEM) oxygen consumption rate (OCR) at each state (H) and average (±SEM) respiratory control ratio (RCR – State 3/State4) (I) in purified mitochondria from 8M WT (n=5) and GS (n=7) skeletal mice. Significance was calculated using either 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test (OCR measurements) or Welch's t test (RCR level). The exact (adjusted) <em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 7A-I<strong><br /> </strong></p>"
+    "all_captions": "Figure 1. mRNA nuclear export reveals cytoplasmic deadenylation and decay dynamics. A. Schematic showing the theoretical experimental set-up. B. Overview of collected time-points and their relevance for decay or deadenylation modeling. C. Time-dependent abundance change of HHF1 or RPL18B mRNAs following Mex67-depletion in DRS datasets (dot) or by reverse-transcription coupled with qPCR (ring). A fitted line represents the decay factor calculated from DRS data. D. mRNA and ncRNA half-life distribution calculated from the Mex67-depletion time course. E. Comparison of mRNA half-life estimations from various studies visualized as a matrix of Spearman rho coefficients (Miller et al, 2011; Neymotin et al, 2014; Presnyak et al, 2015; Chan et al, 2018). F. Correlation between half-life values in Mex67-depleted sample and half-life values from Miller et al, (2011).\n\nFigure 2. mRNA groups exhibit various deadenylation rates. A. Global distribution of mRNA pA-tail lengths during the Mex67-chase experiment. DRS data are presented in a density plot (left) or violin plot (right). Replicates, shown separately in Figure EV1E, were merged. The number of transcripts (pA-tail estimates) in each density plot is given on the panel. As in Fig. 1B the violin plot also highlights in gray the time-points used for deadenylation rate modeling. The latter time-points were discarded due to occurrence of mRNA hyperadenylation; a phenotype specific to very few newly-made mRNAs in nuclear export-block conditions (Jensen et al, 2001). These scarce species only significantly impact the overall pA-tail distribution after most cytoplasmic mRNA have been deadenylated and degraded. B. Autoradiogram depicting the global distribution of pA-tail lengths in selected Mex67 chase samples used to construct the sequencing library. C. Log2 mRNA abundance compared to mean pA-tail length for control Mex67-AA cells, with highly abundant and RPG mRNAs as gold and blue dots, respectively. A bar plot summarizes the read fraction for each transcript category. D. Global distribution of pA-tail lengths of low abundance mRNAs. The number of transcripts in each density plot is given on the panel. E. Time-dependent changes in median pA-tail length across the entire coding transcriptome and four large mRNA groups: high-low abundance, and RPG-non-RPG. Local regression trend lines are shown with a 95 % confidence interval. The number of pA-tail estimates used to calculate the median for each point is given in legends of Fig. 2A, 2D, EV1E, EV1H and EV1J. Replicates were merged to produce 9 median estimates for various time-points.\n\nFigure 3. Pab1 controls deadenylation and decapping. A. Global distribution of pA-tail lengths of RNAs isolated from control, Dcp2- or Xrn1-depleted cells. Gray areas delineate the pA-tail lengths underestimated in the DRS library, as previously reported (Tudek et al, 2021). B. pA-tail length distribution of HCH1 and YMR122W-A mRNAs in control and Dcp2- or Xrn1-depleted cells. C. pA-tail length distribution of DED81, GAS1, HHF1, HTA1, MCH5, and DCP2 mRNAs in control cells compared to strains depleted of  Pab1 using the AID system for 1 or 2 hours. The mRNAs are ranked by half-life time. The number of reads contributing to each distribution is indicated in the panel with n='control'/'1h depletion'/'2h depletion'. The gray boxes show the range of adenosines added de novo in the nucleus by the polyA-polymerase Pap1 on pre-mRNAs (Turtola et al, 2021). D. Comparison of log2 fold-change in mRNA abundance to absolute change in mean pA-tail length for 2h Pab1-depleted cells compared to control. E. Schematic illustrating that one Pab1 can bind from 20-30 adenosines, therefore newly synthesized mRNA pA-tail bear di- or trimers of Pab1. Depending on the number of Pab1 attached to the pA-tail the mRNA is either susceptible to deadenylation of decapping.\n\nFigure 4. The modified gamma model predicts mRNA pA-tail lengths distributions. A. The probability of protection against decapping in function of pA-tail length is represented by the red line. Gray dots show experimental pA-tail length distributions from all Mex67-chase time-points. \n\n\n\nThe number of reads summing up to form the distribution is indicated in Fig. 2A. The presumed number of Pab1 subunits on a pA-tail of a given length is displayed. B. Conceptual scheme illustrating the modified gamma distribution parameters (see main text). γ_rate corresponds to the exponential coefficient of the right arm of the pA-tail distribution, whereas γ_shape+1 represents the number of critical events leading to complete mRNA decay. C. Using gray dots, three density plots show experimental pA-tail length distribution for whole mRNA transcriptome in control cells for replicate A and in control samples for RPL4A and HHF1 mRNAs. Black lines represent fitted modified gamma distributions. Estimation of new mRNA production (by log-fitting) is shown using blue lines. The red line represents the sum of the modified gamma and transcription estimate distributions D.-E. Changes in the value of γ_shape (D.) and γ_rate (E.) parameters of the modified gamma probability distribution over time for all mRNAs or those of low and high abundance separately (RPG and non-RPG are omitted for clarity). The parameters are given as full colored dots supplemented with vertical standard error bars. Each estimate was derived from distributions shown in Fig. 2A, 2D, EV1A, EV1H.-J. (refer to those panels for number of reads). Continuous functions, which were fitted are shown with the equations given. The number of dataset points considered for estimation of the functions’ equation is indicated on each panel. Those functions were used in subsequent modeling (Figure 4F.-G.and EV2F.-J.). F.-G. Time-dependent evolution of whole-transcriptome pA-tail length distribution (E.) or median (G.) based on functions described in Figure 4D.-E. H. Modified gamma model of whole transcriptome deadenylation over time in three-dimension shown as a continuous surface colored according to population density. Black dots show experimental pA-tail distributions. The number of reads summing up to form the distribution is indicated in Fig. 2A. I. As red triangles with vertical error bars are plotted terminal adenosine half-lives calculated independently for each position relative to their rank in the pA-tail, calculated from distributions adjusted for mRNA decapping (Figure EV3B). A continuous exponential function is fitted with a 0.95 confidence interval. J. Experimental pA-tail distributions (same as in Figure 4A) displayed on a normal-logarithmic scale (gray dots). The linear distribution between pA-tail lengths 25-60 (yellow box) is highlighted. The slope of the function represents the correction factor used to calculate microscopic enzymatic deadenylation speed from the apparent one. K.  Table summarizing the steps of the deadenylation modeling performed using the modified gamma distribution.\n\nFigure 5. At steady-state, deadenylation and decay rates correlate. A. Time-dependent change in quantile pA-tail lengths (as color-coded by quantile dots: upper – 75-80-85-90-95th; median - 50th; and lower – 15-10-5th) for the entire coding transcriptome distribution in each replicate. Fitted continuous lines represent the quantile deadenylation coefficient calculated based on the upper quantiles. B. Distribution of adenosine half-lives relative to pA-tail length in each quantile. The terminal adenosine half-life of 39 +/- 7 sec was calculated by averaging the half-lives obtained from quantiles 75-95th (blue area). C. Table summarizes key differences between the modified gamma and quantile methods for calculating deadenylation rate. D. Histogram displaying the distribution of single mRNA terminal adenosine half-lives for the entire coding transcriptome (light-red bars) or mRNAs of high abundance (gray bars). Vertical lines indicate the group median. E.-F. Comparison of decay and quantile deadenylation rates (E.) or log2-scaled mRNA half-life to terminal adenosine half-life (F.). Density plot represents all mRNAs, whereas mRNAs with at least 70 reads in replicate A are shown as individual dots with a blue regression line. Spearman’s rho correlations and p-values were calculated separately for each set using the cor() function in R. G. Schematic highlighting the strong, potentially causal link between deadenylation and decapping inferred from data presented in Figures 5E.-F. H. Comparison of decay and quantile deadenylation rates for various gene ontology groups (see also EV4D). I. Percentage of optimal codons compared to: log2 mRNA abundance, mean mRNA pA-tail length, log2 decay, or quantile deadenylation rates.\n\nFigure 6. Deadenylation stimulates decay but is not a prerequisite for RPG mRNA decapping under stress conditions. A. Time-points collected for the thiolutin 25 °C and heat stress 37 °C chase experiments. Colored surfaces designate the utility of each time frame. Dot contours represent data points excluded from the analysis. B.-C. Distribution of mRNA half-lives (B.) or terminal adenosine half-lives (C.) in Mex67-depletion, thiolutin, and heat stress chase datasets for RPG and non-RPG mRNAs transcriptionally down-regulated during heat stress according to Vinayachandran et al, (2018). The number of estimates in each group is indicated next to the figure legend. D. Time-dependent change in levels of RPG mRNAs in Mex67-depletion, thiolutin, and heat stress time course normalized to control. Fitted lines show the group trend with a 95% confidence interval in gray. Data points normalized to corresponding controls obtained for 13 min heat stress of a double ccr4Δ pan2Δ mutant (black triangle) or Mex67-AA strain treated or not with rapamycin 3 min prior to heat stress for 13 min at 37 °C. For these data, the median is shown along with the data-point density contour. Experiment legend is listed next to panel 6E. E. Time-dependent changes in pA-tail length values of the 95-90-85-80-75th quantiles normalized to the control sample for the same samples as in Fig. 6D. Normalization allows direct comparison of all changes within the group without grouping transcripts by control pA-tail length. F.-G. Northern blot showing RPS5 levels during a Mex67-depletion time course (F.) or heat stress at 37 °C and thiolutin treatment at 25 °C (G.). H. Normalized pA-tail density plot showing the whole transcriptome adenylation profiles in wild-type cells compared to single ccr4Δ or pan2Δ mutants and a double ccr4Δ pan2Δ strain. The gray box shows the range of adenylation produced de novo in the nucleus by the polyA-polymerase Pap1 on pre-mRNAs (Turtola et al, 2021). I. Spot tests comparing wild-type cells to ccr4Δ, pan2Δ, and double ccr4Δ pan2Δ mutant at indicated temperatures. J. Scheme illustrating the role of deadenylation in mRNA decapping and decay. For most mRNAs, deadenylation is a rate-limiting factor that dictates the onset of decapping. RPG transcripts are a special group for which deadenylation can accelerate decay in conditions such as heat stress, but ultimately, decapping and decay are activated by an unknown factor linked to nuclear export.\n"
   }
   
