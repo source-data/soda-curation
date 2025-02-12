@@ -33,8 +33,8 @@ class Panel:
 
     panel_label: str
     panel_caption: str
-    panel_bbox: List[float]
-    confidence: float
+    panel_bbox: List[float] = field(default_factory=list)
+    confidence: float = 0.0
     ai_response: Optional[str] = None
     sd_files: List[str] = field(default_factory=list)
 
@@ -125,7 +125,7 @@ class ZipStructure:
     docx: str = ""
     pdf: str = ""
     ai_response_locate_captions: Optional[str] = None
-    ai_response_extract_individual_captions: Optional[str] = None
+    ai_response_extract_individual_captions: Optional[str] = ""
     cost: ProcessingCost = field(default_factory=ProcessingCost)
     _full_docx: str = ""
     _full_pdf: str = ""

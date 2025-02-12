@@ -9,6 +9,7 @@ from src.soda_curation.pipeline.extract_captions.extract_captions_openai import 
     FigureCaptionExtractorOpenAI,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    Figure,
     ProcessingCost,
     ZipStructure,
 )
@@ -52,11 +53,16 @@ MOCK_EXTRACT_RESPONSE = {
             "figure_label": "Figure 1",
             "caption_title": "Test caption for figure 1",
             "figure_caption": "A) Panel A description. B) Panel B description.",
+            "panels": [
+                {"panel_label": "A", "panel_caption": "Panel A description"},
+                {"panel_label": "B", "panel_caption": "Panel B description"},
+            ],
         },
         {
             "figure_label": "Figure 2",
             "caption_title": "Test caption for figure 2",
             "figure_caption": "Multiple panels showing different aspects.",
+            "panels": [],
         },
     ]
 }
@@ -75,9 +81,8 @@ def mock_prompt_handler():
 
 @pytest.fixture
 def mock_openai_client():
-    """Create a mock OpenAI client."""
+    """Create a mock OpenAI client with properly structured responses."""
     with patch("openai.OpenAI") as mock_client:
-        # Create a properly structured mock response
         instance = mock_client.return_value
         instance.beta.chat.completions.parse.return_value = MagicMock(
             choices=[
@@ -100,10 +105,12 @@ def zip_structure():
         xml="test.xml",
         docx="test.docx",
         pdf="test.pdf",
-        figures=[],
+        figures=[
+            Figure(figure_label="Figure 1", img_files=[], sd_files=[]),
+            Figure(figure_label="Figure 2", img_files=[], sd_files=[]),
+        ],
         errors=[],
         cost=ProcessingCost(),
-        ai_response_extract_individual_captions="",
     )
 
 
@@ -154,6 +161,37 @@ class TestIndividualCaptionExtraction:
                     matching_figures[0].figure_caption == figure_data["figure_caption"]
                 )
 
+    def test_successful_extraction_with_panels(
+        self, mock_openai_client, mock_prompt_handler, zip_structure
+    ):
+        """Test successful extraction of captions with panel information."""
+        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+        updated_zip = extractor.extract_individual_captions(
+            "test content", zip_structure
+        )
+
+        assert len(updated_zip.figures) == 2
+
+        # Check Figure 1
+        figure1 = updated_zip.figures[0]
+        assert figure1.figure_label == "Figure 1"
+        assert figure1.caption_title == "Test caption for figure 1"
+        assert (
+            figure1.figure_caption == "A) Panel A description. B) Panel B description."
+        )
+        assert len(figure1.panels) == 2
+        assert figure1.panels[0].panel_label == "A"
+        assert figure1.panels[0].panel_caption == "Panel A description"
+        assert figure1.panels[1].panel_label == "B"
+        assert figure1.panels[1].panel_caption == "Panel B description"
+
+        # Check Figure 2
+        figure2 = updated_zip.figures[1]
+        assert figure2.figure_label == "Figure 2"
+        assert figure2.caption_title == "Test caption for figure 2"
+        assert figure2.figure_caption == "Multiple panels showing different aspects."
+        assert len(figure2.panels) == 0
+
     def test_api_error_handling(
         self, mock_openai_client, mock_prompt_handler, zip_structure
     ):
@@ -163,11 +201,11 @@ class TestIndividualCaptionExtraction:
         )
 
         extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        result = extractor.extract_individual_captions("test content", zip_structure)
+        updated_zip = extractor.extract_individual_captions(
+            "test content", zip_structure
+        )
 
-        assert isinstance(result, ZipStructure)
-        # Error cases should preserve empty string
-        assert result.ai_response_extract_individual_captions == ""
+        assert updated_zip.ai_response_extract_individual_captions == ""
 
     def test_empty_content(
         self, mock_openai_client, mock_prompt_handler, zip_structure
