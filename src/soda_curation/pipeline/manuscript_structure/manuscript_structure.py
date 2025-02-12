@@ -85,11 +85,10 @@ class TokenUsage:
 class ProcessingCost:
     """Tracks token usage and costs across different processing steps."""
 
-    locate_captions: TokenUsage = field(default_factory=TokenUsage)
+    extract_sections: TokenUsage = field(default_factory=TokenUsage)
     extract_individual_captions: TokenUsage = field(default_factory=TokenUsage)
     assign_panel_source: TokenUsage = field(default_factory=TokenUsage)
     match_caption_panel: TokenUsage = field(default_factory=TokenUsage)
-    locate_data_availability: TokenUsage = field(default_factory=TokenUsage)
     extract_data_sources: TokenUsage = field(default_factory=TokenUsage)
     total: TokenUsage = field(default_factory=TokenUsage)
 
@@ -149,10 +148,11 @@ class ZipStructure:
 
         # Add up each component
         for component in [
-            self.cost.locate_captions,
+            self.cost.extract_sections,
             self.cost.extract_individual_captions,
             self.cost.assign_panel_source,
             self.cost.match_caption_panel,
+            self.cost.extract_data_sources,
         ]:
             total.prompt_tokens += component.prompt_tokens
             total.completion_tokens += component.completion_tokens

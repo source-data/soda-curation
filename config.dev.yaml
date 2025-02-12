@@ -4,9 +4,9 @@
 default: &default
   pipeline:
     ##########################################################
-    # 1) Locate Captions Step
+    # 1) Extract  Figure Legends and Data Availability Sections
     ##########################################################
-    locate_captions:
+    extract_sections:
       openai:
         # OpenAI-specific parameters for this step only
         model: "gpt-4o"
@@ -17,15 +17,15 @@ default: &default
         presence_penalty: 0.0
         json_mode: true
         prompts:
-          # This "locate_captions" key is the "task" name used in PromptHandler.get_prompt(...)
           system: |
-            You are a scientific text analyzer focused on finding figure captions in scientific manuscripts. 
-                Your task is ONLY to find and return the complete figure-related text content from the manuscript.
+            You are a scientific text analyzer focused on extracting relevant sections from scientific manuscripts.
+            You will extract the sections `figure legends` and `data availability` from the manuscript text provided.
+            Your task is ONLY to find and return the complete figure-related text content from the manuscript.
                 
-            The text will be encoded as a `HTML` string and you are required to follow the instructions below, returning
-            also `HTML` formatted strings in the answer.
+            The text will be encoded as a `HTML` string and you are required to keep all the information available,
+            but extracting only the text of both sections.
 
-            Key Instructions:
+            Key Instructions for extracting `Figure Legends` section:
             1. Look for figure captions throughout the entire document - they can appear:
               - In a dedicated section marked as "Figure Legends", "Figure Captions", etc.
               - Embedded in the results section
@@ -46,6 +46,7 @@ default: &default
               - Scale bars and measurements
               - Panel labels and descriptions
               - Source references
+              - Do not include HTML tags in the response
 
             4. DO NOT:
               - Modify or rewrite the text
@@ -53,17 +54,26 @@ default: &default
               - Skip any figure-related content
               - Add any explanatory text of your own
 
+            Key Instructions for extracting `Data availability` section:
+            1. Look for the section titled "Data Availability" or similar in the manuscript.
+            2. Extract the content of this section.
+            3. If there are embedded hyperlinks in the HTML, please include them in the extracted text.
+            4. Follow same formating instructions as for the `Figure Legends` section.
+
             INPUT: Expected figures: $expected_figure_count
 
             Expected figure labels: $expected_figure_labels
 
             Manuscript_text: $manuscript_text
 
-            OUTPUT: Return ONLY the found figure-related text, exactly as it appears in the document. 
-            If you find multiple sections with figure descriptions, concatenate them all.
+            OUTPUT: 
 
-            If you truly cannot find ANY figure captions or descriptions in the document, 
-            only then return "No figure legends section found."
+            ```json
+            {
+              "figure_legends": "Complete figure-related text content from the manuscript",
+              "data_availability": "Complete data availability section content from the manuscript"
+            }
+            ```
           user: |
             Expected figures: $expected_figure_count
 
@@ -89,8 +99,7 @@ default: &default
         prompts:
           system: |
             You are an AI assistant specializing in extracting figure captions from scientific manuscripts. 
-            A section containing ALL figure captions has been provided. This section is encoded as a `HTML` string.
-            We REQUIRE that the figure captions and titles that you extract are returned also as `HTML` strings.
+            A section containing ALL figure captions has been provided.
 
             Your task is to parse these captions into a structured format:
 
@@ -126,11 +135,11 @@ default: &default
               "Figure 1": {
                 "figure_label": "Figure 1",
                 "caption_title": "Main descriptive sentence of the figure",
-                "figure_caption": "Figure caption not including title and <tag>label</tag>, but including all panel descriptions"
+                "figure_caption": "Figure caption not including title and label, but including all panel descriptions"
               },
               {
                 "figure_label": "Figure 2"
-                "caption_title": "Analysis of protein <tag>expression in response to</tag> treatment",
+                "caption_title": "Analysis of protein expression in response to treatment",
                 "figure_caption": "A) Western blot analysis... B) Quantification of..."
               }
             ]
@@ -141,6 +150,52 @@ default: &default
             Expected figure count: $expected_figure_count
 
             Expected labels: $expected_figure_labels
+
+    ##########################################################
+    # 3) Extract sources from data availability section
+    ##########################################################
+    extract_data_sources:
+      openai:
+        model: "gpt-4o-mini"
+        temperature: 0.1
+        top_p: 0.5
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            You are an expert at extracting structured data source information from scientific Data Availability sections.
+            Your task is to identify and extract information about databases, accession numbers, and URLs into a specific JSON format.
+
+            Expected output format:
+            ```
+            [
+              {
+                "database": "name of database",
+                "accession_number": "exact accession number",
+                "url": "complete URL (or DOI) if provided"
+              }
+            ]
+            ```
+            
+            Critical instructions:
+            1. Extract EVERY database source mentioned
+            2. Use EXACT database names as written
+            3. Include COMPLETE accession numbers and / or DOIs when present. Include in `accession_number` field.
+            4. Include FULL URLs when present
+            5. Output valid JSON array of objects
+            6. Return empty array [] if no database sources found
+            7. Do not:
+              - Create/guess URLs
+              - Add partial information
+              - Include file paths or other resources
+              - Include explanatory text
+
+          user: |
+            Extract all database sources and their details from this Data Availability section:
+
+            $data_availability
 
     ##########################################################
     # 3) Match Caption Panel Step
@@ -177,92 +232,6 @@ default: &default
             # System instructions for assigning panel sources...
           user: |
             # User prompt template for assigning panel sources...
-
-    ##########################################################
-    # 5) Locate Data availability section
-    ##########################################################
-    locate_data_availability:
-      openai:
-        model: "gpt-4o"
-        temperature: 0.1
-        top_p: 1.0
-        max_tokens: 2048
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
-        json_mode: true
-        prompts:
-          system: |
-            You are an expert at locating and extracting Data Availability sections from scientific manuscripts.
-            Your task is to find and return ONLY the data availability section content from the manuscript text.
-
-            The section may be found:
-            - As a dedicated section titled "Data Availability" 
-            - Under "Materials and Methods"
-            - Near manuscript end
-            - As "Availability of Data and Materials"
-            - Within supplementary information
-
-            Critical instructions:
-            1. Return ONLY the content of the section in HTML format, WITHOUT the section title
-            2. Include ALL content from this section with HTML tags (e.g., <p>content</p>)
-            3. Maintain exact formatting and text
-            4. Do not add comments or explanations
-            5. Do not modify or summarize the text
-
-          user: |
-            Find and extract the content of the Data Availability section from this manuscript:
-
-            $manuscript_text
-
-            Return ONLY the content in HTML format WITHOUT the section title.
-
-    ##########################################################
-    # 6) Extract sources from data availability section
-    ##########################################################
-    extract_data_sources:
-      openai:
-        model: "gpt-4o-mini"
-        temperature: 0.1
-        top_p: 1.0
-        max_tokens: 2048
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
-        json_mode: true
-        prompts:
-          system: |
-            You are an expert at extracting structured data source information from scientific Data Availability sections.
-            Your task is to identify and extract information about databases, accession numbers, and URLs into a specific JSON format.
-
-            Expected output format:
-            ```
-            [
-              {
-                "database": "name of database",
-                "accession_number": "exact accession number",
-                "url": "complete URL if provided"
-              }
-            ]
-            ```
-            
-            Critical instructions:
-            1. Extract EVERY database source mentioned
-            2. Use EXACT database names as written
-            3. Include COMPLETE accession numbers and / or DOIs when present. Include in `accession_number` field.
-            4. Include FULL URLs when present
-            5. Output valid JSON array of objects
-            6. Return empty array [] if no database sources found
-            7. Do not:
-              - Create/guess URLs
-              - Add partial information
-              - Include file paths or other resources
-              - Include explanatory text
-
-          user: |
-            Extract all database sources and their details from this Data Availability section:
-
-            $data_availability
-
-            Return ONLY a JSON array of data source objects as specified in the instructions.
 
     ##########################################################
     # 7) Object Detection Step (non-AI)

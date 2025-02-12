@@ -4,8 +4,6 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
-from openai.types.chat import ChatCompletion, ChatCompletionMessage
-from openai.types.chat.chat_completion import Choice
 
 from src.soda_curation.pipeline.extract_captions.extract_captions_openai import (
     FigureCaptionExtractorOpenAI,
@@ -15,17 +13,9 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import
     ZipStructure,
 )
 
-# Test data
+# Test configurations
 VALID_CONFIG = {
     "pipeline": {
-        "locate_captions": {
-            "openai": {
-                "model": "gpt-4o",
-                "temperature": 0.1,
-                "top_p": 1.0,
-                "prompts": {"system": "System prompt", "user": "User prompt"},
-            }
-        },
         "extract_individual_captions": {
             "openai": {
                 "model": "gpt-4o",
@@ -33,91 +23,43 @@ VALID_CONFIG = {
                 "top_p": 1.0,
                 "prompts": {"system": "System prompt", "user": "User prompt"},
             }
-        },
+        }
     }
 }
 
 INVALID_MODEL_CONFIG = {
     "pipeline": {
-        "locate_captions": {"openai": {"model": "invalid-model", "temperature": 0.1}},
-        "extract_individual_captions": {
-            "openai": {"model": "invalid-model", "temperature": 0.1}
-        },
+        "extract_individual_captions": {"openai": {"model": "invalid-model"}},
     }
 }
 
 INVALID_PARAMS_CONFIG = {
     "pipeline": {
-        "locate_captions": {
-            "openai": {"model": "gpt-4o", "temperature": 3.0, "top_p": 2.0}
-        },
         "extract_individual_captions": {
-            "openai": {"model": "gpt-4o", "temperature": 3.0, "top_p": 2.0}
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 3.0,
+                "top_p": 2.0,
+            }
+        }
+    }
+}
+
+# Mock response content
+MOCK_EXTRACT_RESPONSE = {
+    "figures": [
+        {
+            "figure_label": "Figure 1",
+            "caption_title": "Test caption for figure 1",
+            "figure_caption": "A) Panel A description. B) Panel B description.",
         },
-    }
+        {
+            "figure_label": "Figure 2",
+            "caption_title": "Test caption for figure 2",
+            "figure_caption": "Multiple panels showing different aspects.",
+        },
+    ]
 }
-
-# Mock API responses
-MOCK_LOCATE_RESPONSE = """Here are the figure captions:
-Figure 1: Test caption for figure 1. A) Panel A description. B) Panel B description.
-Figure 2: Test caption for figure 2. Multiple panels showing different aspects."""
-
-# Different formats of extract responses
-MOCK_EXTRACT_RESPONSE_CLEAN = """```json
-{
-    "Figure 1": {
-        "title": "Test caption for figure 1",
-        "caption": "A) Panel A description. B) Panel B description."
-    },
-    "Figure 2": {
-        "title": "Test caption for figure 2",
-        "caption": "Multiple panels showing different aspects."
-    }
-}
-```"""
-
-MOCK_EXTRACT_RESPONSE_WITH_TEXT = """Some extra text here ```json
-{
-    "Figure 1": {
-        "title": "Test caption for figure 1",
-        "caption": "A) Panel A description. B) Panel B description."
-    },
-    "Figure 2": {
-        "title": "Test caption for figure 2",
-        "caption": "Multiple panels showing different aspects."
-    }
-}
-```"""
-
-MOCK_EXTRACT_RESPONSE_NO_CODEBLOCK = """
-{
-    "Figure 1": {
-        "title": "Test caption for figure 1",
-        "caption": "A) Panel A description. B) Panel B description."
-    },
-    "Figure 2": {
-        "title": "Test caption for figure 2",
-        "caption": "Multiple panels showing different aspects."
-    }
-}
-"""
-
-MOCK_EXTRACT_RESPONSE_WITH_TEXT_NO_CODEBLOCK = """Some extra text here
-{
-    "Figure 1": {
-        "title": "Test caption for figure 1",
-        "caption": "A) Panel A description. B) Panel B description."
-    },
-    "Figure 2": {
-        "title": "Test caption for figure 2",
-        "caption": "Multiple panels showing different aspects."
-    }
-}
-"""
-
-MOCK_EXTRACT_RESPONSE_UNPARSEABLE = (
-    """Some text that is not JSON and cannot be parsed as such."""
-)
 
 
 @pytest.fixture
@@ -135,27 +77,18 @@ def mock_prompt_handler():
 def mock_openai_client():
     """Create a mock OpenAI client."""
     with patch("openai.OpenAI") as mock_client:
-        mock_message = ChatCompletionMessage(
-            content=MOCK_LOCATE_RESPONSE,
-            role="assistant",
-            function_call=None,
-            tool_calls=None,
+        # Create a properly structured mock response
+        instance = mock_client.return_value
+        instance.beta.chat.completions.parse.return_value = MagicMock(
+            choices=[
+                MagicMock(message=MagicMock(content=json.dumps(MOCK_EXTRACT_RESPONSE)))
+            ],
+            usage=MagicMock(
+                prompt_tokens=100,
+                completion_tokens=50,
+                total_tokens=150,
+            ),
         )
-        mock_choice = Choice(
-            finish_reason="stop",
-            index=0,
-            message=mock_message,
-        )
-        mock_completion = ChatCompletion(
-            id="123",
-            choices=[mock_choice],
-            created=1234567890,
-            model="gpt-4o",
-            object="chat.completion",
-            usage={"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150},
-        )
-
-        mock_client.return_value.chat.completions.create.return_value = mock_completion
         yield mock_client
 
 
@@ -170,6 +103,7 @@ def zip_structure():
         figures=[],
         errors=[],
         cost=ProcessingCost(),
+        ai_response_extract_individual_captions="",
     )
 
 
@@ -192,121 +126,86 @@ class TestConfigValidation:
             FigureCaptionExtractorOpenAI(INVALID_PARAMS_CONFIG, mock_prompt_handler)
 
 
-class TestLocateCaptions:
-    """Test caption location functionality."""
-
-    def test_successful_location(
-        self, mock_openai_client, mock_prompt_handler, zip_structure
-    ):
-        mock_resp = MagicMock()
-        mock_resp.choices[0].message.content = json.dumps(
-            {"figure_legends": MOCK_LOCATE_RESPONSE}
-        )
-        mock_openai_client.return_value.beta.chat.completions.parse.return_value = (
-            mock_resp
-        )
-
-        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        response, updated_zip = extractor.locate_captions("test content", zip_structure)
-        assert response == MOCK_LOCATE_RESPONSE
-
-    def test_location_error_handling(
-        self, mock_openai_client, mock_prompt_handler, zip_structure
-    ):
-        """Test error handling during caption location."""
-        mock_openai_client.return_value.chat.completions.create.side_effect = Exception(
-            "API Error"
-        )
-
-        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        with pytest.raises(Exception):
-            extractor.locate_captions(
-                "test content", zip_structure, 2, "Figure 1, Figure 2"
-            )
-
-
-class TestExtractIndividualCaptions:
+class TestIndividualCaptionExtraction:
     """Test individual caption extraction functionality."""
 
-    @pytest.mark.parametrize(
-        "response",
-        [
-            MOCK_EXTRACT_RESPONSE_CLEAN,
-            MOCK_EXTRACT_RESPONSE_WITH_TEXT,
-            MOCK_EXTRACT_RESPONSE_NO_CODEBLOCK,
-            MOCK_EXTRACT_RESPONSE_WITH_TEXT_NO_CODEBLOCK,
-        ],
-    )
     def test_successful_extraction(
-        self, mock_openai_client, mock_prompt_handler, zip_structure, response
-    ):
-        mock_resp = MagicMock()
-        mock_resp.choices[0].message.content = json.dumps(
-            {
-                "figures": [
-                    {
-                        "figure_label": "Figure 1",
-                        "caption_title": "Test caption for figure 1",
-                        "figure_caption": "A) Panel A description. B) Panel B description.",
-                    },
-                    {
-                        "figure_label": "Figure 2",
-                        "caption_title": "Test caption for figure 2",
-                        "figure_caption": "Multiple panels showing different aspects.",
-                    },
-                ]
-            }
-        )
-        mock_openai_client.return_value.beta.chat.completions.parse.return_value = (
-            mock_resp
-        )
-
-        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        result = extractor.extract_individual_captions("caption section", zip_structure)
-        assert isinstance(result, ZipStructure)
-
-    def test_extraction_error_handling(
         self, mock_openai_client, mock_prompt_handler, zip_structure
     ):
-        """Test error handling during individual caption extraction."""
-        mock_openai_client.return_value.chat.completions.create.side_effect = Exception(
-            "API Error"
+        """Test successful extraction of individual captions."""
+        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+        result = extractor.extract_individual_captions("test content", zip_structure)
+
+        assert isinstance(result, ZipStructure)
+        assert result.ai_response_extract_individual_captions == json.dumps(
+            MOCK_EXTRACT_RESPONSE
+        )
+
+        # Verify figures were updated correctly
+        for figure_data in MOCK_EXTRACT_RESPONSE["figures"]:
+            matching_figures = [
+                f
+                for f in result.figures
+                if f.figure_label == figure_data["figure_label"]
+            ]
+            if matching_figures:
+                assert matching_figures[0].caption_title == figure_data["caption_title"]
+                assert (
+                    matching_figures[0].figure_caption == figure_data["figure_caption"]
+                )
+
+    def test_api_error_handling(
+        self, mock_openai_client, mock_prompt_handler, zip_structure
+    ):
+        """Test handling of API errors."""
+        mock_openai_client.return_value.beta.chat.completions.parse.side_effect = (
+            Exception("API Error")
         )
 
         extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        with pytest.raises(Exception):
-            extractor.extract_individual_captions(
-                "caption section", zip_structure, 2, "Figure 1, Figure 2"
-            )
+        result = extractor.extract_individual_captions("test content", zip_structure)
+
+        assert isinstance(result, ZipStructure)
+        # Error cases should preserve empty string
+        assert result.ai_response_extract_individual_captions == ""
+
+    def test_empty_content(
+        self, mock_openai_client, mock_prompt_handler, zip_structure
+    ):
+        """Test handling of empty content."""
+        # Make sure empty content causes an error
+        mock_openai_client.return_value.beta.chat.completions.parse.side_effect = (
+            Exception("Empty content")
+        )
+
+        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+        result = extractor.extract_individual_captions("", zip_structure)
+
+        assert isinstance(result, ZipStructure)
+        # Error cases should preserve empty string
+        assert result.ai_response_extract_individual_captions == ""
 
 
 class TestResponseParsing:
     """Test parsing of AI responses."""
 
-    @pytest.mark.parametrize(
-        "response",
-        [
-            MOCK_EXTRACT_RESPONSE_CLEAN,
-            MOCK_EXTRACT_RESPONSE_WITH_TEXT,
-            MOCK_EXTRACT_RESPONSE_NO_CODEBLOCK,
-            MOCK_EXTRACT_RESPONSE_WITH_TEXT_NO_CODEBLOCK,
-        ],
-    )
-    def test_parse_valid_responses(self, mock_prompt_handler, response):
-        """Test parsing of various valid response formats."""
+    def test_parse_valid_response(self, mock_prompt_handler):
+        """Test parsing of valid response format."""
         extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        result = extractor._parse_captions(response)
+        result = extractor._parse_response(json.dumps(MOCK_EXTRACT_RESPONSE))
 
-        assert isinstance(result, dict)
-        assert "Figure 1" in result
-        assert result["Figure 1"]["title"] == "Test caption for figure 1"
-        assert (
-            result["Figure 1"]["caption"]
-            == "A) Panel A description. B) Panel B description."
+        assert len(result) > 0
+        assert "figures" in result
+        assert isinstance(result["figures"], list)
+        assert len(result["figures"]) == 2
+        assert all(
+            key in result["figures"][0]
+            for key in ["figure_label", "caption_title", "figure_caption"]
         )
 
-    def test_parse_unparseable_response(self, mock_prompt_handler):
-        """Test handling of unparseable response."""
+    def test_parse_invalid_response(self, mock_prompt_handler):
+        """Test parsing of invalid response."""
         extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        result = extractor._parse_captions(MOCK_EXTRACT_RESPONSE_UNPARSEABLE)
+        result = extractor._parse_response("Invalid JSON content")
+
         assert result == {}

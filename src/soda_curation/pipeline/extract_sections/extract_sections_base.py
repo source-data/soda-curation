@@ -1,8 +1,8 @@
-"""Base class for figure caption extraction."""
+"""Base class for extracting manuscript sections."""
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, Tuple
 
 from pydantic import BaseModel
 
@@ -11,26 +11,26 @@ from ..manuscript_structure.manuscript_structure import ZipStructure
 logger = logging.getLogger(__name__)
 
 
-class IndividualCaption(BaseModel):
-    """Model for individual figure caption."""
+class ExtractedSections(BaseModel):
+    """Model for extracted sections from manuscript."""
 
-    figure_label: str
-    caption_title: str
-    figure_caption: str
-
-
-class ExtractedCaptions(BaseModel):
-    """Model for extracted captions response."""
-
-    figures: List[IndividualCaption]
+    figure_legends: str
+    data_availability: str
 
 
-class FigureCaptionExtractor(ABC):
+class ExtractedSectionsResponse(BaseModel):
+    """Model for API response containing extracted sections."""
+
+    sections: ExtractedSections
+
+
+class SectionExtractor(ABC):
     """
-    Abstract base class for extracting figure captions from a document.
+    Abstract base class for extracting sections from manuscripts.
 
-    This class provides common functionality and defines the interface that all
-    figure caption extractors should implement.
+    This class defines the interface that all section extractors should implement.
+    It provides common functionality for extracting figure legends and data availability
+    sections from manuscript content.
     """
 
     def __init__(self, config: Dict, prompt_handler):
@@ -56,25 +56,28 @@ class FigureCaptionExtractor(ABC):
         pass
 
     @abstractmethod
-    def extract_individual_captions(
+    def extract_sections(
         self,
         doc_content: str,
         zip_structure: ZipStructure,
-    ) -> ZipStructure:
+    ) -> Tuple[str, str, ZipStructure]:
         """
-        Extract captions from the figure legends section and update ZipStructure.
+        Extract figure legends and data availability sections from document content.
 
         Args:
-            doc_content: Figure legends section content to analyze
+            doc_content: Document content to analyze
             zip_structure: Current ZIP structure to update
 
         Returns:
-            Updated ZipStructure with extracted captions
+            Tuple containing:
+            - str: The figure legends section
+            - str: The data availability section
+            - ZipStructure: Updated structure with costs and responses
         """
         pass
 
     def _parse_response(self, response: str) -> Dict:
-        """Parse AI response containing caption data."""
+        """Parse AI response containing extracted sections."""
         try:
             import json
             import re
@@ -96,5 +99,8 @@ class FigureCaptionExtractor(ABC):
             return json.loads(response)
 
         except Exception as e:
-            logger.error(f"Error parsing captions: {str(e)}")
-            return {}
+            logger.error(f"Error parsing extracted sections: {str(e)}")
+            return {
+                "figure_legends": "",
+                "data_availability": "",
+            }

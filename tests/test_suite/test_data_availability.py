@@ -1,5 +1,6 @@
-"""Tests for data availability extraction functionality."""
+"""Tests for data source extraction functionality."""
 
+import json
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -15,16 +16,6 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import
 # Test configurations
 VALID_CONFIG = {
     "pipeline": {
-        "locate_data_availability": {
-            "openai": {
-                "model": "gpt-4o",
-                "temperature": 0.1,
-                "top_p": 1.0,
-                "frequency_penalty": 0,
-                "presence_penalty": 0,
-                "prompts": {"system": "System prompt", "user": "User prompt"},
-            }
-        },
         "extract_data_sources": {
             "openai": {
                 "model": "gpt-4o",
@@ -34,27 +25,18 @@ VALID_CONFIG = {
                 "presence_penalty": 0,
                 "prompts": {"system": "System prompt", "user": "User prompt"},
             }
-        },
+        }
     }
 }
 
 INVALID_MODEL_CONFIG = {
     "pipeline": {
-        "locate_data_availability": {"openai": {"model": "invalid-model"}},
         "extract_data_sources": {"openai": {"model": "invalid-model"}},
     }
 }
 
 INVALID_PARAMS_CONFIG = {
     "pipeline": {
-        "locate_data_availability": {
-            "openai": {
-                "model": "gpt-4o",
-                "temperature": 3.0,
-                "top_p": 2.0,
-                "frequency_penalty": 3.0,
-            }
-        },
         "extract_data_sources": {
             "openai": {
                 "model": "gpt-4o",
@@ -62,36 +44,22 @@ INVALID_PARAMS_CONFIG = {
                 "top_p": 2.0,
                 "frequency_penalty": 3.0,
             }
-        },
+        }
     }
 }
 
 # Mock response content
-MOCK_SECTION = """```json
-{
-    "data_availability": "Data Availability:\\nThe data in this study are available under the following accession numbers:\\n- RNA-seq data: GEO: GSE123456\\n- Proteomics data: PRIDE: PXD987654\\n- Code repository: GitHub: https://github.com/example/code"
+MOCK_SOURCES_RESPONSE = {
+    "sources": [
+        {"database": "GEO", "accession_number": "GSE123456", "url": ""},
+        {"database": "PRIDE", "accession_number": "PXD987654", "url": ""},
+        {
+            "database": "GitHub",
+            "accession_number": "example/code",
+            "url": "https://github.com/example/code",
+        },
+    ]
 }
-```"""
-
-MOCK_SOURCES = """```json
-[
-    {
-        "database": "GEO",
-        "accession_number": "GSE123456",
-        "url": ""
-    },
-    {
-        "database": "PRIDE",
-        "accession_number": "PXD987654",
-        "url": ""
-    },
-    {
-        "database": "GitHub",
-        "accession_number": "example/code",
-        "url": "https://github.com/example/code"
-    }
-]
-```"""
 
 
 @pytest.fixture
@@ -109,52 +77,17 @@ def mock_prompt_handler():
 def mock_openai_client():
     """Create a mock OpenAI client."""
     with patch("openai.OpenAI") as mock_client:
-        # Mock for locate_data_availability
-        mock_resp1 = MagicMock()
-        mock_resp1.choices = [MagicMock()]
-        mock_resp1.choices[
-            0
-        ].message.content = """```json
-        {
-            "data_availability": "Data Availability:\\nThe data in this study are available under the following accession numbers:\\n- RNA-seq data: GEO: GSE123456\\n- Proteomics data: PRIDE: PXD987654\\n- Code repository: GitHub: https://github.com/example/code"
-        }
-        ```"""
-        mock_resp1.usage = MagicMock(
-            prompt_tokens=100, completion_tokens=50, total_tokens=150
+        instance = mock_client.return_value
+        instance.beta.chat.completions.parse.return_value = MagicMock(
+            choices=[
+                MagicMock(message=MagicMock(content=json.dumps(MOCK_SOURCES_RESPONSE)))
+            ],
+            usage=MagicMock(
+                prompt_tokens=100,
+                completion_tokens=50,
+                total_tokens=150,
+            ),
         )
-
-        # Mock for extract_data_sources
-        mock_resp2 = MagicMock()
-        mock_resp2.choices = [MagicMock()]
-        mock_resp2.choices[
-            0
-        ].message.content = """```json
-        [
-            {
-                "database": "GEO",
-                "accession_number": "GSE123456",
-                "url": null
-            },
-            {
-                "database": "PRIDE",
-                "accession_number": "PXD987654",
-                "url": null
-            },
-            {
-                "database": "GitHub",
-                "accession_number": "example/code",
-                "url": "https://github.com/example/code"
-            }
-        ]
-        ```"""
-        mock_resp2.usage = MagicMock(
-            prompt_tokens=80, completion_tokens=40, total_tokens=120
-        )
-
-        mock_client.return_value.chat.completions.create.side_effect = [
-            mock_resp1,
-            mock_resp2,
-        ]
         yield mock_client
 
 
@@ -168,6 +101,10 @@ def zip_structure():
         pdf="test.pdf",
         figures=[],
         errors=[],
+        data_availability={
+            "section_text": "",
+            "data_sources": [],
+        },
         cost=ProcessingCost(),
     )
 
@@ -191,76 +128,83 @@ class TestConfigValidation:
             DataAvailabilityExtractorOpenAI(INVALID_PARAMS_CONFIG, mock_prompt_handler)
 
 
-class TestDataAvailabilityExtraction:
-    """Test data availability extraction functionality."""
+class TestDataSourceExtraction:
+    """Test data source extraction functionality."""
 
     def test_successful_extraction(
         self, mock_openai_client, mock_prompt_handler, zip_structure
     ):
-        """Test successful extraction of data availability information."""
+        """Test successful extraction of data sources."""
         extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        result = extractor.extract_data_availability("test content", zip_structure)
+        result = extractor.extract_data_sources("test content", zip_structure)
 
         assert isinstance(result, ZipStructure)
-        assert "data_availability" in result.__dict__
-        assert "GEO: GSE123456" in result.data_availability["section_text"]
-        assert len(result.data_availability["data_sources"]) == 3
-        assert result.data_availability["data_sources"][0]["database"] == "GEO"
+        assert "section_text" in result.data_availability
+        assert "data_sources" in result.data_availability
+        assert len(result.data_availability["data_sources"]) == len(
+            MOCK_SOURCES_RESPONSE["sources"]
+        )
 
-    def test_no_section_found(
+        for actual, expected in zip(
+            result.data_availability["data_sources"], MOCK_SOURCES_RESPONSE["sources"]
+        ):
+            assert actual["database"] == expected["database"]
+            assert actual["accession_number"] == expected["accession_number"]
+            assert actual["url"] == expected["url"]
+
+    def test_no_sources_found(
         self, mock_openai_client, mock_prompt_handler, zip_structure
     ):
-        """Test handling when no data availability section is found."""
-        # Create new mock with proper response format
-        mock_empty_response = MagicMock()
-        mock_empty_response.choices = [MagicMock()]
-
-        # The response should directly match what the extractor will put in the structure
-        mock_empty_response.choices[
-            0
-        ].message.content = (
-            """<p>This study includes no data deposited in external repositories.</p>"""
-        )
-
-        # Set up token usage tracking
-        from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
-            TokenUsage,
-        )
-
-        mock_empty_response.usage = TokenUsage(
-            prompt_tokens=50, completion_tokens=10, total_tokens=60, cost=0.0
-        )
-
-        # Override the mock's return value
-        mock_openai_client.return_value.chat.completions.create.reset_mock()
-        mock_openai_client.return_value.chat.completions.create.side_effect = None
-        mock_openai_client.return_value.chat.completions.create.return_value = (
-            mock_empty_response
+        """Test handling when no data sources are found."""
+        mock_empty_response = json.dumps({"sources": []})
+        mock_openai_client.return_value.beta.chat.completions.parse.return_value = (
+            MagicMock(
+                choices=[MagicMock(message=MagicMock(content=mock_empty_response))],
+                usage=MagicMock(
+                    prompt_tokens=50,
+                    completion_tokens=10,
+                    total_tokens=60,
+                ),
+            )
         )
 
         extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        result = extractor.extract_data_availability("test content", zip_structure)
+        result = extractor.extract_data_sources("test content", zip_structure)
 
         assert isinstance(result, ZipStructure)
-
-        # The data_availability structure should match the expected format
-        assert "data_availability" in result.__dict__
-        assert result.data_availability == {
-            "section_text": "<p>This study includes no data deposited in external repositories.</p>",
-            "data_sources": [],
-        }
+        assert result.data_availability["data_sources"] == []
 
     def test_api_error_handling(
         self, mock_openai_client, mock_prompt_handler, zip_structure
     ):
         """Test handling of API errors."""
-        mock_openai_client.return_value.chat.completions.create.side_effect = Exception(
-            "API Error"
+        mock_openai_client.return_value.beta.chat.completions.parse.side_effect = (
+            Exception("API Error")
         )
 
         extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        result = extractor.extract_data_availability("test content", zip_structure)
+        result = extractor.extract_data_sources("test content", zip_structure)
 
         assert isinstance(result, ZipStructure)
-        # Fix the data structure access
-        assert result.data_availability == {"section_text": "", "data_sources": []}
+        assert result.data_availability["data_sources"] == []
+
+
+class TestResponseParsing:
+    """Test parsing of AI responses."""
+
+    def test_parse_valid_response(self, mock_prompt_handler):
+        """Test parsing of valid response format."""
+        extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+        result = extractor._parse_response(json.dumps(MOCK_SOURCES_RESPONSE))
+
+        assert isinstance(result, list)
+        assert len(result) == len(MOCK_SOURCES_RESPONSE["sources"])
+        for source in result:
+            assert all(key in source for key in ["database", "accession_number", "url"])
+
+    def test_parse_invalid_response(self, mock_prompt_handler):
+        """Test parsing of invalid response."""
+        extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+        result = extractor._parse_response("Invalid JSON content")
+
+        assert result == []
