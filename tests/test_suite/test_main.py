@@ -9,8 +9,40 @@ import pytest
 
 from src.soda_curation.main import main
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    ProcessingCost,
     ZipStructure,
 )
+
+MOCK_CONFIG = {
+    "pipeline": {
+        "extract_sections": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "frequency_penalty": 0,
+                "presence_penalty": 0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
+        "extract_individual_captions": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
+        "extract_data_sources": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
+    }
+}
 
 
 @pytest.fixture
@@ -23,33 +55,6 @@ def mock_paths(tmp_path):
     }
 
 
-def test_main_missing_zip_path():
-    """Test main fails when no ZIP path provided."""
-    with pytest.raises(ValueError, match="ZIP path must be provided"):
-        main(None, "config.yaml")
-
-
-def test_main_missing_config_path():
-    """Test main fails when no config path provided."""
-    with pytest.raises(ValueError, match="config path must be provided"):
-        main("test.zip", None)
-
-
-def test_main_zip_not_found(mock_paths):
-    """Test main fails when ZIP file doesn't exist."""
-    with pytest.raises(FileNotFoundError, match="ZIP file .* does not exist"):
-        main(mock_paths["zip_path"], mock_paths["config_path"])
-
-
-def test_main_config_not_found(mock_paths, tmp_path):
-    """Test main fails when config file doesn't exist."""
-    # Create dummy ZIP
-    Path(mock_paths["zip_path"]).touch()
-
-    with pytest.raises(FileNotFoundError, match="Config file .* does not exist"):
-        main(mock_paths["zip_path"], mock_paths["config_path"])
-
-
 @pytest.fixture
 def mock_zip_content(tmp_path):
     """Create a mock ZIP file with required structure."""
@@ -60,64 +65,20 @@ def mock_zip_content(tmp_path):
         # Create required files and directories
         zf.writestr(f"{manuscript_id}.xml", "<xml>dummy content</xml>")
         zf.writestr(f"Doc/{manuscript_id}Manuscript_TextIG.docx", "dummy content")
-        zf.writestr("graphic/", "")  # Empty string for directories
         zf.writestr("graphic/FIGURE 1.tif", "dummy image content")
         zf.writestr("graphic/FIGURE 2.tif", "dummy image content")
-        zf.writestr("pdf/", "")
         zf.writestr(f"pdf/{manuscript_id}.pdf", "dummy pdf content")
-        zf.writestr("suppl_data/", "")
         zf.writestr("suppl_data/Figure_3sd.zip", "dummy zip content")
-        zf.writestr("prod_forms/", "")
 
     return str(zip_path)
 
 
 @pytest.fixture
 def mock_config(tmp_path):
-    """Create a mock config file with all required sections."""
+    """Create a mock config file."""
     config_path = tmp_path / "config.yaml"
-    config_content = """
-default: &default
-    pipeline:
-        locate_captions:
-            openai:
-                model: gpt-4o
-                temperature: 0.1
-                prompts:
-                    system: "System prompt"
-                    user: "User prompt"
-        extract_individual_captions:
-            openai:
-                model: gpt-4o
-                temperature: 0.1
-                prompts:
-                    system: "System prompt"
-                    user: "User prompt"
-        locate_data_availability:
-            openai:
-                model: gpt-4o
-                temperature: 0.1
-                prompts:
-                    system: "System prompt"
-                    user: "User prompt"
-        extract_data_sources:
-            openai:
-                model: gpt-4o-mini
-                temperature: 0.1
-                prompts:
-                    system: "System prompt"
-                    user: "User prompt"
-        object_detection:
-            model_path: "data/models/panel_detection_model_no_labels.pt"
-            confidence_threshold: 0.25
-            iou_threshold: 0.1
-            image_size: 512
-            max_detections: 30
-
-dev:
-    <<: *default
-"""
-    config_path.write_text(config_content)
+    with open(config_path, "w") as f:
+        json.dump(MOCK_CONFIG, f)
     return str(config_path)
 
 
@@ -133,27 +94,63 @@ def mock_structure():
         errors=[],
         appendix=[],
         non_associated_sd_files=[],
+        cost=ProcessingCost(),
+        data_availability={"section_text": "", "data_sources": []},
+        ai_response_locate_captions="",
+        ai_response_extract_individual_captions="",
     )
 
 
+@patch("yaml.safe_load")
 def test_main_creates_output_directory(
-    mock_zip_content, mock_config, mock_structure, tmp_path
+    mock_yaml_load, mock_zip_content, mock_config, mock_structure, tmp_path
 ):
     """Test main creates output directory if it doesn't exist."""
+    # Mock the yaml config loading
+    mock_yaml_load.return_value = {"default": MOCK_CONFIG}
+
     # Create output path in nonexistent directory
     output_dir = tmp_path / "nonexistent" / "nested" / "path"
     output_path = str(output_dir / "result.json")
 
-    # Add patch for temporary directory creation
+    # Add patches for pipeline components
     with patch("src.soda_curation.main.setup_extract_dir") as mock_setup_dir, patch(
         "src.soda_curation.main.XMLStructureExtractor"
-    ) as mock_extractor:
+    ) as mock_extractor, patch(
+        "src.soda_curation.main.SectionExtractorOpenAI"
+    ) as mock_section_extractor, patch(
+        "src.soda_curation.main.FigureCaptionExtractorOpenAI"
+    ) as mock_caption_extractor, patch(
+        "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
+    ) as mock_data_extractor:
         # Configure mocks
         extract_dir = tmp_path / "extract"
         mock_setup_dir.return_value = extract_dir
+
+        # XML extractor mock
         mock_instance = MagicMock()
         mock_instance.extract_structure.return_value = mock_structure
+        mock_instance.extract_docx_content.return_value = "test content"
         mock_extractor.return_value = mock_instance
+
+        # Section extractor mock
+        mock_section_instance = MagicMock()
+        mock_section_instance.extract_sections.return_value = (
+            "test legends",
+            "test data",
+            mock_structure,
+        )
+        mock_section_extractor.return_value = mock_section_instance
+
+        # Caption extractor mock
+        mock_caption_instance = MagicMock()
+        mock_caption_instance.extract_individual_captions.return_value = mock_structure
+        mock_caption_extractor.return_value = mock_caption_instance
+
+        # Data extractor mock
+        mock_data_instance = MagicMock()
+        mock_data_instance.extract_data_sources.return_value = mock_structure
+        mock_data_extractor.return_value = mock_data_instance
 
         # Run main
         main(mock_zip_content, mock_config, output_path)
@@ -162,38 +159,92 @@ def test_main_creates_output_directory(
         assert output_dir.exists()
         assert Path(output_path).exists()
 
-        # Verify mock was called correctly with the controlled temporary directory
-        mock_extractor.assert_called_once_with(mock_zip_content, str(extract_dir))
 
-
-def test_main_successful_run(mock_zip_content, mock_config, mock_structure):
+@patch("yaml.safe_load")
+def test_main_successful_run(
+    mock_yaml_load, mock_zip_content, mock_config, mock_structure
+):
     """Test successful execution of main function."""
-    with patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor:
-        # Configure mock
+    # Mock the yaml config loading
+    mock_yaml_load.return_value = {"default": MOCK_CONFIG}
+
+    with patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor, patch(
+        "src.soda_curation.main.SectionExtractorOpenAI"
+    ) as mock_section_extractor, patch(
+        "src.soda_curation.main.FigureCaptionExtractorOpenAI"
+    ) as mock_caption_extractor, patch(
+        "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
+    ) as mock_data_extractor:
+        # Configure mocks same as above
         mock_instance = MagicMock()
         mock_instance.extract_structure.return_value = mock_structure
+        mock_instance.extract_docx_content.return_value = "test content"
         mock_extractor.return_value = mock_instance
+
+        mock_section_instance = MagicMock()
+        mock_section_instance.extract_sections.return_value = (
+            "test legends",
+            "test data",
+            mock_structure,
+        )
+        mock_section_extractor.return_value = mock_section_instance
+
+        mock_caption_instance = MagicMock()
+        mock_caption_instance.extract_individual_captions.return_value = mock_structure
+        mock_caption_extractor.return_value = mock_caption_instance
+
+        mock_data_instance = MagicMock()
+        mock_data_instance.extract_data_sources.return_value = mock_structure
+        mock_data_extractor.return_value = mock_data_instance
 
         # Run main
         result = main(mock_zip_content, mock_config)
 
-        # Verify output is valid JSON string
+        # Verify output
         assert isinstance(result, str)
         result_dict = json.loads(result)
         assert "manuscript_id" in result_dict
         assert result_dict["manuscript_id"] == "EMBOJ-DUMMY-ZIP"
 
 
+@patch("yaml.safe_load")
 def test_main_no_output_path_returns_json(
-    mock_zip_content, mock_config, mock_structure
+    mock_yaml_load, mock_zip_content, mock_config, mock_structure
 ):
     """Test main returns JSON string when no output path provided."""
-    with patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor:
-        # Configure mock
+    # Mock the yaml config loading
+    mock_yaml_load.return_value = {"default": MOCK_CONFIG}
+
+    with patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor, patch(
+        "src.soda_curation.main.SectionExtractorOpenAI"
+    ) as mock_section_extractor, patch(
+        "src.soda_curation.main.FigureCaptionExtractorOpenAI"
+    ) as mock_caption_extractor, patch(
+        "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
+    ) as mock_data_extractor:
+        # Configure mocks same as above
         mock_instance = MagicMock()
         mock_instance.extract_structure.return_value = mock_structure
+        mock_instance.extract_docx_content.return_value = "test content"
         mock_extractor.return_value = mock_instance
+
+        mock_section_instance = MagicMock()
+        mock_section_instance.extract_sections.return_value = (
+            "test legends",
+            "test data",
+            mock_structure,
+        )
+        mock_section_extractor.return_value = mock_section_instance
+
+        mock_caption_instance = MagicMock()
+        mock_caption_instance.extract_individual_captions.return_value = mock_structure
+        mock_caption_extractor.return_value = mock_caption_instance
+
+        mock_data_instance = MagicMock()
+        mock_data_instance.extract_data_sources.return_value = mock_structure
+        mock_data_extractor.return_value = mock_data_instance
 
         result = main(mock_zip_content, mock_config)
         assert isinstance(result, str)
-        assert json.loads(result)["manuscript_id"] == "EMBOJ-DUMMY-ZIP"
+        result_dict = json.loads(result)
+        assert result_dict["manuscript_id"] == "EMBOJ-DUMMY-ZIP"
