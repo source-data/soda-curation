@@ -249,7 +249,7 @@ class BenchmarkRunner:
         summary = self._generate_summary(df)
         summary_file = self.results_dir / "summary.json"
         with open(summary_file, "w") as f:
-            json.dump(summary, f, indent=2)
+            json.dump(summary, f, indent=2, ensure_ascii=False)
 
         # Save configuration
         config_file = self.results_dir / "config.yaml"
@@ -258,7 +258,7 @@ class BenchmarkRunner:
 
         logger.info(f"Results saved to {self.results_dir}")
 
-    def _generate_summary(self, df: pd.DataFrame) -> Dict:
+    def _generate_summary(self, df: pd.DataFrame) -> Dict[str, Any]:
         """Generate summary of results."""
         summary = {}
 
