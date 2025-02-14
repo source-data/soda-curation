@@ -64,64 +64,64 @@ class SectionExtractorOpenAI(SectionExtractor):
         zip_structure: ZipStructure,
     ) -> Tuple[str, str, ZipStructure]:
         """Extract figure legends and data availability sections."""
-        try:
-            # Get prompts with variables substituted
-            prompts = self.prompt_handler.get_prompt(
-                step="extract_sections",
-                variables={
-                    "expected_figure_count": len(zip_structure.figures),
-                    "expected_figure_labels": [
-                        figure.figure_label for figure in zip_structure.figures
-                    ],
-                    "manuscript_text": doc_content,
-                },
-            )
+        # try:
+        # Get prompts with variables substituted
+        prompts = self.prompt_handler.get_prompt(
+            step="extract_sections",
+            variables={
+                "expected_figure_count": len(zip_structure.figures),
+                "expected_figure_labels": [
+                    figure.figure_label for figure in zip_structure.figures
+                ],
+                "manuscript_text": doc_content,
+            },
+        )
 
-            # Prepare messages
-            messages = [
-                {"role": "system", "content": prompts["system"]},
-                {"role": "user", "content": prompts["user"]},
-            ]
+        # Prepare messages
+        messages = [
+            {"role": "system", "content": prompts["system"]},
+            {"role": "user", "content": prompts["user"]},
+        ]
 
-            config_ = self.config["pipeline"]["extract_sections"]["openai"]
-            model_ = config_.get("model", "gpt-4o")
+        config_ = self.config["pipeline"]["extract_sections"]["openai"]
+        model_ = config_.get("model", "gpt-4o")
 
-            response = self.client.beta.chat.completions.parse(
-                model=model_,
-                messages=messages,
-                response_format=ExtractedSections,
-                temperature=config_.get("temperature", 0.1),
-                top_p=config_.get("top_p", 1.0),
-                frequency_penalty=config_.get("frequency_penalty", 0),
-                presence_penalty=config_.get("presence_penalty", 0),
-            )
+        response = self.client.beta.chat.completions.parse(
+            model=model_,
+            messages=messages,
+            response_format=ExtractedSections,
+            temperature=config_.get("temperature", 0.1),
+            top_p=config_.get("top_p", 1.0),
+            frequency_penalty=config_.get("frequency_penalty", 0),
+            presence_penalty=config_.get("presence_penalty", 0),
+        )
 
-            # Update token usage - we'll split the cost between the two tasks
-            usage_cost = response.usage.total_tokens  # Split cost evenly
-            update_token_usage(
-                zip_structure.cost.extract_sections,
-                {
-                    "usage": {
-                        "prompt_tokens": response.usage.prompt_tokens,
-                        "completion_tokens": response.usage.completion_tokens,
-                        "total_tokens": usage_cost,
-                    }
-                },
-                model_,
-            )
+        # Update token usage - we'll split the cost between the two tasks
+        usage_cost = response.usage.total_tokens  # Split cost evenly
+        update_token_usage(
+            zip_structure.cost.extract_sections,
+            {
+                "usage": {
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                    "total_tokens": usage_cost,
+                }
+            },
+            model_,
+        )
 
-            # Store response in both relevant places for backward compatibility
-            response_content = response.choices[0].message.content
+        # Store response in both relevant places for backward compatibility
+        response_content = response.choices[0].message.content
 
-            # Parse and return the sections
-            result = json.loads(response_content)
-            zip_structure.ai_response_locate_captions = result["figure_legends"]
-            return (
-                result["figure_legends"],
-                result["data_availability"],
-                zip_structure,
-            )
+        # Parse and return the sections
+        result = json.loads(response_content)
+        zip_structure.ai_response_locate_captions = result["figure_legends"]
+        return (
+            result["figure_legends"],
+            result["data_availability"],
+            zip_structure,
+        )
 
-        except Exception as e:
-            logger.error(f"Error extracting sections: {str(e)}")
-            return "", "", zip_structure
+        # except Exception as e:
+        #     logger.error(f"Error extracting sections: {str(e)}")
+        #     return "", "", zip_structure

@@ -32,9 +32,9 @@ providers:
       # - name: "gpt-4o-mini"
       #   temperatures: [0.0, 0.1, 0.5]
       #   top_p: [0.1, 1.0]
-      - name: "gpt-4o-mini"
-        temperatures: [0.0]
-        top_p: [0.0]
+      - name: "gpt-4o"
+        temperatures: [0.5]
+        top_p: [0.5]
 
 # Test run configuration  
 test_runs:

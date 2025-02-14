@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Generator, List, Optional
 
+import nltk
 import pandas as pd
 import pytest
 import yaml
@@ -24,6 +25,41 @@ from src.soda_curation.pipeline.prompt_handler import PromptHandler
 from .metrics import get_metrics_for_task
 
 logger = logging.getLogger(__name__)
+
+
+# Download required NLTK data
+try:
+    nltk.data.find("tokenizers/punkt_tab")
+except LookupError:
+    nltk.download("punkt")
+    nltk.download("punkt_tab")
+
+
+def preprocess_text(text: str) -> str:
+    """
+    Preprocess text for comparison by:
+    1. Removing escape characters
+    2. Normalizing whitespace
+    3. Stripping extra spaces
+
+    Args:
+        text (str): Input text to process
+
+    Returns:
+        str: Cleaned text
+    """
+    if not isinstance(text, str):
+        return text
+
+    # Replace common escape sequences with their actual characters
+    text = text.replace("\\n", " ")
+    text = text.replace("\\t", " ")
+    text = text.replace("\\r", " ")
+
+    # Normalize whitespace
+    text = " ".join(text.split())
+
+    return text.strip()
 
 
 # Load configuration once at module level
@@ -296,53 +332,43 @@ class BenchmarkRunner:
             if not pipeline_config:
                 raise ValueError("No pipeline configuration found in default profile")
 
-            # Create prompt handler with the pipeline configuration
-            prompt_handler = PromptHandler({"pipeline": pipeline_config})
-
-            # Configure the appropriate extractor based on provider
+            # Provider-specific configuration
             provider = test_case["provider"]
 
-            # Create extractor configuration that matches the expected structure
+            # Create extractor configuration
             extractor_config = {
+                "api_key": os.environ.get(f"{provider.upper()}_API_KEY"),
                 "pipeline": {
                     "extract_sections": {
                         provider: {
                             "model": test_case["model"],
                             "temperature": test_case["temperature"],
                             "top_p": test_case["top_p"],
-                            "max_tokens": pipeline_config["extract_sections"][
-                                provider
-                            ].get("max_tokens", 2048),
-                            "frequency_penalty": pipeline_config["extract_sections"][
-                                provider
-                            ].get("frequency_penalty", 0.0),
-                            "presence_penalty": pipeline_config["extract_sections"][
-                                provider
-                            ].get("presence_penalty", 0.0),
-                            "json_mode": pipeline_config["extract_sections"][
-                                provider
-                            ].get("json_mode", True),
-                            # Get prompts from the pipeline config
-                            "prompts": pipeline_config["extract_sections"][provider][
-                                "prompts"
-                            ],
+                            "prompts": {
+                                "system": pipeline_config["extract_sections"][provider][
+                                    "prompts"
+                                ]["system"],
+                                "user": pipeline_config["extract_sections"][provider][
+                                    "prompts"
+                                ]["user"],
+                            },
                         }
                     }
-                }
+                },
             }
 
-            # Add provider-specific configuration
-            if provider == "openai":
-                extractor_config["api_key"] = os.environ.get("OPENAI_API_KEY")
-            elif provider == "anthropic":
-                raise NotImplementedError("Anthropic is not supported yet")
-            else:
-                raise ValueError(f"Unsupported provider: {provider}")
+            # Create prompt handler with the pipeline configuration
+            prompt_handler = PromptHandler(extractor_config["pipeline"])
 
             # Create sections extractor instance
-            sections_extractor = SectionExtractorOpenAI(
-                extractor_config, prompt_handler
-            )
+            if provider == "anthropic":
+                raise NotImplementedError("Anthropic is not supported yet")
+            elif provider == "openai":
+                sections_extractor = SectionExtractorOpenAI(
+                    extractor_config, prompt_handler
+                )
+            else:
+                raise ValueError(f"Unsupported provider: {provider}")
 
             # Extract sections
             (
@@ -397,6 +423,11 @@ def test_pipeline(test_case: Dict[str, Any]) -> Dict[str, Any]:
     try:
         # Run test
         result = runner.run_test(test_case)
+        # Preprocess the texts
+        if isinstance(result["output"], str):
+            result["output"] = preprocess_text(result["output"])
+        if isinstance(result["expected"], str):
+            result["expected"] = preprocess_text(result["expected"])
 
         # Create test case
         deepeval_test = LLMTestCase(
