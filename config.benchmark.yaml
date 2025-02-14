@@ -1,0 +1,56 @@
+# Evaluation configuration file
+
+# Global settings
+output_dir: "/app/data/benchmark/"
+ground_truth_dir: "/app/data/ground_truth"
+manuscript_dir: "/app/data/archives"
+prompts_source: "/app/config.dev.yaml"
+
+# Test selection
+enabled_tests:
+  - extract_sections
+  # - extract_captions
+  # - assign_panel_source
+  # - match_caption_panel
+  # - extract_data_availability
+
+# Model configurations to test
+providers:
+  # anthropic:
+  #   models:
+  #     - name: "claude-3-5-sonnet-20240620"
+  #       temperatures: [0.0, 0.3, 0.7]
+  #       top_p: [0.1, 1.0]
+  #     - name: "claude-3-haiku-20240620"
+  #       temperatures: [0.0, 0.3, 0.7]
+  #       top_p: [0.1, 1.0]
+  openai:
+    models:
+      # - name: "gpt-4o"
+      #   temperatures: [0.0, 0.1, 0.5]
+      #   top_p: [0.1, 1.0]
+      # - name: "gpt-4o-mini"
+      #   temperatures: [0.0, 0.1, 0.5]
+      #   top_p: [0.1, 1.0]
+      - name: "gpt-4o-mini"
+        temperatures: [0.0]
+        top_p: [0.0]
+
+# Test run configuration  
+test_runs:
+  n_runs: 1  # Number of times to run each configuration
+  # manuscripts: "all"  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
+  manuscripts: 1  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
+
+# Results configuration
+results:
+  tag_prefix: "benchmark"  # Git tag prefix for results
+  save_prompts: true  # Whether to save prompts used in evaluation
+  metrics:
+    - rouge1
+    - rouge2
+    - rougeL
+    - bleu1
+    - bleu2
+    - panel_accuracy  # For panel source assignment
+    - data_source_accuracy  # For data availability
