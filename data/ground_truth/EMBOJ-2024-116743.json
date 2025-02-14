@@ -1,20 +1,20 @@
 {
     "manuscript_id": "EMBOJ-2024-116743",
-    "docx": "Doc/EMBOJ2024116743R1Manuscript_TextIG.docx",
-    "xml": "EMBOJ-2024-116743.xml",
-    "pdf": "pdf/EMBOJ-2024-116743.pdf",
+    "docx": "EMBOJ-2024-116743/Doc/EMBOJ2024116743R1Manuscript_TextIG.docx",
+    "xml": "EMBOJ-2024-116743/EMBOJ-2024-116743.xml",
+    "pdf": "EMBOJ-2024-116743/pdf/EMBOJ-2024-116743.pdf",
     "appendix": [
-        "suppl_data/EMBOJ2024116743R1Appendixsupp.pdf",
-        "suppl_data/EMBOJ2024116743R1Peer Review File_figs in.pdf",
-        "suppl_data/Reagent and tool table_092324.docx"
+        "EMBOJ-2024-116743/EMBOJ2024116743R1Appendixsupp.pdf",
+        "EMBOJ-2024-116743/EMBOJ2024116743R1Peer Review File_figs in.pdf",
+        "EMBOJ-2024-116743/Reagent and tool table_092324.docx"
     ],
     "sd_files": [
-        "suppl_data/Figure 2.zip",
-        "suppl_data/Figure 3.zip",
-        "suppl_data/Figure 4.zip",
-        "suppl_data/Figure 5.zip",
-        "suppl_data/Figure 6.zip",
-        "suppl_data/Figure 7.zip"
+        "EMBOJ-2024-116743/suppl_data/Figure 2.zip",
+        "EMBOJ-2024-116743/suppl_data/Figure 3.zip",
+        "EMBOJ-2024-116743/suppl_data/Figure 4.zip",
+        "EMBOJ-2024-116743/suppl_data/Figure 5.zip",
+        "EMBOJ-2024-116743/suppl_data/Figure 6.zip",
+        "EMBOJ-2024-116743/suppl_data/Figure 7.zip"
     ],
     "figures": [
         {
@@ -80,72 +80,72 @@
             "figure_label": "Figure 2",
             "figure_caption": "A and B) Representative Gomori trichrome images of EDL muscles from 12M (A) and 18M (B) old WT (left) and GS (right) mice. TAs are visualized as pink/purple inclusions as indicated by red arrows. \n\nC and D) Representative EM images of cross sections of EDL (C) and FDB (D) muscles from 8M old WT (left) and GS (right) mice. Images were taken from different muscle fibers. TAs (colored in green for the GS EDL fiber shown in panel C) exhibit a honeycomb-like structure. \n\nE-G) Average (±SEM) percentage of fibers with TAs (E), number of TAs/fiber (F), and TA size (G) in EDL (left), FDB (middle), and tibialis anterior (right) muscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS mice in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. The exact p-value is labeled in the figure when adjusted p<0.05.\n\nSource data: available online for Figure 2A-G",
             "sd_files": [
-              "suppl_data/Figure 2.zip"
+              "EMBOJ-2024-116743/suppl_data/Figure 2.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "Figure 2/2A/12M GS GT.tif",
-                        "Figure 2/2A/12M WT GS.tif",
-                        "Figure 2/2A/README.txt"
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2A/12M GS GT.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2A/12M WT GS.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2A/README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "Figure 2/2B/18M GS GT.tif",
-                        "Figure 2/2B/18M WT  GT.tif",
-                        "Figure 2/2B/README.txt"
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2B/18M GS GT.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2B/18M WT  GT.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2B/README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "Figure 2/2C-D/Representative EM image for 8M GS EDL.tif",
-                        "Figure 2/2C-D/Representative EM image for 8M GS FDB.tif",
-                        "Figure 2/2C-D/Representative EM image for 8M WT EDL.tif",
-                        "Figure 2/2C-D/Representative EM image for 8M WT FDB.tif"
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS EDL.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS FDB.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT EDL.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT FDB.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "Figure 2/2C-D/Representative EM image for 8M GS EDL.tif",
-                        "Figure 2/2C-D/Representative EM image for 8M GS FDB.tif",
-                        "Figure 2/2C-D/Representative EM image for 8M WT EDL.tif",
-                        "Figure 2/2C-D/Representative EM image for 8M WT FDB.tif"
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS EDL.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS FDB.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT EDL.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT FDB.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
-                        "Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
-                        "Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
-                        "Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
-                        "Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
-                        "Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
-                        "Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
                     ]
                   }
             ]
@@ -155,88 +155,88 @@
             "figure_label": "Figure 3",
             "figure_caption": "A) In vivo behavioral studies of average (±SEM) normalized grip strength in 8M old WT (n=9) and GS mice (n=11). Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nB and C) In vivo behavioral studies of treadmill endurance (B) and rotarod endurance (C) tests in 8M old WT (n=7) and GS (n=9) mice where averaged (±SEM) cumulative rest/fall were plotted. Significance was calculated using multiple t-test. * indicates adjusted p<0.05 (adjusted p=0.0316, 0.0088, 0.0006, 0.0001, <0.0001, <0.0001 in sequential order for figure B and adjusted p=0.0114, 0.0025, 0.0005, <0.0001, <0.0001, <0.0001 in sequential order for figure C). \n\nD-F) Average (±SEM) specific force-frequency curves (D), maximum rates of force production (\uf044rise) and relaxation (\uf044decline) during stimulation at 150 Hz (E), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (F) in EDL muscles from 8M old WT (n=9) and GS (n=9) mice. Significance was calculated using either \n\n\n\nmultiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test (for the bar graph). For the bar graph, the exact p-value is labeled in the figure when p<0.05. For the line graphs, * indicates adjusted p<0.05 (for figure D, all adjusted p<0.0001, except at 50Hz, the adjusted p=0.0015; for figure F, adjusted p=0.0216, 0.0028, 0.0008, 0.0012, 0.0033, 0.0149 in sequential order, starting from the 5th stimulation.).\n\nG-I) Average (±SEM) specific force-frequency curves (G), maximum rates of force production (\uf044rise) and relaxation (\uf044decline) during stimulation at 150 Hz (H), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (I) in SOL muscles from 8M old WT (n=8) and GS (n=7) mice. Significance was calculated using either multiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test (for the bar graph). For the bar graph, the exact p-value is labeled in the figure when p<0.05. For the line graphs, * indicates adjusted p<0.05 (for figure G, adjusted p=0.0279, 0.0031, 0.0014, 0.0013, 0.0012, 0.0012, 0.0012 in sequential order; for figure I, adjusted p=0.0465-0.0089, starting from the 36th stimulation.).\n\nJ and K) Normalized average (±SEM) specific force traces elicited during sustained 150 Hz stimulation (left), peak specific force (middle left), time to 50% relaxation (middle right), and maximum rate of contractile decay (right) of EDL (J) and SOL (K) muscles from 8M old WT and GS mice. For EDL muscle, n =7 and 9 for WT and GS groups, respectively. For SOL muscle, n=5 and 8 for WT and GS groups, respectively. Significance was calculated using either multiple t-test (for line graphs) or student’s t-test (for bar graphs). For the bar graphs, the exact p-value is labeled in the figure when p<0.05. For the line graphs, * indicates adjusted p<0.05. \n\nSource data: available online for Figure 3A-K",
             "sd_files": [
-              "suppl_data/Figure 3.zip"
+              "EMBOJ-2024-116743/suppl_data/Figure 3.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "Figure 3/3A/8M Grip Strength .xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3A/8M Grip Strength .xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "Figure 3/3B/Treadmill Behavior.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3B/Treadmill Behavior.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "Figure 3/3C/Rotarod Behavior.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3C/Rotarod Behavior.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "Figure 3/3D/EDL Specific Force (Force Frequency).xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3D/EDL Specific Force (Force Frequency).xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "Figure 3/3E/8M EDL Muscle Kinetics.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3E/8M EDL Muscle Kinetics.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "Figure 3/3F/8M EDL 50Hz Repetitive Stimulation.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3F/8M EDL 50Hz Repetitive Stimulation.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "Figure 3/3G/SOL Specific Force (Force Frequency).xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3G/SOL Specific Force (Force Frequency).xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "Figure 3/3H/8M SOL muscle kinetics.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3H/8M SOL muscle kinetics.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "Figure 3/3I/8M SOL 50Hz Repetitive Stimulation.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3I/8M SOL 50Hz Repetitive Stimulation.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "J",
                     "sd_files":[
-                        "Figure 3/3J/Max Specific Force, Time to 50% max force and dF_dt at Decay.xlsx",
-                        "Figure 3/3J/README.txt",
-                        "Figure 3/3J/Raw data for EDL muscle 150Hz sustained stimulation (Used to plot traces).xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3J/Max Specific Force, Time to 50% max force and dF_dt at Decay.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3J/README.txt",
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3J/Raw data for EDL muscle 150Hz sustained stimulation (Used to plot traces).xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "K",
                     "sd_files":[
-                        "Figure 3/3K/Max Specific Force, Time to 50% max force and dF_dt at Decay.xlsx",
-                        "Figure 3/3K/README.txt",
-                        "Figure 3/3K/Raw data for SOL muscle 150Hz sustained stimulation (Used to plot traces).xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3K/Max Specific Force, Time to 50% max force and dF_dt at Decay.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3K/README.txt",
+                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3K/Raw data for SOL muscle 150Hz sustained stimulation (Used to plot traces).xlsx"
                     ]
                 }
             ]
@@ -246,57 +246,57 @@
             "figure_label": "Figure 4",
             "caption_title": "Constitutive and store-operated Ca2+ entry.",
             "sd_files": [
-              "suppl_data/Figure 4.zip"
+              "EMBOJ-2024-116743/suppl_data/Figure 4.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "Figure 4/4A/Raw Slope data for HEK293 cells transfected with different ORAI1 constructs.xlsx",
-                        "Figure 4/4A/Representative traces of HEK293 cells transfected with WT OR G100S OR WT_G100S at 1_1 ratio.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4A/Raw Slope data for HEK293 cells transfected with different ORAI1 constructs.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4A/Representative traces of HEK293 cells transfected with WT OR G100S OR WT_G100S at 1_1 ratio.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "Figure 4/4B/Representative traces of 2wks WT and GS constitutive calcium entry .xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4B/Representative traces of 2wks WT and GS constitutive calcium entry .xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "Figure 4/4C/Representative traces of 8M WT and GS constitutive calcium entry .xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4C/Representative traces of 8M WT and GS constitutive calcium entry .xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "Figure 4/4D/Rate of constitutive calcium entry .xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4D/Rate of constitutive calcium entry .xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "Figure 4/4E/Representative traces of 2wks WT and GS SOCE activity.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4E/Representative traces of 2wks WT and GS SOCE activity.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "Figure 4/4F/Representative traces of 8M WT and GS SOCE activity.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4F/Representative traces of 8M WT and GS SOCE activity.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "Figure 4/4G/Rate of store operated calcium entry.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4G/Rate of store operated calcium entry.xlsx"
                     ]
                   }
             ]
@@ -306,25 +306,25 @@
             "figure_label": "Figure 5",
             "caption_title": "CASQ, STIM1, and ORAI1 protein expression.",
             "sd_files": [
-              "suppl_data/Figure 5.zip"
+              "EMBOJ-2024-116743/suppl_data/Figure 5.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "Figure 5/5A/Normalised CASQ and STIM1 value in 2wks WT and GS conditon.xlsx",
-                        "Figure 5/5A/Normalised CASQ and STIM1 value in 8 months WT and GS conditon.xlsx",
-                        "Figure 5/5A/Western Blot for 2wks and 8M Casq1 and STIM1.tif"
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5A/Normalised CASQ and STIM1 value in 2wks WT and GS conditon.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5A/Normalised CASQ and STIM1 value in 8 months WT and GS conditon.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5A/Western Blot for 2wks and 8M Casq1 and STIM1.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "Figure 5/5B/Normalised CASQ and STIM1 value in 2wks WT and GS conditon.xlsx",
-                        "Figure 5/5B/Normalised CASQ and STIM1 value in 8 months WT and GS conditon.xlsx",
-                        "Figure 5/5B/Western Blot for 2wks and 8M Casq1 and STIM1.tif"
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5B/Normalised CASQ and STIM1 value in 2wks WT and GS conditon.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5B/Normalised CASQ and STIM1 value in 8 months WT and GS conditon.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5B/Western Blot for 2wks and 8M Casq1 and STIM1.tif"
                     ]
                   },
                   {
@@ -337,40 +337,40 @@
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "Figure 5/5D/Representative traces of WT and V5HA HET mice SOCE activity.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5D/Representative traces of WT and V5HA HET mice SOCE activity.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "Figure 5/5E/ICC staining using EDL bundles_ HA antibody.tif",
-                        "Figure 5/5E/ICC staining using EDL bundles_ ORAI1 antibody.tif",
-                        "Figure 5/5E/ICC staining using EDL bundles_merged image.tif"
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5E/ICC staining using EDL bundles_ HA antibody.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5E/ICC staining using EDL bundles_ ORAI1 antibody.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5E/ICC staining using EDL bundles_merged image.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "Figure 5/5F/Western blot marker.tif",
-                        "Figure 5/5F/Western blot using HA antibodies.tif"
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5F/Western blot marker.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5F/Western blot using HA antibodies.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "Figure 5/5G/2wks Orai1 western blot analysis in V5HA and V5HA_GS mice .xlsx",
-                        "Figure 5/5G/Western blot for Orai1-HA expression_2wks.tif"
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5G/2wks Orai1 western blot analysis in V5HA and V5HA_GS mice .xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5G/Western blot for Orai1-HA expression_2wks.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "Figure 5/5H/8M Orai1 western blot analysis in V5HA and V5HA_GS mice .xlsx",
-                        "Figure 5/5H/Western blot for Orai1-HA expression_8M.tif"
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5H/8M Orai1 western blot analysis in V5HA and V5HA_GS mice .xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5H/Western blot for Orai1-HA expression_8M.tif"
                     ]
                   }
             ]
@@ -393,73 +393,73 @@
             "figure_label": "Figure 7",
             "caption_title": "Morphological and functional assessment of mitochondrial damage in 8M GS mice.",
             "sd_files": [
-              "suppl_data/Figure 7.zip"
+              "EMBOJ-2024-116743/suppl_data/Figure 7.zip"
             ],
             "panels": [
                 {
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "Figure 7/7A/EM images of WT and GS EDL muscles looking at mitochondria morphology.tif"
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7A/EM images of WT and GS EDL muscles looking at mitochondria morphology.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "Figure 7/7B/16s Transcript level fold change.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7B/16s Transcript level fold change.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "Figure 7/7C/Western blot for VDAC_8M.tif",
-                        "Figure 7/7C/Western blot of VDAC protein expression level_8M.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7C/Western blot for VDAC_8M.tif",
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7C/Western blot of VDAC protein expression level_8M.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "Figure 7/7D/8M WT and GS Mitochonrial membrane potential.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7D/8M WT and GS Mitochonrial membrane potential.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "Figure 7/7E/Normalised delta value for MitoSOX_8M.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7E/Normalised delta value for MitoSOX_8M.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "Figure 7/7F/Complex I enzyme activity measurement_8M.xlsx",
-                        "Figure 7/7F/Complex II_III_IV_V enzyme activity measurement_8M.xlsx",
-                        "Figure 7/7F/README.txt"
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7F/Complex I enzyme activity measurement_8M.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7F/Complex II_III_IV_V enzyme activity measurement_8M.xlsx",
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7F/README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "Figure 7/7G/Representative clarks electrode trancesw for 8M WT and GS purified mitochondria.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7G/Representative clarks electrode trancesw for 8M WT and GS purified mitochondria.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "Figure 7/7H/OCR calculated form clarks electrode_8M.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7H/OCR calculated form clarks electrode_8M.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "Figure 7/7I/RCR levels calculated from clarks electrode.xlsx"
+                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7I/RCR levels calculated from clarks electrode.xlsx"
                     ]
                   }
             ]

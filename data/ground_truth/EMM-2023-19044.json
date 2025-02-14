@@ -1,6 +1,6 @@
 {
   "manuscript_id": "EMM-2023-19044",
-  "docx": "Doc/EMM202319044V3Manuscript_Textmstxt1_FINAL.docx",
+  "docx": "EMM-2023-19044/Doc/EMM202319044V3Manuscript_Textmstxt1_FINAL.docx",
   "figures": [
     {
       "figure_caption": "(A) Schematic representation of experimental procedures for (B-G). Astrocytes were isolated from the cortex of neonatal mice and were cultured under proliferating conditions. Subsequently, cells were transduced with lentiviral vectors encoding GFP or GFP-McIdas (McIdas) and cultured under differentiating conditions for indicated time points.\n\n(B) Cortical astrocytes were immunostained against GFP (green) to mark infected cells, P73 (grey) and S100β (red) at day 7 of differentiation. Arrows point to McIdas-infected cells which are P73+ and represent cells committed to the ependymal lineage.\n\n(C-D) The graph depicts the percentage of the infected cells that co-express the ependymal marker P73 over the total number of the infected cells (C) The percentage of the infected cells which display S100β staining around their cell body, which corresponds to ependymal cells, is depicted in the graph (D) Data are presented as the median ±interquartile range (IQR) of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann–Whitney test (***p < 0.0001). \n\n\n\n(E) Transduced astrocytes were immunostained at differentiation day 14 against GFP (green), FoxJ1 (grey) and pericentrin (PCNT, red). Note the presence of multiple basal bodies, based on PCNT signal accumulation, in McIdas-infected cells which co-express the ependymal marker FoxJ1 (arrows). \n\n(F-G) The graphs present the percentage of the infected cells that express FoxJ1 over the total number of the infected cells (F) and the percentage of FoxJ1-positive infected cells which also display accumulation of PCNT signal (G). Data are presented as the median ±IQR of three independent experiments. Statistical significance was determined using the non-parametric two-tailed Mann–Whitney test (***p < 0.0001). \n\nDNA was stained with Dapi (blue). Scale bars, 10 μm. \n\nAbbreviations, dd: differentiation day",
@@ -11,53 +11,53 @@
           "panel_caption": "",
           "panel_label": "A",
           "sd_files": [
-            "Figure 1/Figure 1 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "B",
           "sd_files": [
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Image Data 1B/1B GFP Overexpression.tif",
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Image Data 1B/1B McIdas Overexpression.tif",
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Image Data 1B/1B GFP Overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Image Data 1B/1B McIdas Overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "C",
           "sd_files": [
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "D",
           "sd_files": [
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "E",
           "sd_files": [
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx",
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Image Data 1E/1E GFP overexpression.tif",
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Image Data 1E/1E McIdas overexpression.tif"
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx",
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Image Data 1E/1E GFP overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Image Data 1E/1E McIdas overexpression.tif"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "F",
           "sd_files": [
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "G",
           "sd_files": [
-            "suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 1 Source Data.zip:Figure 1/Figure 1 Numerical Data.xlsx"
           ]
         }
       ]
@@ -71,30 +71,30 @@
           "panel_caption": "",
           "panel_label": "A",
           "sd_files": [
-            "suppl_data/Figure 2 Source Data.zip:Figure 2/Figure 2 Numerical Data.xlsx",
-            "suppl_data/Figure 2 Source Data.zip:Figure 2/Image Data 2A/2A GFP overexpression.tif",            
-            "suppl_data/Figure 2 Source Data.zip:Figure 2/Image Data 2A/2A McIdas overexpression.tif"            
+            "EMM-2023-19044/suppl_data/Figure 2 Source Data.zip:Figure 2/Figure 2 Numerical Data.xlsx",
+            "EMM-2023-19044/suppl_data/Figure 2 Source Data.zip:Figure 2/Image Data 2A/2A GFP overexpression.tif",            
+            "EMM-2023-19044/suppl_data/Figure 2 Source Data.zip:Figure 2/Image Data 2A/2A McIdas overexpression.tif"            
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "B",
           "sd_files": [
-            "suppl_data/Figure 2 Source Data.zip:Figure 2/Figure 2 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 2 Source Data.zip:Figure 2/Figure 2 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "C",
           "sd_files": [
-            "suppl_data/Figure 2 Source Data.zip:Figure 2/Figure 2 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 2 Source Data.zip:Figure 2/Figure 2 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "D",
           "sd_files": [
-            "suppl_data/Figure 2 Source Data.zip:Figure 2/Figure 2 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 2 Source Data.zip:Figure 2/Figure 2 Numerical Data.xlsx"
           ]
         }
       ]
@@ -108,43 +108,43 @@
           "panel_caption": "",
           "panel_label": "A",
           "sd_files": [
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx",
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3A/3A GFP overexpression.tif",  
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3A/3A McIdas overexpression.tif",
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3A/3A zoom GFP overexpression.tif",
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3A/3A zoom McIdas overexpression.tif"
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx",
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3A/3A GFP overexpression.tif",  
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3A/3A McIdas overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3A/3A zoom GFP overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3A/3A zoom McIdas overexpression.tif"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "B",
           "sd_files": [
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "C",
           "sd_files": [
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx",
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3C/3C GFP overexpression.tif",
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3C/3C McIdas overexpression.tif",  
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3C/3C zoom GFP overexpression.tif",  
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3C/3C zoom McIdas overexpression.tif"  
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx",
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3C/3C GFP overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3C/3C McIdas overexpression.tif",  
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3C/3C zoom GFP overexpression.tif",  
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Image Data 3C/3C zoom McIdas overexpression.tif"  
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "D",
           "sd_files": [
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "E",
           "sd_files": [
-            "suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 3 Source Data.zip:Figure 3/Figure 3 Numerical Data.xlsx"
           ]
         }
       ]
@@ -158,43 +158,43 @@
           "panel_caption": "",
           "panel_label": "A",
           "sd_files": [
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx",
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4A/4A GFP overexpression.tif",
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4A/4A McIdas overexpression.tif",  
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4A/4A zoom GFP overexpression.tif",  
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4A/4A zoom McIdas overexpression.tif"  
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx",
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4A/4A GFP overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4A/4A McIdas overexpression.tif",  
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4A/4A zoom GFP overexpression.tif",  
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4A/4A zoom McIdas overexpression.tif"  
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "B",
           "sd_files": [
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "C",
           "sd_files": [
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx",
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4C/4C GFP overexpression.tif",
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4C/4C McIdas overexpression.tif",  
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4C/4C zoom GFP overexpression.tif",  
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4C/4C zoom McIdas overexpression.tif"  
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx",
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4C/4C GFP overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4C/4C McIdas overexpression.tif",  
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4C/4C zoom GFP overexpression.tif",  
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Image Data 4C/4C zoom McIdas overexpression.tif"  
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "D",
           "sd_files": [
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "E",
           "sd_files": [
-            "suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 4 Source Data.zip:Figure 4/Figure 4 Numerical Data.xlsx"
           ]
         }
       ]
@@ -208,28 +208,28 @@
           "panel_caption": "",
           "panel_label": "A",
           "sd_files": [
-            "suppl_data/Figure 5 Source Data.zip:Figure 5/Figure 5 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 5 Source Data.zip:Figure 5/Figure 5 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "B",
           "sd_files": [
-            "suppl_data/Figure 5 Source Data.zip:Figure 5/Figure 5 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 5 Source Data.zip:Figure 5/Figure 5 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "C",
           "sd_files": [
-            "suppl_data/Figure 5 Source Data.zip:Figure 5/Figure 5 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 5 Source Data.zip:Figure 5/Figure 5 Numerical Data.xlsx"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "D",
           "sd_files": [
-            "suppl_data/Figure 5 Source Data.zip:Figure 5/Figure 5 Numerical Data.xlsx"
+            "EMM-2023-19044/suppl_data/Figure 5 Source Data.zip:Figure 5/Figure 5 Numerical Data.xlsx"
           ]
         }
       ]
@@ -243,29 +243,29 @@
           "panel_caption": "",
           "panel_label": "A",
           "sd_files": [
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Figure 6 Numerical Data.xlsx",
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6A/6A GFP overexpression.tif",
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6A/6A McIdas overexpression.tif",
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6A/6A zoom GFP overexpression.tif",
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6A/6A zoom McIdas overexpression.tif"
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Figure 6 Numerical Data.xlsx",
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6A/6A GFP overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6A/6A McIdas overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6A/6A zoom GFP overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6A/6A zoom McIdas overexpression.tif"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "B",
           "sd_files": [
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Figure 6 Numerical Data.xlsx",
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6B/6B GFP overexpression.tif",
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6B/6B McIdas overexpression.tif",
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6B/6B zoom GFP overexpression.tif",
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6B/6B zoom McIdas overexpression.tif"
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Figure 6 Numerical Data.xlsx",
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6B/6B GFP overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6B/6B McIdas overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6B/6B zoom GFP overexpression.tif",
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Image Data 6B/6B zoom McIdas overexpression.tif"
           ]
         },
         {
           "panel_caption": "",
           "panel_label": "C",
           "sd_files": [
-            "suppl_data/Figure 6 Source Data.zip:Figure 6/Figure 6 Numerical Data.xlsx",
+            "EMM-2023-19044/suppl_data/Figure 6 Source Data.zip:Figure 6/Figure 6 Numerical Data.xlsx",
             ""
           ]
         }

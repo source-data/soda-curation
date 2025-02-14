@@ -1,16 +1,16 @@
 {
   "manuscript_id": "EMBOR-2023-58706-T",
-  "xml": "EMBOR-2023-58706-T.xml",
-  "docx": "Doc/0924wangEMBOR202358706V3Manuscript_Textmstxt_1726649888_1.docx",
-  "pdf": "pdf/EMBOR-2023-58706-T.pdf",
-  "appendix": ["suppl_data/EV Figures Source Data.zip"],
+  "xml": "EMBOR-2023-58706-T/EMBOR-2023-58706-T.xml",
+  "docx": "EMBOR-2023-58706-T/Doc/0924wangEMBOR202358706V3Manuscript_Textmstxt_1726649888_1.docx",
+  "pdf": "EMBOR-2023-58706-T/pdf/EMBOR-2023-58706-T.pdf",
+  "appendix": ["EMBOR-2023-58706-T/suppl_data/EV Figures Source Data.zip"],
   "figures": [
     {
       "figure_label": "Figure 1",
       "img_files": [
         "graphic/finalrevisionFig1Nlgn1 and Nlgn2 are specifically localized on excitatory and inhibitory synapses.jpg"
       ],
-      "sd_files": ["suppl_data/Fig1.zip"],
+      "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig1.zip"],
       "figure_caption": "Schematic overview of experimental timeline and set-up.\n\nSchematic of Nlgn1-WT and Nlgn2-WT constructs.\n\nRepresentative image from DIV14-16 cultured Nlgn1234 conditional knockout mice neurons, infected with Cre (blue) and either Nlgn1-WT (top) or Nlgn2-WT (bottom). The neurons were labeled with antibodies to Homer1 (red), HA (green), and MAP2 (blue). Scale bar: 20 mm. The right panels show an enlarged box area (arrowheads indicate HA puncta overlapped with Homer1 puncta). Scale bar: 5 mm.\n\nSummary graph of the HA-Homer1 overlap percentage in Nlgn1-WT and Nlgn2-WT conditions. (Bar and line graphs indicate mean  SEM; numbers of cells/experiments = 13/3 and 11/3 for each column, left to right. Statistical significance was assessed by unpaired t test, p<0.0001).\n\nRepresentative image of hippocampal neurons from DIV14-16 cultured Nlgn1234 conditional knockout mice, infected with Cre (blue) and either Nlgn1-WT (top) or Nlgn2-WT (bottom). The neurons were labeled with antibodies to Gephyrin (red), HA (green), and MAP2 (blue). Scale bar: 20 mm. The right panels show an enlarged box area (arrowheads indicate HA puncta overlapped with Gephyrin puncta). Scale bar: 5 mm.\n\nSummary graph of the HA-Gephyrin overlap percentage in Nlgn1-WT and Nlgn2-WT conditions. (Bar and line graphs indicate mean  SEM; numbers of cells/experiments = 15/3 and 14/3 for each column, left to right. Statistical significance was assessed by unpaired t test, p<0.0001).",
       "caption_title": "Nlgn1 and Nlgn2 are specifically localized on excitatory and inhibitory synapses.",
       "panels": [
@@ -28,39 +28,39 @@
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Fig1.zip:Fig1/Fig1C/MAP+HA-Cre+NL1-WT.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1C/MAP2+HA- Cre+NL-2WT.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1C/MAP2+Homer1-Cre+NL1-WT.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1C/MAP2+Homer1-Cre+NL2WT.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1C/Merge-Cre+NL1-WT.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1C/Merge-Cre+NL2WT.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1C/zoom-Cre+NL1-WT.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1C/zoom-Cre+NL2WT.tif"
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1C/MAP+HA-Cre+NL1-WT.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1C/MAP2+HA- Cre+NL-2WT.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1C/MAP2+Homer1-Cre+NL1-WT.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1C/MAP2+Homer1-Cre+NL2WT.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1C/Merge-Cre+NL1-WT.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1C/Merge-Cre+NL2WT.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1C/zoom-Cre+NL1-WT.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1C/zoom-Cre+NL2WT.tif"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig1.zip:Fig1/Fig1D&F/Fig1.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1D&F/Fig1.xlsx"]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Fig1.zip:Fig1/Fig1E/NL1-WT-MAP2+HA.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1E/NL1-WT-MAP2+gephyrin.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1E/NL1-WT-merge.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1E/NL1-WT-zoom.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1E/NL2-WT-MAP2+HA.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1E/NL2-WT-MAP2+gephyrin.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1E/NL2-WT-merge.tif",
-            "suppl_data/Fig1.zip:Fig1/Fig1E/NL2-WT-zoom..tif"
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1E/NL1-WT-MAP2+HA.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1E/NL1-WT-MAP2+gephyrin.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1E/NL1-WT-merge.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1E/NL1-WT-zoom.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1E/NL2-WT-MAP2+HA.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1E/NL2-WT-MAP2+gephyrin.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1E/NL2-WT-merge.tif",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1E/NL2-WT-zoom..tif"
           ]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig1.zip:Fig1/Fig1D&F/Fig1.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig1.zip:Fig1/Fig1D&F/Fig1.xlsx"]
         }
       ]
     },
@@ -69,7 +69,7 @@
       "img_files": [
         "graphic/finalrevisionFig2The intracellular sequence of Nlgn2 is necessary for inhibitory synapse function but can be fully replaced with the intracellular sequence of Nlgn1.jpg"
       ],
-      "sd_files": ["suppl_data/Fig2.zip"],
+      "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig2.zip"],
       "figure_caption": "Schematic of Nlgn2-WT, Nlgn2-GPI (Nlgn2 chimeric construct only has extracellular domain), Nlgn2-Nlgn1 (Nlgn2 extracellular domain with Nlgn1 intercellular domain) constructs.\n\nRepresentative traces of evoked GABAR-IPSC recorded from DIV14-16 cultured Nlgn1234 conditional knockout mice neurons in the five conditions (Cre, Cre, Cre+Nlgn2-WT, Cre+Nlgn2-GPI and Cre+Nlgn2-Nlgn1).\n\nSummary graph of evoked GABAR-IPSC amplitude in all conditions (Bar and line graphs indicate mean  SEM; numbers of cells/experiments = 16/3, 16/3, 16/3, 14/3 and 14/3 for each column, left to right).  Nonsignificant p>0.05; p<0.01; p<0.001; p<0.0001, one-way ANOVA with post-hoc Dunnett’s Multiple comparisons.",
       "caption_title": "The intracellular sequence of Nlgn2 is necessary for inhibitory synapse function but can be fully replaced with the intracellular sequence of Nlgn1.",
       "panels": [
@@ -86,7 +86,7 @@
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig2.zip:Fig2/Fig2C/Fig2.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig2.zip:Fig2/Fig2C/Fig2.xlsx"]
         }
       ]
     },
@@ -95,7 +95,7 @@
       "img_files": [
         "graphic/finalrevisionFig3The cytoplasmic gephyrin binding motif is required for Nlgn2 function whereas tyrosine phosphorylation is not or something similar whatever the significance of the Y is.jpg"
       ],
-      "sd_files": ["suppl_data/Fig3.zip"],
+      "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig3.zip"],
       "figure_caption": "Alignment of Nlgn1 and Nlgn2 gephyrin binding sequence.\n\nSchematic of Nlgn2-Nlgn1Y770A (Nlgn2 extracellular domain with Nlgn1 intercellular domain with a gephyrin binding point mutation), Nlgn2-Nlgn1DelGeph (Nlgn2 extracellular domain with Nlgn1 intercellular domain truncation of the entire gephyrin binding sequence) constructs.\n\nRepresentative traces of evoked GABAR-IPSC recorded from DIV14-16 cultured Nlgn1234 conditional knockout mice neurons in the four conditions (Cre, Cre, Cre+Nlgn2-Nlgn1Y770A, Cre+Nlgn2-Nlgn1DelGeph).\n\nSummary graph of evoked GABAR-IPSC amplitude in all conditions (Bar and line graphs indicate mean  SEM; numbers of cells/experiments = 15/3,16/3,15/3, and 15/3 for each column, left to right).  Nonsignificant p>0.05; p<0.001, one-way ANOVA with post-hoc Dunnett’s Multiple comparisons. Nonsignificant relations are indicated as ns.",
       "caption_title": "The cytoplasmic gephyrin binding motif is required for Nlgn2 function whereas tyrosine phosphorylation is not.",
       "panels": [
@@ -117,7 +117,7 @@
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig3.zip:Fig3/Fig3D/Fig3.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig3.zip:Fig3/Fig3D/Fig3.xlsx"]
         }
       ]
     },
@@ -126,7 +126,7 @@
       "img_files": [
         "graphic/finalrevisionFig4A conserved cytoplasmic 21 residue sequence is necessary for Nlgn2 function whereas the PDZdomain binding sequence is dispensable .jpg"
       ],
-      "sd_files": ["suppl_data/Fig4.zip"],
+      "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig4.zip"],
       "figure_caption": "Alignment of Nlgn1 and Nlgn2 intracellular domain. Colored boxes show the different Nlgn2 intracellular domain truncations.\n\nSchematic of Nlgn2-mt1, Nlgn2-mt2, Nlgn2-mt3, Nlgn2-mt3, Nlgn2-mt4 and Nlgn2-mt5 constructs.\n\nRepresentative traces of evoked GABAR-IPSC recorded from DIV14-16 cultured Nlgn1234 conditional knockout mice neurons in the seven conditions (Cre, Cre, Cre+Nlgn2-mt1, Cre+Nlgn2-mt2, Cre+Nlgn2-mt3, Cre+Nlgn2-mt4, Cre+Nlgn2-mt5).\n\nSummary graph of evoked GABAR-IPSC amplitude in all conditions (Bar and line graphs indicate mean  SEM; numbers of cells/experiments = 19/4,19/4,19/4,19/4,17/4,13/3, and 13/3 for each column, left to right).  Nonsignificant p>0.05; p<0.01; p<0.001, one-way ANOVA with post-hoc Dunnett’s Multiple comparisons. Nonsignificant relations are indicated as ns.",
       "caption_title": "A conserved cytoplasmic 21 residue sequence is necessary for Nlgn2 function, whereas the PDZ-domain binding sequence is dispensable.",
       "panels": [
@@ -148,7 +148,7 @@
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig4.zip:Fig4/Fig4D/Fig4.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig4.zip:Fig4/Fig4D/Fig4.xlsx"]
         }
       ]
     },
@@ -157,7 +157,7 @@
       "img_files": [
         "graphic/finalrevisionFig5Different from the functional promiscuity of the Nlgn1 and Nlgn2 cytoplasmic sequences their extracellular sequences encode synapse typespecificity that is independent of MDGA binding.jpg"
       ],
-      "sd_files": ["suppl_data/Fig5.zip"],
+      "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig5.zip"],
       "figure_caption": "Schematic of Nlgn1-Nlgn2 (Nlgn1 extracellular domain with Nlgn2 intercellular domain) constructs.\n\nRepresentative traces of evoked GABAR-IPSC recorded from DIV14-16 cultured Nlgn1234 conditional knockout mice neurons in the three conditions (Cre, Cre, Cre+Nlgn1-Nlgn2). Note that we rescued Nlgn1-Nlgn2 here from the identical three batches of Figure 2, so the Cre and Cre traces here are the same as in Figure 2.\n\nSummary graph of evoked GABAR-IPSC amplitude in all conditions (Bar and line graphs indicate mean  SEM; numbers of cells/experiments = 16/3,16/3, and 12/3 for each column, left to right). p<0.0001, one-way ANOVA with post-hoc Dunnett’s Multiple comparisons. Nonsignificant relations are indicated as ns. Note that we rescued Nlgn1-Nlgn2 here from the identical three batches of Figure 2, so the Cre and Cre data here are the same as in Figure 2.\n\nSchematic of Nlgn2-MDGA1mt (Nlgn2 with MDGA1-binding point mutation) constructs.\n\nRepresentative traces of evoked GABAR-IPSC recorded from DIV14-16 cultured Nlgn1234 conditional knockout mice neurons in the three conditions (Cre, Cre, Cre+Nlgn2-MDGA1mt).\n\nSummary graph of evoked GABAR-IPSC amplitude in all conditions (Bar and line graphs indicate mean  SEM; numbers of cells/experiments = 16/3,15/3, and 18/3 for each column, left to right).  Nonsignificant p>0.05; p<0.01, one-way ANOVA with post-hoc Dunnett’s Multiple comparisons. Nonsignificant relations are indicated as ns.",
       "caption_title": "Different from the functional promiscuity of the Nlgn1 and Nlgn2 cytoplasmic sequences, their extracellular sequences encode synapse type-specificity that is independent of MDGA binding.",
       "panels": [
@@ -174,7 +174,7 @@
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig5.zip:Fig5/Fig5C&F/Fig5.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig5.zip:Fig5/Fig5C&F/Fig5.xlsx"]
         },
         {
           "panel_label": "D",
@@ -189,7 +189,7 @@
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig5.zip:Fig5/Fig5C&F/Fig5.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig5.zip:Fig5/Fig5C&F/Fig5.xlsx"]
         }
       ]
     },
@@ -198,7 +198,7 @@
       "img_files": [
         "graphic/finalrevisionFig6Nlgn1 extracellular domain provides the specificity of Nlgn1 excitatory function.jpg"
       ],
-      "sd_files": ["suppl_data/Fig6.zip"],
+      "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig6.zip"],
       "figure_caption": "Schematic of Nlgn1-WT, Nlgn1-GPI (Nlgn1 chimeric construct only has extracellular domain), Nlgn2-Nlgn1 constructs.\n\nRepresentative traces of evoked AMPAR- and NMDAR-EPSCs recorded from DIV14-16 cultured Nlgn1234 conditional knockout mice neurons. AMPAR-EPSCs and NMDAR-EPSC recorded at -70 mV and +40 mV, respectively, in the five conditions (Cre, Cre, Cre+Nlgn1-WT, Cre+Nlgn1-GPI, Cre+Nlgn2-Nlgn1).\n\nSummary graph of evoked AMPAR-EPSC amplitude in all conditions (Bar and line graphs indicate mean  SEM; numbers of cells/experiments = 22/4, 17/4, 22/4, 23/4, and 16/3 for each column, left to right). Nonsignificant p>0.05;p<0.05, one-way ANOVA with post-hoc Dunnett’s Multiple comparisons. Nonsignificant relations are indicated as ns.\n\nSummary graph of evoked NMDAR-EPSC amplitude in all conditions (Bar and line graphs indicate mean  SEM; numbers of cells/experiments = 22/4, 17/4, 22/4, 23/4, and 16/3 for each column, left to right). Nonsignificant p>0.05; p<0.01; p<0.0001, one-way ANOVA with post-hoc Dunnett’s Multiple comparisons. Nonsignificant relations are indicated as ns.",
       "caption_title": "Nlgn1 extracellular domain provides the specificity of Nlgn1 excitatory function.",
       "panels": [
@@ -215,12 +215,12 @@
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig6.zip:Fig6/Fig6C&D/Fig6.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig6.zip:Fig6/Fig6C&D/Fig6.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig6.zip:Fig6/Fig6C&D/Fig6.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig6.zip:Fig6/Fig6C&D/Fig6.xlsx"]
         }
       ]
     },
@@ -246,12 +246,12 @@
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig7.zip:Fig7/Fig7C&D/Fig7.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig7.zip:Fig7/Fig7C&D/Fig7.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Fig7.zip:Fig7/Fig7C&D/Fig7.xlsx"]
+          "sd_files": ["EMBOR-2023-58706-T/suppl_data/Fig7.zip:Fig7/Fig7C&D/Fig7.xlsx"]
         }
       ]
     }
