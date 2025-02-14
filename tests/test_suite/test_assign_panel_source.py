@@ -260,3 +260,36 @@ class TestPanelSourceAssigner(unittest.TestCase):
         self.assertEqual(figure.panels[0].sd_files, ["file1.csv"])
         self.assertEqual(figure.panels[1].sd_files, ["file2.csv"])
         self.assertCountEqual(figure.sd_files, ["source_data1.zip", "source_data2.zip"])
+
+    @patch("zipfile.ZipFile")
+    def test_get_zip_contents_filters_macos_files(self, mock_zipfile):
+        """Test that __MACOSX and .DS_Store files are filtered out."""
+        # Mock the zipfile and its contents
+        mock_zip = MagicMock()
+        mock_zip.__enter__.return_value = mock_zip
+        mock_zip.infolist.return_value = [
+            MagicMock(filename="__MACOSX/folder/._file1.csv"),
+            MagicMock(filename="folder/.DS_Store"),
+            MagicMock(filename="folder/file1.csv"),
+            MagicMock(filename="folder/file2.xlsx"),
+            MagicMock(filename="__MACOSX/folder/._file2.xlsx"),
+            MagicMock(filename=".DS_Store"),
+        ]
+        mock_zipfile.return_value = mock_zip
+
+        # Define the input
+        sd_files = [
+            os.path.join(self.config["extraction_dir"], "path/to/data.zip"),
+            os.path.join(self.config["extraction_dir"], "path/to/file.dat"),
+        ]
+
+        # Define expected output (only real data files, no macOS files)
+        expected_output = [
+            "path/to/data.zip:folder/file1.csv",
+            "path/to/data.zip:folder/file2.xlsx",
+            "path/to/file.dat",
+        ]
+
+        # Call the method and assert the output
+        output = self.assigner._get_zip_contents(sd_files)
+        self.assertEqual(sorted(output), sorted(expected_output))

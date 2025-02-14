@@ -98,9 +98,13 @@ class PanelSourceAssigner(ABC):
                             zip_relative_path = os.path.relpath(
                                 file_path, self.extraction_dir
                             )
-                            extracted_files.append(
-                                f"{zip_relative_path}:{file_info.filename}"
-                            )
+                            if not (
+                                "__MACOSX" in file_info.filename
+                                or ".DS_Store" in file_info.filename
+                            ):
+                                extracted_files.append(
+                                    f"{zip_relative_path}:{file_info.filename}"
+                                )
                 except zipfile.BadZipFile:
                     logger.error(f"Bad zip file: {file_path}")
             else:
