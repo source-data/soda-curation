@@ -16,6 +16,9 @@ from ._main_utils import (
 )
 from .config import ConfigurationLoader
 from .logging_config import setup_logging
+from .pipeline.assign_panel_source.assign_panel_source_openai import (
+    PanelSourceAssignerOpenAI,
+)
 from .pipeline.data_availability.data_availability_openai import (
     DataAvailabilityExtractorOpenAI,
 )
@@ -57,6 +60,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
     try:
         # Setup extraction directory
         extract_dir = setup_extract_dir()
+        config_loader.config["extraction_dir"] = str(extract_dir)
 
         try:
             # Extract manuscript structure (first pipeline step)
@@ -93,6 +97,14 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             )
             zip_structure = data_availability_extractor.extract_data_sources(
                 section_text=data_availability_text, zip_structure=zip_structure
+            )
+
+            # Assign panel source
+            panel_source_assigner = PanelSourceAssignerOpenAI(
+                config_loader.config, prompt_handler
+            )
+            zip_structure.figures = panel_source_assigner.assign_panel_source(
+                zip_structure
             )
 
             # Update total costs before returning results

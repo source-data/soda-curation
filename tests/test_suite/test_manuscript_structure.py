@@ -1,8 +1,10 @@
 """Tests for XMLStructureExtractor class."""
 
 import shutil
+import unittest
 import zipfile
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 from zipfile import ZipFile
 
 import lxml.etree as etree
@@ -335,3 +337,81 @@ def test_extraction_preserves_manuscript_structure(temp_extract_dir, create_test
     # Check XML was properly handled
     assert extractor.manuscript_id == MANUSCRIPT_ID
     assert (extract_dir / f"{MANUSCRIPT_ID}.xml").exists()
+
+
+class TestManuscriptXMLParser(unittest.TestCase):
+    @patch("zipfile.ZipFile")
+    @patch("lxml.etree.parse")  # Add this patch for the initialization
+    def setUp(self, mock_etree_parse, mock_zipfile):
+        # Mock the zipfile and its contents
+        mock_zip = MagicMock()
+        mock_zip.__enter__.return_value = mock_zip
+        mock_zip.namelist.return_value = [
+            "EMM-2023-18636/suppl_data/Figure 1.zip",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip",
+            "EMM-2023-18636/EMM-2023-18636.xml",
+        ]
+
+        # Mock the file reading operations to return bytes
+        mock_file = MagicMock()
+        mock_file.read.return_value = b""  # Return empty bytes
+        mock_zip.open.return_value.__enter__.return_value = mock_file
+
+        mock_zipfile.return_value = mock_zip
+
+        # Create a mock XML root for initialization
+        init_xml_content = """
+        <article>
+            <notes>
+            </notes>
+        </article>
+        """
+        mock_root = etree.fromstring(init_xml_content)
+        mock_etree_parse.return_value = MagicMock(
+            getroot=MagicMock(return_value=mock_root)
+        )
+
+        # Provide mock paths for zip_path and extract_dir
+        zip_path = "/mock/path/to/zip"
+        extract_dir = "/mock/path/to/extract"
+
+        # Initialize the parser with the required arguments
+        self.parser = XMLStructureExtractor(zip_path, extract_dir)
+
+    def test_extract_source_data_files(self):
+        # Mock XML content for testing - using real XML structure
+        xml_content = """
+        <article>
+            <notes>
+                <form id="3030804" object-type="Figure Source Data Files">
+                    <label>Figure 1 Source Data</label>
+                    <long-desc>Figure 1.zip</long-desc>
+                    <object_id>EMM-2023-18636/suppl_data/Figure 1.zip</object_id>
+                </form>
+                <form id="3133324" object-type="Figure Source Data Files">
+                    <label>Figure1 Source Data</label>
+                    <long-desc>Fig1.zip</long-desc>
+                    <object_id>EMBOR-2023-58706-T/suppl_data/Fig1.zip</object_id>
+                </form>
+                <fig id="3001824" object-type="Figure">
+                    <label>Figure 1</label>
+                    <long-desc>Figure 1.eps</long-desc>
+                    <object_id>EMM-2023-18636/graphic/Figure 1.eps</object_id>
+                </fig>
+            </notes>
+        </article>
+        """
+        # Parse the test XML content and ensure it's set as the main XML content
+        self.parser.xml_content = etree.fromstring(xml_content)
+
+        # Verify the XML content is what we expect
+        print(etree.tostring(self.parser.xml_content, pretty_print=True).decode())
+
+        # Now test the method
+        source_data_files = self.parser._get_source_data_files("Figure 1")
+
+        expected_files = [
+            "EMM-2023-18636/suppl_data/Figure 1.zip",
+            "EMBOR-2023-58706-T/suppl_data/Fig1.zip",
+        ]
+        self.assertEqual(sorted(source_data_files), sorted(expected_files))

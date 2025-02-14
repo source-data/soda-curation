@@ -41,6 +41,22 @@ MOCK_CONFIG = {
                 "prompts": {"system": "System prompt", "user": "User prompt"},
             }
         },
+        "assign_panel_source": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
+        "match_caption_panel": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
     }
 }
 

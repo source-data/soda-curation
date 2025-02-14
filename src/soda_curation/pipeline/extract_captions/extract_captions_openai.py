@@ -169,5 +169,4 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
                 figure.figure_caption = "Figure caption not found."
                 figure.caption_title = ""
                 figure.panels = []
-
         return zip_structure

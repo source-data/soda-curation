@@ -1,74 +1,74 @@
 {
   "manuscript_id": "EMM-2023-18636",
-  "xml": "EMM-2023-18636.xml",
-  "docx": "doc/240429 EMM  DUSP6 targeting abrogates HER3 R2.docx",
-  "pdf": "pdf/EMM-2023-18636.pdf",
+  "xml": "EMM-2023-18636/EMM-2023-18636.xml",
+  "docx": "EMM-2023-18636/doc/240429 EMM  DUSP6 targeting abrogates HER3 R2.docx",
+  "pdf": "EMM-2023-18636/pdf/EMM-2023-18636.pdf",
   "appendix": [
-    "graphic/EV1.eps",
-    "graphic/EV2.eps",
-    "graphic/EV3.eps",
-    "graphic/EV4.eps",
-    "graphic/EV5.eps",
-    "suppl_data/Table EV1.docx",
-    "suppl_data/Table EV2.docx",
-    "suppl_data/Table EV3.docx",
-    "suppl_data/EMM202318636V3Appendix.pdf",
-    "suppl_data/Dataset EV1.xlsx",
-    "suppl_data/Dataset EV2.xlsx",
-    "suppl_data/Dataset EV3.xlsx",
-    "suppl_data/Dataset EV4.xlsx"
+    "EMM-2023-18636/graphic/EV1.eps",
+    "EMM-2023-18636/graphic/EV2.eps",
+    "EMM-2023-18636/graphic/EV3.eps",
+    "EMM-2023-18636/graphic/EV4.eps",
+    "EMM-2023-18636/graphic/EV5.eps",
+    "EMM-2023-18636/suppl_data/Table EV1.docx",
+    "EMM-2023-18636/suppl_data/Table EV2.docx",
+    "EMM-2023-18636/suppl_data/Table EV3.docx",
+    "EMM-2023-18636/suppl_data/EMM202318636V3Appendix.pdf",
+    "EMM-2023-18636/suppl_data/Dataset EV1.xlsx",
+    "EMM-2023-18636/suppl_data/Dataset EV2.xlsx",
+    "EMM-2023-18636/suppl_data/Dataset EV3.xlsx",
+    "EMM-2023-18636/suppl_data/Dataset EV4.xlsx"
   ],
   "figures": [
     {
       "figure_label": "Figure 1",
-      "img_files": ["graphic/Figure 1.eps"],
-      "sd_files": ["suppl_data/Figure 1.zip"],
+      "img_files": ["EMM-2023-18636/graphic/Figure 1.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 1.zip"],
       "figure_caption": "(A) Development of lapatinib resistance in HER2+ breast cancer cells. BT474 and BT474Br cells were treated with 1 M of lapatinib for 9 days (d), 6 months (mos) and 9 mos to yield Drug-tolerant persister (DTP), Drug-tolerant expanding perister (DTEP) and Long term resistant (LR) clones, respectively. The cells were stained with crystal violet (0.5% w/v) and the images were acquired with an inverted microscope. The transcriptional profiles from each functional state of lapatinib drug tolerance and resistance development from three parallel BT474 cell plates were surveyed by RNA-sequencing. (B) The number of the genes with a significant change in their expression during the resistance acquisition (see Dataset EV1 for individual gene names). Transcription factor (TF) binding motifs significantly enriched in significantly regulated genes in each transition are indicated. Bolding indicates shared TF binding sites between DTP downregulated and DTEP upregulated genes. (C) Differentially expressed pathways were identified using the R package limma and hallmark gene sets were used for GSVA analysis to reveal hallmarks and signal transduction pathways involved in each step of the resistance acquisition. Red indicates those hallmarks and pathways that are overlapping with processes regulated by DUSP6 depletion in figure 3F.\n\nFigure 2: Clinical association of DUSP6 overexpression with poor prognosis HER2+ breast cancers. (A, B) Volcano plots visualizing differentially expressed genes in (A) Control-DTP and (B) DTP-DTEP transitions. The volcano blots indicate \n\n\n\nall genes that were significantly regulated during these transitions (|logFC |<2 and FDR <0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (DUSP6, CDC25A, CDC25C, and SYNJ1) are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). (C) Changes in the DUSP6, CDC25A, CDC25C, and SYNJ1 mRNA levels during the acquisition of lapatinib resistance in BT474 cells. Data is based on RNA sequencing analysis (Dataset EV1) and was analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05, **p < 0.01 and ***p < 0.001 were determined (n=3). (D) Differential expression of DUSP6, CDC25A, CDC25C, and SYNJ1 in different breast cancer subtypes. Data were extracted from the METABRIC dataset and categorized into five molecular subtypes according to the PAM50 gene expression subtype classification (basal, claudin-low, HER2+, Luminal A, and Luminal B). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test and shown as mean  standard deviation (SD). Statistically significant values of *p < 0.05, **p < 0.01 and ****p < 0.0001 were determined (basal=209, claudin-low=218, HER2+=224, LumA=700 and LumB=475). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) groups and the clinical breast cancer subtypes were compared between the two groups. NA; not available. (F,G) Subgroup of 113 patient cases with high tumor ERBB2 mRNA expression (LogFC>1, FDR<0.05) were divided into DUSP6high and DUSP6low groups and their overall survival (OS) (G) (Log-rank Test p value=0.0220) and disease-specific progression free survival (PFS)(H)(Log-rank Test p value=0.0259) was tested according to DUSP6 status. \n\n\n\nFigure 3: Functional involvement of DUSP6 in HER2i tolerance development. \n\n(A) Expression of DUSP6 protein in different stages of lapatinib resistance development by Western blot analysis. (B) Relative expression of DUSP6 mRNA in indicated cell lines either at the untreated control situation, or in the DTP state after following treatments: BT474Br, Lapatinib 1M for 9 days; EFM192A and HCC1419, Lapatinib 2.5 M for 14 days; HCC827(EGFRmut NSCLC), 1 µM Osimertinib for 10 days; A375(BRAFV600E mutant malignant melanoma (MM)), 1 µM dabrafenib+100 nM trametinib for 10 days; and HT-29(BRAFV600E mutant colorectal cancer (CRC)), 1 µM dabrafenib+10 µg/ml cetuximab for 10 days. Data for EFM192 and HCC1419 cells was obtained from (DataRef: (Chang et al., 2022)(GSE155342), and for other cells by qRT-PCR analysis of the de novo treated samples. Shown is data from two-three repeat samples. (C) Transcriptional profile of MDA-MB-453 cells after DUSP6 knockdown by 3 different siRNA and compared with 3 different scramble controls, followed by the GSVA analysis of the Hallmark gene sets. The Hallmark gene sets overlapping with the gene sets regulated to same direction in DUSP6 low expressing DTEP cells (Fig. 1C) are indicated with red.  (D, E) Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on cell viability (G) and apoptosis (H), as measured by WST1 cell viability assay and caspase 3/7 activity, respectively. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. n=3.  (F) Ectopic overexpression of either wild-type DUSP6 (DUSPWT) or ERK binding deficient KIM mutant of DUSP6 (DUSP6MUT) in BT474 cells inhibits lapatinib effects on apoptosis. Shown is a result from a representative experiment from three repeats with similar results. Data were analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (G) \n\n\n\nDUSP6 inhibitor BCI preempts DTEP development in BT474 cells treated with either lapatinib or neratinib for 6 months. The cells were stained and fixed with crystal violet in methanol (0.5% w/v) and the images were acquired with an inverted microscope. \n\nFigure 4: Both genetic and pharmacological DUSP6 targeting overcomes HER2i resistance. (A) RNAi-mediated DUSP6 knockdown, but not of DUSP1, induces apoptotic cell death in MDA-MB-453 cells, as shown by Western blotting for PARP-1 cleavage. (B) CRISPR/CAS9-mediated DUSP6 knockout hinders the clonogenic growth of MDA-MB-453 cells, as compared to the CAS9 expressing controls. Shown are three independent single cell clones created with two independent gRNAs (g1 and g2). The cells were seeded at low density and maintained for 10 d. The colonies were stained/fixed with 0.5% crystal violet in methanol and imaged using an inverted microscope. (C) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to HER2-targeted therapies. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01, ***p < 0.001 and ****p < 0.0001 were determined. (D) A 2D synergy map of neratinib-BCI combination in MDA-MB-453 cells calculated by Bliss SynergyFinder (Ianevski et al., 2017). Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (E) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to combination with capecitabine and neratinib. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and \n\n\n\nanalyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined.\n\nFigure 5: DUSP6 inhibition overcomes HER2 inhibitor resistance in vivo. (A) Subcutaneous xenograft growth of two independent DUSP6 single cell knockout clones of MDA-MB-453 cells targeted with two different gRNA guides. One-way ANOVA followed by Tukey's multiple comparisons test **p < 0.01 comparing each clone to CAS9 expressing control cells . Data are shown as mean  SD (n=5) (B-E) The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft models: HCC1954 (B, C) or MDA-MB-453 (D, E). Data are shown as mean  SD (n=10 in each treatment group). Mice with tumor size ∼100 mm3 were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined. C and E panels display percentual change in the tumor volume from the start of the therapy as water-fall blots in HCC1954 and MDA-MB453 models, respectively. (F) H&E staining of the representative MDA-MB-453 xenograft tumors from the control, lapatinib, BCI and lapatinib+BCI groups at day 24. Scale bar 200 µm.  \n\nFigure 6: DUSP6 targeting inhibits HER3 expression  (A) A 2D synergy map of lapatinib+MK2206(AKTi) or (B) lapatinib+BCI(DUSP6i) combination in MDA-MB-453 cells calculated by the Bliss SynergyFinder. Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (C) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on apoptosis \n\n\n\ninduction (PARP-1 cleavage), and HER2 or HER3 protein levels by Western blot analysis. The cells were treated with lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) and their combinations for 48 h. (D) Quantification of PARP1 cleavage from three repeats of (C). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (E,F) The dose-dependent effects of MK2206 (E) and BCI (F) on the expression of HER2 and HER3 protein levels in MDA-MB-453 cells by Western blot analysis after 48h of treatment. (G) The time-dependent effects of BCI (2.5 µM) on the expression of HER2 and HER3 protein levels and apoptosis induction (PARP cleavage) in MDA-MB-453 cells by Western blot analysis. Increase in phosphorylated ERK (p-ERK1/2) and inhibition of DUSP6 both indicate for early target engagement by BCI.  (H) DUSP6 knockdown by siRNA inhibits HER2 and HER3 protein expression in MDA-MB-453 cells. (I) Effects of BCI (50 mg/kg) therapy on HER2 and HER3 protein levels in the MDA-MB-453 xenograft tissue on day 24. Shown is immunohistochemical analysis of HER2 and HER3 from the adjacent paraffin embedded tissue slices from Fig. 5F. Scale bar 200 µm. (J) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and expression of phosphorylated HER3 (p-HER3Y1298) was compared between the two groups. Data were analyzed by two-tailed t test; **p < 0.01. (DUSP6high=142, DUSP6low=149).\n\nFig. 7. DUSP6 targeting overcomes Neuregulin/HER3-mediated HER2i therapy tolerance\n\n(A) Comparison of the potential of BCI or MK2206 treatment to overcome Neuregulin (NRG)-mediated rescue from the anti-proliferative activity of neratinib. The cells were \n\n\n\ntreated with NRG (10 ng/mL), lapatinib (1 µM), MK2206 (1, 2.5, and 5 µM), and BCI (1, 2.5, and 5 µM) for 48 h and cell viability was measured by WST-1 assay.  Data were collected from three independent experiments each performed with three technical repeat samples. (B) Comparison of the effects of BCI and MK2206 on NRG-mediated evasion from neratinib-induced apoptotic cell death, as measured by Western blot analysis for cleaved PARP-1. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h. (C) HER3 overexpression rescues MDA-MB-453 cells from BCI-elicited inhibition of cell viability. The control or HER3 overexpressing MDA-MB-453 were treated with BCI (3 µM) for 48 h and cell viability was measured by WST-1 assay. Shown is data from four technical replicate samples from a representative of three experiments with similar results. The data was analysed by Two-way ANOVA + Tukey’s post hoc test, ****p < 0.0001 (D) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on NRG-mediated rescue from the anti-growth activity of lapatinib, as shown by crystal violet staining. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h, stained/fixed with 0.5% crystal violet in methanol and imaged by an inverted microscope (images acquired at 10x magnification). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and the neuregulin (NRG1) mRNA levels were compared between the two groups. Data were analyzed by two-tailed t test; ****p < 0.0001. (DUSP6high=167, DUSP6low=181).  (F) The effect of DUSP6 knockdown on the brain metastatic outgrowth of MDA-MB-361 cells in a zebrafish model. GFP positive MDA-MB-361 cells transfected either with control scrambled siRNA or DUSP6 siRNA were injected into zebrafish embryo brain and the GFP intensity was measured 3 days after by microscopy. Data were analyzed \n\n\n\nby two-tailed t test; ****p < 0.0001. Scale bar 100 µm (siSCR=37, siDUSP6=43). (G) Improved overall survival of mice with intracranially injected DUSP6 KO MDA-MB-453 cells as compared to the CAS9 positive control cell injected mice. Survival data were analyzed by log-rank Mantel–Cox test, **p < 0.01.\n\nFigure 8. Feed-forward loop between NRG/HER3 and DUSP6 determines HER2i sensitivity\n\n(A) DUSP1 and DUSP6 mRNA levels were determined by qRT-PCR analysis after treatment with increasing concentrations of neratinib for 48 h in indicated cell lines. Red denotes for HER2i resistant cell lines and green HER2i sensitive cells. Data were collected from three independent experiments each performed in triplicate. (B, C) Comparison of the effect of neratinib treatment (48 h) on DUSP6, p-AKT and p-ERK1/2 between HER2i sensitive BT474Br (B) and HER2i resistant MDA-MB-361 (C) cells, respectively. (D) The effect of siRNA-mediated HER3 knockdown on DUSP6 expression in MDA-MB-453 cells by Western blot analysis. (E) NRG-mediated induction of DUSP6 mRNA via MEK activation as measured by qRT-PCR analysis after treatment with NRG (10 ng/mL), MK2206(AKTi) (2.5 µM), and trametinib(MEKi) (100 nM) for 48 h. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05 and ****p < 0.0001 were determined (n=3). (F) The effect of NRG on DUSP6 protein expression BT474 cells via MEK activation. The cells were serum-starved for 24 h, followed by treatment with NRG (10 ng/mL), MK2206 (2.5 µM) and trametinib (100 nM) for 48 h. (G) Inhibition of DUSP6 expression in HER2i resistant MDA-MB-453 cells by MEKi Trametinib. The cells were treated with MK2206 (2.5 µM) or trametinib (100 nM) for \n\n\n\n48 h. (H) A schematic illustration of the discovered HER3/DUSP6 feed forward loop in HER2+ breast cancer cells. NRG binding to HER3 induces MEK/ERK-mediated DUSP6 expression which feeds back to increased HER2 and HER3 expression (left panel). In HER2i sensitive cells (middle panel) inhibition of HER3 results in DUSP6 inhibition and loss of DUSP6 driven cancer hallmarks. In HER2i resistant cells (right panel), MEK is not inhibited by HER2i but its constitutive activity (MEKca.) drives DUSP6-HER2/3 positive feed-back loop resulting in HER3-mediated multitherapy resistance and cancer progression.",
       "caption_title": "Transcriptional landscape of lapatinib tolerance and resistance development in HER2+ cells.",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 1.zip:Figure 1/1A/1A.tiff"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 1.zip:Figure 1/1A/1A.tiff"]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 1.zip:Figure 1/1B/1B.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 1.zip:Figure 1/1B/1B.xlsx"]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 1.zip:Figure 1/1C/1C.csv"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 1.zip:Figure 1/1C/1C.csv"]
         }
       ]
     },
     {
       "figure_label": "Figure 2",
-      "img_files": ["graphic/Figure 2.eps"],
-      "sd_files": ["suppl_data/Figure 2.zip"],
+      "img_files": ["EMM-2023-18636/graphic/Figure 2.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip"],
       "figure_caption": "(A, B) Volcano plots visualizing differentially expressed genes in (A) Control-DTP and (B) DTP-DTEP transitions. The volcano blots indicate  all genes that were significantly regulated during these transitions (|logFC |<2 and FDR <0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (DUSP6, CDC25A, CDC25C, and SYNJ1) are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). (C) Changes in the DUSP6, CDC25A, CDC25C, and SYNJ1 mRNA levels during the acquisition of lapatinib resistance in BT474 cells. Data is based on RNA sequencing analysis (Dataset EV1) and was analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05, **p < 0.01 and ***p < 0.001 were determined (n=3). (D) Differential expression of DUSP6, CDC25A, CDC25C, and SYNJ1 in different breast cancer subtypes. Data were extracted from the METABRIC dataset and categorized into five molecular subtypes according to the PAM50 gene expression subtype classification (basal, claudin-low, HER2+, Luminal A, and Luminal B). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test and shown as mean  standard deviation (SD). Statistically significant values of *p < 0.05, **p < 0.01 and ****p < 0.0001 were determined (basal=209, claudin-low=218, HER2+=224, LumA=700 and LumB=475). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) groups and the clinical breast cancer subtypes were compared between the two groups. NA; not available. (F,G) Subgroup of 113 patient cases with high tumor ERBB2 mRNA expression (LogFC>1, FDR<0.05) were divided into DUSP6high and DUSP6low groups and their overall survival (OS) (G) (Log-rank Test p value=0.0220) and disease-specific progression free survival (PFS)(H)(Log-rank Test p value=0.0259) was tested according to DUSP6 status.",
       "caption_title": "Clinical association of DUSP6 overexpression with poor prognosis HER2+ breast cancers.",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2A/2A.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip:Figure 2/2A/2A.xlsx"]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2B/2B.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip:Figure 2/2B/2B.xlsx"]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2C/2C.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip:Figure 2/2C/2C.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2D/2D.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip:Figure 2/2D/2D.xlsx"]
         },
         {
           "panel_label": "E",
@@ -89,8 +89,8 @@
     },
     {
       "figure_label": "Figure 3",
-      "img_files": ["graphic/Figure 3.eps"],
-      "sd_files": ["suppl_data/Figure 3.zip"],
+      "img_files": ["EMM-2023-18636/graphic/Figure 3.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip"],
       "figure_caption": "(A) Expression of DUSP6 protein in different stages of lapatinib resistance development by Western blot analysis. (B) Relative expression of DUSP6 mRNA in indicated cell lines either at the untreated control situation, or in the DTP state after following treatments: BT474Br, Lapatinib 1M for 9 days; EFM192A and HCC1419, Lapatinib 2.5 M for 14 days; HCC827(EGFRmut NSCLC), 1 µM Osimertinib for 10 days; A375(BRAFV600E mutant malignant melanoma (MM)), 1 µM dabrafenib+100 nM trametinib for 10 days; and HT-29(BRAFV600E mutant colorectal cancer (CRC)), 1 µM dabrafenib+10 µg/ml cetuximab for 10 days. Data for EFM192 and HCC1419 cells was obtained from (DataRef: (Chang et al., 2022)(GSE155342), and for other cells by qRT-PCR analysis of the de novo treated samples. Shown is data from two-three repeat samples. (C) Transcriptional profile of MDA-MB-453 cells after DUSP6 knockdown by 3 different siRNA and compared with 3 different scramble controls, followed by the GSVA analysis of the Hallmark gene sets. The Hallmark gene sets overlapping with the gene sets regulated to same direction in DUSP6 low expressing DTEP cells (Fig. 1C) are indicated with red.  (D, E) Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on cell viability (G) and apoptosis (H), as measured by WST1 cell viability assay and caspase 3/7 activity, respectively. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. n=3.  (F) Ectopic overexpression of either wild-type DUSP6 (DUSPWT) or ERK binding deficient KIM mutant of DUSP6 (DUSP6MUT) in BT474 cells inhibits lapatinib effects on apoptosis. Shown is a result from a representative experiment from three repeats with similar results. Data were analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (G)  DUSP6 inhibitor BCI preempts DTEP development in BT474 cells treated with either lapatinib or neratinib for 6 months. The cells were stained and fixed with crystal violet in methanol (0.5% w/v) and the images were acquired with an inverted microscope.",
       "caption_title": "Functional involvement of DUSP6 in HER2i tolerance development.",
       "panels": [
@@ -98,53 +98,53 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 3.zip:Figure 3/3A/1st/DUSP6-1.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/1st/B-actin 1.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/1st/DUSP1-1.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/2nd/DUSP1-2.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/2nd/B-actin 2.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/2nd/DUSP6-2.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/3rd/DUSP6.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/3rd/B-actin.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/3rd/DUSP1.tiff"
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/1st/DUSP6-1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/1st/B-actin 1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/1st/DUSP1-1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/2nd/DUSP1-2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/2nd/B-actin 2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/2nd/DUSP6-2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/3rd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/3rd/DUSP1.tiff"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3B/Fig. 3B.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3B/Fig. 3B.xlsx"]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3C/3C.csv"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3C/3C.csv"]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3D/3D.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3D/3D.xlsx"]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3E/3E.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3E/3E.xlsx"]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3F/3F.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3F/3F.xlsx"]
         },
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3G/3G.tiff"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3G/3G.tiff"]
         }
       ]
     },
     {
       "figure_label": "Figure 4",
-      "img_files": ["graphic/Figure 4.eps"],
-      "sd_files": ["suppl_data/Figure 4.zip"],
+      "img_files": ["EMM-2023-18636/graphic/Figure 4.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip"],
       "figure_caption": "(A) RNAi-mediated DUSP6 knockdown, but not of DUSP1, induces apoptotic cell death in MDA-MB-453 cells, as shown by Western blotting for PARP-1 cleavage. (B) CRISPR/CAS9-mediated DUSP6 knockout hinders the clonogenic growth of MDA-MB-453 cells, as compared to the CAS9 expressing controls. Shown are three independent single cell clones created with two independent gRNAs (g1 and g2). The cells were seeded at low density and maintained for 10 d. The colonies were stained/fixed with 0.5% crystal violet in methanol and imaged using an inverted microscope. (C) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to HER2-targeted therapies. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01, ***p < 0.001 and ****p < 0.0001 were determined. (D) A 2D synergy map of neratinib-BCI combination in MDA-MB-453 cells calculated by Bliss SynergyFinder (Ianevski et al., 2017). Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (E) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to combination with capecitabine and neratinib. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and  analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined.",
       "caption_title": "Both genetic and pharmacological DUSP6 targeting overcomes HER2i resistance.",
       "panels": [
@@ -152,325 +152,325 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/DUSP6.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/B-actin.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/DUSP1.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/DUSP6.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/B-actin.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/DUSP1.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/DUSP6.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/B-actin.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/DUSP1.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/Cl-PARP, 89.tiff"
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/DUSP1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/DUSP1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/DUSP1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/Cl-PARP, 89.tiff"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4B/4B.tiff"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4B/4B.tiff"]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4C/4C.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4C/4C.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4D/4D.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4D/4D.xlsx"]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4E/4E.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4E/4E.xlsx"]
         }
       ]
     },
     {
       "figure_label": "Figure 5",
-      "img_files": ["graphic/Figure 5.eps"],
-      "sd_files": ["suppl_data/Figure 5.zip"],
+      "img_files": ["EMM-2023-18636/graphic/Figure 5.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip"],
       "figure_caption": "(A) Subcutaneous xenograft growth of two independent DUSP6 single cell knockout clones of MDA-MB-453 cells targeted with two different gRNA guides. One-way ANOVA followed by Tukey's multiple comparisons test **p < 0.01 comparing each clone to CAS9 expressing control cells . Data are shown as mean  SD (n=5) (B-E) The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft models: HCC1954 (B, C) or MDA-MB-453 (D, E). Data are shown as mean  SD (n=10 in each treatment group). Mice with tumor size ∼100 mm3 were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined. C and E panels display percentual change in the tumor volume from the start of the therapy as water-fall blots in HCC1954 and MDA-MB453 models, respectively. (F) H&E staining of the representative MDA-MB-453 xenograft tumors from the control, lapatinib, BCI and lapatinib+BCI groups at day 24. Scale bar 200 µm.",
       "caption_title": "DUSP6 inhibition overcomes HER2 inhibitor resistance in vivo.",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5A/5A.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5A/5A.xlsx"]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5B/5B.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5B/5B.xlsx"]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5C/5C.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5C/5C.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5D/5D.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5D/5D.xlsx"]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5E/5E.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5E/5E.xlsx"]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 5.zip:Figure 5/5F/BCI.tiff",
-            "suppl_data/Figure 5.zip:Figure 5/5F/Control.tiff",
-            "suppl_data/Figure 5.zip:Figure 5/5F/Lapatinib.tiff",
-            "suppl_data/Figure 5.zip:Figure 5/5F/Lapatinib+BCI.tiff"
+            "EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5F/BCI.tiff",
+            "EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5F/Control.tiff",
+            "EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5F/Lapatinib.tiff",
+            "EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5F/Lapatinib+BCI.tiff"
           ]
         }
       ]
     },
     {
       "figure_label": "Figure 6",
-      "img_files": ["graphic/Figure 6.eps"],
-      "sd_files": ["suppl_data/Figure 6.zip"],
+      "img_files": ["EMM-2023-18636/graphic/Figure 6.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip"],
       "figure_caption": "(A) A 2D synergy map of lapatinib+MK2206(AKTi) or (B) lapatinib+BCI(DUSP6i) combination in MDA-MB-453 cells calculated by the Bliss SynergyFinder. Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (C) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on apoptosis induction (PARP-1 cleavage), and HER2 or HER3 protein levels by Western blot analysis. The cells were treated with lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) and their combinations for 48 h. (D) Quantification of PARP1 cleavage from three repeats of (C). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (E,F) The dose-dependent effects of MK2206 (E) and BCI (F) on the expression of HER2 and HER3 protein levels in MDA-MB-453 cells by Western blot analysis after 48h of treatment. (G) The time-dependent effects of BCI (2.5 µM) on the expression of HER2 and HER3 protein levels and apoptosis induction (PARP cleavage) in MDA-MB-453 cells by Western blot analysis. Increase in phosphorylated ERK (p-ERK1/2) and inhibition of DUSP6 both indicate for early target engagement by BCI.  (H) DUSP6 knockdown by siRNA inhibits HER2 and HER3 protein expression in MDA-MB-453 cells. (I) Effects of BCI (50 mg/kg) therapy on HER2 and HER3 protein levels in the MDA-MB-453 xenograft tissue on day 24. Shown is immunohistochemical analysis of HER2 and HER3 from the adjacent paraffin embedded tissue slices from Fig. 5F. Scale bar 200 µm. (J) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and expression of phosphorylated HER3 (p-HER3Y1298) was compared between the two groups. Data were analyzed by two-tailed t test; **p < 0.01. (DUSP6high=142, DUSP6low=149).",
       "caption_title": "DUSP6 targeting inhibits HER3 expression",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6A/6A updated.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6A/6A updated.xlsx"]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6B/6B updated.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6B/6B updated.xlsx"]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/p-AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/HER3.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/p-AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/HER3.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/p-AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/HER3.tiff"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6D/6D.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6D/6D.xlsx"]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6E/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6E/p-AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6E/AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6E/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6E/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/HER3.tiff"
           ]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6F/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6F/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6F/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6F/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6F/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6F/HER3.tiff"
           ]
         },
         {
           "panel_label": "G",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6G/DUSP6.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/p-ERK1:2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/HER3.png"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/HER3.png"
           ]
         },
         {
           "panel_label": "H",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6H/1st/DUSP6.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/1st/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/1st/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/1st/HER3.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/2nd/DUSP6.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/2nd/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/2nd/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/2nd/HER3.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/3rd/DUSP6.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/3rd/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/3rd/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/3rd/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/1st/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/1st/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/1st/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/1st/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/2nd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/2nd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/2nd/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/2nd/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/3rd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/3rd/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/3rd/HER3.tiff"
           ]
         },
         {
           "panel_label": "I",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6I/HER3, BCI.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6I/HER2, control.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6I/HER2, BCI.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6I/HER3, control.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6I/HER3, BCI.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6I/HER2, control.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6I/HER2, BCI.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6I/HER3, control.tiff"
           ]
         },
         {
           "panel_label": "J",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6J/6J.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6J/6J.xlsx"]
         }
       ]
     },
     {
       "figure_label": "Figure 7",
-      "img_files": ["graphic/Figure 7.eps"],
-      "sd_files": ["suppl_data/Figure 7.zip"],
+      "img_files": ["EMM-2023-18636/graphic/Figure 7.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip"],
       "figure_caption": "(A) Comparison of the potential of BCI or MK2206 treatment to overcome Neuregulin (NRG)-mediated rescue from the anti-proliferative activity of neratinib. The cells were treated with NRG (10 ng/mL), lapatinib (1 µM), MK2206 (1, 2.5, and 5 µM), and BCI (1, 2.5, and 5 µM) for 48 h and cell viability was measured by WST-1 assay.  Data were collected from three independent experiments each performed with three technical repeat samples. (B) Comparison of the effects of BCI and MK2206 on NRG-mediated evasion from neratinib-induced apoptotic cell death, as measured by Western blot analysis for cleaved PARP-1. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h. (C) HER3 overexpression rescues MDA-MB-453 cells from BCI-elicited inhibition of cell viability. The control or HER3 overexpressing MDA-MB-453 were treated with BCI (3 µM) for 48 h and cell viability was measured by WST-1 assay. Shown is data from four technical replicate samples from a representative of three experiments with similar results. The data was analysed by Two-way ANOVA + Tukey’s post hoc test, ****p < 0.0001 (D) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on NRG-mediated rescue from the anti-growth activity of lapatinib, as shown by crystal violet staining. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h, stained/fixed with 0.5% crystal violet in methanol and imaged by an inverted microscope (images acquired at 10x magnification). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and the neuregulin (NRG1) mRNA levels were compared between the two groups. Data were analyzed by two-tailed t test; ****p < 0.0001. (DUSP6high=167, DUSP6low=181).  (F) The effect of DUSP6 knockdown on the brain metastatic outgrowth of MDA-MB-361 cells in a zebrafish model. GFP positive MDA-MB-361 cells transfected either with control scrambled siRNA or DUSP6 siRNA were injected into zebrafish embryo brain and the GFP intensity was measured 3 days after by microscopy. Data were analyzed by two-tailed t test; ****p < 0.0001. Scale bar 100 µm (siSCR=37, siDUSP6=43). (G) Improved overall survival of mice with intracranially injected DUSP6 KO MDA-MB-453 cells as compared to the CAS9 positive control cell injected mice. Survival data were analyzed by log-rank Mantel–Cox test, **p < 0.01.",
       "caption_title": "DUSP6 targeting overcomes Neuregulin/HER3-mediated HER2i therapy tolerance",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7A/7A.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7A/7A.xlsx"]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 7.zip:Figure 7/7B/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 7.zip:Figure 7/7B/B-actin.tiff",
-            "suppl_data/Figure 7.zip:Figure 7/7B/Cl-PARP, 89.tiff"
+            "EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7B/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7B/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7B/Cl-PARP, 89.tiff"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7C/7C.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7C/7C.xlsx"]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7D/7D.tiff"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7D/7D.tiff"]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7E/7E.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7E/7E.xlsx"]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7F/7F.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7F/7F.xlsx"]
         },
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7G/7G.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7G/7G.xlsx"]
         }
       ]
     },
     {
       "figure_label": "Figure 8",
-      "img_files": ["graphic/Figure 8.eps"],
-      "sd_files": ["suppl_data/Figure 8.zip"],
+      "img_files": ["EMM-2023-18636/graphic/Figure 8.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 8.zip"],
       "figure_caption": "(A) DUSP1 and DUSP6 mRNA levels were determined by qRT-PCR analysis after treatment with increasing concentrations of neratinib for 48 h in indicated cell lines. Red denotes for HER2i resistant cell lines and green HER2i sensitive cells. Data were collected from three independent experiments each performed in triplicate. (B, C) Comparison of the effect of neratinib treatment (48 h) on DUSP6, p-AKT and p-ERK1/2 between HER2i sensitive BT474Br (B) and HER2i resistant MDA-MB-361 (C) cells, respectively. (D) The effect of siRNA-mediated HER3 knockdown on DUSP6 expression in MDA-MB-453 cells by Western blot analysis. (E) NRG-mediated induction of DUSP6 mRNA via MEK activation as measured by qRT-PCR analysis after treatment with NRG (10 ng/mL), MK2206(AKTi) (2.5 µM), and trametinib(MEKi) (100 nM) for 48 h. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05 and ****p < 0.0001 were determined (n=3). (F) The effect of NRG on DUSP6 protein expression BT474 cells via MEK activation. The cells were serum-starved for 24 h, followed by treatment with NRG (10 ng/mL), MK2206 (2.5 µM) and trametinib (100 nM) for 48 h. (G) Inhibition of DUSP6 expression in HER2i resistant MDA-MB-453 cells by MEKi Trametinib. The cells were treated with MK2206 (2.5 µM) or trametinib (100 nM) for  48 h. (H) A schematic illustration of the discovered HER3/DUSP6 feed forward loop in HER2+ breast cancer cells. NRG binding to HER3 induces MEK/ERK-mediated DUSP6 expression which feeds back to increased HER2 and HER3 expression (left panel). In HER2i sensitive cells (middle panel) inhibition of HER3 results in DUSP6 inhibition and loss of DUSP6 driven cancer hallmarks. In HER2i resistant cells (right panel), MEK is not inhibited by HER2i but its constitutive activity (MEKca.) drives DUSP6-HER2/3 positive feed-back loop resulting in HER3-mediated multitherapy resistance and cancer progression.",
       "caption_title": "Feed-forward loop between NRG/HER3 and DUSP6 determines HER2i sensitivity",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 8.zip:Figure 8/8A/8A.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8A/8A.xlsx"]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8B/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8B/p-AKT.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8B/ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8B/p-ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8B/AKT.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/AKT.tiff"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8C/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8C/p-AKT.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8C/p-ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8C/AKT.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8C/ERK.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/ERK.tiff"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8D/3rd/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/3rd/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/3rd/HER3.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/1st/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/1st/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/1st/HER3.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/2nd/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/2nd/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/2nd/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/3rd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/3rd/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/1st/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/1st/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/1st/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/2nd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/2nd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/2nd/HER3.tiff"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": ["suppl_data/Figure 8.zip:Figure 8/8E/8E.xlsx"]
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8E/8E.xlsx"]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8F/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8F/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8F/ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8F/p-ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8F/AKT.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/AKT.tiff"
           ]
         },
         {
           "panel_label": "G",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8G/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/p-AKT.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/p-ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/AKT.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/AKT.tiff"
           ]
         },
         {

@@ -163,13 +163,11 @@ class XMLStructureExtractor:
 
     def _get_source_data_files(self, figure_label: str) -> List[str]:
         """Get source data files for a specific figure."""
+        # Extract the figure number
+        figure_num = "".join(filter(str.isdigit, figure_label))
+
         # Build XPath for source data elements
-        xpath_query = " | ".join(
-            [
-                f"//form[@object-type='{type}'][label='{figure_label} Source Data']"
-                for type in self.SOURCE_DATA_TYPES
-            ]
-        )
+        xpath_query = f"//form[@object-type='Figure Source Data Files'][contains(label, '{figure_num}')]"
 
         sd_files = self.xml_content.xpath(xpath_query)
 
