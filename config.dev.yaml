@@ -25,7 +25,7 @@ default: &default
             The text will be encoded as a `HTML` string and you are required to keep all the information available,
             but extracting only the text of both sections.
 
-            THE RETURN MUST BE DONE WITHOUT ANY HTML CODE ON IT. JUST PLANE TEXT
+            THE RETURN MUST BE DONE WITHOUT ANY HTML CODE ON IT. JUST PLANE TEXT.
 
             Key Instructions for extracting `Figure Legends` section:
             1. Look for figure captions throughout the entire document - they can appear:

@@ -14,11 +14,19 @@ import nltk
 import pandas as pd
 import pytest
 import yaml
-from deepeval import assert_test
 from deepeval.test_case import LLMTestCase
 
+from src.soda_curation.pipeline.extract_captions.extract_captions_openai import (
+    FigureCaptionExtractorOpenAI,
+)
 from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (
     SectionExtractorOpenAI,
+)
+from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    ZipStructure,
+)
+from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
+    XMLStructureExtractor,
 )
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
 
@@ -26,13 +34,15 @@ from .metrics import get_metrics_for_task
 
 logger = logging.getLogger(__name__)
 
-
 # Download required NLTK data
 try:
     nltk.data.find("tokenizers/punkt_tab")
 except LookupError:
     nltk.download("punkt")
     nltk.download("punkt_tab")
+
+# Define a results bag to store test results
+results_bag = []
 
 
 def preprocess_text(text: str) -> str:
@@ -62,19 +72,6 @@ def preprocess_text(text: str) -> str:
     return text.strip()
 
 
-# Load configuration once at module level
-def load_config() -> Dict[str, Any]:
-    """Load benchmark configuration."""
-    config_path = os.environ.get("BENCHMARK_CONFIG", "config.benchmark.yaml")
-    if not os.path.exists(config_path):
-        raise FileNotFoundError(f"Configuration file not found: {config_path}")
-
-    with open(config_path) as f:
-        config = yaml.safe_load(f)
-
-    return config
-
-
 class BenchmarkCache:
     """Handle caching of benchmark results."""
 
@@ -92,13 +89,13 @@ class BenchmarkCache:
         top_p: float,
         run: int,
     ) -> Path:
-        """Generate cache file path."""
-        cache_key = (
-            f"{test_name}_{msid}_{provider}_{model}_t{temperature}_p{top_p}_r{run}"
+        """Get path for cached result."""
+        return (
+            self.cache_dir
+            / f"{test_name}_{msid}_{provider}_{model}_{temperature}_{top_p}_{run}.json"
         )
-        return self.cache_dir / f"{cache_key}.json"
 
-    def get_cached_result(self, cache_path: Path) -> Optional[Any]:
+    def get_cached_result(self, cache_path: Path) -> Optional[Dict[str, Any]]:
         """Get cached result if it exists."""
         if cache_path.exists():
             with open(cache_path) as f:
@@ -108,36 +105,107 @@ class BenchmarkCache:
     def cache_result(self, cache_path: Path, result: Dict[str, Any]) -> None:
         """Cache test result."""
         with open(cache_path, "w") as f:
-            json.dump(result, f, indent=2)
+            json.dump(result, f)
 
 
 class BenchmarkRunner:
-    """Main class for running benchmarks."""
+    """Runner for benchmark tests."""
 
     def __init__(self, config: Dict[str, Any]):
+        """Initialize benchmark runner with configuration."""
         self.config = config
-        self.results_dir = Path(config["output_dir"]) / datetime.now().strftime(
-            "%Y-%m-%d_%H-%M-%S"
+
+        # Setup base directories
+        self.base_output_dir = Path(
+            self.config.get("output_dir", "/app/data/benchmark")
         )
+
+        # Setup cache directory
+        self.cache_dir = self.base_output_dir / "cache"
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+
+        # Setup timestamp-based results directory
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.results_dir = self.base_output_dir / timestamp
         self.results_dir.mkdir(parents=True, exist_ok=True)
-        self.extracts_dir = self.results_dir / "extracts"
-        self.extracts_dir.mkdir(exist_ok=True)
-        self.cache = BenchmarkCache(self.results_dir / "cache")
+
+        # Initialize cache
+        self.cache = BenchmarkCache(self.cache_dir)
+
+        # Initialize results DataFrame
+        self.results_df = pd.DataFrame(
+            columns=[
+                "pytest_obj",
+                "status",
+                "duration_ms",
+                "strategy",
+                "msid",
+                "run",
+                "task",
+                "input",
+                "actual",
+                "expected",
+                "figure_label",
+                "ai_response",
+                "rouge1",
+                "rouge1_success",
+                "rouge1_threshold",
+                "rouge2",
+                "rouge2_success",
+                "rouge2_threshold",
+                "rougeL",
+                "rougeL_success",
+                "rougeL_threshold",
+                "bleu1",
+                "bleu1_success",
+                "bleu1_threshold",
+                "bleu2",
+                "bleu2_success",
+                "bleu2_threshold",
+                "bleu3",
+                "bleu3_success",
+                "bleu3_threshold",
+                "bleu4",
+                "bleu4_success",
+                "bleu4_threshold",
+                "data_source_accuracy",
+                "data_source_accuracy_success",
+                "data_source_accuracy_threshold",
+                "data_source_accuracy_exact",
+                "data_source_accuracy_jaccard",
+                "timestamp",
+            ]
+        )
 
     def get_test_cases(self) -> Generator[Dict[str, Any], None, None]:
         """Generate test cases from configuration."""
-        # Get providers and models
         for provider, prov_config in self.config["providers"].items():
             for model in prov_config["models"]:
                 for temp in model["temperatures"]:
                     for top_p in model["top_p"]:
-                        # Get manuscripts
-                        manuscripts = self._get_manuscripts()
-                        for msid in manuscripts:
-                            # Get enabled tests
-                            for test_name in self.config["enabled_tests"]:
-                                # Get number of runs
-                                for run in range(self.config["test_runs"]["n_runs"]):
+                        for test_name in self.config[
+                            "enabled_tests"
+                        ]:  # Changed from "tests" to "enabled_tests"
+                            # Handle different manuscript configurations
+                            manuscripts = self.config["test_runs"]["manuscripts"]
+                            if (
+                                isinstance(manuscripts, str)
+                                and manuscripts.lower() == "all"
+                            ):
+                                manuscripts = self._get_all_manuscripts()
+                            elif isinstance(manuscripts, int):
+                                manuscripts = self._get_n_manuscripts(manuscripts)
+                            elif isinstance(manuscripts, list):
+                                manuscripts = manuscripts
+                            else:
+                                raise ValueError(
+                                    f"Invalid manuscripts configuration: {manuscripts}"
+                                )
+
+                            for msid in manuscripts:
+                                for run in range(
+                                    self.config["test_runs"]["n_runs"]
+                                ):  # Changed from "runs" to "test_runs.n_runs"
                                     yield {
                                         "test_name": test_name,
                                         "msid": msid,
@@ -148,44 +216,22 @@ class BenchmarkRunner:
                                         "run": run,
                                     }
 
-    def cleanup(self):
-        """Clean up extraction directories."""
-        try:
-            if self.extracts_dir.exists():
-                shutil.rmtree(self.extracts_dir)
-                logger.info(f"Cleaned up extraction directory: {self.extracts_dir}")
-        except Exception as e:
-            logger.error(f"Error cleaning up extraction directory: {str(e)}")
-
-    def cleanup_manuscript(self, msid: str):
-        """Clean up extraction directory for a specific manuscript."""
-        try:
-            manuscript_dir = self.extracts_dir / msid
-            if manuscript_dir.exists():
-                shutil.rmtree(manuscript_dir)
-                logger.info(f"Cleaned up manuscript directory: {manuscript_dir}")
-        except Exception as e:
-            logger.error(f"Error cleaning up manuscript directory: {str(e)}")
-
-    def _get_manuscripts(self) -> List[str]:
-        """Get list of manuscripts to process."""
-        manuscripts_config = self.config["test_runs"]["manuscripts"]
+    def _get_all_manuscripts(self) -> List[str]:
+        """Get all available manuscript IDs from ground truth directory."""
         ground_truth_dir = Path(self.config["ground_truth_dir"])
+        return [f.stem for f in ground_truth_dir.glob("*.json")]
 
-        all_manuscripts = sorted([f.stem for f in ground_truth_dir.glob("*.json")])
-
-        if manuscripts_config == "all":
-            return all_manuscripts
-        elif isinstance(manuscripts_config, int):
-            return all_manuscripts[:manuscripts_config]
-        elif isinstance(manuscripts_config, list):
-            return manuscripts_config
-        raise ValueError(f"Invalid manuscripts configuration: {manuscripts_config}")
+    def _get_n_manuscripts(self, n: int) -> List[str]:
+        """Get first n manuscript IDs from ground truth directory."""
+        all_manuscripts = self._get_all_manuscripts()
+        return all_manuscripts[:n]
 
     def _load_ground_truth(self, msid: str) -> Dict[str, Any]:
         """Load ground truth data for manuscript."""
-        ground_truth_file = Path(self.config["ground_truth_dir"]) / f"{msid}.json"
-        with open(ground_truth_file) as f:
+        ground_truth_path = Path(self.config["ground_truth_dir"]) / f"{msid}.json"
+        if not ground_truth_path.exists():
+            raise FileNotFoundError(f"Ground truth not found: {ground_truth_path}")
+        with open(ground_truth_path) as f:
             return json.load(f)
 
     def run_test(self, test_case: Dict[str, Any]) -> Dict[str, Any]:
@@ -225,91 +271,28 @@ class BenchmarkRunner:
 
         if test_name == "extract_sections":
             return self._run_extract_sections(test_case, ground_truth)
-        elif test_name == "extract_captions":
+        elif test_name == "extract_individual_captions":
             return self._run_extract_captions(test_case, ground_truth)
         elif test_name == "assign_panel_source":
             return self._run_assign_panel_source(test_case, ground_truth)
-        elif test_name == "match_caption_panel":
-            return self._run_match_caption_panel(test_case, ground_truth)
         elif test_name == "extract_data_availability":
             return self._run_extract_data_availability(test_case, ground_truth)
+        elif test_name == "assign_panel_source":
+            return self._run_assign_panel_source(test_case, ground_truth)
         else:
             raise ValueError(f"Unknown test: {test_name}")
-
-    def save_results(self, results: List[Dict[str, Any]]) -> None:
-        """Save benchmark results."""
-        # Convert to DataFrame
-        df = pd.DataFrame(results)
-
-        # Save detailed results
-        results_file = self.results_dir / "results.json"
-        df.to_json(results_file, orient="records", indent=2)
-
-        # Generate and save summary
-        summary = self._generate_summary(df)
-        summary_file = self.results_dir / "summary.json"
-        with open(summary_file, "w") as f:
-            json.dump(summary, f, indent=2, ensure_ascii=False)
-
-        # Save configuration
-        config_file = self.results_dir / "config.yaml"
-        with open(config_file, "w") as f:
-            yaml.dump(self.config, f)
-
-        logger.info(f"Results saved to {self.results_dir}")
-
-    def _generate_summary(self, df: pd.DataFrame) -> Dict[str, Any]:
-        """Generate summary of results."""
-        summary = {}
-
-        # Overall summary
-        summary["overall"] = {
-            metric: df[metric].mean()
-            for metric in self.config["results"]["metrics"]
-            if metric in df.columns
-        }
-
-        # By test
-        summary["by_test"] = {}
-        for test in df["test_name"].unique():
-            test_df = df[df["test_name"] == test]
-            summary["by_test"][test] = {
-                metric: test_df[metric].mean()
-                for metric in self.config["results"]["metrics"]
-                if metric in test_df.columns
-            }
-
-        # By model
-        summary["by_model"] = {}
-        for provider in df["provider"].unique():
-            summary["by_model"][provider] = {}
-            provider_df = df[df["provider"] == provider]
-
-            for model in provider_df["model"].unique():
-                model_df = provider_df[provider_df["model"] == model]
-                summary["by_model"][provider][model] = {
-                    metric: model_df[metric].mean()
-                    for metric in self.config["results"]["metrics"]
-                    if metric in model_df.columns
-                }
-
-        return summary
 
     def _run_extract_sections(
         self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Run extract sections test."""
         try:
-            from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
-                XMLStructureExtractor,
-            )
-
             # Get manuscript path
             msid = test_case["msid"]
 
-            # Setup extraction directory for this test
-            extract_dir = self.results_dir / "extracts" / msid
-            extract_dir.mkdir(parents=True, exist_ok=True)
+            # Create temporary extraction directory
+            temp_extract_dir = self.base_output_dir / "temp_extracts" / msid
+            temp_extract_dir.mkdir(parents=True, exist_ok=True)
 
             # Get ZIP path
             zip_path = Path(self.config["manuscript_dir"]) / f"{msid}.zip"
@@ -317,7 +300,7 @@ class BenchmarkRunner:
                 raise FileNotFoundError(f"ZIP file not found: {zip_path}")
 
             # Use XML extractor to get structure and extract files
-            extractor = XMLStructureExtractor(str(zip_path), str(extract_dir))
+            extractor = XMLStructureExtractor(str(zip_path), str(temp_extract_dir))
             zip_structure = extractor.extract_structure()
 
             # Get the DOCX content
@@ -387,8 +370,8 @@ class BenchmarkRunner:
                 "data_availability", {}
             ).get("section_text", "")
 
-            # Return results in the format expected by the test framework
-            return {
+            # Create result dictionary
+            result = {
                 "input": str(zip_path),
                 "output": figure_legends,
                 "expected": ground_truth_figures,
@@ -399,116 +382,311 @@ class BenchmarkRunner:
                 else {},
             }
 
+            # Fill results bag
+            self._fill_results_bag(
+                test_case=test_case,
+                result=result,
+                actual_output=figure_legends,
+                expected_output=ground_truth_figures,
+            )
+
+            return result
+
         except Exception as e:
             logger.error(
                 f"Error running extract sections test: {str(e)}", exc_info=True
             )
             raise
 
+        finally:
+            # Cleanup temporary directory after processing
+            if temp_extract_dir.exists():
+                shutil.rmtree(temp_extract_dir)
+
     def _run_extract_captions(
         self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Run extract captions test."""
-        pass
+        try:
+            # Load prompts from development configuration
+            with open(self.config["prompts_source"]) as f:
+                dev_config = yaml.safe_load(f)
 
-    def _run_extract_data_availability(
-        self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Run extract data availability test."""
-        pass
+            # Get the default configuration which contains our pipeline setup
+            pipeline_config = dev_config.get("default", {}).get("pipeline", {})
+            if not pipeline_config:
+                raise ValueError("No pipeline configuration found in default profile")
 
-    def _run_assign_panel_source(
-        self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Run assign panel source test."""
-        pass
+            # Provider-specific configuration
+            provider = test_case["provider"]
+
+            # Create extractor configuration
+            extractor_config = {
+                "api_key": os.environ.get(f"{provider.upper()}_API_KEY"),
+                "pipeline": {
+                    "extract_individual_captions": {
+                        provider: {
+                            "model": test_case["model"],
+                            "temperature": test_case["temperature"],
+                            "top_p": test_case["top_p"],
+                            "prompts": {
+                                "system": pipeline_config[
+                                    "extract_individual_captions"
+                                ][provider]["prompts"]["system"],
+                                "user": pipeline_config["extract_individual_captions"][
+                                    provider
+                                ]["prompts"]["user"],
+                            },
+                        }
+                    }
+                },
+            }
+
+            # Create prompt handler
+            prompt_handler = PromptHandler(extractor_config["pipeline"])
+
+            # Create captions extractor instance
+            if provider == "anthropic":
+                raise NotImplementedError("Anthropic is not supported yet")
+            elif provider == "openai":
+                captions_extractor = FigureCaptionExtractorOpenAI(
+                    extractor_config, prompt_handler
+                )
+            else:
+                raise ValueError(f"Unsupported provider: {provider}")
+
+            # Create a ZipStructure object with just the figures
+            zip_structure = ZipStructure(figures=ground_truth["figures"])
+
+            # Extract captions using all_captions from ground truth
+            extracted_zip_structure = captions_extractor.extract_individual_captions(
+                doc_content=ground_truth["all_captions"], zip_structure=zip_structure
+            )
+
+            # Compare each caption and title to its ground truth
+            results = []
+            for figure in ground_truth["figures"]:
+                figure_label = figure["figure_label"]
+                expected_caption = figure["figure_caption"]
+                expected_title = figure["caption_title"]
+
+                # Get the actual caption and title from extracted results
+                extracted_figure = next(
+                    (
+                        f
+                        for f in extracted_zip_structure.figures
+                        if f["figure_label"] == figure_label
+                    ),
+                    None,
+                )
+
+                actual_caption = (
+                    extracted_figure["figure_caption"] if extracted_figure else ""
+                )
+                actual_title = (
+                    extracted_figure["caption_title"] if extracted_figure else ""
+                )
+
+                # Fill results bag with both caption and title metrics
+                self._fill_results_bag(
+                    test_case=test_case,
+                    result={"input": ground_truth["all_captions"]},
+                    actual_output=actual_caption,
+                    expected_output=expected_caption,
+                    actual_title=actual_title,
+                    expected_title=expected_title,
+                    figure_label=figure_label,
+                )
+
+                results.append(
+                    {
+                        "figure_label": figure_label,
+                        "actual_caption": actual_caption,
+                        "expected_caption": expected_caption,
+                        "actual_title": actual_title,
+                        "expected_title": expected_title,
+                    }
+                )
+
+            return {
+                "input": ground_truth["all_captions"],
+                "results": results,
+                "cost": extracted_zip_structure.cost.extract_individual_captions.model_dump()
+                if hasattr(
+                    extracted_zip_structure.cost.extract_individual_captions,
+                    "model_dump",
+                )
+                else {},
+            }
+
+        except Exception as e:
+            logger.error(
+                f"Error running extract captions test: {str(e)}", exc_info=True
+            )
+            raise
+
+    def _fill_results_bag(
+        self,
+        test_case: Dict[str, Any],
+        result: Dict[str, Any],
+        actual_output: str = "",
+        expected_output: str = "",
+        actual_title: str = "",
+        expected_title: str = "",
+        figure_label: str = "",
+    ) -> None:
+        """Fill the results DataFrame with test metrics and metadata."""
+        try:
+            # Create base row for DataFrame
+            row = {
+                "pytest_obj": None,
+                "status": "completed",
+                "duration_ms": 0,
+                "strategy": f"{test_case['provider']}_{test_case['model']}",
+                "msid": test_case["msid"],
+                "run": test_case["run"],
+                "task": test_case.get("test_name", ""),
+                "input": result.get("input", ""),
+                "actual": actual_output,
+                "expected": expected_output,
+                "figure_label": figure_label,
+                "ai_response": result.get("ai_response", ""),
+                "timestamp": pd.Timestamp.now(),
+            }
+
+            # Get metrics for this task
+            metrics = get_metrics_for_task(test_case.get("test_name", ""))
+
+            if test_case.get("test_name") == "extract_individual_captions":
+                # For caption extraction, evaluate both caption and title
+                test_cases = [
+                    (
+                        "caption",
+                        LLMTestCase(
+                            input=result.get("input", ""),
+                            actual_output=actual_output,
+                            expected_output=expected_output,
+                        ),
+                    ),
+                    (
+                        "title",
+                        LLMTestCase(
+                            input=result.get("input", ""),
+                            actual_output=actual_title,
+                            expected_output=expected_title,
+                        ),
+                    ),
+                ]
+
+                for prefix, test_case_obj in test_cases:
+                    for metric in metrics:
+                        score = metric.measure(test_case_obj)
+                        row[f"{prefix}_{metric.name}"] = score
+                        row[f"{prefix}_{metric.name}_success"] = metric.is_successful()
+                        row[f"{prefix}_{metric.name}_threshold"] = metric.threshold
+
+            else:
+                # For all other tests, evaluate normally
+                test_case_obj = LLMTestCase(
+                    input=result.get("input", ""),
+                    actual_output=actual_output,
+                    expected_output=expected_output,
+                )
+
+                for metric in metrics:
+                    score = metric.measure(test_case_obj)
+                    row[metric.name] = score
+                    row[f"{metric.name}_success"] = metric.is_successful()
+                    row[f"{metric.name}_threshold"] = metric.threshold
+
+            # Append to DataFrame
+            self.results_df = pd.concat(
+                [self.results_df, pd.DataFrame([row])], ignore_index=True
+            )
+
+        except Exception as e:
+            logger.error(f"Error filling results: {str(e)}", exc_info=True)
+            raise
+
+    def cleanup(self):
+        """Clean up extraction directories."""
+        try:
+            if self.extracts_dir.exists():
+                shutil.rmtree(self.extracts_dir)
+        except Exception as e:
+            logger.error(f"Error cleaning up extraction directories: {str(e)}")
 
 
-# Initialize benchmark configuration
-config = load_config()
-runner = BenchmarkRunner(config)
+# Load configuration once at module level
+def load_config() -> Dict[str, Any]:
+    """Load benchmark configuration."""
+    config_path = os.environ.get("BENCHMARK_CONFIG", "config.benchmark.yaml")
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Configuration file not found: {config_path}")
+
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+
+    return config
 
 
-def pytest_generate_tests(metafunc) -> None:
-    """Generate test cases for pytest."""
+# Initialize runner with configuration
+runner = BenchmarkRunner(load_config())
+
+logger.info("Starting test generation")
+
+
+def pytest_generate_tests(metafunc):
+    """Generate test cases."""
     if "test_case" in metafunc.fixturenames:
-        test_cases = list(runner.get_test_cases())
-        metafunc.parametrize("test_case", test_cases)
+        logger.info("Generating test cases")
+        metafunc.parametrize("test_case", runner.get_test_cases())
+        logger.info("Test cases generated")
 
 
-def test_pipeline(test_case: Dict[str, Any]) -> Dict[str, Any]:
+logger.info("Starting test execution")
+
+
+def test_pipeline(test_case: Dict[str, Any]) -> None:
     """Run pipeline test with generated test case."""
     try:
-        # Run test
+        logger.info(f"Running test case: {test_case}")
+
+        # Run the test and collect results
         result = runner.run_test(test_case)
-        # Preprocess the texts
-        if isinstance(result["output"], str):
-            result["output"] = preprocess_text(result["output"])
-        if isinstance(result["expected"], str):
-            result["expected"] = preprocess_text(result["expected"])
+        logger.info("Test case completed")
 
-        # Create test case
-        deepeval_test = LLMTestCase(
-            input=result["input"],
-            actual_output=result["output"],
-            expected_output=result["expected"],
-        )
+        # Save results after each test
+        results_path = runner.results_dir / "results.json"
 
-        # Get metrics
-        metrics = get_metrics_for_task(test_case["test_name"])
+        # Update results file
+        if results_path.exists():
+            # Load existing results
+            with open(results_path) as f:
+                existing_results = json.load(f)
+        else:
+            existing_results = []
 
-        # Calculate scores
-        scores = {}
-        for metric in metrics:
-            score = metric.measure(deepeval_test)
-            scores[metric.name] = score
+        # Add new result
+        existing_results.append(result)
 
-        # Store results
-        test_result = {
-            **test_case,
-            **scores,
-            "input": result["input"],
-            "output": result["output"],
-            "expected": result["expected"],
-        }
+        # Save updated results
+        with open(results_path, "w") as f:
+            json.dump(existing_results, f, indent=2)
 
-        # Add test result to session
-        pytest.test_result = test_result
-
-        # Run assertions (this will raise AssertionError if any metric fails)
-        assert_test(deepeval_test, metrics=metrics)
-
-        return test_result
+        logger.info(f"Updated results saved to {results_path}")
 
     except Exception as e:
         logger.error(f"Error in test: {str(e)}", exc_info=True)
         raise
+    finally:
+        # Clean up any temporary files
+        temp_extracts_dir = runner.base_output_dir / "temp_extracts"
+        if temp_extracts_dir.exists():
+            shutil.rmtree(temp_extracts_dir)
 
 
-def pytest_sessionfinish(session, exitstatus) -> None:
-    """Save results and clean up after all tests complete."""
-    try:
-        results = []
-
-        # Collect results from all tests
-        for item in session.items:
-            if hasattr(pytest, "test_result"):
-                results.append(pytest.test_result)
-                delattr(pytest, "test_result")  # Clean up after collecting
-
-        if results:  # Only save if we have results
-            runner.save_results(results)
-            logger.info(f"Saved {len(results)} test results")
-        else:
-            logger.warning("No test results to save")
-
-        # Clean up all extraction directories
-        runner.cleanup()
-
-    except Exception as e:
-        logger.error(f"Error in session finish: {str(e)}", exc_info=True)
-        # Try cleanup even if there was an error
-        try:
-            runner.cleanup()
-        except Exception:
-            pass
+# Also add this to make sure we see all logs
+@pytest.fixture(autouse=True)
+def _setup_logging():
+    logging.basicConfig(level=logging.INFO)

@@ -9,7 +9,7 @@ prompts_source: "/app/config.dev.yaml"
 # Test selection
 enabled_tests:
   - extract_sections
-  # - extract_captions
+  - extract_individual_captions
   # - assign_panel_source
   # - match_caption_panel
   # - extract_data_availability
@@ -36,6 +36,16 @@ providers:
         temperatures: [0.5]
         top_p: [0.5]
 
+thresholds:
+  rouge1: 0.9
+  rouge2: 0.9
+  rougeL: 0.9
+  bleu1: 0.9
+  bleu2: 0.9
+  bleu3: 0.9
+  bleu4: 0.9
+  data_source_accuracy: 0.9
+  data_source_accuracy_exact: 0.9
 # Test run configuration  
 test_runs:
   n_runs: 1  # Number of times to run each configuration
