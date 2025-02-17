@@ -405,6 +405,24 @@ class BenchmarkRunner:
             )
             raise
 
+    def _run_extract_captions(
+        self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Run extract captions test."""
+        pass
+
+    def _run_extract_data_availability(
+        self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Run extract data availability test."""
+        pass
+
+    def _run_assign_panel_source(
+        self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Run assign panel source test."""
+        pass
+
 
 # Initialize benchmark configuration
 config = load_config()
