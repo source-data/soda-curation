@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import shutil
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Generator, List, Optional
@@ -250,6 +251,26 @@ class BenchmarkRunner:
         # Check cache
         cached_result = self.cache.get_cached_result(cache_path)
         if cached_result is not None:
+            # Even with cached results, we need to calculate metrics
+            if test_case["test_name"] == "extract_sections":
+                self._fill_results_bag(
+                    test_case=test_case,
+                    result=cached_result,
+                    actual_output=cached_result["output"],
+                    expected_output=cached_result["expected"],
+                )
+            elif test_case["test_name"] == "extract_individual_captions":
+                # For each figure in the cached results
+                for result in cached_result.get("results", []):
+                    self._fill_results_bag(
+                        test_case=test_case,
+                        result=cached_result,
+                        actual_output=result["actual_caption"],
+                        expected_output=result["expected_caption"],
+                        actual_title=result["actual_title"],
+                        expected_title=result["expected_title"],
+                        figure_label=result["figure_label"],
+                    )
             return cached_result
 
         # Load ground truth
@@ -287,6 +308,7 @@ class BenchmarkRunner:
     ) -> Dict[str, Any]:
         """Run extract sections test."""
         try:
+            start_time = time.time()
             # Get manuscript path
             msid = test_case["msid"]
 
@@ -361,6 +383,7 @@ class BenchmarkRunner:
             ) = sections_extractor.extract_sections(
                 doc_content=docx_content, zip_structure=zip_structure
             )
+            duration_ms = (time.time() - start_time) * 1000
 
             # Get ground truth sections
             ground_truth_figures = "\n".join(
@@ -384,12 +407,11 @@ class BenchmarkRunner:
 
             # Fill results bag
             self._fill_results_bag(
-                test_case=test_case,
+                test_case={**test_case, "duration_ms": duration_ms},
                 result=result,
                 actual_output=figure_legends,
                 expected_output=ground_truth_figures,
             )
-
             return result
 
         except Exception as e:
@@ -408,6 +430,7 @@ class BenchmarkRunner:
     ) -> Dict[str, Any]:
         """Run extract captions test."""
         try:
+            start_time = time.time()
             # Load prompts from development configuration
             with open(self.config["prompts_source"]) as f:
                 dev_config = yaml.safe_load(f)
@@ -463,6 +486,13 @@ class BenchmarkRunner:
                 doc_content=ground_truth["all_captions"], zip_structure=zip_structure
             )
 
+            # Extract captions
+            extracted_zip_structure = captions_extractor.extract_individual_captions(
+                doc_content=ground_truth["all_captions"], zip_structure=zip_structure
+            )
+
+            duration_ms = (time.time() - start_time) * 1000
+
             # Compare each caption and title to its ground truth
             results = []
             for figure in ground_truth["figures"]:
@@ -480,33 +510,33 @@ class BenchmarkRunner:
                     None,
                 )
 
-                actual_caption = (
-                    extracted_figure["figure_caption"] if extracted_figure else ""
-                )
-                actual_title = (
-                    extracted_figure["caption_title"] if extracted_figure else ""
-                )
+                if extracted_figure:
+                    actual_caption = extracted_figure["figure_caption"]
+                    actual_title = extracted_figure["caption_title"]
 
-                # Fill results bag with both caption and title metrics
-                self._fill_results_bag(
-                    test_case=test_case,
-                    result={"input": ground_truth["all_captions"]},
-                    actual_output=actual_caption,
-                    expected_output=expected_caption,
-                    actual_title=actual_title,
-                    expected_title=expected_title,
-                    figure_label=figure_label,
-                )
+                    # Fill results bag with both caption and title metrics
+                    self._fill_results_bag(
+                        test_case={**test_case, "duration_ms": duration_ms},
+                        result={
+                            "input": ground_truth["all_captions"],
+                            "ai_response": str(extracted_zip_structure),
+                        },
+                        actual_output=actual_caption,
+                        expected_output=expected_caption,
+                        actual_title=actual_title,
+                        expected_title=expected_title,
+                        figure_label=figure_label,
+                    )
 
-                results.append(
-                    {
-                        "figure_label": figure_label,
-                        "actual_caption": actual_caption,
-                        "expected_caption": expected_caption,
-                        "actual_title": actual_title,
-                        "expected_title": expected_title,
-                    }
-                )
+                    results.append(
+                        {
+                            "figure_label": figure_label,
+                            "actual_caption": actual_caption,
+                            "expected_caption": expected_caption,
+                            "actual_title": actual_title,
+                            "expected_title": expected_title,
+                        }
+                    )
 
             return {
                 "input": ground_truth["all_captions"],
@@ -538,70 +568,81 @@ class BenchmarkRunner:
         """Fill the results DataFrame with test metrics and metadata."""
         try:
             # Create base row for DataFrame
-            row = {
+            base_row = {
                 "pytest_obj": None,
                 "status": "completed",
-                "duration_ms": 0,
+                "duration_ms": test_case.get("duration_ms", 0),
                 "strategy": f"{test_case['provider']}_{test_case['model']}",
                 "msid": test_case["msid"],
                 "run": test_case["run"],
                 "task": test_case.get("test_name", ""),
                 "input": result.get("input", ""),
-                "actual": actual_output,
-                "expected": expected_output,
                 "figure_label": figure_label,
                 "ai_response": result.get("ai_response", ""),
                 "timestamp": pd.Timestamp.now(),
             }
 
-            # Get metrics for this task
+            # Get metrics
             metrics = get_metrics_for_task(test_case.get("test_name", ""))
 
-            if test_case.get("test_name") == "extract_individual_captions":
-                # For caption extraction, evaluate both caption and title
-                test_cases = [
-                    (
-                        "caption",
-                        LLMTestCase(
-                            input=result.get("input", ""),
-                            actual_output=actual_output,
-                            expected_output=expected_output,
-                        ),
-                    ),
-                    (
-                        "title",
-                        LLMTestCase(
-                            input=result.get("input", ""),
-                            actual_output=actual_title,
-                            expected_output=expected_title,
-                        ),
-                    ),
-                ]
+            rows_to_add = []
 
-                for prefix, test_case_obj in test_cases:
-                    for metric in metrics:
-                        score = metric.measure(test_case_obj)
-                        row[f"{prefix}_{metric.name}"] = score
-                        row[f"{prefix}_{metric.name}_success"] = metric.is_successful()
-                        row[f"{prefix}_{metric.name}_threshold"] = metric.threshold
+            # Always add the main output row
+            caption_row = base_row.copy()
+            caption_row.update(
+                {
+                    "actual": actual_output,
+                    "expected": expected_output,
+                }
+            )
 
-            else:
-                # For all other tests, evaluate normally
+            # Calculate metrics for caption
+            test_case_obj = LLMTestCase(
+                input=result.get("input", ""),
+                actual_output=actual_output,
+                expected_output=expected_output,
+            )
+
+            for metric in metrics:
+                score = metric.measure(test_case_obj)
+                caption_row[metric.name] = score
+                caption_row[f"{metric.name}_success"] = metric.is_successful()
+                caption_row[f"{metric.name}_threshold"] = metric.threshold
+
+            rows_to_add.append(caption_row)
+
+            # Only add title row for extract_individual_captions task
+            if (
+                test_case.get("test_name") == "extract_individual_captions"
+                and actual_title
+            ):
+                title_row = base_row.copy()
+                title_row.update(
+                    {
+                        "actual": actual_title,
+                        "expected": expected_title,
+                        "task": f"{test_case.get('test_name')}_title",
+                    }
+                )
+
+                # Calculate metrics for title
                 test_case_obj = LLMTestCase(
                     input=result.get("input", ""),
-                    actual_output=actual_output,
-                    expected_output=expected_output,
+                    actual_output=actual_title,
+                    expected_output=expected_title,
                 )
 
                 for metric in metrics:
                     score = metric.measure(test_case_obj)
-                    row[metric.name] = score
-                    row[f"{metric.name}_success"] = metric.is_successful()
-                    row[f"{metric.name}_threshold"] = metric.threshold
+                    title_row[metric.name] = score
+                    title_row[f"{metric.name}_success"] = metric.is_successful()
+                    title_row[f"{metric.name}_threshold"] = metric.threshold
 
-            # Append to DataFrame
+                rows_to_add.append(title_row)
+
+            # Append rows to DataFrame
             self.results_df = pd.concat(
-                [self.results_df, pd.DataFrame([row])], ignore_index=True
+                [self.results_df, pd.DataFrame(rows_to_add)], ignore_index=True
             )
 
         except Exception as e:
@@ -615,6 +656,22 @@ class BenchmarkRunner:
                 shutil.rmtree(self.extracts_dir)
         except Exception as e:
             logger.error(f"Error cleaning up extraction directories: {str(e)}")
+
+    def save_results(self):
+        """Save results DataFrame to CSV file."""
+        try:
+            # Save DataFrame to CSV
+            results_csv_path = self.results_dir / "metrics.csv"
+            self.results_df.to_csv(results_csv_path, index=False)
+
+            # Also save as Excel for easier viewing (optional)
+            results_excel_path = self.results_dir / "metrics.xlsx"
+            self.results_df.to_excel(results_excel_path, index=False)
+
+            logger.info(f"Saved metrics to {results_csv_path} and {results_excel_path}")
+        except Exception as e:
+            logger.error(f"Error saving results: {str(e)}", exc_info=True)
+            raise
 
 
 # Load configuration once at module level
@@ -673,6 +730,9 @@ def test_pipeline(test_case: Dict[str, Any]) -> None:
         # Save updated results
         with open(results_path, "w") as f:
             json.dump(existing_results, f, indent=2)
+
+        # Save metrics DataFrame
+        runner.save_results()
 
         logger.info(f"Updated results saved to {results_path}")
 
