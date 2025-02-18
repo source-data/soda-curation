@@ -17,6 +17,9 @@ import pytest
 import yaml
 from deepeval.test_case import LLMTestCase
 
+from src.soda_curation.pipeline.data_availability.data_availability_openai import (
+    DataAvailabilityExtractorOpenAI,
+)
 from src.soda_curation.pipeline.extract_captions.extract_captions_openai import (
     FigureCaptionExtractorOpenAI,
 )
@@ -563,6 +566,157 @@ class BenchmarkRunner:
             )
             raise
 
+    def _run_extract_data_availability(
+        self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Run data availability extraction test."""
+        try:
+            start_time = time.time()
+
+            # Get manuscript path
+            msid = test_case["msid"]
+
+            # Create temporary extraction directory
+            temp_extract_dir = self.base_output_dir / "temp_extracts" / msid
+            temp_extract_dir.mkdir(parents=True, exist_ok=True)
+
+            # Get ZIP path
+            zip_path = Path(self.config["manuscript_dir"]) / f"{msid}.zip"
+            if not zip_path.exists():
+                raise FileNotFoundError(f"ZIP file not found: {zip_path}")
+
+            # Use XML extractor to get structure and extract files
+            extractor = XMLStructureExtractor(str(zip_path), str(temp_extract_dir))
+            zip_structure = extractor.extract_structure()
+
+            # Get the DOCX content
+            docx_content = extractor.extract_docx_content(zip_structure.docx)
+
+            # Load prompts from development configuration
+            with open(self.config["prompts_source"]) as f:
+                dev_config = yaml.safe_load(f)
+
+            # Get the default configuration which contains our pipeline setup
+            pipeline_config = dev_config.get("default", {}).get("pipeline", {})
+            if not pipeline_config:
+                raise ValueError("No pipeline configuration found in default profile")
+
+            # Provider-specific configuration
+            provider = test_case["provider"]
+
+            # Create extractor configuration
+            extractor_config = {
+                "api_key": os.environ.get(f"{provider.upper()}_API_KEY"),
+                "pipeline": {
+                    "extract_data_sources": {  # Note: changed from extract_sections
+                        provider: {
+                            "model": test_case["model"],
+                            "temperature": test_case["temperature"],
+                            "top_p": test_case["top_p"],
+                            "prompts": {
+                                "system": pipeline_config["extract_data_sources"][
+                                    provider
+                                ]["prompts"]["system"],
+                                "user": pipeline_config["extract_data_sources"][
+                                    provider
+                                ]["prompts"]["user"],
+                            },
+                        }
+                    }
+                },
+            }
+
+            # Create prompt handler with the pipeline configuration
+            prompt_handler = PromptHandler(extractor_config["pipeline"])
+
+            # Create data availability extractor instance
+            if provider == "anthropic":
+                raise NotImplementedError("Anthropic is not supported yet")
+            elif provider == "openai":
+                data_extractor = DataAvailabilityExtractorOpenAI(
+                    extractor_config, prompt_handler
+                )
+            else:
+                raise ValueError(f"Unsupported provider: {provider}")
+
+            # Get the ground truth text and sources
+            ground_truth_text = ground_truth["data_availability"]["section_text"]
+            ground_truth_sources = ground_truth["data_availability"]["data_sources"]
+
+            # Extract data availability using the correct method
+            updated_structure = data_extractor.extract_data_sources(
+                section_text=ground_truth_text, zip_structure=zip_structure
+            )
+
+            # Get the extracted data
+            data_availability_text = updated_structure.data_availability["section_text"]
+            data_sources = updated_structure.data_availability["data_sources"]
+
+            duration_ms = (time.time() - start_time) * 1000
+
+            # Calculate scores
+            scores = self._calculate_data_availability_scores(
+                data_sources, ground_truth_sources
+            )
+
+            # Prepare specific outputs for each score type
+            specific_outputs = {
+                "database": {
+                    "actual": str([source["database"] for source in data_sources]),
+                    "expected": str(
+                        [source["database"] for source in ground_truth_sources]
+                    ),
+                },
+                "accession": {
+                    "actual": str(
+                        [source["accession_number"] for source in data_sources]
+                    ),
+                    "expected": str(
+                        [source["accession_number"] for source in ground_truth_sources]
+                    ),
+                },
+                "url": {
+                    "actual": str([source["url"] for source in data_sources]),
+                    "expected": str([source["url"] for source in ground_truth_sources]),
+                },
+                "combined": {
+                    "actual": str(data_sources),
+                    "expected": str(ground_truth_sources),
+                },
+            }
+
+            # Fill results bag with specific outputs for each score type
+            self._fill_results_bag(
+                test_case={**test_case, "duration_ms": duration_ms},
+                result={"input": docx_content, "ai_response": str(updated_structure)},
+                actual_output=specific_outputs,  # Now passing dictionary of specific outputs
+                expected_output=specific_outputs,  # Now passing dictionary of specific outputs
+                data_availability_scores=scores,
+            )
+
+            return {
+                "input": docx_content,
+                "output": data_availability_text,
+                "expected": ground_truth_text,
+                "extracted_sources": data_sources,
+                "ground_truth_sources": ground_truth_sources,
+                "scores": scores,
+                "cost": updated_structure.cost.extract_data_sources.model_dump()  # Changed from extract_data_availability
+                if hasattr(updated_structure.cost.extract_data_sources, "model_dump")
+                else {},
+            }
+
+        except Exception as e:
+            logger.error(
+                f"Error running data availability test: {str(e)}", exc_info=True
+            )
+            raise
+
+        finally:
+            # Cleanup temporary directory after processing
+            if temp_extract_dir.exists():
+                shutil.rmtree(temp_extract_dir)
+
     def _get_panel_sequence_score(
         self, extracted_panels: List[Dict], ground_truth_panels: List[Dict]
     ) -> Tuple[float, List[str], List[str]]:
@@ -593,6 +747,63 @@ class BenchmarkRunner:
             ground_truth_labels,
         )
 
+    def _calculate_data_availability_scores(
+        self,
+        extracted_sources: List[Dict[str, str]],
+        ground_truth_sources: List[Dict[str, str]],
+    ) -> Dict[str, float]:
+        """Calculate scores for data availability matching.
+
+        Args:
+            extracted_sources: List of extracted data sources
+            ground_truth_sources: List of ground truth data sources
+
+        Returns:
+            Dict with scores for database, accession, url and combined
+        """
+        if not extracted_sources or not ground_truth_sources:
+            return {
+                "database_score": 0.0,
+                "accession_score": 0.0,
+                "url_score": 0.0,
+                "combined_score": 0.0,
+            }
+
+        # Initialize counters for each metric
+        database_matches = 0
+        accession_matches = 0
+        url_matches = 0
+
+        # For each ground truth source, find best match in extracted sources
+        for gt_source in ground_truth_sources:
+            for ext_source in extracted_sources:
+                # Database matching (partial)
+                if (
+                    gt_source["database"].lower() in ext_source["database"].lower()
+                    or ext_source["database"].lower() in gt_source["database"].lower()
+                ):
+                    database_matches += 1
+
+                # Exact matching for accession and URL
+                if gt_source["accession_number"] == ext_source["accession_number"]:
+                    accession_matches += 1
+                if gt_source["url"] == ext_source["url"]:
+                    url_matches += 1
+
+        # Calculate scores
+        total_sources = len(ground_truth_sources)
+        database_score = database_matches / total_sources
+        accession_score = accession_matches / total_sources
+        url_score = url_matches / total_sources
+        combined_score = (database_score + accession_score + url_score) / 3
+
+        return {
+            "database_score": database_score,
+            "accession_score": accession_score,
+            "url_score": url_score,
+            "combined_score": combined_score,
+        }
+
     def _fill_results_bag(
         self,
         test_case: Dict[str, Any],
@@ -603,8 +814,9 @@ class BenchmarkRunner:
         expected_title: str = "",
         figure_label: str = "",
         panel_sequence_score: float = 0.0,
-        actual_panels: List[str] = None,
-        expected_panels: List[str] = None,
+        actual_panels: List[str] = [],
+        expected_panels: List[str] = [],
+        data_availability_scores: Dict[str, float] = {},
     ) -> None:
         """Fill the results DataFrame with test metrics and metadata."""
         try:
@@ -620,6 +832,14 @@ class BenchmarkRunner:
                 "figure_label": figure_label,
                 "ai_response": result.get("ai_response", ""),
                 "timestamp": pd.Timestamp.now(),
+                # Add AI model parameters
+                "model": test_case["model"],
+                "provider": test_case["provider"],
+                "temperature": test_case["temperature"],
+                "top_p": test_case["top_p"],
+                # Add any other parameters that might be in test_case
+                "frequency_penalty": test_case.get("frequency_penalty", None),
+                "presence_penalty": test_case.get("presence_penalty", None),
             }
 
             rows_to_add = []
@@ -704,6 +924,47 @@ class BenchmarkRunner:
                 panel_row["panel_sequence_accuracy_threshold"] = 1.0
 
                 rows_to_add.append(panel_row)
+
+            # For data availability task
+            if (
+                test_case.get("test_name") == "extract_data_availability"
+                and data_availability_scores
+            ):
+                score_types = {
+                    "database": "Database Name Matching",
+                    "accession": "Accession Number Matching",
+                    "url": "URL Matching",
+                    "combined": "Combined Score",
+                }
+
+                for score_type, description in score_types.items():
+                    score_row = base_row.copy()
+                    score_row.update(
+                        {
+                            "task": f"data_availability_{score_type}",
+                            "actual": actual_output[score_type][
+                                "actual"
+                            ],  # Use specific output
+                            "expected": expected_output[score_type][
+                                "expected"
+                            ],  # Use specific output
+                            "accuracy": data_availability_scores[f"{score_type}_score"],
+                            "accuracy_success": data_availability_scores[
+                                f"{score_type}_score"
+                            ]
+                            == 1.0,
+                            "accuracy_threshold": 1.0,
+                            "description": description,
+                        }
+                    )
+
+                    # Set other metrics to NaN
+                    for metric in metrics:
+                        score_row[metric.name] = float("nan")
+                        score_row[f"{metric.name}_success"] = float("nan")
+                        score_row[f"{metric.name}_threshold"] = float("nan")
+
+                    rows_to_add.append(score_row)
 
             # Append all rows to DataFrame
             self.results_df = pd.concat(

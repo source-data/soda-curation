@@ -1,5 +1,6 @@
 """Metrics for evaluating model performance on different tasks."""
 
+import ast
 import logging
 from typing import List, Set
 
@@ -163,92 +164,98 @@ class PanelSourceMatchMetric(BaseMetric):
 
 
 class DataSourceAccuracyMetric(BaseMetric):
-    """Metric for evaluating data source extraction accuracy."""
+    """Metric for measuring data source extraction accuracy."""
 
     def __init__(self, threshold: float = 0.8):
-        super().__init__(threshold=threshold)
-        self.exact_match_score = 0.0
-        self.jaccard_score = 0.0
+        """Initialize metric with threshold."""
+        super().__init__()  # Call parent's init without arguments
+        self.threshold = threshold  # Set threshold after parent init
+        self.last_measured_value = 0.0  # Initialize last measured value
 
     def measure(self, test_case: LLMTestCase) -> float:
+        """Measure accuracy of data source extraction."""
         try:
-            import json
+            # Parse the actual and expected outputs from strings to lists
+            actual_sources = ast.literal_eval(test_case.actual_output)
+            expected_sources = ast.literal_eval(test_case.expected_output)
 
-            expected = json.loads(test_case.expected_output)
-            actual = json.loads(test_case.actual_output)
+            # Calculate individual scores
+            database_matches = 0
+            accession_matches = 0
+            url_matches = 0
 
-            if not expected:
-                self.score = 1.0 if not actual else 0.0
-                self.exact_match_score = self.score
-                self.jaccard_score = self.score
-                self.success = self.score >= self.threshold
-                return self.score
-
-            # Count exact matches
-            exact_matches = 0
-            for exp_source in expected:
-                for act_source in actual:
+            for expected in expected_sources:
+                for actual in actual_sources:
+                    # Database partial match
                     if (
-                        exp_source.get("database", "").lower().strip()
-                        == act_source.get("database", "").lower().strip()
-                        and exp_source.get("accession_number", "").lower().strip()
-                        == act_source.get("accession_number", "").lower().strip()
+                        expected["database"].lower() in actual["database"].lower()
+                        or actual["database"].lower() in expected["database"].lower()
                     ):
-                        exact_matches += 1
-                        break
+                        database_matches += 1
 
-            # Calculate Jaccard similarities
-            jaccard_scores = []
-            for exp_source in expected:
-                source_scores = []
-                for act_source in actual:
-                    # Compare database names
-                    db_jaccard = calculate_jaccard_similarity(
-                        set(exp_source.get("database", "").lower().split()),
-                        set(act_source.get("database", "").lower().split()),
-                    )
-                    # Compare accession numbers
-                    acc_jaccard = calculate_jaccard_similarity(
-                        set(exp_source.get("accession_number", "").lower().split()),
-                        set(act_source.get("accession_number", "").lower().split()),
-                    )
-                    source_scores.append((db_jaccard + acc_jaccard) / 2)
-                jaccard_scores.append(max(source_scores) if source_scores else 0.0)
+                    # Exact matches for accession and URL
+                    if expected["accession_number"] == actual["accession_number"]:
+                        accession_matches += 1
+                    if expected["url"] == actual["url"]:
+                        url_matches += 1
 
-            # Calculate final scores
-            self.exact_match_score = exact_matches / len(expected)
-            self.jaccard_score = np.mean(jaccard_scores)
-            self.score = (self.exact_match_score + self.jaccard_score) / 2
-            self.success = self.score >= self.threshold
+            total_sources = len(expected_sources) if expected_sources else 1
 
-            return self.score
+            # Calculate combined score
+            combined_score = (
+                database_matches / total_sources
+                + accession_matches / total_sources
+                + url_matches / total_sources
+            ) / 3
+
+            self.last_measured_value = combined_score  # Store the score
+            return combined_score
 
         except Exception as e:
             logger.error(f"Error measuring data source accuracy: {str(e)}")
-            self.score = 0.0
-            self.exact_match_score = 0.0
-            self.jaccard_score = 0.0
-            self.success = False
-            return self.score
+            self.last_measured_value = 0.0
+            return 0.0
+
+    def is_successful(self) -> bool:
+        """Check if the last measured value meets the threshold."""
+        return self.last_measured_value >= self.threshold
 
     @property
     def name(self) -> str:
+        """Get the name of the metric."""
         return "data_source_accuracy"
 
 
 def get_metrics_for_task(task_name: str) -> List[BaseMetric]:
-    """Get appropriate metrics for a given task."""
-    base_metrics = [
-        RougeMetric(score_type=rouge_type)
-        for rouge_type in ["rouge1", "rouge2", "rougeL"]
-    ] + [
-        BleuMetric(bleu_type=bleu_type)
-        for bleu_type in ["bleu1", "bleu2", "bleu3", "bleu4"]
-    ]
+    """Get metrics for a specific task."""
+    base_metrics = []
 
-    # Add task-specific metrics
-    if task_name == "assign_panel_source":
-        base_metrics.append(PanelSourceMatchMetric())
+    if task_name == "extract_sections":
+        base_metrics.extend(
+            [
+                RougeMetric(
+                    score_type="rouge1"
+                ),  # Changed from rouge_type to score_type
+                RougeMetric(score_type="rouge2"),
+                RougeMetric(score_type="rougeL"),
+                BleuMetric(bleu_type="bleu1"),  # Changed from n_gram to bleu_type
+                BleuMetric(bleu_type="bleu2"),
+                BleuMetric(bleu_type="bleu3"),
+                BleuMetric(bleu_type="bleu4"),
+            ]
+        )
+    elif task_name == "extract_individual_captions":
+        base_metrics.extend(
+            [
+                RougeMetric(score_type="rouge1"),
+                RougeMetric(score_type="rouge2"),
+                RougeMetric(score_type="rougeL"),
+                BleuMetric(bleu_type="bleu1"),
+                BleuMetric(bleu_type="bleu2"),
+                BleuMetric(bleu_type="bleu3"),
+                BleuMetric(bleu_type="bleu4"),
+            ]
+        )
     elif task_name == "extract_data_availability":
         base_metrics.append(DataSourceAccuracyMetric())
 

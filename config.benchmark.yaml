@@ -12,7 +12,7 @@ enabled_tests:
   - extract_individual_captions
   # - assign_panel_source
   # - match_caption_panel
-  # - extract_data_availability
+  - extract_data_availability
 
 # Model configurations to test
 providers:
