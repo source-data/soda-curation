@@ -9,7 +9,7 @@ import shutil
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional
+from typing import Any, Dict, Generator, List, Optional, Tuple
 
 import nltk
 import pandas as pd
@@ -486,11 +486,6 @@ class BenchmarkRunner:
                 doc_content=ground_truth["all_captions"], zip_structure=zip_structure
             )
 
-            # Extract captions
-            extracted_zip_structure = captions_extractor.extract_individual_captions(
-                doc_content=ground_truth["all_captions"], zip_structure=zip_structure
-            )
-
             duration_ms = (time.time() - start_time) * 1000
 
             # Compare each caption and title to its ground truth
@@ -514,7 +509,15 @@ class BenchmarkRunner:
                     actual_caption = extracted_figure["figure_caption"]
                     actual_title = extracted_figure["caption_title"]
 
-                    # Fill results bag with both caption and title metrics
+                    # Calculate panel sequence score
+                    (
+                        panel_sequence_score,
+                        extracted_labels,
+                        ground_truth_labels,
+                    ) = self._get_panel_sequence_score(
+                        extracted_figure.get("panels", []), figure.get("panels", [])
+                    )
+                    # Fill results bag with all metrics including panel sequence
                     self._fill_results_bag(
                         test_case={**test_case, "duration_ms": duration_ms},
                         result={
@@ -526,6 +529,9 @@ class BenchmarkRunner:
                         actual_title=actual_title,
                         expected_title=expected_title,
                         figure_label=figure_label,
+                        panel_sequence_score=panel_sequence_score,
+                        actual_panels=extracted_labels,
+                        expected_panels=ground_truth_labels,
                     )
 
                     results.append(
@@ -535,9 +541,11 @@ class BenchmarkRunner:
                             "expected_caption": expected_caption,
                             "actual_title": actual_title,
                             "expected_title": expected_title,
+                            "panel_sequence_score": panel_sequence_score,
+                            "actual_panels": extracted_labels,
+                            "expected_panels": ground_truth_labels,
                         }
                     )
-
             return {
                 "input": ground_truth["all_captions"],
                 "results": results,
@@ -555,6 +563,36 @@ class BenchmarkRunner:
             )
             raise
 
+    def _get_panel_sequence_score(
+        self, extracted_panels: List[Dict], ground_truth_panels: List[Dict]
+    ) -> Tuple[float, List[str], List[str]]:
+        """Calculate score for panel sequence matching and return the sequences.
+
+        Args:
+            extracted_panels: List of panel dictionaries from extraction
+            ground_truth_panels: List of panel dictionaries from ground truth
+
+        Returns:
+            tuple: (score, extracted_labels, ground_truth_labels)
+                - score: 1.0 if sequences match exactly, 0.0 otherwise
+                - extracted_labels: List of extracted panel labels
+                - ground_truth_labels: List of ground truth panel labels
+        """
+        # Extract just the panel labels in order
+        extracted_labels = [p["panel_label"] for p in extracted_panels]
+        ground_truth_labels = [p["panel_label"] for p in ground_truth_panels]
+
+        # If either list is empty, return 0 and empty lists
+        if not extracted_labels or not ground_truth_labels:
+            return 0.0, [], []
+
+        # Return score and both sequences
+        return (
+            1.0 if extracted_labels == ground_truth_labels else 0.0,
+            extracted_labels,
+            ground_truth_labels,
+        )
+
     def _fill_results_bag(
         self,
         test_case: Dict[str, Any],
@@ -564,6 +602,9 @@ class BenchmarkRunner:
         actual_title: str = "",
         expected_title: str = "",
         figure_label: str = "",
+        panel_sequence_score: float = 0.0,
+        actual_panels: List[str] = None,
+        expected_panels: List[str] = None,
     ) -> None:
         """Fill the results DataFrame with test metrics and metadata."""
         try:
@@ -575,22 +616,19 @@ class BenchmarkRunner:
                 "strategy": f"{test_case['provider']}_{test_case['model']}",
                 "msid": test_case["msid"],
                 "run": test_case["run"],
-                "task": test_case.get("test_name", ""),
                 "input": result.get("input", ""),
                 "figure_label": figure_label,
                 "ai_response": result.get("ai_response", ""),
                 "timestamp": pd.Timestamp.now(),
             }
 
-            # Get metrics
-            metrics = get_metrics_for_task(test_case.get("test_name", ""))
-
             rows_to_add = []
 
-            # Always add the main output row
+            # Add main caption row
             caption_row = base_row.copy()
             caption_row.update(
                 {
+                    "task": test_case.get("test_name", ""),
                     "actual": actual_output,
                     "expected": expected_output,
                 }
@@ -603,6 +641,7 @@ class BenchmarkRunner:
                 expected_output=expected_output,
             )
 
+            metrics = get_metrics_for_task(test_case.get("test_name", ""))
             for metric in metrics:
                 score = metric.measure(test_case_obj)
                 caption_row[metric.name] = score
@@ -611,36 +650,62 @@ class BenchmarkRunner:
 
             rows_to_add.append(caption_row)
 
-            # Only add title row for extract_individual_captions task
-            if (
-                test_case.get("test_name") == "extract_individual_captions"
-                and actual_title
-            ):
-                title_row = base_row.copy()
-                title_row.update(
+            # Only add title and panel sequence rows for extract_individual_captions task
+            if test_case.get("test_name") == "extract_individual_captions":
+                # Add title row if we have a title
+                if actual_title:
+                    title_row = base_row.copy()
+                    title_row.update(
+                        {
+                            "task": f"{test_case.get('test_name')}_title",
+                            "actual": actual_title,
+                            "expected": expected_title,
+                        }
+                    )
+
+                    # Calculate metrics for title
+                    test_case_obj = LLMTestCase(
+                        input=result.get("input", ""),
+                        actual_output=actual_title,
+                        expected_output=expected_title,
+                    )
+
+                    for metric in metrics:
+                        score = metric.measure(test_case_obj)
+                        title_row[metric.name] = score
+                        title_row[f"{metric.name}_success"] = metric.is_successful()
+                        title_row[f"{metric.name}_threshold"] = metric.threshold
+
+                    rows_to_add.append(title_row)
+
+                # Add panel sequence row
+                panel_row = base_row.copy()
+                panel_row.update(
                     {
-                        "actual": actual_title,
-                        "expected": expected_title,
-                        "task": f"{test_case.get('test_name')}_title",
+                        "task": "panel_sequence",
+                        "actual": str(actual_panels),  # Store the actual panel sequence
+                        "expected": str(
+                            expected_panels
+                        ),  # Store the expected panel sequence
                     }
                 )
 
-                # Calculate metrics for title
-                test_case_obj = LLMTestCase(
-                    input=result.get("input", ""),
-                    actual_output=actual_title,
-                    expected_output=expected_title,
-                )
-
+                # Set all other metrics to NaN except for a custom accuracy
                 for metric in metrics:
-                    score = metric.measure(test_case_obj)
-                    title_row[metric.name] = score
-                    title_row[f"{metric.name}_success"] = metric.is_successful()
-                    title_row[f"{metric.name}_threshold"] = metric.threshold
+                    panel_row[metric.name] = float("nan")
+                    panel_row[f"{metric.name}_success"] = float("nan")
+                    panel_row[f"{metric.name}_threshold"] = float("nan")
 
-                rows_to_add.append(title_row)
+                # Add the panel sequence score as its own accuracy metric
+                panel_row["panel_sequence_accuracy"] = panel_sequence_score
+                panel_row["panel_sequence_accuracy_success"] = (
+                    panel_sequence_score == 1.0
+                )
+                panel_row["panel_sequence_accuracy_threshold"] = 1.0
 
-            # Append rows to DataFrame
+                rows_to_add.append(panel_row)
+
+            # Append all rows to DataFrame
             self.results_df = pd.concat(
                 [self.results_df, pd.DataFrame(rows_to_add)], ignore_index=True
             )
