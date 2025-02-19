@@ -8,10 +8,10 @@ prompts_source: "/app/config.dev.yaml"
 
 # Test selection
 enabled_tests:
-  # - extract_sections
-  # - extract_individual_captions
+  - extract_sections
+  - extract_individual_captions
   - assign_panel_source
-  # - extract_data_availability
+  - extract_data_availability
 
 # Model configurations to test
 providers:
@@ -31,9 +31,9 @@ providers:
       - name: "gpt-4o-mini"
         temperatures: [0.5]
         top_p: [0.1]
-      # - name: "gpt-4o"
-      #   temperatures: [0.5]
-      #   top_p: [0.5]
+      - name: "gpt-4o"
+        temperatures: [0.5]
+        top_p: [0.5]
 
 thresholds:
   rouge1: 0.9
@@ -47,9 +47,9 @@ thresholds:
   data_source_accuracy_exact: 0.9
 # Test run configuration  
 test_runs:
-  n_runs: 1  # Number of times to run each configuration
+  n_runs: 3  # Number of times to run each configuration
   # manuscripts: "all"  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
-  manuscripts: ["EMM-2023-18636"]  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
+  manuscripts: 2  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
 
 # Results configuration
 results:
