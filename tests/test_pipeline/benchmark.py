@@ -960,8 +960,7 @@ class BenchmarkRunner:
 
             # Assign panel sources
             logger.info("Assigning panel sources")
-            updated_zip_structure = panel_assigner.assign_panel_source(zip_structure)
-            extracted_figures = updated_zip_structure.figures
+            extracted_figures = panel_assigner.assign_panel_source(zip_structure)
 
             duration_ms = (time.time() - start_time) * 1000
 
