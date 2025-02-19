@@ -9,7 +9,7 @@ import shutil
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional, Tuple
+from typing import Any, Dict, Generator, List, Optional
 
 import nltk
 import pandas as pd
@@ -408,139 +408,163 @@ class BenchmarkRunner:
         self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Run extract captions test."""
-        try:
-            start_time = time.time()
-            # Load prompts from development configuration
-            with open(self.config["prompts_source"]) as f:
-                dev_config = yaml.safe_load(f)
+        start_time = time.time()
+        # Load prompts from development configuration
+        with open(self.config["prompts_source"]) as f:
+            dev_config = yaml.safe_load(f)
 
-            # Get the default configuration which contains our pipeline setup
-            pipeline_config = dev_config.get("default", {}).get("pipeline", {})
-            if not pipeline_config:
-                raise ValueError("No pipeline configuration found in default profile")
+        # Get the default configuration which contains our pipeline setup
+        pipeline_config = dev_config.get("default", {}).get("pipeline", {})
+        if not pipeline_config:
+            raise ValueError("No pipeline configuration found in default profile")
 
-            # Provider-specific configuration
-            provider = test_case["provider"]
+        # Provider-specific configuration
+        provider = test_case["provider"]
 
-            # Create extractor configuration
-            extractor_config = {
-                "api_key": os.environ.get(f"{provider.upper()}_API_KEY"),
-                "pipeline": {
-                    "extract_individual_captions": {
-                        provider: {
-                            "model": test_case["model"],
-                            "temperature": test_case["temperature"],
-                            "top_p": test_case["top_p"],
-                            "prompts": {
-                                "system": pipeline_config[
-                                    "extract_individual_captions"
-                                ][provider]["prompts"]["system"],
-                                "user": pipeline_config["extract_individual_captions"][
-                                    provider
-                                ]["prompts"]["user"],
-                            },
-                        }
-                    }
-                },
-            }
-
-            # Create prompt handler
-            prompt_handler = PromptHandler(extractor_config["pipeline"])
-
-            # Create captions extractor instance
-            if provider == "anthropic":
-                raise NotImplementedError("Anthropic is not supported yet")
-            elif provider == "openai":
-                captions_extractor = FigureCaptionExtractorOpenAI(
-                    extractor_config, prompt_handler
-                )
-            else:
-                raise ValueError(f"Unsupported provider: {provider}")
-
-            # Create a ZipStructure object with just the figures
-            zip_structure = ZipStructure(figures=ground_truth["figures"])
-
-            # Extract captions using all_captions from ground truth
-            extracted_zip_structure = captions_extractor.extract_individual_captions(
-                doc_content=ground_truth["all_captions"], zip_structure=zip_structure
-            )
-
-            duration_ms = (time.time() - start_time) * 1000
-
-            # Compare each caption and title to its ground truth
-            results = []
-            for figure in ground_truth["figures"]:
-                figure_label = figure["figure_label"]
-                expected_caption = figure["figure_caption"]
-                expected_title = figure["caption_title"]
-
-                # Get the actual caption and title from extracted results
-                extracted_figure = next(
-                    (
-                        f
-                        for f in extracted_zip_structure.figures
-                        if f["figure_label"] == figure_label
-                    ),
-                    None,
-                )
-
-                if extracted_figure:
-                    actual_caption = extracted_figure["figure_caption"]
-                    actual_title = extracted_figure["caption_title"]
-
-                    # Calculate panel sequence score
-                    (
-                        panel_sequence_score,
-                        extracted_labels,
-                        ground_truth_labels,
-                    ) = self._get_panel_sequence_score(
-                        extracted_figure.get("panels", []), figure.get("panels", [])
-                    )
-                    # Fill results bag with all metrics including panel sequence
-                    self._fill_results_bag(
-                        test_case={**test_case, "duration_ms": duration_ms},
-                        result={
-                            "input": ground_truth["all_captions"],
-                            "ai_response": str(extracted_zip_structure),
+        # Create extractor configuration
+        extractor_config = {
+            "api_key": os.environ.get(f"{provider.upper()}_API_KEY"),
+            "pipeline": {
+                "extract_individual_captions": {
+                    provider: {
+                        "model": test_case["model"],
+                        "temperature": test_case["temperature"],
+                        "top_p": test_case["top_p"],
+                        "prompts": {
+                            "system": pipeline_config["extract_individual_captions"][
+                                provider
+                            ]["prompts"]["system"],
+                            "user": pipeline_config["extract_individual_captions"][
+                                provider
+                            ]["prompts"]["user"],
                         },
-                        actual_output=actual_caption,
-                        expected_output=expected_caption,
-                        actual_title=actual_title,
-                        expected_title=expected_title,
-                        figure_label=figure_label,
-                        panel_sequence_score=panel_sequence_score,
-                        actual_panels=extracted_labels,
-                        expected_panels=ground_truth_labels,
-                    )
+                    }
+                }
+            },
+        }
 
-                    results.append(
-                        {
-                            "figure_label": figure_label,
-                            "actual_caption": actual_caption,
-                            "expected_caption": expected_caption,
-                            "actual_title": actual_title,
-                            "expected_title": expected_title,
-                            "panel_sequence_score": panel_sequence_score,
-                            "actual_panels": extracted_labels,
-                            "expected_panels": ground_truth_labels,
-                        }
-                    )
-            return {
-                "input": ground_truth["all_captions"],
-                "results": results,
-                "cost": extracted_zip_structure.cost.extract_individual_captions.model_dump()
-                if hasattr(
-                    extracted_zip_structure.cost.extract_individual_captions,
-                    "model_dump",
-                )
-                else {},
-            }
+        # Create prompt handler
+        prompt_handler = PromptHandler(extractor_config["pipeline"])
 
-        except Exception as e:
-            logger.error(
-                f"Error running extract captions test: {str(e)}", exc_info=True
+        # Create captions extractor instance
+        if provider == "anthropic":
+            raise NotImplementedError("Anthropic is not supported yet")
+        elif provider == "openai":
+            captions_extractor = FigureCaptionExtractorOpenAI(
+                extractor_config, prompt_handler
             )
-            raise
+        else:
+            raise ValueError(f"Unsupported provider: {provider}")
+
+        # Ground truth comes from the input
+        zip_structure = ZipStructure(figures=ground_truth["figures"])
+
+        # This is where we get the AI extraction
+        extracted_zip_structure = captions_extractor.extract_individual_captions(
+            doc_content=ground_truth["all_captions"], zip_structure=zip_structure
+        )
+        # Calculate duration before processing results
+        duration_ms = (time.time() - start_time) * 1000
+
+        # For each figure in ground truth, find corresponding AI extraction
+        results = []
+        for gt_figure in ground_truth["figures"]:
+            figure_label = gt_figure["figure_label"]
+
+            # Ground truth values
+            expected_caption = gt_figure["figure_caption"]
+            expected_title = gt_figure["caption_title"]
+            expected_panels = [p["panel_label"] for p in gt_figure["panels"]]
+
+            # Find matching AI extracted figure
+            extracted_figure = next(
+                (
+                    f
+                    for f in extracted_zip_structure.figures
+                    if f["figure_label"] == figure_label
+                ),
+                None,
+            )
+
+            if extracted_figure:
+                # AI extracted values
+                actual_caption = extracted_figure["figure_caption"]
+                actual_title = extracted_figure["caption_title"]
+                actual_panels = [p["panel_label"] for p in extracted_figure["panels"]]
+
+                panel_sequence_score = 1 - (
+                    len(set(expected_panels)) - len(set(actual_panels))
+                ) / len(set(expected_panels))
+
+                # Fill results for each task with correct actual/expected pairs
+                self._fill_results_bag(
+                    test_case={**test_case, "duration_ms": duration_ms},
+                    result={
+                        "input": ground_truth["all_captions"],
+                        "ai_response": str(extracted_zip_structure),
+                    },
+                    actual_output=actual_title,  # AI extracted
+                    expected_output=expected_title,  # Ground truth
+                    figure_label=figure_label,
+                    task="figure_title",
+                )
+
+                self._fill_results_bag(
+                    test_case={**test_case, "duration_ms": duration_ms},
+                    result={
+                        "input": ground_truth["all_captions"],
+                        "ai_response": str(extracted_zip_structure),
+                    },
+                    actual_output=actual_caption,  # AI extracted
+                    expected_output=expected_caption,  # Ground truth
+                    figure_label=figure_label,
+                    task="figure_caption",
+                )
+
+                self._fill_results_bag(
+                    test_case={**test_case, "duration_ms": duration_ms},
+                    result={
+                        "input": ground_truth["all_captions"],
+                        "ai_response": str(extracted_zip_structure),
+                    },
+                    actual_output=str(actual_panels),  # AI extracted
+                    expected_output=str(expected_panels),  # Ground truth
+                    figure_label=figure_label,
+                    task="panel_sequence",
+                    score=panel_sequence_score,
+                )
+
+                # Store structured results
+                results.append(
+                    {
+                        "figure_label": figure_label,
+                        "tasks": {
+                            "figure_title": {
+                                "actual": actual_title,  # AI extracted
+                                "expected": expected_title,  # Ground truth
+                            },
+                            "figure_caption": {
+                                "actual": actual_caption,  # AI extracted
+                                "expected": expected_caption,  # Ground truth
+                            },
+                            "panel_sequence": {
+                                "actual": actual_panels,  # AI extracted
+                                "expected": expected_panels,  # Ground truth
+                                "score": panel_sequence_score,
+                            },
+                        },
+                    }
+                )
+
+        return {
+            "input": ground_truth["all_captions"],
+            "results": results,
+            "cost": extracted_zip_structure.cost.extract_individual_captions.model_dump()
+            if hasattr(
+                extracted_zip_structure.cost.extract_individual_captions, "model_dump"
+            )
+            else {},
+        }
 
     def _run_extract_data_availability(
         self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
@@ -692,36 +716,6 @@ class BenchmarkRunner:
             # Cleanup temporary directory after processing
             if temp_extract_dir.exists():
                 shutil.rmtree(temp_extract_dir)
-
-    def _get_panel_sequence_score(
-        self, extracted_panels: List[Dict], ground_truth_panels: List[Dict]
-    ) -> Tuple[float, List[str], List[str]]:
-        """Calculate score for panel sequence matching and return the sequences.
-
-        Args:
-            extracted_panels: List of panel dictionaries from extraction
-            ground_truth_panels: List of panel dictionaries from ground truth
-
-        Returns:
-            tuple: (score, extracted_labels, ground_truth_labels)
-                - score: 1.0 if sequences match exactly, 0.0 otherwise
-                - extracted_labels: List of extracted panel labels
-                - ground_truth_labels: List of ground truth panel labels
-        """
-        # Extract just the panel labels in order
-        extracted_labels = [p["panel_label"] for p in extracted_panels]
-        ground_truth_labels = [p["panel_label"] for p in ground_truth_panels]
-
-        # If either list is empty, return 0 and empty lists
-        if not extracted_labels or not ground_truth_labels:
-            return 0.0, [], []
-
-        # Return score and both sequences
-        return (
-            1.0 if extracted_labels == ground_truth_labels else 0.0,
-            extracted_labels,
-            ground_truth_labels,
-        )
 
     def _calculate_data_availability_scores(
         self,
@@ -1031,18 +1025,12 @@ class BenchmarkRunner:
         result: Dict[str, Any],
         actual_output: str = "",
         expected_output: str = "",
-        actual_title: str = "",
-        expected_title: str = "",
         figure_label: str = "",
-        panel_sequence_score: float = 0.0,
-        actual_panels: List[str] = [],
-        expected_panels: List[str] = [],
-        data_availability_scores: Dict[str, float] = {},
-        panel_source_scores: Dict[str, float] = {},
+        task: str = "",
+        score: Optional[float] = None,  # Allow pre-calculated score
     ) -> None:
         """Fill the results DataFrame with test metrics and metadata."""
         try:
-            # Create base row for DataFrame - only including columns that exist in DataFrame
             base_row = {
                 "pytest_obj": None,
                 "status": "completed",
@@ -1053,8 +1041,10 @@ class BenchmarkRunner:
                 "input": result.get("input", ""),
                 "figure_label": figure_label,
                 "panel_label": test_case.get("panel_label", ""),
-                "ai_response": result.get("ai_response", ""),
                 "timestamp": pd.Timestamp.now(),
+                "task": task,
+                "actual": actual_output,
+                "expected": expected_output,
             }
 
             rows_to_add = []
@@ -1110,16 +1100,26 @@ class BenchmarkRunner:
                 )
 
             elif test_name == "extract_individual_captions":
-                # TODO: Implement simplified version for individual captions
-                pass
+                # If score is pre-calculated (like for panel_sequence), use it
+                if score is not None:
+                    base_row["score"] = score
+                else:
+                    # Otherwise calculate score using appropriate metric
+                    metric = get_metrics_for_task(test_name)[0]
+                    test_case = LLMTestCase(
+                        input=result["input"],
+                        actual_output=actual_output,
+                        expected_output=expected_output,
+                    )
+                    base_row["score"] = metric.measure(test_case)
 
             elif test_name == "panel_source_assignment":
                 # TODO: Implement simplified version for panel source assignment
                 pass
 
-            # Append all rows to DataFrame
+            # Add row to DataFrame
             self.results_df = pd.concat(
-                [self.results_df, pd.DataFrame(rows_to_add)], ignore_index=True
+                [self.results_df, pd.DataFrame([base_row])], ignore_index=True
             )
 
         except Exception as e:
