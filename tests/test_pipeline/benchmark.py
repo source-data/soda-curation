@@ -936,6 +936,9 @@ class BenchmarkRunner:
                     },
                     actual_output=data["actual"],
                     expected_output=data["expected"],
+                    figure_label=data["figure_label"],
+                    task="panel_source_assignment",
+                    score=data["score"],  # Pass the pre-calculated score
                 )
 
             return {
@@ -1046,6 +1049,8 @@ class BenchmarkRunner:
             elif test_name in [
                 "extract_individual_captions",
                 "extract_data_availability",
+                "assign_panel_source",
+                "panel_source_assignment",
             ]:
                 # If score is pre-calculated (like for panel_sequence), use it
                 if score is not None:
@@ -1060,9 +1065,8 @@ class BenchmarkRunner:
                     )
                     base_row["score"] = metric.measure(test_case)
 
-            elif test_name == "panel_source_assignment":
-                # TODO: Implement simplified version for panel source assignment
-                pass
+            else:
+                raise ValueError(f"Unknown test name: {test_name}")
 
             # Add row to DataFrame
             self.results_df = pd.concat(
