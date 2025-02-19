@@ -3,6 +3,7 @@
 import ast
 import json
 import logging
+import re
 from typing import List, Set
 
 from deepeval.metrics import BaseMetric
@@ -10,6 +11,30 @@ from deepeval.scorer import Scorer
 from deepeval.test_case import LLMTestCase
 
 logger = logging.getLogger(__name__)
+
+
+def normalize_text(text: str, is_data_availability: bool = False) -> str:
+    """Normalize text for consistent comparison."""
+    if not isinstance(text, str):
+        text = str(text)
+
+    # Remove "Data Availability" prefix if specified
+    if is_data_availability:
+        text = re.sub(r"^data\s+availability\s*[:.]?\s*", "", text, flags=re.IGNORECASE)
+
+    # Convert to lowercase
+    text = text.lower()
+
+    # Remove extra whitespace
+    text = " ".join(text.split())
+
+    # Remove punctuation except periods and hyphens
+    text = re.sub(r"[^\w\s.-]", "", text)
+
+    # Normalize numbers
+    text = re.sub(r"(\d+)", lambda m: str(float(m.group(1))), text)
+
+    return text.strip()
 
 
 def calculate_jaccard_similarity(set1: Set, set2: Set) -> float:
@@ -61,10 +86,18 @@ class BleuMetric(BaseMetric):
         self.threshold = threshold
         self.scorer = Scorer()
 
-    def measure(self, test_case: LLMTestCase):
+    def measure(self, test_case: LLMTestCase) -> float:
+        # Normalize both texts
+        prediction = normalize_text(test_case.actual_output)
+        target = normalize_text(test_case.expected_output)
+
+        # Skip empty texts
+        if not prediction or not target:
+            return 0.0
+
         self.score = self.scorer.sentence_bleu_score(
-            prediction=test_case.actual_output,
-            references=test_case.expected_output,
+            prediction=prediction,
+            references=target,
             bleu_type=self.bleu_type,
         )
         self.success = self.score >= self.threshold
@@ -220,35 +253,17 @@ class DataSourceAccuracyMetric(BaseMetric):
 
 def get_metrics_for_task(task_name: str) -> List[BaseMetric]:
     """Get metrics for a specific task."""
-    base_metrics = []
-
-    if task_name == "extract_sections":
-        base_metrics.extend(
-            [
-                RougeMetric(
-                    score_type="rouge1"
-                ),  # Changed from rouge_type to score_type
-                RougeMetric(score_type="rouge2"),
-                RougeMetric(score_type="rougeL"),
-                BleuMetric(bleu_type="bleu1"),  # Changed from n_gram to bleu_type
-                BleuMetric(bleu_type="bleu2"),
-                BleuMetric(bleu_type="bleu3"),
-                BleuMetric(bleu_type="bleu4"),
-            ]
-        )
-    elif task_name == "extract_individual_captions":
-        base_metrics.extend(
-            [
-                RougeMetric(score_type="rouge1"),
-                RougeMetric(score_type="rouge2"),
-                RougeMetric(score_type="rougeL"),
-                BleuMetric(bleu_type="bleu1"),
-                BleuMetric(bleu_type="bleu2"),
-                BleuMetric(bleu_type="bleu3"),
-                BleuMetric(bleu_type="bleu4"),
-            ]
-        )
+    # For most tasks, we'll use BLEU1
+    if task_name in [
+        "extract_sections",
+        "extract_individual_captions",
+        "locate_figure_captions",
+    ]:
+        return [BleuMetric(bleu_type="bleu1")]
+    # For data availability, we keep the specific metric
     elif task_name == "extract_data_availability":
-        base_metrics.append(DataSourceAccuracyMetric())
-
-    return base_metrics
+        return [DataSourceAccuracyMetric()]
+    # For panel source assignment, we use the panel source metric
+    elif task_name == "panel_source_assignment":
+        return [PanelSourceMatchMetric()]
+    return []

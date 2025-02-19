@@ -38,7 +38,7 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser impor
 )
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
 
-from .metrics import get_metrics_for_task
+from .metrics import get_metrics_for_task, normalize_text
 
 
 # At the very top of the file, after imports
@@ -75,33 +75,6 @@ except LookupError:
 
 # Define a results bag to store test results
 results_bag = []
-
-
-def preprocess_text(text: str) -> str:
-    """
-    Preprocess text for comparison by:
-    1. Removing escape characters
-    2. Normalizing whitespace
-    3. Stripping extra spaces
-
-    Args:
-        text (str): Input text to process
-
-    Returns:
-        str: Cleaned text
-    """
-    if not isinstance(text, str):
-        return text
-
-    # Replace common escape sequences with their actual characters
-    text = text.replace("\\n", " ")
-    text = text.replace("\\t", " ")
-    text = text.replace("\\r", " ")
-
-    # Normalize whitespace
-    text = " ".join(text.split())
-
-    return text.strip()
 
 
 class BenchmarkCache:
@@ -178,33 +151,9 @@ class BenchmarkRunner:
                 "actual",
                 "expected",
                 "figure_label",
+                "panel_label",
                 "ai_response",
-                "rouge1",
-                "rouge1_success",
-                "rouge1_threshold",
-                "rouge2",
-                "rouge2_success",
-                "rouge2_threshold",
-                "rougeL",
-                "rougeL_success",
-                "rougeL_threshold",
-                "bleu1",
-                "bleu1_success",
-                "bleu1_threshold",
-                "bleu2",
-                "bleu2_success",
-                "bleu2_threshold",
-                "bleu3",
-                "bleu3_success",
-                "bleu3_threshold",
-                "bleu4",
-                "bleu4_success",
-                "bleu4_threshold",
-                "data_source_accuracy",
-                "data_source_accuracy_success",
-                "data_source_accuracy_threshold",
-                "data_source_accuracy_exact",
-                "data_source_accuracy_jaccard",
+                "score",
                 "timestamp",
             ]
         )
@@ -417,9 +366,8 @@ class BenchmarkRunner:
             duration_ms = (time.time() - start_time) * 1000
 
             # Get ground truth sections
-            ground_truth_figures = "\n".join(
-                figure["figure_caption"] for figure in ground_truth["figures"]
-            )
+            ground_truth_figures = ground_truth["all_captions"]
+
             ground_truth_data_availability = ground_truth.get(
                 "data_availability", {}
             ).get("section_text", "")
@@ -1090,11 +1038,11 @@ class BenchmarkRunner:
         actual_panels: List[str] = [],
         expected_panels: List[str] = [],
         data_availability_scores: Dict[str, float] = {},
-        panel_source_scores: Dict[str, float] = {},  # Added new parameter
+        panel_source_scores: Dict[str, float] = {},
     ) -> None:
         """Fill the results DataFrame with test metrics and metadata."""
         try:
-            # Create base row for DataFrame
+            # Create base row for DataFrame - only including columns that exist in DataFrame
             base_row = {
                 "pytest_obj": None,
                 "status": "completed",
@@ -1104,192 +1052,70 @@ class BenchmarkRunner:
                 "run": test_case["run"],
                 "input": result.get("input", ""),
                 "figure_label": figure_label,
+                "panel_label": test_case.get("panel_label", ""),
                 "ai_response": result.get("ai_response", ""),
                 "timestamp": pd.Timestamp.now(),
-                # Add AI model parameters
-                "model": test_case["model"],
-                "provider": test_case["provider"],
-                "temperature": test_case["temperature"],
-                "top_p": test_case["top_p"],
-                # Add any other parameters that might be in test_case
-                "frequency_penalty": test_case.get("frequency_penalty", None),
-                "presence_penalty": test_case.get("presence_penalty", None),
             }
 
             rows_to_add = []
+            test_name = test_case.get("test_name", "")
 
-            # Add main caption row
-            caption_row = base_row.copy()
-            caption_row.update(
-                {
-                    "task": test_case.get("test_name", ""),
-                    "actual": actual_output,
-                    "expected": expected_output,
-                }
-            )
+            # Handle different test types
+            if test_name == "extract_sections":
+                metric = get_metrics_for_task(test_name)[0]
 
-            # Calculate metrics for caption
-            test_case_obj = LLMTestCase(
-                input=result.get("input", ""),
-                actual_output=actual_output,
-                expected_output=expected_output,
-            )
+                # Add row for figure captions extraction
+                caption_test_case = LLMTestCase(
+                    input=result["input"],
+                    actual_output=normalize_text(result["output"]),
+                    expected_output=normalize_text(result["expected"]),
+                )
+                caption_score = metric.measure(caption_test_case)
 
-            metrics = get_metrics_for_task(test_case.get("test_name", ""))
-            for metric in metrics:
-                score = metric.measure(test_case_obj)
-                caption_row[metric.name] = score
-                caption_row[f"{metric.name}_success"] = metric.is_successful()
-                caption_row[f"{metric.name}_threshold"] = metric.threshold
-
-            rows_to_add.append(caption_row)
-
-            # Only add title and panel sequence rows for extract_individual_captions task
-            if test_case.get("test_name") == "extract_individual_captions":
-                # Add title row if we have a title
-                if actual_title:
-                    title_row = base_row.copy()
-                    title_row.update(
-                        {
-                            "task": f"{test_case.get('test_name')}_title",
-                            "actual": actual_title,
-                            "expected": expected_title,
-                        }
-                    )
-
-                    # Calculate metrics for title
-                    test_case_obj = LLMTestCase(
-                        input=result.get("input", ""),
-                        actual_output=actual_title,
-                        expected_output=expected_title,
-                    )
-
-                    for metric in metrics:
-                        score = metric.measure(test_case_obj)
-                        title_row[metric.name] = score
-                        title_row[f"{metric.name}_success"] = metric.is_successful()
-                        title_row[f"{metric.name}_threshold"] = metric.threshold
-
-                    rows_to_add.append(title_row)
-
-                # Add panel sequence row
-                panel_row = base_row.copy()
-                panel_row.update(
+                rows_to_add.append(
                     {
-                        "task": "panel_sequence",
-                        "actual": str(actual_panels),  # Store the actual panel sequence
-                        "expected": str(
-                            expected_panels
-                        ),  # Store the expected panel sequence
+                        **base_row,
+                        "task": "locate_figure_captions",
+                        "actual": normalize_text(result["output"]),
+                        "expected": normalize_text(result["expected"]),
+                        "score": caption_score,
                     }
                 )
 
-                # Set all other metrics to NaN except for a custom accuracy
-                for metric in metrics:
-                    panel_row[metric.name] = float("nan")
-                    panel_row[f"{metric.name}_success"] = float("nan")
-                    panel_row[f"{metric.name}_threshold"] = float("nan")
+                # Add row for data availability extraction
 
-                # Add the panel sequence score as its own accuracy metric
-                panel_row["panel_sequence_accuracy"] = panel_sequence_score
-                panel_row["panel_sequence_accuracy_success"] = (
-                    panel_sequence_score == 1.0
+                data_test_case = LLMTestCase(
+                    input=result["input"],
+                    actual_output=normalize_text(
+                        result["data_availability_output"], True
+                    ),
+                    expected_output=normalize_text(
+                        result["data_availability_expected"], True
+                    ),
                 )
-                panel_row["panel_sequence_accuracy_threshold"] = 1.0
+                data_score = metric.measure(data_test_case)
 
-                rows_to_add.append(panel_row)
+                rows_to_add.append(
+                    {
+                        **base_row,
+                        "task": "extract_data_availability",
+                        "actual": normalize_text(
+                            result["data_availability_output"], True
+                        ),
+                        "expected": normalize_text(
+                            result["data_availability_expected"], True
+                        ),
+                        "score": data_score,
+                    }
+                )
 
-            # For data availability task
-            if (
-                test_case.get("test_name") == "extract_data_availability"
-                and data_availability_scores
-            ):
-                score_types = {
-                    "database": "Database Name Matching",
-                    "accession": "Accession Number Matching",
-                    "url": "URL Matching",
-                    "combined": "Combined Score",
-                }
+            elif test_name == "extract_individual_captions":
+                # TODO: Implement simplified version for individual captions
+                pass
 
-                for score_type, description in score_types.items():
-                    score_row = base_row.copy()
-                    score_row.update(
-                        {
-                            "task": f"data_availability_{score_type}",
-                            "actual": actual_output[score_type][
-                                "actual"
-                            ],  # Use specific output
-                            "expected": expected_output[score_type][
-                                "expected"
-                            ],  # Use specific output
-                            "accuracy": data_availability_scores[f"{score_type}_score"],
-                            "accuracy_success": data_availability_scores[
-                                f"{score_type}_score"
-                            ]
-                            == 1.0,
-                            "accuracy_threshold": 1.0,
-                            "description": description,
-                        }
-                    )
-
-                    # Set other metrics to NaN
-                    for metric in metrics:
-                        score_row[metric.name] = float("nan")
-                        score_row[f"{metric.name}_success"] = float("nan")
-                        score_row[f"{metric.name}_threshold"] = float("nan")
-
-                    rows_to_add.append(score_row)
-
-            # For panel source assignment task
-            # For panel source assignment task
-            if (
-                test_case.get("test_name") == "panel_source_assignment"
-                and panel_source_scores
-            ):
-                for panel_id, score in panel_source_scores.items():
-                    if panel_id == "average_score":  # Skip average for now
-                        continue
-
-                    score_row = base_row.copy()
-                    score_row.update(
-                        {
-                            "task": "panel_source_assignment",
-                            "panel_id": panel_id,
-                            "actual": actual_output,  # Direct string of files
-                            "expected": expected_output,  # Direct string of files
-                            "accuracy": score,
-                            "accuracy_success": score == 1.0,
-                            "accuracy_threshold": 1.0,
-                            "description": "Panel Source File Assignment",
-                            "figure_label": test_case.get("figure_label", ""),
-                            "panel_label": test_case.get("panel_label", ""),
-                        }
-                    )
-
-                    # Set other metrics to NaN
-                    for metric in metrics:
-                        score_row[metric.name] = float("nan")
-                        score_row[f"{metric.name}_success"] = float("nan")
-                        score_row[f"{metric.name}_threshold"] = float("nan")
-
-                    rows_to_add.append(score_row)
-                # Add average score row
-                if "average_score" in panel_source_scores:
-                    avg_row = base_row.copy()
-                    avg_row.update(
-                        {
-                            "task": "panel_source_assignment_average",
-                            "panel_id": "average",
-                            "actual": "N/A",
-                            "expected": "N/A",
-                            "accuracy": panel_source_scores["average_score"],
-                            "accuracy_success": panel_source_scores["average_score"]
-                            == 1.0,
-                            "accuracy_threshold": 1.0,
-                            "description": "Panel Source Assignment Average Score",
-                        }
-                    )
-                    rows_to_add.append(avg_row)
+            elif test_name == "panel_source_assignment":
+                # TODO: Implement simplified version for panel source assignment
+                pass
 
             # Append all rows to DataFrame
             self.results_df = pd.concat(

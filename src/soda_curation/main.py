@@ -105,6 +105,10 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             )
             zip_structure.figures = processed_figures
 
+            # Run the object detection step
+            # object_detection = ObjectDetection(config_loader.config, prompt_handler)
+            # zip_structure = object_detection.detect_objects(zip_structure)
+
             # Update total costs before returning results
             zip_structure.update_total_cost()
 
