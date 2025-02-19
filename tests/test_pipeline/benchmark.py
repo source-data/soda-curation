@@ -17,6 +17,9 @@ import pytest
 import yaml
 from deepeval.test_case import LLMTestCase
 
+from src.soda_curation.pipeline.assign_panel_source.assign_panel_source_openai import (
+    PanelSourceAssignerOpenAI,
+)
 from src.soda_curation.pipeline.data_availability.data_availability_openai import (
     DataAvailabilityExtractorOpenAI,
 )
@@ -27,6 +30,7 @@ from src.soda_curation.pipeline.extract_sections.extract_sections_openai import 
     SectionExtractorOpenAI,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    Figure,
     ZipStructure,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
@@ -35,6 +39,30 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser impor
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
 
 from .metrics import get_metrics_for_task
+
+
+# At the very top of the file, after imports
+def setup_logging():
+    """Configure detailed logging."""
+    # Clear any existing handlers
+    root = logging.getLogger()
+    if root.handlers:
+        for handler in root.handlers:
+            root.removeHandler(handler)
+
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler()],
+    )
+
+    # Set logging level for specific loggers
+    logging.getLogger("tests.test_pipeline").setLevel(logging.DEBUG)
+    logging.getLogger("src.soda_curation").setLevel(logging.DEBUG)
+
+
+setup_logging()
 
 logger = logging.getLogger(__name__)
 
@@ -804,6 +832,252 @@ class BenchmarkRunner:
             "combined_score": combined_score,
         }
 
+    def _calculate_panel_source_scores(
+        self,
+        extracted_figures: List[Figure],
+        ground_truth_figures: List[Dict[str, Any]],
+    ) -> Dict[str, float]:
+        """Calculate scores for panel source assignments."""
+        scores = {}
+        total_score = 0.0
+        panel_count = 0
+
+        for gt_figure in ground_truth_figures:
+            ext_figure = next(
+                (
+                    f
+                    for f in extracted_figures
+                    if f.figure_label == gt_figure["figure_label"]
+                ),
+                None,
+            )
+
+            for gt_panel in gt_figure["panels"]:
+                panel_key = f"{gt_figure['figure_label']}_{gt_panel['panel_label']}"
+                expected_files = gt_panel["sd_files"]
+
+                if ext_figure:
+                    ext_panel = next(
+                        (
+                            p
+                            for p in ext_figure.panels
+                            if p.panel_label == gt_panel["panel_label"]
+                        ),
+                        None,
+                    )
+                    actual_files = ext_panel.sd_files if ext_panel else []
+                else:
+                    actual_files = []
+
+                # Calculate score for this panel
+                if not expected_files:
+                    panel_score = 1.0 if not actual_files else 0.0
+                else:
+                    correct_matches = len(
+                        set(expected_files).intersection(set(actual_files))
+                    )
+                    panel_score = correct_matches / len(expected_files)
+
+                scores[panel_key] = panel_score
+                total_score += panel_score
+                panel_count += 1
+
+        # Add average score
+        scores["average_score"] = total_score / panel_count if panel_count > 0 else 0.0
+
+        return scores
+
+    def _run_assign_panel_source(
+        self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Run panel source assignment test."""
+        try:
+            start_time = time.time()
+
+            # Get manuscript path
+            msid = test_case["msid"]
+
+            # Create temporary extraction directory
+            temp_extract_dir = self.base_output_dir / "temp_extracts" / msid
+            temp_extract_dir.mkdir(parents=True, exist_ok=True)
+
+            # Get ZIP path
+            zip_path = Path(self.config["manuscript_dir"]) / f"{msid}.zip"
+            if not zip_path.exists():
+                raise FileNotFoundError(f"ZIP file not found: {zip_path}")
+
+            # Use XML extractor to get structure and extract files
+            extractor = XMLStructureExtractor(str(zip_path), str(temp_extract_dir))
+            zip_structure = extractor.extract_structure()
+
+            # Load prompts from development configuration
+            with open(self.config["prompts_source"]) as f:
+                dev_config = yaml.safe_load(f)
+
+            # Get the default configuration which contains our pipeline setup
+            pipeline_config = dev_config.get("default", {}).get("pipeline", {})
+            if not pipeline_config:
+                raise ValueError("No pipeline configuration found in default profile")
+
+            # Provider-specific configuration
+            provider = test_case["provider"]
+
+            # Create extractor configuration
+            extractor_config = {
+                "api_key": os.environ.get(f"{provider.upper()}_API_KEY"),
+                "pipeline": {
+                    "assign_panel_source": {
+                        provider: {
+                            "model": test_case["model"],
+                            "temperature": test_case["temperature"],
+                            "top_p": test_case["top_p"],
+                            "prompts": {
+                                "system": pipeline_config["assign_panel_source"][
+                                    provider
+                                ]["prompts"]["system"],
+                                "user": pipeline_config["assign_panel_source"][
+                                    provider
+                                ]["prompts"]["user"],
+                            },
+                        }
+                    }
+                },
+                "extraction_dir": str(temp_extract_dir),
+            }
+
+            # Create prompt handler with the pipeline configuration
+            prompt_handler = PromptHandler(extractor_config["pipeline"])
+
+            # Create assigner instance
+            if provider == "anthropic":
+                raise NotImplementedError("Anthropic is not supported yet")
+            elif provider == "openai":
+                panel_assigner = PanelSourceAssignerOpenAI(
+                    extractor_config, prompt_handler
+                )
+            else:
+                raise ValueError(f"Unsupported provider: {provider}")
+
+            # Assign panel sources
+            logger.info("Assigning panel sources")
+            updated_zip_structure = panel_assigner.assign_panel_source(zip_structure)
+            extracted_figures = updated_zip_structure.figures
+
+            duration_ms = (time.time() - start_time) * 1000
+
+            # Debug logging
+            logger.info(
+                f"Number of ground truth figures: {len(ground_truth['figures'])}"
+            )
+            logger.info(f"Number of extracted figures: {len(extracted_figures)}")
+
+            # Calculate scores
+            scores = self._calculate_panel_source_scores(
+                extracted_figures, ground_truth["figures"]
+            )
+
+            for fig in ground_truth["figures"]:
+                for panel in fig["panels"]:
+                    print(f"  Panel {panel['panel_label']}: {panel['sd_files']}")
+
+            for fig in extracted_figures:
+                print(f"EX Figure {fig.figure_label}: {len(fig.panels)} panels")
+                for panel in fig.panels:
+                    print(f"  Panel {panel.panel_label}: {panel.sd_files}")
+
+            # Calculate scores and prepare outputs
+            specific_outputs = {}
+            scores = {}
+
+            for gt_figure, ext_figure in zip(
+                ground_truth["figures"], extracted_figures
+            ):
+                figure_label = gt_figure["figure_label"]
+
+                for gt_panel in gt_figure["panels"]:
+                    panel_label = gt_panel["panel_label"]
+
+                    # get ext_panel from ext_figure if ext_panel.panel_label == panel_label
+                    ext_panel = next(
+                        (p for p in ext_figure.panels if panel_label in p.panel_label),
+                        None,
+                    )
+
+                    panel_key = f"{figure_label}_{panel_label}"
+                    expected_files = gt_panel["sd_files"]
+                    actual_files = ext_panel.sd_files if ext_panel else []
+
+                    # Calculate score for this panel
+                    if not expected_files:
+                        panel_score = 1.0 if not actual_files else 0.0
+                    else:
+                        correct_matches = len(
+                            set(expected_files).intersection(set(actual_files))
+                        )
+                        panel_score = correct_matches / len(expected_files)
+
+                    print(f"Panel {panel_label}:")
+                    print(f"Expected: {expected_files}")
+                    print(f"Actual: {actual_files}")
+                    print(f"Score: {panel_score}")
+
+                    scores[panel_key] = panel_score
+                    specific_outputs[panel_key] = {
+                        "actual": str(actual_files),
+                        "expected": str(expected_files),
+                        "figure_label": figure_label,
+                        "panel_label": panel_label,
+                        "score": panel_score,
+                    }
+            else:
+                print(f"No matching extracted figure found for {figure_label}")
+
+            for panel_id, data in specific_outputs.items():
+                print(f"Adding result for panel: {panel_id}")
+                panel_row = {
+                    **test_case,
+                    "duration_ms": duration_ms,
+                    "figure_label": data["figure_label"],
+                    "panel_label": data["panel_label"],
+                    "task": "panel_source_assignment",
+                    "score": data["score"],
+                }
+
+                self._fill_results_bag(
+                    test_case=panel_row,
+                    result={
+                        "input": str(zip_structure),
+                        "ai_response": str(extracted_figures),
+                    },
+                    actual_output=data["actual"],
+                    expected_output=data["expected"],
+                )
+
+            return {
+                "input": str(zip_structure),
+                "extracted_figures": [
+                    {
+                        "figure_label": fig.figure_label,
+                        "panels": [
+                            {"panel_label": p.panel_label, "sd_files": p.sd_files}
+                            for p in fig.panels
+                        ],
+                    }
+                    for fig in extracted_figures
+                ],
+                "ground_truth_figures": ground_truth["figures"],
+                "scores": scores,
+            }
+
+        except Exception as e:
+            logger.error(f"Error running panel source assignment test: {str(e)}")
+            raise
+
+        finally:
+            # Cleanup temporary directory after processing
+            if temp_extract_dir.exists():
+                shutil.rmtree(temp_extract_dir)
+
     def _fill_results_bag(
         self,
         test_case: Dict[str, Any],
@@ -817,6 +1091,7 @@ class BenchmarkRunner:
         actual_panels: List[str] = [],
         expected_panels: List[str] = [],
         data_availability_scores: Dict[str, float] = {},
+        panel_source_scores: Dict[str, float] = {},  # Added new parameter
     ) -> None:
         """Fill the results DataFrame with test metrics and metadata."""
         try:
@@ -966,6 +1241,57 @@ class BenchmarkRunner:
 
                     rows_to_add.append(score_row)
 
+            # For panel source assignment task
+            # For panel source assignment task
+            if (
+                test_case.get("test_name") == "panel_source_assignment"
+                and panel_source_scores
+            ):
+                for panel_id, score in panel_source_scores.items():
+                    if panel_id == "average_score":  # Skip average for now
+                        continue
+
+                    score_row = base_row.copy()
+                    score_row.update(
+                        {
+                            "task": "panel_source_assignment",
+                            "panel_id": panel_id,
+                            "actual": actual_output,  # Direct string of files
+                            "expected": expected_output,  # Direct string of files
+                            "accuracy": score,
+                            "accuracy_success": score == 1.0,
+                            "accuracy_threshold": 1.0,
+                            "description": "Panel Source File Assignment",
+                            "figure_label": test_case.get("figure_label", ""),
+                            "panel_label": test_case.get("panel_label", ""),
+                        }
+                    )
+
+                    # Set other metrics to NaN
+                    for metric in metrics:
+                        score_row[metric.name] = float("nan")
+                        score_row[f"{metric.name}_success"] = float("nan")
+                        score_row[f"{metric.name}_threshold"] = float("nan")
+
+                    rows_to_add.append(score_row)
+                # Add average score row
+                if "average_score" in panel_source_scores:
+                    avg_row = base_row.copy()
+                    avg_row.update(
+                        {
+                            "task": "panel_source_assignment_average",
+                            "panel_id": "average",
+                            "actual": "N/A",
+                            "expected": "N/A",
+                            "accuracy": panel_source_scores["average_score"],
+                            "accuracy_success": panel_source_scores["average_score"]
+                            == 1.0,
+                            "accuracy_threshold": 1.0,
+                            "description": "Panel Source Assignment Average Score",
+                        }
+                    )
+                    rows_to_add.append(avg_row)
+
             # Append all rows to DataFrame
             self.results_df = pd.concat(
                 [self.results_df, pd.DataFrame(rows_to_add)], ignore_index=True
@@ -1033,7 +1359,8 @@ logger.info("Starting test execution")
 def test_pipeline(test_case: Dict[str, Any]) -> None:
     """Run pipeline test with generated test case."""
     try:
-        logger.info(f"Running test case: {test_case}")
+        logger.info("Starting test case")
+        logger.info(f"Test case parameters: {test_case}")
 
         # Run the test and collect results
         result = runner.run_test(test_case)
@@ -1074,5 +1401,14 @@ def test_pipeline(test_case: Dict[str, Any]) -> None:
 
 # Also add this to make sure we see all logs
 @pytest.fixture(autouse=True)
-def _setup_logging():
-    logging.basicConfig(level=logging.INFO)
+def setup_logging():
+    """Configure logging for tests."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        force=True,  # This ensures we override any existing configuration
+    )
+
+    # Test that logging is working
+    logger.info("Logging configured for tests")
+    return None

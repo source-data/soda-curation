@@ -1,10 +1,10 @@
 """Metrics for evaluating model performance on different tasks."""
 
 import ast
+import json
 import logging
 from typing import List, Set
 
-import numpy as np
 from deepeval.metrics import BaseMetric
 from deepeval.scorer import Scorer
 from deepeval.test_case import LLMTestCase
@@ -88,64 +88,57 @@ class BleuMetric(BaseMetric):
 class PanelSourceMatchMetric(BaseMetric):
     """Metric for evaluating panel source data assignment accuracy."""
 
-    def __init__(self, threshold: float = 0.8):
+    def __init__(self, threshold: float = 1.0):
         super().__init__(threshold=threshold)
-        self.exact_match_score = 0.0
-        self.jaccard_score = 0.0
+        self.panel_scores = {}
+        self.score = 0.0
+
+    def calculate_panel_score(
+        self, expected_files: List[str], actual_files: List[str]
+    ) -> float:
+        """Calculate score for a single panel."""
+        # If no files are expected and none provided, that's correct
+        if not expected_files and not actual_files:
+            return 1.0
+
+        # If no files are expected but some provided, that's wrong
+        if not expected_files and actual_files:
+            return 0.0
+
+        # If files are expected but none provided, that's wrong
+        if expected_files and not actual_files:
+            return 0.0
+
+        # Calculate exact matches
+        expected_set = set(expected_files)
+        actual_set = set(actual_files)
+        correct_matches = len(expected_set.intersection(actual_set))
+
+        # Score is based on exact matches over expected files
+        return correct_matches / len(expected_files)
 
     def measure(self, test_case: LLMTestCase) -> float:
         try:
-            import json
-
             expected = json.loads(test_case.expected_output)
             actual = json.loads(test_case.actual_output)
 
-            total_panels = 0
-            exact_matches = 0
-            jaccard_scores = []
+            # Reset scores
+            self.panel_scores = {}
+            total_score = 0.0
+            panel_count = 0
 
-            for exp_figure in expected:
-                figure_label = exp_figure["figure_label"]
-                act_figure = next(
-                    (f for f in actual if f["figure_label"] == figure_label), None
-                )
+            # Calculate score for each panel
+            for panel_id, data in expected.items():
+                expected_files = data.get("files", [])
+                actual_files = actual.get(panel_id, {}).get("files", [])
 
-                if not act_figure:
-                    continue
+                panel_score = self.calculate_panel_score(expected_files, actual_files)
+                self.panel_scores[panel_id] = panel_score
+                total_score += panel_score
+                panel_count += 1
 
-                # Process panels
-                for exp_panel in exp_figure.get("panels", []):
-                    total_panels += 1
-                    exp_files = set(exp_panel.get("sd_files", []))
-
-                    # Find matching panel in actual
-                    act_panel = next(
-                        (
-                            p
-                            for p in act_figure.get("panels", [])
-                            if p["panel_label"] == exp_panel["panel_label"]
-                        ),
-                        None,
-                    )
-
-                    if act_panel:
-                        act_files = set(act_panel.get("sd_files", []))
-                        if exp_files == act_files:
-                            exact_matches += 1
-                        jaccard_scores.append(
-                            calculate_jaccard_similarity(exp_files, act_files)
-                        )
-                    else:
-                        jaccard_scores.append(0.0)
-
-            # Calculate scores
-            self.exact_match_score = (
-                exact_matches / total_panels if total_panels > 0 else 0.0
-            )
-            self.jaccard_score = np.mean(jaccard_scores) if jaccard_scores else 0.0
-
-            # Combined score
-            self.score = (self.exact_match_score + self.jaccard_score) / 2
+            # Calculate average score
+            self.score = total_score / panel_count if panel_count > 0 else 0.0
             self.success = self.score >= self.threshold
 
             return self.score
@@ -153,8 +146,7 @@ class PanelSourceMatchMetric(BaseMetric):
         except Exception as e:
             logger.error(f"Error measuring panel source matches: {str(e)}")
             self.score = 0.0
-            self.exact_match_score = 0.0
-            self.jaccard_score = 0.0
+            self.panel_scores = {}
             self.success = False
             return self.score
 
