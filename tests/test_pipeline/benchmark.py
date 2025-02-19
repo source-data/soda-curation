@@ -38,7 +38,7 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser impor
 )
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
 
-from .metrics import get_metrics_for_task, normalize_text
+from .metrics import calculate_data_source_scores, get_metrics_for_task, normalize_text
 
 
 # At the very top of the file, after imports
@@ -655,43 +655,45 @@ class BenchmarkRunner:
             duration_ms = (time.time() - start_time) * 1000
 
             # Calculate scores
-            scores = self._calculate_data_availability_scores(
-                data_sources, ground_truth_sources
-            )
+            scores = calculate_data_source_scores(data_sources, ground_truth_sources)
 
-            # Prepare specific outputs for each score type
-            specific_outputs = {
-                "database": {
-                    "actual": str([source["database"] for source in data_sources]),
-                    "expected": str(
-                        [source["database"] for source in ground_truth_sources]
-                    ),
-                },
-                "accession": {
-                    "actual": str(
-                        [source["accession_number"] for source in data_sources]
-                    ),
-                    "expected": str(
-                        [source["accession_number"] for source in ground_truth_sources]
-                    ),
-                },
-                "url": {
-                    "actual": str([source["url"] for source in data_sources]),
-                    "expected": str([source["url"] for source in ground_truth_sources]),
-                },
-                "combined": {
-                    "actual": str(data_sources),
-                    "expected": str(ground_truth_sources),
-                },
-            }
+            # Fill results bag for each task
+            base_result = {"input": docx_content, "ai_response": str(updated_structure)}
 
-            # Fill results bag with specific outputs for each score type
+            # Database extraction task
             self._fill_results_bag(
                 test_case={**test_case, "duration_ms": duration_ms},
-                result={"input": docx_content, "ai_response": str(updated_structure)},
-                actual_output=specific_outputs,  # Now passing dictionary of specific outputs
-                expected_output=specific_outputs,  # Now passing dictionary of specific outputs
-                data_availability_scores=scores,
+                result=base_result,
+                actual_output=str([source["database"] for source in data_sources]),
+                expected_output=str(
+                    [source["database"] for source in ground_truth_sources]
+                ),
+                task="database_extraction",
+                score=scores["database_score"],
+            )
+
+            # URL extraction task
+            self._fill_results_bag(
+                test_case={**test_case, "duration_ms": duration_ms},
+                result=base_result,
+                actual_output=str([source["url"] for source in data_sources]),
+                expected_output=str([source["url"] for source in ground_truth_sources]),
+                task="url_extraction",
+                score=scores["url_score"],
+            )
+
+            # Accession number extraction task
+            self._fill_results_bag(
+                test_case={**test_case, "duration_ms": duration_ms},
+                result=base_result,
+                actual_output=str(
+                    [source["accession_number"] for source in data_sources]
+                ),
+                expected_output=str(
+                    [source["accession_number"] for source in ground_truth_sources]
+                ),
+                task="access_number_extraction",
+                score=scores["accession_score"],
             )
 
             return {
@@ -701,11 +703,10 @@ class BenchmarkRunner:
                 "extracted_sources": data_sources,
                 "ground_truth_sources": ground_truth_sources,
                 "scores": scores,
-                "cost": updated_structure.cost.extract_data_sources.model_dump()  # Changed from extract_data_availability
+                "cost": updated_structure.cost.extract_data_sources.model_dump()
                 if hasattr(updated_structure.cost.extract_data_sources, "model_dump")
                 else {},
             }
-
         except Exception as e:
             logger.error(
                 f"Error running data availability test: {str(e)}", exc_info=True
@@ -716,63 +717,6 @@ class BenchmarkRunner:
             # Cleanup temporary directory after processing
             if temp_extract_dir.exists():
                 shutil.rmtree(temp_extract_dir)
-
-    def _calculate_data_availability_scores(
-        self,
-        extracted_sources: List[Dict[str, str]],
-        ground_truth_sources: List[Dict[str, str]],
-    ) -> Dict[str, float]:
-        """Calculate scores for data availability matching.
-
-        Args:
-            extracted_sources: List of extracted data sources
-            ground_truth_sources: List of ground truth data sources
-
-        Returns:
-            Dict with scores for database, accession, url and combined
-        """
-        if not extracted_sources or not ground_truth_sources:
-            return {
-                "database_score": 0.0,
-                "accession_score": 0.0,
-                "url_score": 0.0,
-                "combined_score": 0.0,
-            }
-
-        # Initialize counters for each metric
-        database_matches = 0
-        accession_matches = 0
-        url_matches = 0
-
-        # For each ground truth source, find best match in extracted sources
-        for gt_source in ground_truth_sources:
-            for ext_source in extracted_sources:
-                # Database matching (partial)
-                if (
-                    gt_source["database"].lower() in ext_source["database"].lower()
-                    or ext_source["database"].lower() in gt_source["database"].lower()
-                ):
-                    database_matches += 1
-
-                # Exact matching for accession and URL
-                if gt_source["accession_number"] == ext_source["accession_number"]:
-                    accession_matches += 1
-                if gt_source["url"] == ext_source["url"]:
-                    url_matches += 1
-
-        # Calculate scores
-        total_sources = len(ground_truth_sources)
-        database_score = database_matches / total_sources
-        accession_score = accession_matches / total_sources
-        url_score = url_matches / total_sources
-        combined_score = (database_score + accession_score + url_score) / 3
-
-        return {
-            "database_score": database_score,
-            "accession_score": accession_score,
-            "url_score": url_score,
-            "combined_score": combined_score,
-        }
 
     def _calculate_panel_source_scores(
         self,
@@ -1099,7 +1043,10 @@ class BenchmarkRunner:
                     }
                 )
 
-            elif test_name == "extract_individual_captions":
+            elif test_name in [
+                "extract_individual_captions",
+                "extract_data_availability",
+            ]:
                 # If score is pre-calculated (like for panel_sequence), use it
                 if score is not None:
                     base_row["score"] = score
