@@ -51,7 +51,7 @@ class PanelSourceAssigner(ABC):
         for figure in self.zip_structure.figures:
             logger.info(f"Assigning data source to figure: {figure.figure_label}")
             self._assign_to_figure(figure)
-        return self.zip_structure
+        return self.zip_structure.figures
 
     def _assign_to_figure(self, figure: Figure) -> None:
         """Process single figure."""

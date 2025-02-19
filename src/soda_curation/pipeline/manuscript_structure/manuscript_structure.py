@@ -169,14 +169,30 @@ class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         """Convert dataclass objects to dictionaries, excluding private fields."""
         if isinstance(obj, (ZipStructure, Figure, Panel, ProcessingCost, TokenUsage)):
-            # Convert to dict and filter out private fields
-            dict_obj = {k: v for k, v in vars(obj).items() if not k.startswith("_")}
+            # Get all non-private attributes
+            dict_obj = {}
+            for k, v in vars(obj).items():
+                if k.startswith("_"):
+                    continue
+
+                # Handle special cases that might cause circular references
+                if k == "figures" and isinstance(obj, ZipStructure):
+                    dict_obj[k] = [self.default(fig) for fig in v]
+                elif k == "panels" and isinstance(obj, Figure):
+                    dict_obj[k] = [self.default(panel) for panel in v]
+                elif k == "sd_files" and isinstance(obj, Panel):
+                    # Only include the file names, not full paths
+                    dict_obj[k] = [os.path.basename(f) for f in v] if v else []
+                else:
+                    dict_obj[k] = v
+
             # Remove any None values and empty collections
             return {
                 k: v
                 for k, v in dict_obj.items()
                 if v is not None and v != {} and v != []
             }
+
         return super().default(obj)
 
     def serialize_dataclass(self, obj):

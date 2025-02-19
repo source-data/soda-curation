@@ -151,24 +151,24 @@ class TestPanelSourceAssigner(unittest.TestCase):
 
     def test_parse_assigned_files_to_panels(self):
         # Example AI response
-        ai_response = {
-            "assigned_files": [
-                {
-                    "panel_label": "A",
-                    "panel_sd_files": ["file1.csv", "file2.xlsx", "file3.txt"],
-                },
-                {
-                    "panel_label": "B",
-                    "panel_sd_files": [
+        ai_response = AsignedFilesList(
+            assigned_files=[
+                AsignedFiles(
+                    panel_label="A",
+                    panel_sd_files=["file1.csv", "file2.xlsx", "file3.txt"],
+                ),
+                AsignedFiles(
+                    panel_label="B",
+                    panel_sd_files=[
                         "file4.dat",
                         "file5.csv",
                         "file6.xlsx",
                         "file7.txt",
                     ],
-                },
+                ),
             ],
-            "not_assigned_files": ["data_file.dat"],
-        }
+            not_assigned_files=["data_file.dat"],
+        )
 
         # Expected output
         expected_panels = [

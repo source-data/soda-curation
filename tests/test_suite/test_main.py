@@ -10,6 +10,7 @@ import pytest
 from src.soda_curation.main import main
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
     ProcessingCost,
+    TokenUsage,
     ZipStructure,
 )
 
@@ -101,7 +102,12 @@ def mock_config(tmp_path):
 @pytest.fixture
 def mock_structure():
     """Create a mock ZipStructure that can be serialized."""
-    return ZipStructure(
+    cost = ProcessingCost()
+    cost.extract_sections = TokenUsage(
+        prompt_tokens=0, completion_tokens=0, total_tokens=0, cost=0.0
+    )
+
+    structure = ZipStructure(
         manuscript_id="EMBOJ-DUMMY-ZIP",
         xml="EMBOJ-DUMMY-ZIP.xml",
         docx="Doc/EMBOJ-DUMMY-ZIPManuscript_TextIG.docx",
@@ -110,11 +116,20 @@ def mock_structure():
         errors=[],
         appendix=[],
         non_associated_sd_files=[],
-        cost=ProcessingCost(),
+        cost=cost,
         data_availability={"section_text": "", "data_sources": []},
         ai_response_locate_captions="",
         ai_response_extract_individual_captions="",
     )
+
+    # Ensure private attributes are not creating circular references
+    structure._full_appendix = []
+    structure._full_docx = ""
+    structure._full_pdf = ""
+    structure.ai_config = {}
+    structure.ai_provider = ""
+
+    return structure
 
 
 @patch("yaml.safe_load")
@@ -184,16 +199,34 @@ def test_main_successful_run(
     # Mock the yaml config loading
     mock_yaml_load.return_value = {"default": MOCK_CONFIG}
 
+    # Create a ZipStructure instance
+    test_structure = ZipStructure(
+        manuscript_id="EMBOJ-DUMMY-ZIP",
+        xml="EMBOJ-DUMMY-ZIP.xml",
+        docx="Doc/EMBOJ-DUMMY-ZIPManuscript_TextIG.docx",
+        pdf="pdf/EMBOJ-DUMMY-ZIP.pdf",
+        figures=[],
+        errors=[],
+        appendix=[],
+        non_associated_sd_files=[],
+        cost=ProcessingCost(),
+        data_availability={"section_text": "", "data_sources": []},
+        ai_response_locate_captions="",
+        ai_response_extract_individual_captions="",
+    )
+
     with patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor, patch(
         "src.soda_curation.main.SectionExtractorOpenAI"
     ) as mock_section_extractor, patch(
         "src.soda_curation.main.FigureCaptionExtractorOpenAI"
     ) as mock_caption_extractor, patch(
         "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
-    ) as mock_data_extractor:
-        # Configure mocks same as above
+    ) as mock_data_extractor, patch(
+        "src.soda_curation.main.PanelSourceAssignerOpenAI"
+    ) as mock_panel_assigner:
+        # Configure mocks
         mock_instance = MagicMock()
-        mock_instance.extract_structure.return_value = mock_structure
+        mock_instance.extract_structure.return_value = test_structure
         mock_instance.extract_docx_content.return_value = "test content"
         mock_extractor.return_value = mock_instance
 
@@ -201,17 +234,22 @@ def test_main_successful_run(
         mock_section_instance.extract_sections.return_value = (
             "test legends",
             "test data",
-            mock_structure,
+            test_structure,
         )
         mock_section_extractor.return_value = mock_section_instance
 
         mock_caption_instance = MagicMock()
-        mock_caption_instance.extract_individual_captions.return_value = mock_structure
+        mock_caption_instance.extract_individual_captions.return_value = test_structure
         mock_caption_extractor.return_value = mock_caption_instance
 
         mock_data_instance = MagicMock()
-        mock_data_instance.extract_data_sources.return_value = mock_structure
+        mock_data_instance.extract_data_sources.return_value = test_structure
         mock_data_extractor.return_value = mock_data_instance
+
+        # Update this mock to return a list of figures
+        mock_panel_instance = MagicMock()
+        mock_panel_instance.assign_panel_source.return_value = test_structure.figures
+        mock_panel_assigner.return_value = mock_panel_instance
 
         # Run main
         result = main(mock_zip_content, mock_config)
@@ -219,7 +257,9 @@ def test_main_successful_run(
         # Verify output
         assert isinstance(result, str)
         result_dict = json.loads(result)
-        assert "manuscript_id" in result_dict
+        assert (
+            "manuscript_id" in result_dict
+        ), f"Expected 'manuscript_id' in {result_dict}"
         assert result_dict["manuscript_id"] == "EMBOJ-DUMMY-ZIP"
 
 
@@ -231,6 +271,22 @@ def test_main_no_output_path_returns_json(
     # Mock the yaml config loading
     mock_yaml_load.return_value = {"default": MOCK_CONFIG}
 
+    # Create a ZipStructure instance instead of a dictionary
+    test_structure = ZipStructure(
+        manuscript_id="EMBOJ-DUMMY-ZIP",
+        xml="EMBOJ-DUMMY-ZIP.xml",
+        docx="Doc/EMBOJ-DUMMY-ZIPManuscript_TextIG.docx",
+        pdf="pdf/EMBOJ-DUMMY-ZIP.pdf",
+        figures=[],
+        errors=[],
+        appendix=[],
+        non_associated_sd_files=[],
+        cost=ProcessingCost(),
+        data_availability={"section_text": "", "data_sources": []},
+        ai_response_locate_captions="",
+        ai_response_extract_individual_captions="",
+    )
+
     with patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor, patch(
         "src.soda_curation.main.SectionExtractorOpenAI"
     ) as mock_section_extractor, patch(
@@ -238,9 +294,9 @@ def test_main_no_output_path_returns_json(
     ) as mock_caption_extractor, patch(
         "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
     ) as mock_data_extractor:
-        # Configure mocks same as above
+        # Configure mocks to return the ZipStructure object
         mock_instance = MagicMock()
-        mock_instance.extract_structure.return_value = mock_structure
+        mock_instance.extract_structure.return_value = test_structure
         mock_instance.extract_docx_content.return_value = "test content"
         mock_extractor.return_value = mock_instance
 
@@ -248,16 +304,16 @@ def test_main_no_output_path_returns_json(
         mock_section_instance.extract_sections.return_value = (
             "test legends",
             "test data",
-            mock_structure,
+            test_structure,
         )
         mock_section_extractor.return_value = mock_section_instance
 
         mock_caption_instance = MagicMock()
-        mock_caption_instance.extract_individual_captions.return_value = mock_structure
+        mock_caption_instance.extract_individual_captions.return_value = test_structure
         mock_caption_extractor.return_value = mock_caption_instance
 
         mock_data_instance = MagicMock()
-        mock_data_instance.extract_data_sources.return_value = mock_structure
+        mock_data_instance.extract_data_sources.return_value = test_structure
         mock_data_extractor.return_value = mock_data_instance
 
         result = main(mock_zip_content, mock_config)

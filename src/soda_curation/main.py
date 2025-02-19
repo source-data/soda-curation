@@ -2,18 +2,14 @@
 
 import json
 import logging
+from pathlib import Path
 from typing import Optional
 
 from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (
     SectionExtractorOpenAI,
 )
 
-from ._main_utils import (
-    cleanup_extract_dir,
-    setup_extract_dir,
-    validate_paths,
-    write_output,
-)
+from ._main_utils import cleanup_extract_dir, setup_extract_dir, validate_paths
 from .config import ConfigurationLoader
 from .logging_config import setup_logging
 from .pipeline.assign_panel_source.assign_panel_source_openai import (
@@ -103,30 +99,43 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             panel_source_assigner = PanelSourceAssignerOpenAI(
                 config_loader.config, prompt_handler
             )
-            zip_structure.figures = panel_source_assigner.assign_panel_source(
-                zip_structure
+            # Pass only the figures to assign_panel_source
+            processed_figures = panel_source_assigner.assign_panel_source(
+                zip_structure  # Pass figures list instead of whole structure
             )
+            zip_structure.figures = processed_figures
 
             # Update total costs before returning results
             zip_structure.update_total_cost()
 
-            # Convert to JSON
+            # Convert to JSON using CustomJSONEncoder
             output_json = json.dumps(
                 zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2
             )
 
-            # Write to file if output path provided
             if output_path:
-                write_output(output_json, output_path)
+                output_dir = Path(output_path).parent
+                output_dir.mkdir(parents=True, exist_ok=True)
+                with open(output_path, "w", encoding="utf-8") as f:
+                    f.write(output_json)
 
             return output_json
 
-        finally:
-            cleanup_extract_dir(extract_dir)
-
+        except Exception as e:
+            logger.error(f"Pipeline failed: {str(e)}")
+            error_json = json.dumps({"error": str(e)})
+            if output_path:
+                output_dir = Path(output_path).parent
+                output_dir.mkdir(parents=True, exist_ok=True)
+                with open(output_path, "w", encoding="utf-8") as f:
+                    f.write(error_json)
+            return error_json
     except Exception as e:
         logger.exception(f"Pipeline failed: {str(e)}")
         return json.dumps({"error": str(e)})
+
+    finally:
+        cleanup_extract_dir(extract_dir)
 
 
 if __name__ == "__main__":
