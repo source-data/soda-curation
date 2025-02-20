@@ -114,8 +114,6 @@ class BenchmarkCache:
 
 
 class BenchmarkRunner:
-    """Runner for benchmark tests."""
-
     def __init__(self, config: Dict[str, Any]):
         """Initialize benchmark runner with configuration."""
         self.config = config
@@ -125,22 +123,21 @@ class BenchmarkRunner:
             self.config.get("output_dir", "/app/data/benchmark")
         )
 
-        # Setup cache directory
-        self.cache_dir = self.base_output_dir / "cache"
-        self.cache_dir.mkdir(parents=True, exist_ok=True)
-
         # Setup timestamp-based results directory
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         self.results_dir = self.base_output_dir / timestamp
         self.results_dir.mkdir(parents=True, exist_ok=True)
 
+        # Setup cache directory
+        self.cache_dir = self.base_output_dir / "cache"
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+
         # Initialize cache
         self.cache = BenchmarkCache(self.cache_dir)
 
-        # Initialize results DataFrame
+        # Initialize results DataFrame with simplified columns
         self.results_df = pd.DataFrame(
             columns=[
-                "pytest_obj",
                 "status",
                 "duration_ms",
                 "strategy",
@@ -152,7 +149,6 @@ class BenchmarkRunner:
                 "expected",
                 "figure_label",
                 "panel_label",
-                "ai_response",
                 "score",
                 "timestamp",
             ]

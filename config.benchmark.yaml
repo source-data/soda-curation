@@ -35,16 +35,6 @@ providers:
         temperatures: [0.5]
         top_p: [0.5]
 
-thresholds:
-  rouge1: 0.9
-  rouge2: 0.9
-  rougeL: 0.9
-  bleu1: 0.9
-  bleu2: 0.9
-  bleu3: 0.9
-  bleu4: 0.9
-  data_source_accuracy: 0.9
-  data_source_accuracy_exact: 0.9
 # Test run configuration  
 test_runs:
   n_runs: 3  # Number of times to run each configuration
@@ -52,14 +42,3 @@ test_runs:
   manuscripts: 2  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
 
 # Results configuration
-results:
-  tag_prefix: "benchmark"  # Git tag prefix for results
-  save_prompts: true  # Whether to save prompts used in evaluation
-  metrics:
-    - rouge1
-    - rouge2
-    - rougeL
-    - bleu1
-    - bleu2
-    - panel_accuracy  # For panel source assignment
-    - data_source_accuracy  # For data availability
