@@ -31,9 +31,6 @@ def normalize_text(text: str, is_data_availability: bool = False) -> str:
     # Remove punctuation except periods and hyphens
     text = re.sub(r"[^\w\s.-]", "", text)
 
-    # Normalize numbers
-    text = re.sub(r"(\d+)", lambda m: str(float(m.group(1))), text)
-
     return text.strip()
 
 

@@ -233,24 +233,148 @@ class BenchmarkRunner:
         if cached_result is not None:
             # Even with cached results, we need to calculate metrics
             if test_case["test_name"] == "extract_sections":
+                metric = get_metrics_for_task(test_case["test_name"])[0]
+
+                # Handle figure captions task
+                caption_test_case = LLMTestCase(
+                    input=cached_result["input"],
+                    actual_output=normalize_text(cached_result["output"]),
+                    expected_output=normalize_text(cached_result["expected"]),
+                )
+                caption_score = metric.measure(caption_test_case)
+
                 self._fill_results_bag(
                     test_case=test_case,
                     result=cached_result,
-                    actual_output=cached_result["output"],
-                    expected_output=cached_result["expected"],
+                    actual_output=normalize_text(cached_result["output"]),
+                    expected_output=normalize_text(cached_result["expected"]),
+                    task="locate_figure_captions",  # Changed from extract_data_availability
+                    score=caption_score,
+                )
+
+                # Handle data availability task
+                data_test_case = LLMTestCase(
+                    input=cached_result["input"],
+                    actual_output=normalize_text(
+                        cached_result["data_availability_output"], True
+                    ),
+                    expected_output=normalize_text(
+                        cached_result["data_availability_expected"], True
+                    ),
+                )
+                data_score = metric.measure(data_test_case)
+
+                self._fill_results_bag(
+                    test_case=test_case,
+                    result=cached_result,
+                    actual_output=normalize_text(
+                        cached_result["data_availability_output"], True
+                    ),
+                    expected_output=normalize_text(
+                        cached_result["data_availability_expected"], True
+                    ),
+                    task="extract_data_availability",
+                    score=data_score,
                 )
             elif test_case["test_name"] == "extract_individual_captions":
                 # For each figure in the cached results
                 for result in cached_result.get("results", []):
+                    # Handle figure title
                     self._fill_results_bag(
                         test_case=test_case,
                         result=cached_result,
-                        actual_output=result["actual_caption"],
-                        expected_output=result["expected_caption"],
-                        actual_title=result["actual_title"],
-                        expected_title=result["expected_title"],
+                        actual_output=result["tasks"]["figure_title"]["actual"],
+                        expected_output=result["tasks"]["figure_title"]["expected"],
                         figure_label=result["figure_label"],
+                        task="figure_title",
                     )
+                    # Handle figure caption
+                    self._fill_results_bag(
+                        test_case=test_case,
+                        result=cached_result,
+                        actual_output=result["tasks"]["figure_caption"]["actual"],
+                        expected_output=result["tasks"]["figure_caption"]["expected"],
+                        figure_label=result["figure_label"],
+                        task="figure_caption",
+                    )
+                    # Handle panel sequence
+                    self._fill_results_bag(
+                        test_case=test_case,
+                        result=cached_result,
+                        actual_output=str(result["tasks"]["panel_sequence"]["actual"]),
+                        expected_output=str(
+                            result["tasks"]["panel_sequence"]["expected"]
+                        ),
+                        figure_label=result["figure_label"],
+                        task="panel_sequence",
+                        score=result["tasks"]["panel_sequence"]["score"],
+                    )
+            elif test_case["test_name"] == "extract_data_availability":
+                for task_name in [
+                    "database_extraction",
+                    "url_extraction",
+                    "access_number_extraction",
+                ]:
+                    self._fill_results_bag(
+                        test_case=test_case,
+                        result=cached_result,
+                        actual_output=cached_result["extracted_sources"],
+                        expected_output=cached_result["ground_truth_sources"],
+                        task=task_name,
+                        score=cached_result["scores"].get(f"{task_name}_score"),
+                    )
+            elif test_case["test_name"] == "assign_panel_source":
+                # Handle each figure and panel in the cached results
+                for figure in cached_result.get("extracted_figures", []):
+                    figure_label = figure["figure_label"]
+                    for panel in figure.get("panels", []):
+                        panel_label = panel["panel_label"]
+                        panel_key = f"{figure_label}_{panel_label}"
+
+                        # Get the corresponding ground truth panel
+                        gt_figure = next(
+                            (
+                                f
+                                for f in cached_result["ground_truth_figures"]
+                                if f["figure_label"] == figure_label
+                            ),
+                            None,
+                        )
+                        if gt_figure:
+                            gt_panel = next(
+                                (
+                                    p
+                                    for p in gt_figure["panels"]
+                                    if p["panel_label"] == panel_label
+                                ),
+                                None,
+                            )
+                            if gt_panel:
+                                # Calculate score for this panel
+                                expected_files = gt_panel["sd_files"]
+                                actual_files = panel["sd_files"]
+
+                                if not expected_files:
+                                    panel_score = 1.0 if not actual_files else 0.0
+                                else:
+                                    correct_matches = len(
+                                        set(expected_files).intersection(
+                                            set(actual_files)
+                                        )
+                                    )
+                                    panel_score = correct_matches / len(expected_files)
+
+                                self._fill_results_bag(
+                                    test_case=test_case,
+                                    result=cached_result,
+                                    actual_output=str(actual_files),
+                                    expected_output=str(expected_files),
+                                    figure_label=figure_label,
+                                    task="panel_source_assignment",
+                                    score=panel_score,
+                                    panel_key=panel_key,
+                                )
+
             return cached_result
 
         # Load ground truth
@@ -367,7 +491,6 @@ class BenchmarkRunner:
 
             # Get ground truth sections
             ground_truth_figures = ground_truth["all_captions"]
-
             ground_truth_data_availability = ground_truth.get(
                 "data_availability", {}
             ).get("section_text", "")
@@ -384,13 +507,50 @@ class BenchmarkRunner:
                 else {},
             }
 
-            # Fill results bag
+            # Get metric for scoring
+            metric = get_metrics_for_task(test_case["test_name"])[0]
+
+            # Handle figure captions task
+            caption_test_case = LLMTestCase(
+                input=str(zip_path),
+                actual_output=normalize_text(figure_legends),
+                expected_output=normalize_text(ground_truth_figures),
+            )
+            caption_score = metric.measure(caption_test_case)
+
             self._fill_results_bag(
                 test_case={**test_case, "duration_ms": duration_ms},
-                result=result,
-                actual_output=figure_legends,
-                expected_output=ground_truth_figures,
+                result={
+                    "input": str(zip_path),
+                    "output": figure_legends,
+                    "expected": ground_truth_figures,
+                },
+                actual_output=normalize_text(figure_legends),
+                expected_output=normalize_text(ground_truth_figures),
+                task="locate_figure_captions",  # Changed from extract_data_availability
+                score=caption_score,
             )
+            # Handle data availability task
+            data_test_case = LLMTestCase(
+                input=str(zip_path),
+                actual_output=normalize_text(data_availability, True),
+                expected_output=normalize_text(ground_truth_data_availability, True),
+            )
+            data_score = metric.measure(data_test_case)
+
+            self._fill_results_bag(
+                test_case={**test_case, "duration_ms": duration_ms},
+                result={
+                    "input": str(zip_path),
+                    "output": figure_legends,
+                    "expected": ground_truth_figures,
+                },
+                actual_output=normalize_text(data_availability, True),
+                expected_output=normalize_text(ground_truth_data_availability, True),
+                task="extract_data_availability",
+                score=data_score,
+            )
+
             return result
 
         except Exception as e:
@@ -975,6 +1135,7 @@ class BenchmarkRunner:
         figure_label: str = "",
         task: str = "",
         score: Optional[float] = None,  # Allow pre-calculated score
+        panel_key: Optional[str] = "",  # Allow pre-calculated score
     ) -> None:
         """Fill the results DataFrame with test metrics and metadata."""
         try:
@@ -992,81 +1153,22 @@ class BenchmarkRunner:
                 "task": task,
                 "actual": actual_output,
                 "expected": expected_output,
+                "panel_key": panel_key,
             }
 
-            rows_to_add = []
             test_name = test_case.get("test_name", "")
 
-            # Handle different test types
-            if test_name == "extract_sections":
-                metric = get_metrics_for_task(test_name)[0]
-
-                # Add row for figure captions extraction
-                caption_test_case = LLMTestCase(
-                    input=result["input"],
-                    actual_output=normalize_text(result["output"]),
-                    expected_output=normalize_text(result["expected"]),
-                )
-                caption_score = metric.measure(caption_test_case)
-
-                rows_to_add.append(
-                    {
-                        **base_row,
-                        "task": "locate_figure_captions",
-                        "actual": normalize_text(result["output"]),
-                        "expected": normalize_text(result["expected"]),
-                        "score": caption_score,
-                    }
-                )
-
-                # Add row for data availability extraction
-
-                data_test_case = LLMTestCase(
-                    input=result["input"],
-                    actual_output=normalize_text(
-                        result["data_availability_output"], True
-                    ),
-                    expected_output=normalize_text(
-                        result["data_availability_expected"], True
-                    ),
-                )
-                data_score = metric.measure(data_test_case)
-
-                rows_to_add.append(
-                    {
-                        **base_row,
-                        "task": "extract_data_availability",
-                        "actual": normalize_text(
-                            result["data_availability_output"], True
-                        ),
-                        "expected": normalize_text(
-                            result["data_availability_expected"], True
-                        ),
-                        "score": data_score,
-                    }
-                )
-
-            elif test_name in [
-                "extract_individual_captions",
-                "extract_data_availability",
-                "assign_panel_source",
-                "panel_source_assignment",
-            ]:
-                # If score is pre-calculated (like for panel_sequence), use it
-                if score is not None:
-                    base_row["score"] = score
-                else:
-                    # Otherwise calculate score using appropriate metric
-                    metric = get_metrics_for_task(test_name)[0]
-                    test_case = LLMTestCase(
-                        input=result["input"],
-                        actual_output=actual_output,
-                        expected_output=expected_output,
-                    )
-                    base_row["score"] = metric.measure(test_case)
-
+            if score is not None:
+                base_row["score"] = score
             else:
-                raise ValueError(f"Unknown test name: {test_name}")
+                # Otherwise calculate score using appropriate metric
+                metric = get_metrics_for_task(test_name)[0]
+                test_case = LLMTestCase(
+                    input=result["input"],
+                    actual_output=actual_output,
+                    expected_output=expected_output,
+                )
+                base_row["score"] = metric.measure(test_case)
 
             # Add row to DataFrame
             self.results_df = pd.concat(
