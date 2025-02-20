@@ -1,0 +1,44 @@
+# Evaluation configuration file
+
+# Global settings
+output_dir: "/app/data/benchmark/"
+ground_truth_dir: "/app/data/ground_truth"
+manuscript_dir: "/app/data/archives"
+prompts_source: "/app/config.dev.yaml"
+
+# Test selection
+enabled_tests:
+  - extract_sections
+  - extract_individual_captions
+  - assign_panel_source
+  - extract_data_availability
+
+# Model configurations to test
+providers:
+  # anthropic:
+  #   models:
+  #     - name: "claude-3-5-sonnet-20240620"
+  #       temperatures: [0.0, 0.3, 0.7]
+  #       top_p: [0.1, 1.0]
+  #     - name: "claude-3-haiku-20240620"
+  #       temperatures: [0.0, 0.3, 0.7]
+  #       top_p: [0.1, 1.0]
+  openai:
+    models:
+      # - name: "gpt-4o"
+      #   temperatures: [0.0, 0.1, 0.5]
+      #   top_p: [0.1, 1.0]
+      - name: "gpt-4o-mini"
+        temperatures: [0.5]
+        top_p: [0.1]
+      - name: "gpt-4o"
+        temperatures: [0.5]
+        top_p: [0.5]
+
+# Test run configuration  
+test_runs:
+  n_runs: 3  # Number of times to run each configuration
+  # manuscripts: "all"  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
+  manuscripts: 2  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
+
+# Results configuration

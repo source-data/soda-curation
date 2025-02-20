@@ -153,13 +153,9 @@ class TestSectionExtraction:
         )
 
         extractor = SectionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        figure_legends, data_availability, updated_zip = extractor.extract_sections(
-            "test content", zip_structure
-        )
 
-        assert figure_legends == ""
-        assert data_availability == ""
-        assert updated_zip.ai_response_locate_captions == ""
+        with pytest.raises(Exception, match="API Error"):
+            extractor.extract_sections("test content", zip_structure)
 
     def test_empty_content(
         self, mock_openai_client, mock_prompt_handler, zip_structure
@@ -170,13 +166,9 @@ class TestSectionExtraction:
         )
 
         extractor = SectionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        figure_legends, data_availability, updated_zip = extractor.extract_sections(
-            "", zip_structure
-        )
 
-        assert figure_legends == ""
-        assert data_availability == ""
-        assert updated_zip.ai_response_locate_captions == ""
+        with pytest.raises(Exception, match="Empty content"):
+            extractor.extract_sections("", zip_structure)
 
 
 class TestResponseParsing:
