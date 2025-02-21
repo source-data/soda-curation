@@ -287,7 +287,7 @@ default: &default
     ##########################################################
     match_caption_panel:
       openai:
-        model: "gpt-4-vision-preview"
+        model: "gpt-4o"
         temperature: 0.3
         top_p: 1.0
         max_tokens: 2048
@@ -296,9 +296,37 @@ default: &default
         json_mode: true
         prompts:
           system: |
-            # System instructions for matching panels to captions...
+            You are an AI assistant specialized in analyzing scientific figures. Your task is to match panel images with their corresponding captions from the main figure caption. Follow these instructions carefully:
+
+            1. Look at the provided panel image and read the full figure caption carefully.
+            2. Identify which part of the caption corresponds to the panel image you see.
+            3. Look for panel labels like (A), (B), etc., or descriptions that clearly match the image content.
+            4. Note that in some cases you will have the letter present in the panel image, but not always.
+            5. For each panel, you MUST:
+              - Extract the relevant caption text that specifically describes this panel
+              - Include any statistical information, methodological notes, or scale bars relevant to this panel
+              - Make the panel caption understandable on its own while staying true to the original text
+
+            6. Key guidelines:
+              - Only include text relevant to the specific panel shown
+              - Maintain all scientific details and statistical information
+              - Keep original phrasing where possible
+              - Ensure panel labels are in the specified format below.
+              - If you can't determine the panel label, use visual and caption context to make your best assessment
+
+            Example response format:
+
+            {
+              "panel_label": "A",
+              "panel_caption": "This is the panel caption for panel A"
+            }
+
           user: |
-            # User prompt template for matching panels...
+            Please analyze this panel image from a figure with the following caption:
+
+            $figure_caption
+
+            Based on the image content and the caption text, identify which panel this represents and provide its specific caption maintaining scientific accuracy and completeness."""
 
 
     ##########################################################

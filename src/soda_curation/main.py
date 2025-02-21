@@ -23,6 +23,9 @@ from .pipeline.extract_captions.extract_captions_openai import (
 )
 from .pipeline.manuscript_structure.manuscript_structure import CustomJSONEncoder
 from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
+from .pipeline.match_caption_panel.match_caption_panel_openai import (
+    MatchPanelCaptionOpenAI,
+)
 from .pipeline.prompt_handler import PromptHandler
 
 logger = logging.getLogger(__name__)
@@ -99,11 +102,18 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             panel_source_assigner = PanelSourceAssignerOpenAI(
                 config_loader.config, prompt_handler
             )
-            # Pass only the figures to assign_panel_source
+            # Pass only             # Pass only the figures to assign_panel_source
             processed_figures = panel_source_assigner.assign_panel_source(
                 zip_structure  # Pass figures list instead of whole structure
             )
+            # Preserve all ZipStructure data while updating figures
             zip_structure.figures = processed_figures
+
+            # Match panels with captions using object detection
+            panel_matcher = MatchPanelCaptionOpenAI(
+                config_loader.config, prompt_handler
+            )
+            _ = panel_matcher.process_figures(zip_structure)
 
             # Update total costs before returning results
             zip_structure.update_total_cost()
