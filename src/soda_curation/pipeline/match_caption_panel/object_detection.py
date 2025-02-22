@@ -56,9 +56,9 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
             raise ValueError("PDF conversion failed: no pages found")
     elif file_ext in [".jpg", ".jpeg", ".png", ".tif", ".tiff"]:
         image = Image.open(file_path)
-    elif file_ext == ".eps":
+    elif file_ext in [".eps", ".ai"]:
         # Convert EPS to PNG
-        new_file_path = file_path.replace(".eps", ".png")
+        new_file_path = file_path.replace(file_ext, ".png")
         command = [
             "gs",
             "-dNOPAUSE",
