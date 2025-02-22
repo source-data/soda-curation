@@ -48,27 +48,25 @@ class MatchPanelCaption(ABC):
                 )
                 image, _ = convert_to_pil_image(full_path)
 
-                # Detect panels
-                detected_panels = self.object_detector.detect_panels(image)
+                # Get only bounding boxes from detection
+                detected_regions = self.object_detector.detect_panels(image)
 
-                if not detected_panels:
+                if not detected_regions:
                     logger.warning(
                         f"No panels detected in figure {figure.figure_label}"
                     )
                     continue
 
-                # Process each detected panel
+                # Process each detected region
                 processed_panels = []
-                for panel_info in detected_panels:
-                    if panel_info["confidence"] < 0.25:
+                for detection in detected_regions:
+                    if detection["confidence"] < 0.25:
                         logger.warning(
-                            f"Low confidence detection ({panel_info['confidence']:.2f}) in figure {figure.figure_label}"
+                            f"Low confidence detection ({detection['confidence']:.2f}) in figure {figure.figure_label}"
                         )
                         continue
 
-                    encoded_image = self._extract_panel_image(
-                        image, panel_info["panel_bbox"]
-                    )
+                    encoded_image = self._extract_panel_image(image, detection["bbox"])
 
                     if encoded_image:
                         panel_object = self._match_panel_caption(
@@ -87,8 +85,8 @@ class MatchPanelCaption(ABC):
                         panel = Panel(
                             panel_label=panel_object.panel_label,
                             panel_caption=panel_object.panel_caption,
-                            panel_bbox=panel_info["panel_bbox"],
-                            confidence=panel_info["confidence"],
+                            panel_bbox=detection["bbox"],
+                            confidence=detection["confidence"],
                             # Preserve original data exactly as is
                             sd_files=original_panel.sd_files if original_panel else [],
                             ai_response=original_panel.ai_response
@@ -106,7 +104,6 @@ class MatchPanelCaption(ABC):
 
                 # Update figure panels while preserving all other figure attributes
                 figure.panels = processed_panels
-                break
 
             except Exception as e:
                 logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
