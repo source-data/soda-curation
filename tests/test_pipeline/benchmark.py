@@ -160,10 +160,12 @@ class BenchmarkRunner:
             for model in prov_config["models"]:
                 for temp in model["temperatures"]:
                     for top_p in model["top_p"]:
-                        for test_name in self.config[
-                            "enabled_tests"
-                        ]:  # Changed from "tests" to "enabled_tests"
-                            # Handle different manuscript configurations
+                        # Get default penalties from dev config
+                        with open(self.config["prompts_source"]) as f:
+                            dev_config = yaml.safe_load(f)
+                        default_config = dev_config.get("default", {})
+
+                        for test_name in self.config["enabled_tests"]:
                             manuscripts = self.config["test_runs"]["manuscripts"]
                             if (
                                 isinstance(manuscripts, str)
@@ -180,9 +182,7 @@ class BenchmarkRunner:
                                 )
 
                             for msid in manuscripts:
-                                for run in range(
-                                    self.config["test_runs"]["n_runs"]
-                                ):  # Changed from "runs" to "test_runs.n_runs"
+                                for run in range(self.config["test_runs"]["n_runs"]):
                                     yield {
                                         "test_name": test_name,
                                         "msid": msid,
@@ -190,6 +190,12 @@ class BenchmarkRunner:
                                         "model": model["name"],
                                         "temperature": temp,
                                         "top_p": top_p,
+                                        "frequency_penalty": default_config.get(
+                                            "frequency_penalty", 0.0
+                                        ),
+                                        "presence_penalty": default_config.get(
+                                            "presence_penalty", 0.0
+                                        ),
                                         "run": run,
                                     }
 
@@ -1130,13 +1136,12 @@ class BenchmarkRunner:
         expected_output: str = "",
         figure_label: str = "",
         task: str = "",
-        score: Optional[float] = None,  # Allow pre-calculated score
-        panel_key: Optional[str] = "",  # Allow pre-calculated score
+        score: Optional[float] = None,
+        panel_key: Optional[str] = "",
     ) -> None:
-        """Fill the results DataFrame with test metrics and metadata."""
+        """Fill the results DataFrame with test metrics and model parameters."""
         try:
             base_row = {
-                "pytest_obj": None,
                 "status": "completed",
                 "duration_ms": test_case.get("duration_ms", 0),
                 "strategy": f"{test_case['provider']}_{test_case['model']}",
@@ -1150,21 +1155,32 @@ class BenchmarkRunner:
                 "actual": actual_output,
                 "expected": expected_output,
                 "panel_key": panel_key,
+                # Add all model parameters
+                "model": test_case["model"],
+                "temperature": test_case["temperature"],
+                "top_p": test_case["top_p"],
+                "frequency_penalty": test_case.get("frequency_penalty", 0.0),
+                "presence_penalty": test_case.get("presence_penalty", 0.0),
+                "seed": test_case["run"],  # Using run as seed
+                "provider": test_case["provider"],
             }
-
-            test_name = test_case.get("test_name", "")
 
             if score is not None:
                 base_row["score"] = score
             else:
-                # Otherwise calculate score using appropriate metric
+                # Get the test name from test_case
+                test_name = test_case.get("test_name", "")
+                if not test_name:
+                    logger.warning("No test_name found in test_case, using task name")
+                    test_name = task
+
                 metric = get_metrics_for_task(test_name)[0]
-                test_case = LLMTestCase(
+                test_case_obj = LLMTestCase(
                     input=result["input"],
                     actual_output=actual_output,
                     expected_output=expected_output,
                 )
-                base_row["score"] = metric.measure(test_case)
+                base_row["score"] = metric.measure(test_case_obj)
 
             # Add row to DataFrame
             self.results_df = pd.concat(
@@ -1184,17 +1200,41 @@ class BenchmarkRunner:
             logger.error(f"Error cleaning up extraction directories: {str(e)}")
 
     def save_results(self):
-        """Save results DataFrame to CSV file."""
+        """Save results and prompts to CSV files."""
         try:
-            # Save DataFrame to CSV
-            results_csv_path = self.results_dir / "metrics.csv"
-            self.results_df.to_csv(results_csv_path, index=False)
+            # Save metrics DataFrame
+            metrics_path = self.results_dir / "metrics.csv"
+            self.results_df.to_csv(metrics_path, index=False)
 
-            # Also save as Excel for easier viewing (optional)
-            results_excel_path = self.results_dir / "metrics.xlsx"
-            self.results_df.to_excel(results_excel_path, index=False)
+            # Extract and save prompts
+            with open(self.config["prompts_source"]) as f:
+                dev_config = yaml.safe_load(f)
 
-            logger.info(f"Saved metrics to {results_csv_path} and {results_excel_path}")
+            prompts_data = []
+            pipeline_config = dev_config.get("default", {}).get("pipeline", {})
+
+            for task in self.config["enabled_tests"]:
+                for provider in self.config["providers"]:
+                    prompts = (
+                        pipeline_config.get(task, {})
+                        .get(provider, {})
+                        .get("prompts", {})
+                    )
+                    prompts_data.append(
+                        {
+                            "task": task,
+                            "provider": provider,
+                            "system_prompt": prompts.get("system", ""),
+                            "user_prompt": prompts.get("user", ""),
+                        }
+                    )
+
+            prompts_df = pd.DataFrame(prompts_data)
+            prompts_path = self.results_dir / "prompts.csv"
+            prompts_df.to_csv(prompts_path, index=False)
+
+            logger.info(f"Results saved to {metrics_path} and {prompts_path}")
+
         except Exception as e:
             logger.error(f"Error saving results: {str(e)}", exc_info=True)
             raise

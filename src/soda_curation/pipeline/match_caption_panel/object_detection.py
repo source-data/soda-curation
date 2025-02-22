@@ -56,9 +56,9 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
             raise ValueError("PDF conversion failed: no pages found")
     elif file_ext in [".jpg", ".jpeg", ".png", ".tif", ".tiff"]:
         image = Image.open(file_path)
-    elif file_ext == ".eps":
+    elif file_ext in [".eps", ".ai"]:
         # Convert EPS to PNG
-        new_file_path = file_path.replace(".eps", ".png")
+        new_file_path = file_path.replace(file_ext, ".png")
         command = [
             "gs",
             "-dNOPAUSE",
@@ -129,7 +129,7 @@ class ObjectDetection:
         iou: float = 0.1,
         imgsz: int = 512,
         max_det: int = 30,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, float]]:
         """
         Detect panels in the given image using YOLOv10.
 
@@ -144,37 +144,35 @@ class ObjectDetection:
             max_det (int): Maximum number of detections. Default is 30.
 
         Returns:
-            List[Dict[str, Any]]: List of dictionaries containing detected panel information.
-                Each dictionary includes 'panel_label', 'panel_caption', and 'panel_bbox'.
+            List[Dict[str, float]]: List of detected panels with bbox and confidence
 
         Raises:
             Exception: If there's an error during the detection process.
         """
+        if image is None:
+            raise ValueError("Input image cannot be None")
+
         logger.info("Detecting panels in image")
 
         try:
-            # Convert PIL Image to numpy array
             np_image = np.array(image)
-
             results = self.model(
                 np_image, conf=conf, iou=iou, imgsz=imgsz, max_det=max_det
             )
 
-            panels = []
+            detections = []
             for i, box in enumerate(results[0].boxes.xyxyn.tolist()):
                 x1, y1, x2, y2 = box
                 confidence = float(results[0].boxes.conf[i])
 
-                panel_info = {
-                    "panel_label": chr(65 + i),
-                    "panel_caption": "TO BE ADDED IN LATER STEP",
-                    "panel_bbox": [x1, y1, x2, y2],
+                detection_info = {
+                    "bbox": [x1, y1, x2, y2],
                     "confidence": confidence,
                 }
-                panels.append(panel_info)
+                detections.append(detection_info)
 
-            logger.info(f"Detected {len(panels)} panels")
-            return panels
+            logger.info(f"Detected {len(detections)} panels")
+            return detections
 
         except Exception as e:
             logger.error(f"Error detecting panels: {str(e)}")

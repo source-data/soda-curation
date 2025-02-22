@@ -1,75 +1,150 @@
-"""
-This module provides the base class for matching panel captions with their corresponding images.
-
-It defines an abstract base class that all specific panel caption matching implementations
-should inherit from, ensuring a consistent interface across different matching methods.
-"""
 import base64
 import io
+import json
 import logging
 from abc import ABC, abstractmethod
-from typing import List
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from PIL import Image
+from pydantic import BaseModel
 
-from ..manuscript_structure.manuscript_structure import ZipStructure
+from ..manuscript_structure.manuscript_structure import Panel, ZipStructure
+from .object_detection import convert_to_pil_image, create_object_detection
 
 logger = logging.getLogger(__name__)
 
 
-class MatchPanelCaption(ABC):
-    """
-    Abstract base class for matching panel captions with their corresponding images.
+class PanelObject(BaseModel):
+    """Model for a list of panels."""
 
-    This class defines the interface that all panel caption matching implementations should follow.
-    It provides a common structure for matching captions to panels and updating the ZipStructure.
-    """
+    panel_label: str
+    panel_caption: str
+
+
+class MatchPanelCaption(ABC):
+    def __init__(self, config: Dict[str, Any], prompt_handler: Any):
+        self.config = config
+        self.prompt_handler = prompt_handler
+        self._validate_config()
+        # Initialize object detector using the create_object_detection helper
+        self.object_detector = create_object_detection(config)
 
     @abstractmethod
-    def match_captions(self, zip_structure: ZipStructure) -> ZipStructure:
-        """
-        Match captions to panels in a ZipStructure.
-
-        This method should be implemented by subclasses to define the specific
-        panel caption matching logic for different AI models or approaches.
-
-        Args:
-            zip_structure (ZipStructure): The ZipStructure containing figures and panels.
-
-        Returns:
-            ZipStructure: The updated ZipStructure with matched captions.
-        """
+    def _validate_config(self) -> None:
         pass
 
-    def _extract_panel_image(self, figure_path: str, bbox: List[float]) -> str:
+    def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
+        """Process all figures in the manuscript."""
+        self.zip_structure = zip_structure
+        for figure in zip_structure.figures:
+            try:
+                # Store original panels to preserve ALL data
+                original_panels = {panel.panel_label: panel for panel in figure.panels}
+
+                # Convert figure file to PIL Image
+                full_path = str(
+                    Path(self.config.get("extraction_dir")) / figure.img_files[0]
+                )
+                image, _ = convert_to_pil_image(full_path)
+
+                # Get only bounding boxes from detection
+                detected_regions = self.object_detector.detect_panels(image)
+
+                if not detected_regions:
+                    logger.warning(
+                        f"No panels detected in figure {figure.figure_label}"
+                    )
+                    continue
+
+                # Process each detected region
+                processed_panels = []
+                for detection in detected_regions:
+                    if detection["confidence"] < 0.25:
+                        logger.warning(
+                            f"Low confidence detection ({detection['confidence']:.2f}) in figure {figure.figure_label}"
+                        )
+                        continue
+
+                    encoded_image = self._extract_panel_image(image, detection["bbox"])
+
+                    if encoded_image:
+                        panel_object = self._match_panel_caption(
+                            encoded_image, figure.figure_caption
+                        )
+                        panel_object = (
+                            PanelObject(**json.loads(panel_object))
+                            if isinstance(panel_object, str)
+                            else panel_object
+                        )
+
+                        # Get original panel if it exists
+                        original_panel = original_panels.get(panel_object.panel_label)
+
+                        # Create new panel preserving ALL original data
+                        panel = Panel(
+                            panel_label=panel_object.panel_label,
+                            panel_caption=panel_object.panel_caption,
+                            panel_bbox=detection["bbox"],
+                            confidence=detection["confidence"],
+                            # Preserve original data exactly as is
+                            sd_files=original_panel.sd_files if original_panel else [],
+                            ai_response=original_panel.ai_response
+                            if original_panel
+                            else None,
+                        )
+                        processed_panels.append(panel)
+
+                # Preserve any panels that weren't detected but existed in original
+                unmatched_labels = set(original_panels.keys()) - {
+                    p.panel_label for p in processed_panels
+                }
+                for label in unmatched_labels:
+                    processed_panels.append(original_panels[label])
+
+                # Update figure panels while preserving all other figure attributes
+                figure.panels = processed_panels
+
+            except Exception as e:
+                logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
+                continue
+
+        return zip_structure
+
+    def _extract_panel_image(
+        self, pil_image: Image.Image, bbox: List[float]
+    ) -> Optional[str]:
         """
         Extract a panel image from a figure based on bounding box coordinates.
 
-        This method opens the figure image, crops it according to the bounding box,
+        This method crops the PIL Image according to the bounding box,
         and returns the panel image as a base64 encoded string.
 
         Args:
-            figure_path (str): Path to the figure image file.
+            pil_image (Image.Image): The PIL Image object of the entire figure.
             bbox (List[float]): Bounding box coordinates [x1, y1, x2, y2] in relative format.
 
         Returns:
-            str: Base64 encoded string of the panel image.
-
-        Raises:
-            Exception: If there's an error during image extraction or encoding.
+            Optional[str]: Base64 encoded string of the panel image, or None if extraction fails.
         """
         try:
-            with Image.open(figure_path) as img:
-                width, height = img.size
-                left, top, right, bottom = [
-                    int(coord * width if i % 2 == 0 else coord * height)
-                    for i, coord in enumerate(bbox)
-                ]
-                panel = img.crop((left, top, right, bottom))
+            width, height = pil_image.size
+            left, top, right, bottom = [
+                int(coord * width if i % 2 == 0 else coord * height)
+                for i, coord in enumerate(bbox)
+            ]
+            panel = pil_image.crop((left, top, right, bottom))
 
-                buffered = io.BytesIO()
-                panel.save(buffered, format="PNG")
-                return base64.b64encode(buffered.getvalue()).decode("utf-8")
+            buffered = io.BytesIO()
+            panel.save(buffered, format="PNG")
+            return base64.b64encode(buffered.getvalue()).decode("utf-8")
         except Exception as e:
             logger.error(f"Error extracting panel image: {str(e)}")
-            return ""
+            return None
+
+    @abstractmethod
+    def _match_panel_caption(
+        self, panel_image: Image.Image, figure_caption: str
+    ) -> Dict[str, str]:
+        """Match a panel image with its caption using AI."""
+        pass

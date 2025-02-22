@@ -181,8 +181,8 @@ class CustomJSONEncoder(json.JSONEncoder):
                 elif k == "panels" and isinstance(obj, Figure):
                     dict_obj[k] = [self.default(panel) for panel in v]
                 elif k == "sd_files" and isinstance(obj, Panel):
-                    # Only include the file names, not full paths
-                    dict_obj[k] = [os.path.basename(f) for f in v] if v else []
+                    # Preserve the full paths for source data files
+                    dict_obj[k] = [str(f) for f in v] if v else []
                 else:
                     dict_obj[k] = v
 
