@@ -149,6 +149,9 @@ class ObjectDetection:
         Raises:
             Exception: If there's an error during the detection process.
         """
+        if image is None:
+            raise ValueError("Input image cannot be None")
+
         logger.info("Detecting panels in image")
 
         try:
