@@ -31,14 +31,14 @@ providers:
       - name: "gpt-4o-mini"
         temperatures: [0.5]
         top_p: [0.1]
-      # - name: "gpt-4o"
-      #   temperatures: [0.5]
-      #   top_p: [0.5]
+      - name: "gpt-4o"
+        temperatures: [0.5]
+        top_p: [0.5]
 
 # Test run configuration  
 test_runs:
   n_runs: 1  # Number of times to run each configuration
   # manuscripts: "all"  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
-  manuscripts: ["EMM-2023-18636"]  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
+  manuscripts: 2  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
 
 # Results configuration
