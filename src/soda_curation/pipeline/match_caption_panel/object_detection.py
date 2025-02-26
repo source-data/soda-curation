@@ -11,27 +11,72 @@ import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+import cv2
 import numpy as np
 import pdf2image
 from PIL import Image
+from PIL.Image import DecompressionBombError
 from ultralytics import YOLOv10
 
 logger = logging.getLogger(__name__)
 
 
+def scale_down_large_image(file_path: str, max_pixels: int = 178956970) -> str:
+    """
+    Scale down an image file if it exceeds the maximum pixel limit.
+    Uses OpenCV for memory-efficient processing of large images.
+
+    Args:
+        file_path (str): Path to the image file
+        max_pixels (int): Maximum number of pixels allowed (default: 178956970)
+
+    Returns:
+        str: Path to the scaled down image
+    """
+    try:
+        # Read image dimensions first
+        img = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
+        if img is None:
+            raise ValueError(f"Failed to open image: {file_path}")
+
+        height, width = img.shape[:2]
+        total_pixels = width * height
+
+        if total_pixels <= max_pixels:
+            return file_path
+
+        # Calculate scaling factor
+        scale_factor = (max_pixels / total_pixels) ** 0.5
+        new_width = int(width * scale_factor)
+        new_height = int(height * scale_factor)
+
+        # Create scaled image path
+        scaled_path = (
+            os.path.splitext(file_path)[0] + "_scaled" + os.path.splitext(file_path)[1]
+        )
+
+        # Resize using OpenCV
+        img_scaled = cv2.resize(
+            img, (new_width, new_height), interpolation=cv2.INTER_LANCZOS4
+        )
+        cv2.imwrite(scaled_path, img_scaled)
+
+        return scaled_path
+    except Exception as e:
+        raise ValueError(f"Failed to scale image: {str(e)}")
+
+
 def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, str]:
     """
     Convert various image formats (PDF, EPS, TIFF, JPG, PNG) to a PIL image.
-
-    This function handles different file formats and converts them to a PIL Image object.
-    For PDF files, it converts the first page to a PNG image and saves it.
+    Large images are automatically scaled down if they exceed the pixel limit.
 
     Args:
         file_path (str): The path to the image file.
         dpi (int): Dots per inch for high-resolution conversion. Default is 300.
 
     Returns:
-        Tuple[PIL.Image, str]: The converted PIL image and the path to the new image file (if converted from PDF).
+        Tuple[PIL.Image, str]: The converted PIL image and the path to the new image file.
 
     Raises:
         FileNotFoundError: If the specified file does not exist.
@@ -46,7 +91,6 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
     new_file_path = file_path
 
     if file_ext == ".pdf":
-        # Convert PDF to PNG
         pages = pdf2image.convert_from_path(file_path, dpi=dpi)
         if pages:
             new_file_path = file_path.replace(".pdf", ".png")
@@ -55,21 +99,42 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
         else:
             raise ValueError("PDF conversion failed: no pages found")
     elif file_ext in [".jpg", ".jpeg", ".png", ".tif", ".tiff"]:
-        image = Image.open(file_path)
+        try:
+            image = Image.open(file_path)
+        except DecompressionBombError:
+            # Scale down the image and try again
+            scaled_path = scale_down_large_image(file_path)
+            try:
+                image = Image.open(scaled_path)
+                new_file_path = scaled_path
+            except Exception as e:
+                raise ValueError(f"Failed to process scaled image: {str(e)}")
+        except Exception as e:
+            raise ValueError(f"Failed to open image: {str(e)}")
     elif file_ext in [".eps", ".ai"]:
-        # Convert EPS to PNG
-        new_file_path = file_path.replace(file_ext, ".png")
-        command = [
-            "gs",
-            "-dNOPAUSE",
-            "-dBATCH",
-            "-sDEVICE=pngalpha",
-            f"-r{dpi}",
-            f"-sOutputFile={new_file_path}",
-            file_path,
-        ]
-        subprocess.run(command, check=True)
-        image = Image.open(new_file_path)
+        try:
+            new_file_path = file_path.replace(file_ext, ".png")
+            command = [
+                "gs",
+                "-dNOPAUSE",
+                "-dBATCH",
+                "-sDEVICE=pngalpha",
+                f"-r{dpi}",
+                f"-sOutputFile={new_file_path}",
+                file_path,
+            ]
+            subprocess.run(command, check=True)
+            image = Image.open(new_file_path)
+        except DecompressionBombError:
+            # Scale down the converted PNG and try again
+            scaled_path = scale_down_large_image(new_file_path)
+            try:
+                image = Image.open(scaled_path)
+                new_file_path = scaled_path
+            except Exception as e:
+                raise ValueError(f"Failed to process scaled image: {str(e)}")
+        except Exception as e:
+            raise ValueError(f"Failed to convert or open image: {str(e)}")
     else:
         raise ValueError(f"Unsupported file format: {file_ext}")
 
