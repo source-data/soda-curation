@@ -1,6 +1,10 @@
 import os
 import unittest
+from typing import Any, List
 from unittest.mock import MagicMock, patch
+
+from pydantic import BeforeValidator, ValidationError
+from typing_extensions import Annotated
 
 from src.soda_curation.pipeline.assign_panel_source.assign_panel_source_base import (
     AsignedFiles,
@@ -13,30 +17,50 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import
 )
 
 
+# Add these helper functions at module level
+def create_file_validator(valid_files: List[str]) -> Annotated[str, Any]:
+    """Create a validator for file paths based on the list of valid files."""
+
+    def validate_file_path(file_path: str) -> str:
+        if file_path not in valid_files:
+            raise ValueError(f"File path '{file_path}' not in valid files list")
+        return file_path
+
+    return Annotated[str, BeforeValidator(validate_file_path)]
+
+
 class TestPanelSourceAssigner(unittest.TestCase):
     class ConcretePanelSourceAssigner(PanelSourceAssigner):
         def _validate_config(self):
             pass
 
-        def call_ai_service(self, prompt: str) -> AsignedFilesList:
-            # Mock response
+        def call_ai_service(
+            self, prompt: str, allowed_files: List[str]
+        ) -> AsignedFilesList:
+            # Mock response with validation context
             return AsignedFilesList(
                 assigned_files=[
-                    AsignedFiles(
-                        panel_label="A",
-                        panel_sd_files=[
-                            "suppl_data/figure_1.zip:A/A_1.csv",
-                            "suppl_data/figure_1.zip:A/A_2.csv",
-                            "suppl_data/figure_1.zip:A/A_3.csv",
-                        ],
+                    AsignedFiles.model_validate(
+                        {
+                            "panel_label": "A",
+                            "panel_sd_files": [
+                                "suppl_data/figure_1.zip:A/A_1.csv",
+                                "suppl_data/figure_1.zip:A/A_2.csv",
+                                "suppl_data/figure_1.zip:A/A_3.csv",
+                            ],
+                        },
+                        context={"allowed_files": allowed_files},
                     ),
-                    AsignedFiles(
-                        panel_label="B",
-                        panel_sd_files=[
-                            "suppl_data/figure_1.zip:B/B_1.csv",
-                            "suppl_data/figure_1.zip:B/B_2.csv",
-                            "suppl_data/figure_1.zip:B/B_3.csv",
-                        ],
+                    AsignedFiles.model_validate(
+                        {
+                            "panel_label": "B",
+                            "panel_sd_files": [
+                                "suppl_data/figure_1.zip:B/B_1.csv",
+                                "suppl_data/figure_1.zip:B/B_2.csv",
+                                "suppl_data/figure_1.zip:B/B_3.csv",
+                            ],
+                        },
+                        context={"allowed_files": allowed_files},
                     ),
                 ],
                 not_assigned_files=["suppl_data/data_table.csv"],
@@ -150,24 +174,37 @@ class TestPanelSourceAssigner(unittest.TestCase):
         )
 
     def test_parse_assigned_files_to_panels(self):
-        # Example AI response
-        ai_response = AsignedFilesList(
-            assigned_files=[
-                AsignedFiles(
-                    panel_label="A",
-                    panel_sd_files=["file1.csv", "file2.xlsx", "file3.txt"],
-                ),
-                AsignedFiles(
-                    panel_label="B",
-                    panel_sd_files=[
-                        "file4.dat",
-                        "file5.csv",
-                        "file6.xlsx",
-                        "file7.txt",
-                    ],
-                ),
-            ],
-            not_assigned_files=["data_file.dat"],
+        # Example AI response with validation context
+        valid_files = [
+            "file1.csv",
+            "file2.xlsx",
+            "file3.txt",
+            "file4.dat",
+            "file5.csv",
+            "file6.xlsx",
+            "file7.txt",
+        ]
+
+        ai_response = AsignedFilesList.model_validate(
+            {
+                "assigned_files": [
+                    {
+                        "panel_label": "A",
+                        "panel_sd_files": ["file1.csv", "file2.xlsx", "file3.txt"],
+                    },
+                    {
+                        "panel_label": "B",
+                        "panel_sd_files": [
+                            "file4.dat",
+                            "file5.csv",
+                            "file6.xlsx",
+                            "file7.txt",
+                        ],
+                    },
+                ],
+                "not_assigned_files": ["data_file.dat"],
+            },
+            context={"allowed_files": valid_files},
         )
 
         # Expected output
@@ -244,8 +281,14 @@ class TestPanelSourceAssigner(unittest.TestCase):
         # Mock the AI service response
         mock_response = AsignedFilesList(
             assigned_files=[
-                AsignedFiles(panel_label="A", panel_sd_files=["file1.csv"]),
-                AsignedFiles(panel_label="B", panel_sd_files=["file2.csv"]),
+                AsignedFiles.model_validate(
+                    {"panel_label": "A", "panel_sd_files": ["file1.csv"]},
+                    context={"allowed_files": ["file1.csv", "file2.csv"]},
+                ),
+                AsignedFiles.model_validate(
+                    {"panel_label": "B", "panel_sd_files": ["file2.csv"]},
+                    context={"allowed_files": ["file1.csv", "file2.csv"]},
+                ),
             ],
             not_assigned_files=[],
         )
@@ -293,3 +336,191 @@ class TestPanelSourceAssigner(unittest.TestCase):
         # Call the method and assert the output
         output = self.assigner._get_zip_contents(sd_files)
         self.assertEqual(sorted(output), sorted(expected_output))
+
+
+class TestPanelSourceAssignerValidation(unittest.TestCase):
+    """Test validation features of PanelSourceAssigner."""
+
+    def setUp(self):
+        self.config = {
+            "assign_panel_source": {
+                "prompts": {
+                    "user": "Assign the following files to the panels: {panel_labels} with files: {file_list}"
+                },
+                "openai": {
+                    "model": "gpt-4",
+                    "temperature": 0.3,
+                    "top_p": 1.0,
+                    "frequency_penalty": 0,
+                    "presence_penalty": 0,
+                },
+                "cost": {},
+            },
+            "extraction_dir": "/mock/extraction/dir",
+        }
+        self.prompt_handler = MagicMock()
+
+    def test_hallucinated_files_validation(self):
+        """Test that hallucinated file paths are rejected."""
+        # Define valid files
+        valid_files = [
+            "suppl_data/figure_1.zip:A/real_file1.csv",
+            "suppl_data/figure_1.zip:A/real_file2.xlsx",
+            "suppl_data/figure_1.zip:B/real_file3.csv",
+        ]
+
+        ValidatedFile = create_file_validator(valid_files)
+
+        class ValidatedAsignedFiles(AsignedFiles):
+            panel_sd_files: List[ValidatedFile]
+
+        # Test multiple scenarios
+        test_cases = [
+            # Valid cases
+            {
+                "panel_label": "A",
+                "panel_sd_files": ["suppl_data/figure_1.zip:A/real_file1.csv"],
+                "should_pass": True,
+            },
+            # Multiple valid files
+            {
+                "panel_label": "A",
+                "panel_sd_files": [
+                    "suppl_data/figure_1.zip:A/real_file1.csv",
+                    "suppl_data/figure_1.zip:A/real_file2.xlsx",
+                ],
+                "should_pass": True,
+            },
+            # Invalid file
+            {
+                "panel_label": "A",
+                "panel_sd_files": ["suppl_data/figure_1.zip:A/hallucinated_file.csv"],
+                "should_pass": False,
+            },
+            # Mix of valid and invalid files
+            {
+                "panel_label": "B",
+                "panel_sd_files": [
+                    "suppl_data/figure_1.zip:B/real_file3.csv",
+                    "suppl_data/figure_1.zip:B/hallucinated_file.xlsx",
+                ],
+                "should_pass": False,
+            },
+        ]
+
+        for case in test_cases:
+            if case["should_pass"]:
+                try:
+                    valid_data = AsignedFiles.model_validate(
+                        {
+                            "panel_label": case["panel_label"],
+                            "panel_sd_files": case["panel_sd_files"],
+                        },
+                        context={"allowed_files": valid_files},
+                    )
+                    self.assertIsNotNone(valid_data)
+                except ValidationError:
+                    self.fail(
+                        f"Validation failed for valid files: {case['panel_sd_files']}"
+                    )
+            else:
+                with self.assertRaises(ValidationError):
+                    AsignedFiles.model_validate(
+                        {
+                            "panel_label": case["panel_label"],
+                            "panel_sd_files": case["panel_sd_files"],
+                        },
+                        context={"allowed_files": valid_files},
+                    )
+
+    def test_unicode_path_handling(self):
+        """Test handling of Unicode characters in file paths."""
+        # Setup the test environment
+        self.config[
+            "extraction_dir"
+        ] = "/mock/extraction/dir"  # Make sure this matches the zip path structure
+
+        test_paths = [
+            "Figure 1/1A/Figure 1A IFN-ß.xlsx",  # UTF-8
+            "Figure 1/1A/Figure 1A IFN-ª┬.xlsx",  # Windows-1252
+            "Figure 1/1B/µg-analysis.csv",  # UTF-8 micro symbol
+            "Figure 1/1C/°C-measurements.xlsx",  # UTF-8 degree symbol
+            "Figure 1/1D/α-β-γ.csv",  # Greek letters
+        ]
+
+        # Mock zip file path that matches the extraction_dir structure
+        zip_file_path = "/mock/extraction/dir/suppl_data/figure_1.zip"
+
+        mock_zip = MagicMock()
+        mock_zip.infolist.return_value = [
+            MagicMock(filename=path) for path in test_paths
+        ]
+        mock_zip.__enter__.return_value = mock_zip
+
+        with patch("zipfile.ZipFile", return_value=mock_zip):
+            assigner = TestPanelSourceAssigner.ConcretePanelSourceAssigner(
+                self.config, self.prompt_handler
+            )
+            normalized_paths = assigner._get_zip_contents([zip_file_path])
+
+            # The expected paths should include the relative zip path
+            expected_zip_path = "suppl_data/figure_1.zip"
+
+            # Verify each path is properly normalized
+            for test_path in test_paths:
+                # For the Windows-1252 path, we expect it to be normalized to the UTF-8 version
+                if "IFN-ª┬" in test_path:
+                    expected_path = test_path.replace("IFN-ª┬", "IFN-ß")
+                else:
+                    expected_path = test_path
+
+                expected_full_path = f"{expected_zip_path}:{expected_path}"
+                self.assertTrue(
+                    any(p == expected_full_path for p in normalized_paths),
+                    f"Missing normalized path for {test_path}\nExpected: {expected_full_path}\nGot: {normalized_paths}",
+                )
+
+    def test_windows_files_filtering(self):
+        """Test filtering of Windows system files and metadata."""
+        # Setup the test environment
+        self.config["extraction_dir"] = "/mock/extraction/dir"
+
+        test_files = [
+            MagicMock(filename="folder/data.csv"),
+            MagicMock(filename="Thumbs.db"),
+            MagicMock(filename="folder/Thumbs.db"),
+            MagicMock(filename="desktop.ini"),
+            MagicMock(filename="folder/desktop.ini"),
+            MagicMock(filename=".DS_Store"),
+            MagicMock(filename="folder/.DS_Store"),
+            MagicMock(filename="__MACOSX/._data.csv"),
+            MagicMock(filename="folder/valid_file.xlsx"),
+            MagicMock(filename="folder/subfolder/data.txt"),
+        ]
+
+        mock_zip = MagicMock()
+        mock_zip.infolist.return_value = test_files
+        mock_zip.__enter__.return_value = mock_zip
+
+        # Use a zip path that matches the extraction_dir structure
+        zip_path = "/mock/extraction/dir/suppl_data/test.zip"
+
+        with patch("zipfile.ZipFile", return_value=mock_zip):
+            assigner = TestPanelSourceAssigner.ConcretePanelSourceAssigner(
+                self.config, self.prompt_handler
+            )
+            file_list = assigner._get_zip_contents([zip_path])
+
+            # Expected files should include the relative zip path
+            expected_files = [
+                "suppl_data/test.zip:folder/data.csv",
+                "suppl_data/test.zip:folder/valid_file.xlsx",
+                "suppl_data/test.zip:folder/subfolder/data.txt",
+            ]
+
+            # Verify system files are filtered out
+            self.assertEqual(sorted(file_list), sorted(expected_files))
+            self.assertFalse(any("Thumbs.db" in path for path in file_list))
+            self.assertFalse(any("desktop.ini" in path for path in file_list))
+            self.assertFalse(any(".DS_Store" in path for path in file_list))
+            self.assertFalse(any("__MACOSX" in path for path in file_list))

@@ -4,7 +4,7 @@ import zipfile
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, FieldValidationInfo, field_validator
 
 from ..manuscript_structure.manuscript_structure import Figure, Panel, ZipStructure
 from ..prompt_handler import PromptHandler
@@ -15,6 +15,19 @@ class AsignedFiles(BaseModel):
 
     panel_label: str
     panel_sd_files: List[str]
+
+    @field_validator("panel_sd_files", mode="before")
+    @classmethod
+    def validate_panel_sd_files(
+        cls, value: List[str], info: FieldValidationInfo
+    ) -> List[str]:
+        allowed_files = info.context.get("allowed_files", [])
+        invalid_files = [file for file in value if file not in allowed_files]
+        if invalid_files:
+            raise ValueError(
+                f"Invalid files: {invalid_files}. Allowed files are: {allowed_files}"
+            )
+        return value
 
 
 class AsignedFilesList(BaseModel):
@@ -74,7 +87,7 @@ class PanelSourceAssigner(ABC):
             )
 
             # Call AI service
-            assigned_files_list = self.call_ai_service(prompt)
+            assigned_files_list = self.call_ai_service(prompt, extracted_files)
 
         # Convert assigned files to Panel objects
         panels = self.parse_assigned_files_to_panels(assigned_files_list)
@@ -85,36 +98,43 @@ class PanelSourceAssigner(ABC):
         )
 
     @abstractmethod
-    def call_ai_service(self, prompt: str) -> AsignedFilesList:
+    def call_ai_service(
+        self, prompt: str, allowed_files: List[str]
+    ) -> AsignedFilesList:
         """Abstract method to call AI service."""
         pass
 
     def _get_zip_contents(self, sd_files: List[str]) -> List[str]:
         """Extract file list from zip files and return paths in a specific format."""
         extracted_files = []
+        windows_system_files = {"Thumbs.db", "desktop.ini"}
 
         for file_path in sd_files:
             if file_path.endswith(".zip"):
-                try:
-                    with zipfile.ZipFile(file_path, "r") as zip_ref:
-                        for file_info in zip_ref.infolist():
-                            # Skip directories (they end with '/') and macOS metadata
-                            if (
-                                file_info.filename.endswith("/")
-                                or "__MACOSX" in file_info.filename
-                                or ".DS_Store" in file_info.filename
-                            ):
-                                continue
+                with zipfile.ZipFile(file_path, "r") as zip_ref:
+                    for file_info in zip_ref.infolist():
+                        # Skip directories, macOS metadata, and Windows system files
+                        filename = file_info.filename
+                        if (
+                            filename.endswith("/")
+                            or "__MACOSX" in filename
+                            or ".DS_Store" in filename
+                            or any(wsf in filename for wsf in windows_system_files)
+                        ):
+                            continue
 
-                            # Construct the path format: suppl_data/zip_file_path:internal_path
-                            zip_relative_path = os.path.relpath(
-                                file_path, self.extraction_dir
-                            )
-                            extracted_files.append(
-                                f"{zip_relative_path}:{file_info.filename}"
-                            )
-                except zipfile.BadZipFile:
-                    logger.error(f"Bad zip file: {file_path}")
+                        # Normalize Unicode characters
+                        try:
+                            filename = filename.encode("cp1252").decode("utf-8")
+                        except (UnicodeEncodeError, UnicodeDecodeError):
+                            # If encoding fails, keep original filename
+                            pass
+
+                        # Construct the path format
+                        zip_relative_path = os.path.relpath(
+                            file_path, self.extraction_dir
+                        )
+                        extracted_files.append(f"{zip_relative_path}:{filename}")
             else:
                 # Non-zip files are added directly
                 extracted_files.append(os.path.relpath(file_path, self.extraction_dir))

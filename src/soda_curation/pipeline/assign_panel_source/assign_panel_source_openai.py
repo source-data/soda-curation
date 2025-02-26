@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import openai
 from pydantic import ValidationError
@@ -59,7 +59,7 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
                 f"Presence penalty must be between -2 and 2, value: `{config_.get('presence_penalty', 0)}`"
             )
 
-    def call_ai_service(self, prompt: str) -> AsignedFilesList:
+    def call_ai_service(self, prompt: str, allowed_files: List) -> AsignedFilesList:
         """Call OpenAI service with the given prompt."""
         try:
             # Get both system and user prompts
@@ -67,10 +67,7 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
 
             # Prepare messages
             messages = [
-                {
-                    "role": "system",
-                    "content": prompts["system"],
-                },
+                {"role": "system", "content": prompts["system"]},
                 {"role": "user", "content": prompt},
             ]
 
@@ -97,8 +94,10 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
             # Parse response
             response_data = json.loads(response.choices[0].message.content)
 
-            # Validate and create AsignedFilesList object
-            assigned_files_list = AsignedFilesList(**response_data)
+            # Validate and create AsignedFilesList object with context
+            assigned_files_list = AsignedFilesList.model_validate(
+                response_data, context={"allowed_files": allowed_files}
+            )
             return assigned_files_list
 
         except ValidationError as ve:
