@@ -1199,7 +1199,9 @@ class BenchmarkRunner:
                     expected_output=expected_output,
                 )
                 base_row["score"] = metric.measure(test_case_obj)
+                import pdb
 
+                pdb.set_trace()
             # Add row to DataFrame
             self.results_df = pd.concat(
                 [self.results_df, pd.DataFrame([base_row])], ignore_index=True

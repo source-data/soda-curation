@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import zipfile
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Tuple
@@ -35,6 +36,15 @@ class PanelSourceAssigner(ABC):
         self._validate_config()
         logger.info("PanelSourceAssigner initialized successfully")
 
+    @staticmethod
+    def normalize_panel_label(label: str) -> str:
+        """Normalize panel labels by removing figure numbers and standardizing format."""
+
+        match = re.search(r"[A-Z]\d*$", label.upper())
+        if match:
+            return match.group(0).rstrip("0123456789")
+        return label.upper()
+
     @abstractmethod
     def _validate_config(self) -> None:
         """
@@ -55,12 +65,31 @@ class PanelSourceAssigner(ABC):
 
     def _assign_to_figure(self, figure: Figure) -> None:
         """Process single figure."""
+        # First normalize and deduplicate existing panels
+        normalized_panels = {}
+        for panel in figure.panels:
+            norm_label = self.normalize_panel_label(panel.panel_label)
+            if norm_label in normalized_panels:
+                # If we already have this panel, keep the one with higher confidence
+                existing = normalized_panels[norm_label]
+                if panel.confidence > existing.confidence:
+                    normalized_panels[norm_label] = panel
+            else:
+                normalized_panels[norm_label] = panel
+
+            # Update the panel label to normalized form
+            panel.panel_label = norm_label
+
+        # Update figure with deduplicated panels
+        figure.panels = list(normalized_panels.values())
+
         # Initialize empty sd_files for all panels if not present
         for panel in figure.panels:
             if not hasattr(panel, "sd_files"):
                 panel.sd_files = []
 
         sd_files = [os.path.join(self.extraction_dir, f) for f in figure.sd_files]
+
         if not sd_files:
             # If there are no source data files, return early with empty assignments
             assigned_files_list = AsignedFilesList(
@@ -70,7 +99,7 @@ class PanelSourceAssigner(ABC):
             # Get file list from zip files
             extracted_files = self._get_zip_contents(sd_files)
 
-            # Get panel labels
+            # Get panel labels (now normalized)
             panel_labels = [panel.panel_label for panel in figure.panels]
 
             # Get the prompt
@@ -81,8 +110,10 @@ class PanelSourceAssigner(ABC):
             # Call AI service
             assigned_files_list = self.call_ai_service(prompt, extracted_files)
 
-        # Convert assigned files to Panel objects
+        # Convert assigned files to Panel objects and normalize their labels
         panels = self.parse_assigned_files_to_panels(assigned_files_list)
+        for p in panels:
+            p.panel_label = self.normalize_panel_label(p.panel_label)
 
         # Update figure with assignments
         self._update_figure_with_assignments(
@@ -166,36 +197,35 @@ class PanelSourceAssigner(ABC):
     ) -> None:
         """Update figure with source data assignments."""
         try:
-            # Initialize sd_files for all existing panels first
+            # Create a dictionary to store panels by their normalized labels
+            normalized_panels = {}
+
+            # First process existing panels
             for panel in figure.panels:
+                norm_label = self.normalize_panel_label(panel.panel_label)
+                panel.panel_label = norm_label  # Update the label to normalized form
                 if not hasattr(panel, "sd_files"):
                     panel.sd_files = []
+                normalized_panels[norm_label] = panel
 
-            # Update panel assignments
+            # Process new panels and update/add them
             for new_panel in panels:
-                # Find matching existing panel
-                existing_panel = next(
-                    (
-                        p
-                        for p in figure.panels
-                        if p.panel_label == new_panel.panel_label
-                    ),
-                    None,
-                )
+                norm_label = self.normalize_panel_label(new_panel.panel_label)
+                new_panel.panel_label = norm_label
 
-                if existing_panel:
+                if norm_label in normalized_panels:
                     # Update existing panel's sd_files
-                    existing_panel.sd_files = new_panel.sd_files or []
+                    normalized_panels[norm_label].sd_files = new_panel.sd_files or []
                 else:
-                    # Add new panel to figure with initialized sd_files
+                    # Add new panel
                     new_panel.sd_files = new_panel.sd_files or []
-                    figure.panels.append(new_panel)
+                    normalized_panels[norm_label] = new_panel
+
+            # Update figure's panels with deduplicated list
+            figure.panels = list(normalized_panels.values())
 
             # Update unassigned files
             figure.unassigned_sd_files = not_assigned_files
-
-            # Remove duplicates from figure's sd_files
-            figure.sd_files = list(set(figure.sd_files))
 
             logger.info(
                 f"Updated figure {figure.figure_label} with {len(panels)} panel assignments"

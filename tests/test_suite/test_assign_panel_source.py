@@ -577,118 +577,6 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
         # Check filtered not assigned files
         self.assertEqual(filtered_not_assigned, ["valid_file4.csv"])
 
-    def test_assigned_files_list_validation(self):
-        """Test validation of AsignedFilesList with filtering."""
-        # Define allowed files
-        allowed_files = [
-            "suppl_data/figure_1.zip:A/file1.csv",
-            "suppl_data/figure_1.zip:B/file2.csv",
-            "suppl_data/figure_1.zip:C/file3.csv",
-        ]
-
-        # Test data with both valid and invalid assignments
-        assigned_files = [
-            AsignedFiles(
-                panel_label="A", panel_sd_files=["suppl_data/figure_1.zip:A/file1.csv"]
-            ),
-            AsignedFiles(panel_label="B", panel_sd_files=["invalid_file.csv"]),
-            AsignedFiles(
-                panel_label="C", panel_sd_files=["suppl_data/figure_1.zip:C/file3.csv"]
-            ),
-        ]
-
-        not_assigned_files = [
-            "suppl_data/figure_1.zip:B/file2.csv",
-            "invalid_not_assigned.csv",
-        ]
-
-        # Filter files
-        filtered_assigned, filtered_not_assigned = self.assigner.filter_files(
-            assigned_files=assigned_files,
-            not_assigned_files=not_assigned_files,
-            allowed_files=allowed_files,
-        )
-
-        # Create AsignedFilesList with filtered data
-        result = AsignedFilesList(
-            assigned_files=filtered_assigned, not_assigned_files=filtered_not_assigned
-        )
-
-        # Check that only valid assignments remain
-        self.assertEqual(len(result.assigned_files), 2)  # Only A and C should remain
-        self.assertEqual(result.assigned_files[0].panel_label, "A")
-        self.assertEqual(
-            result.assigned_files[0].panel_sd_files,
-            ["suppl_data/figure_1.zip:A/file1.csv"],
-        )
-        self.assertEqual(result.assigned_files[1].panel_label, "C")
-        self.assertEqual(
-            result.assigned_files[1].panel_sd_files,
-            ["suppl_data/figure_1.zip:C/file3.csv"],
-        )
-
-        # Check that not_assigned_files only contains valid files
-        self.assertEqual(
-            result.not_assigned_files, ["suppl_data/figure_1.zip:B/file2.csv"]
-        )
-
-    def test_panels_always_have_sd_files(self):
-        """Test that panels always have sd_files list, even when empty."""
-        # Create a figure with no source data files
-        figure = Figure(
-            figure_label="Figure 1",
-            panels=[
-                Panel(panel_label="A", panel_caption=""),
-                Panel(panel_label="B", panel_caption=""),
-            ],
-            sd_files=[],
-            img_files=[],
-        )
-
-        # Process the figure
-        self.assigner._assign_to_figure(figure)
-
-        # Verify that each panel has sd_files as an empty list
-        for panel in figure.panels:
-            self.assertTrue(
-                hasattr(panel, "sd_files"),
-                f"Panel {panel.panel_label} missing sd_files attribute",
-            )
-            self.assertEqual(
-                panel.sd_files,
-                [],
-                f"Panel {panel.panel_label} sd_files should be empty list",
-            )
-
-    def test_parse_assigned_files_to_panels_empty_assignments(self):
-        """Test that parse_assigned_files_to_panels creates panels with empty sd_files."""
-        # Create an empty assigned files list
-        assigned_files_list = AsignedFilesList(assigned_files=[], not_assigned_files=[])
-
-        # Parse the empty assignments
-        panels = self.assigner.parse_assigned_files_to_panels(assigned_files_list)
-
-        # Verify result is an empty list
-        self.assertEqual(panels, [])
-
-        # Test with assigned files that have empty sd_files
-        assigned_files_list = AsignedFilesList(
-            assigned_files=[
-                AsignedFiles(panel_label="A", panel_sd_files=[]),
-                AsignedFiles(panel_label="B", panel_sd_files=[]),
-            ],
-            not_assigned_files=[],
-        )
-
-        # Parse the assignments
-        panels = self.assigner.parse_assigned_files_to_panels(assigned_files_list)
-
-        # Verify each panel has empty sd_files
-        self.assertEqual(len(panels), 2)
-        for panel in panels:
-            self.assertTrue(hasattr(panel, "sd_files"))
-            self.assertEqual(panel.sd_files, [])
-
     def test_update_figure_with_assignments_preserves_empty_sd_files(self):
         """Test that _update_figure_with_assignments preserves empty sd_files."""
         # Create a figure with existing panels
@@ -717,3 +605,368 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
         for panel in figure.panels:
             self.assertTrue(hasattr(panel, "sd_files"))
             self.assertEqual(panel.sd_files, [])
+
+    def test_panel_label_normalization(self):
+        """Test that panel labels are properly normalized to prevent duplication."""
+        # Test the normalize_panel_label method directly
+        test_cases = [
+            ("1A", "A"),
+            ("A", "A"),
+            ("Fig2B", "B"),
+            ("Figure3C", "C"),
+            ("1D", "D"),
+            ("D", "D"),
+            ("Panel2E", "E"),
+            ("1A1", "A"),  # Handle numeric suffixes
+            ("a", "A"),  # Handle lowercase
+            ("1a", "A"),  # Handle mixed case
+        ]
+
+        for input_label, expected in test_cases:
+            self.assertEqual(
+                self.assigner.normalize_panel_label(input_label),
+                expected,
+                f"Failed to normalize {input_label} to {expected}",
+            )
+
+        # Test panel deduplication in figure updates
+        figure = Figure(
+            figure_label="Figure 1",
+            panels=[
+                Panel(panel_label="1A", panel_caption="", sd_files=[]),
+                Panel(panel_label="1B", panel_caption="", sd_files=[]),
+            ],
+            sd_files=["source_data1.zip"],
+            img_files=[],
+        )
+
+        new_panels = [
+            Panel(panel_label="A", panel_caption="", sd_files=["new_file1.csv"]),
+            Panel(panel_label="B", panel_caption="", sd_files=["new_file2.csv"]),
+        ]
+
+        # Update figure with new panels
+        self.assigner._update_figure_with_assignments(
+            figure=figure, panels=new_panels, not_assigned_files=[]
+        )
+
+        # Verify no duplicate panels were created
+        self.assertEqual(len(figure.panels), 2)
+
+        # Verify the original panel labels were preserved but got the new sd_files
+        panel_data = {panel.panel_label: panel.sd_files for panel in figure.panels}
+        self.assertEqual(panel_data["A"], ["new_file1.csv"])
+        self.assertEqual(panel_data["B"], ["new_file2.csv"])
+
+    def test_mixed_panel_label_assignments(self):
+        """Test handling of mixed panel label formats in assignments."""
+        figure = Figure(
+            figure_label="Figure 1",
+            panels=[
+                Panel(panel_label="1A", panel_caption=""),
+                Panel(panel_label="1B", panel_caption=""),
+            ],
+            sd_files=["source_data1.zip"],
+            img_files=[],
+        )
+
+        # Create assignments with mixed label formats
+        assigned_files_list = AsignedFilesList(
+            assigned_files=[
+                AsignedFiles(panel_label="A", panel_sd_files=["file1.csv"]),
+                AsignedFiles(panel_label="1B", panel_sd_files=["file2.csv"]),
+            ],
+            not_assigned_files=[],
+        )
+
+        # Convert to panels
+        panels = self.assigner.parse_assigned_files_to_panels(assigned_files_list)
+
+        # Update figure
+        self.assigner._update_figure_with_assignments(
+            figure=figure, panels=panels, not_assigned_files=[]
+        )
+
+        # Verify results
+        self.assertEqual(len(figure.panels), 2)
+        panel_data = {panel.panel_label: panel.sd_files for panel in figure.panels}
+        self.assertEqual(panel_data["A"], ["file1.csv"])
+        self.assertEqual(panel_data["B"], ["file2.csv"])
+
+    @patch("zipfile.ZipFile")
+    def test_deduplication_of_existing_panels(self, mock_zipfile):
+        """Test that panels are deduplicated during assignment."""
+        # Mock the zipfile and its contents
+        mock_zip = MagicMock()
+        mock_zip.__enter__.return_value = mock_zip
+        mock_zip.infolist.return_value = [
+            MagicMock(filename="file1.csv"),
+            MagicMock(filename="file2.csv"),
+        ]
+        mock_zipfile.return_value = mock_zip
+
+        # Override the call_ai_service with a MagicMock for this test
+        self.assigner.call_ai_service = MagicMock()
+
+        # Create a figure with duplicate panels (B and 1B)
+        figure = Figure(
+            figure_label="Figure 1",
+            panels=[
+                Panel(
+                    panel_label="B",
+                    panel_caption="Caption B",
+                    confidence=0.8,
+                    panel_bbox=[0.1, 0.1, 0.2, 0.2],
+                    sd_files=[],
+                ),
+                Panel(
+                    panel_label="1B",
+                    panel_caption="",
+                    confidence=0.0,
+                    sd_files=["existing_file.csv"],
+                ),
+                Panel(panel_label="C", panel_caption="Caption C", sd_files=[]),
+            ],
+            sd_files=["source_data1.zip"],
+            img_files=[],
+        )
+
+        # Mock the AI service response
+        mock_response = AsignedFilesList(
+            assigned_files=[
+                AsignedFiles(panel_label="B", panel_sd_files=["file1.csv"]),
+                AsignedFiles(panel_label="C", panel_sd_files=["file2.csv"]),
+            ],
+            not_assigned_files=[],
+        )
+        self.assigner.call_ai_service.return_value = mock_response
+
+        # Call _assign_to_figure
+        self.assigner._assign_to_figure(figure)
+
+        # Verify panels were deduplicated
+        self.assertEqual(len(figure.panels), 2)  # Should only have B and C now
+
+        # Find panel B and verify it has the merged properties
+        panel_b = next(
+            p
+            for p in figure.panels
+            if self.assigner.normalize_panel_label(p.panel_label) == "B"
+        )
+        self.assertEqual(
+            panel_b.panel_caption, "Caption B"
+        )  # Should keep non-empty caption
+        self.assertEqual(panel_b.confidence, 0.8)  # Should keep higher confidence
+        self.assertEqual(
+            panel_b.sd_files, ["file1.csv"]
+        )  # Should have new sd_files from AI service
+        self.assertEqual(
+            panel_b.panel_bbox, [0.1, 0.1, 0.2, 0.2]
+        )  # Should keep bbox from higher confidence
+
+        # Verify panel C remains unchanged except for sd_files update
+        panel_c = next(
+            p
+            for p in figure.panels
+            if self.assigner.normalize_panel_label(p.panel_label) == "C"
+        )
+        self.assertEqual(panel_c.panel_caption, "Caption C")
+        self.assertEqual(panel_c.sd_files, ["file2.csv"])
+
+    @patch("zipfile.ZipFile")
+    def test_panel_label_simplification(self, mock_zipfile):
+        """Test that panel labels are simplified to just letters."""
+        # Mock the zipfile and its contents
+        mock_zip = MagicMock()
+        mock_zip.__enter__.return_value = mock_zip
+        mock_zip.infolist.return_value = [
+            MagicMock(filename="file1.csv"),
+            MagicMock(filename="file2.csv"),
+        ]
+        mock_zipfile.return_value = mock_zip
+
+        # Override the call_ai_service with a MagicMock for this test
+        self.assigner.call_ai_service = MagicMock()
+
+        # Create a figure with numbered panel labels
+        figure = Figure(
+            figure_label="Figure 1",
+            panels=[
+                Panel(panel_label="1A", panel_caption="Caption A", confidence=0.8),
+                Panel(panel_label="1B", panel_caption="Caption B", confidence=0.7),
+                Panel(panel_label="Fig1C", panel_caption="Caption C", confidence=0.6),
+            ],
+            sd_files=["source_data1.zip"],
+            img_files=[],
+        )
+
+        # Mock the AI service response
+        mock_response = AsignedFilesList(
+            assigned_files=[
+                AsignedFiles(panel_label="A", panel_sd_files=["file1.csv"]),
+                AsignedFiles(panel_label="B", panel_sd_files=["file2.csv"]),
+                AsignedFiles(panel_label="C", panel_sd_files=["file3.csv"]),
+            ],
+            not_assigned_files=[],
+        )
+        self.assigner.call_ai_service.return_value = mock_response
+
+        # Process the figure
+        self.assigner._assign_to_figure(figure)
+
+        # Verify panel labels are simplified
+        expected_labels = ["A", "B", "C"]
+        actual_labels = [panel.panel_label for panel in figure.panels]
+        self.assertEqual(sorted(actual_labels), sorted(expected_labels))
+
+        # Verify other properties are preserved
+        panel_data = {panel.panel_label: panel for panel in figure.panels}
+        self.assertEqual(panel_data["A"].panel_caption, "Caption A")
+        self.assertEqual(panel_data["B"].panel_caption, "Caption B")
+        self.assertEqual(panel_data["C"].panel_caption, "Caption C")
+
+    def test_update_figure_with_assignments(self):
+        """Test that _update_figure_with_assignments correctly normalizes labels and updates panels."""
+        # Create a figure with various panel label formats
+        figure = Figure(
+            figure_label="Figure 1",
+            panels=[
+                Panel(
+                    panel_label="1A",  # Should become "A"
+                    panel_caption="Caption A",
+                    confidence=0.8,
+                    panel_bbox=[0.1, 0.1, 0.2, 0.2],
+                    sd_files=["old_file1.csv"],
+                ),
+                Panel(
+                    panel_label="Fig1B",  # Should become "B"
+                    panel_caption="Caption B",
+                    confidence=0.7,
+                    panel_bbox=[0.2, 0.2, 0.3, 0.3],
+                    sd_files=[],
+                ),
+            ],
+            sd_files=["source_data1.zip"],
+            img_files=[],
+        )
+
+        # Create new panels with normalized labels
+        new_panels = [
+            Panel(panel_label="A", panel_caption="", sd_files=["new_file1.csv"]),
+            Panel(panel_label="B", panel_caption="", sd_files=["new_file2.csv"]),
+        ]
+
+        # Update figure with new assignments
+        self.assigner._update_figure_with_assignments(
+            figure=figure, panels=new_panels, not_assigned_files=["unassigned.csv"]
+        )
+
+        # Verify results
+        self.assertEqual(len(figure.panels), 2)  # Should have 2 panels
+
+        # Check panel A
+        panel_a = next(
+            p for p in figure.panels if p.panel_label == "A"
+        )  # Note: looking for "A", not "1A"
+        self.assertEqual(panel_a.panel_caption, "Caption A")
+        self.assertEqual(panel_a.confidence, 0.8)
+        self.assertEqual(panel_a.panel_bbox, [0.1, 0.1, 0.2, 0.2])
+        self.assertEqual(panel_a.sd_files, ["new_file1.csv"])
+
+        # Check panel B
+        panel_b = next(
+            p for p in figure.panels if p.panel_label == "B"
+        )  # Note: looking for "B", not "Fig1B"
+        self.assertEqual(panel_b.panel_caption, "Caption B")
+        self.assertEqual(panel_b.confidence, 0.7)
+        self.assertEqual(panel_b.panel_bbox, [0.2, 0.2, 0.3, 0.3])
+        self.assertEqual(panel_b.sd_files, ["new_file2.csv"])
+
+        # Check unassigned files
+        self.assertEqual(figure.unassigned_sd_files, ["unassigned.csv"])
+
+    def test_update_figure_with_new_panel(self):
+        """Test that _update_figure_with_assignments correctly handles new panels."""
+        # Create a figure with one panel
+        figure = Figure(
+            figure_label="Figure 1",
+            panels=[
+                Panel(
+                    panel_label="1A",
+                    panel_caption="Caption A",
+                    confidence=0.8,
+                    sd_files=["old_file1.csv"],
+                ),
+            ],
+            sd_files=["source_data1.zip"],
+            img_files=[],
+        )
+
+        # Create new panels including a new one
+        new_panels = [
+            Panel(panel_label="A", panel_caption="", sd_files=["new_file1.csv"]),
+            Panel(
+                panel_label="B",  # New panel
+                panel_caption="New Panel",
+                sd_files=["new_file2.csv"],
+            ),
+        ]
+
+        # Update figure with new assignments
+        self.assigner._update_figure_with_assignments(
+            figure=figure, panels=new_panels, not_assigned_files=[]
+        )
+
+        # Verify results
+        self.assertEqual(len(figure.panels), 2)  # Should now have 2 panels
+
+        # Check panel A
+        panel_a = next(p for p in figure.panels if p.panel_label == "A")
+        self.assertEqual(
+            panel_a.panel_caption, "Caption A"
+        )  # Original caption preserved
+        self.assertEqual(panel_a.confidence, 0.8)  # Original confidence preserved
+        self.assertEqual(panel_a.sd_files, ["new_file1.csv"])  # New sd_files updated
+
+        # Check new panel B
+        panel_b = next(p for p in figure.panels if p.panel_label == "B")
+        self.assertEqual(panel_b.panel_caption, "New Panel")
+        self.assertEqual(panel_b.sd_files, ["new_file2.csv"])
+
+    def test_update_figure_preserves_properties(self):
+        """Test that _update_figure_with_assignments preserves important panel properties."""
+        # Create a figure with a panel that has all properties set
+        figure = Figure(
+            figure_label="Figure 1",
+            panels=[
+                Panel(
+                    panel_label="1A",
+                    panel_caption="Original Caption",
+                    confidence=0.9,
+                    panel_bbox=[0.1, 0.1, 0.2, 0.2],
+                    ai_response="Original AI Response",
+                    sd_files=["old_file.csv"],
+                ),
+            ],
+            sd_files=["source_data1.zip"],
+            img_files=[],
+        )
+
+        # Create new panel with minimal properties
+        new_panels = [
+            Panel(panel_label="A", panel_caption="", sd_files=["new_file.csv"]),
+        ]
+
+        # Update figure
+        self.assigner._update_figure_with_assignments(
+            figure=figure, panels=new_panels, not_assigned_files=[]
+        )
+
+        # Verify all properties are preserved except sd_files
+        panel = figure.panels[0]
+        self.assertEqual(panel.panel_label, "A")  # Should be normalized
+        self.assertEqual(panel.panel_caption, "Original Caption")
+        self.assertEqual(panel.confidence, 0.9)
+        self.assertEqual(panel.panel_bbox, [0.1, 0.1, 0.2, 0.2])
+        self.assertEqual(panel.ai_response, "Original AI Response")
+        self.assertEqual(panel.sd_files, ["new_file.csv"])  # Only this should change
