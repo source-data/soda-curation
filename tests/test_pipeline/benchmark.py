@@ -619,7 +619,25 @@ class BenchmarkRunner:
             raise ValueError(f"Unsupported provider: {provider}")
 
         # Ground truth comes from the input
-        zip_structure = ZipStructure(figures=ground_truth["figures"])
+        modified_figures = [
+            Figure(
+                figure_label=fig.figure_label,
+                img_files=fig.img_files,
+                sd_files=fig.sd_files,
+                panels=fig.panels,
+                unassigned_sd_files=fig.unassigned_sd_files,
+                _full_img_files=fig._full_img_files,
+                _full_sd_files=fig._full_sd_files,
+                duplicated_panels=fig.duplicated_panels,
+                ai_response_panel_source_assign=fig.ai_response_panel_source_assign,
+                figure_caption="",  # Set to empty string
+                caption_title="",  # Set to empty string
+            )
+            for fig in ground_truth["figures"]
+        ]
+
+        # Use the modified figures in ZipStructure
+        zip_structure = ZipStructure(figures=modified_figures)
 
         # This is where we get the AI extraction
         extracted_zip_structure = captions_extractor.extract_individual_captions(

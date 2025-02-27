@@ -180,17 +180,17 @@ class CustomJSONEncoder(json.JSONEncoder):
                     dict_obj[k] = [self.default(fig) for fig in v]
                 elif k == "panels" and isinstance(obj, Figure):
                     dict_obj[k] = [self.default(panel) for panel in v]
-                elif k == "sd_files" and isinstance(obj, Panel):
-                    # Preserve the full paths for source data files
+                elif k == "sd_files":  # Changed this condition
+                    # Always include sd_files, even if empty
                     dict_obj[k] = [str(f) for f in v] if v else []
                 else:
                     dict_obj[k] = v
 
-            # Remove any None values and empty collections
+            # Remove None values and empty collections, but preserve sd_files
             return {
                 k: v
                 for k, v in dict_obj.items()
-                if v is not None and v != {} and v != []
+                if v is not None and (k == "sd_files" or (v != {} and v != []))
             }
 
         return super().default(obj)

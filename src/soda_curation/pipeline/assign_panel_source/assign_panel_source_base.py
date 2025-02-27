@@ -2,9 +2,9 @@ import logging
 import os
 import zipfile
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
-from pydantic import BaseModel, FieldValidationInfo, field_validator
+from pydantic import BaseModel
 
 from ..manuscript_structure.manuscript_structure import Figure, Panel, ZipStructure
 from ..prompt_handler import PromptHandler
@@ -15,19 +15,6 @@ class AsignedFiles(BaseModel):
 
     panel_label: str
     panel_sd_files: List[str]
-
-    @field_validator("panel_sd_files", mode="before")
-    @classmethod
-    def validate_panel_sd_files(
-        cls, value: List[str], info: FieldValidationInfo
-    ) -> List[str]:
-        allowed_files = info.context.get("allowed_files", [])
-        invalid_files = [file for file in value if file not in allowed_files]
-        if invalid_files:
-            raise ValueError(
-                f"Invalid files: {invalid_files}. Allowed files are: {allowed_files}"
-            )
-        return value
 
 
 class AsignedFilesList(BaseModel):
@@ -68,6 +55,11 @@ class PanelSourceAssigner(ABC):
 
     def _assign_to_figure(self, figure: Figure) -> None:
         """Process single figure."""
+        # Initialize empty sd_files for all panels if not present
+        for panel in figure.panels:
+            if not hasattr(panel, "sd_files"):
+                panel.sd_files = []
+
         sd_files = [os.path.join(self.extraction_dir, f) for f in figure.sd_files]
         if not sd_files:
             # If there are no source data files, return early with empty assignments
@@ -159,12 +151,12 @@ class PanelSourceAssigner(ABC):
     ) -> List[Panel]:
         """Parse the assigned files list into Panel objects."""
         panels = []
-        # Access assigned_files directly instead of using get()
         for assigned_file in assigned_files_list.assigned_files:
             panel = Panel(
                 panel_label=assigned_file.panel_label,
                 panel_caption="",  # Assuming caption is not provided in this context
-                sd_files=assigned_file.panel_sd_files,
+                sd_files=assigned_file.panel_sd_files
+                or [],  # Ensure empty list if None
             )
             panels.append(panel)
         return panels
@@ -174,6 +166,11 @@ class PanelSourceAssigner(ABC):
     ) -> None:
         """Update figure with source data assignments."""
         try:
+            # Initialize sd_files for all existing panels first
+            for panel in figure.panels:
+                if not hasattr(panel, "sd_files"):
+                    panel.sd_files = []
+
             # Update panel assignments
             for new_panel in panels:
                 # Find matching existing panel
@@ -188,9 +185,10 @@ class PanelSourceAssigner(ABC):
 
                 if existing_panel:
                     # Update existing panel's sd_files
-                    existing_panel.sd_files = new_panel.sd_files
+                    existing_panel.sd_files = new_panel.sd_files or []
                 else:
-                    # Add new panel to figure
+                    # Add new panel to figure with initialized sd_files
+                    new_panel.sd_files = new_panel.sd_files or []
                     figure.panels.append(new_panel)
 
             # Update unassigned files
@@ -208,3 +206,27 @@ class PanelSourceAssigner(ABC):
                 f"Error updating assignments for {figure.figure_label}: {str(e)}"
             )
             raise
+
+    @staticmethod
+    def filter_files(
+        assigned_files: List[AsignedFiles],
+        not_assigned_files: List[str],
+        allowed_files: List[str],
+    ) -> Tuple[List[AsignedFiles], List[str]]:
+        """Remove any files that are not in allowed_files."""
+        filtered_assigned_files = []
+
+        for af in assigned_files:
+            # Filter valid files for this panel
+            valid_files = [file for file in af.panel_sd_files if file in allowed_files]
+            # Only keep panels that have at least one valid file
+            if valid_files:
+                filtered_assigned_files.append(
+                    AsignedFiles(panel_label=af.panel_label, panel_sd_files=valid_files)
+                )
+
+        filtered_not_assigned_files = [
+            file for file in not_assigned_files if file in allowed_files
+        ]
+
+        return filtered_assigned_files, filtered_not_assigned_files

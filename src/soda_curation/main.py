@@ -102,7 +102,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             panel_source_assigner = PanelSourceAssignerOpenAI(
                 config_loader.config, prompt_handler
             )
-            # Pass only             # Pass only the figures to assign_panel_source
+            # Pass only
             processed_figures = panel_source_assigner.assign_panel_source(
                 zip_structure  # Pass figures list instead of whole structure
             )

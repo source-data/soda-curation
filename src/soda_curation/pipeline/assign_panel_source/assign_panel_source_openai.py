@@ -1,14 +1,18 @@
 import json
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import openai
 from pydantic import ValidationError
 
 from ..cost_tracking import update_token_usage
 from ..prompt_handler import PromptHandler
-from .assign_panel_source_base import AsignedFilesList, PanelSourceAssigner
+from .assign_panel_source_base import (
+    AsignedFiles,
+    AsignedFilesList,
+    PanelSourceAssigner,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -94,11 +98,20 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
             # Parse response
             response_data = json.loads(response.choices[0].message.content)
 
-            # Validate and create AsignedFilesList object with context
-            assigned_files_list = AsignedFilesList.model_validate(
-                response_data, context={"allowed_files": allowed_files}
+            # Filter out invalid files
+            filtered_assigned, filtered_not_assigned = self.filter_files(
+                assigned_files=[
+                    AsignedFiles(**af) for af in response_data["assigned_files"]
+                ],
+                not_assigned_files=response_data["not_assigned_files"],
+                allowed_files=allowed_files,
             )
-            return assigned_files_list
+
+            # Create the filtered AsignedFilesList
+            return AsignedFilesList(
+                assigned_files=filtered_assigned,
+                not_assigned_files=filtered_not_assigned,
+            )
 
         except ValidationError as ve:
             logger.error(f"Validation error when creating AsignedFilesList: {ve}")
@@ -106,4 +119,26 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
 
         except Exception as e:
             logger.error(f"Error calling OpenAI API: {str(e)}")
-            return AsignedFilesList(assigned_files=[], not_assigned_files=[])
+
+    @staticmethod
+    def filter_files(
+        assigned_files: List[AsignedFiles],
+        not_assigned_files: List[str],
+        allowed_files: List[str],
+    ) -> Tuple[List[AsignedFiles], List[str]]:
+        """Remove any files that are not in allowed_files."""
+        filtered_assigned_files = [
+            AsignedFiles(
+                panel_label=af.panel_label,
+                panel_sd_files=[
+                    file for file in af.panel_sd_files if file in allowed_files
+                ],
+            )
+            for af in assigned_files
+        ]
+
+        filtered_not_assigned_files = [
+            file for file in not_assigned_files if file in allowed_files
+        ]
+
+        return filtered_assigned_files, filtered_not_assigned_files

@@ -3,7 +3,7 @@ import unittest
 from typing import Any, List
 from unittest.mock import MagicMock, patch
 
-from pydantic import BeforeValidator, ValidationError
+from pydantic import BeforeValidator
 from typing_extensions import Annotated
 
 from src.soda_curation.pipeline.assign_panel_source.assign_panel_source_base import (
@@ -342,23 +342,29 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
     """Test validation features of PanelSourceAssigner."""
 
     def setUp(self):
+        """Set up test environment."""
         self.config = {
-            "assign_panel_source": {
-                "prompts": {
-                    "user": "Assign the following files to the panels: {panel_labels} with files: {file_list}"
+            "pipeline": {
+                "assign_panel_source": {
+                    "prompts": {
+                        "user": "Assign the following files to the panels: {panel_labels} with files: {file_list}"
+                    },
+                    "openai": {
+                        "model": "gpt-4",
+                        "temperature": 0.3,
+                        "top_p": 1.0,
+                        "frequency_penalty": 0,
+                        "presence_penalty": 0,
+                    },
+                    "cost": {},
                 },
-                "openai": {
-                    "model": "gpt-4",
-                    "temperature": 0.3,
-                    "top_p": 1.0,
-                    "frequency_penalty": 0,
-                    "presence_penalty": 0,
-                },
-                "cost": {},
             },
             "extraction_dir": "/mock/extraction/dir",
         }
         self.prompt_handler = MagicMock()
+        self.assigner = TestPanelSourceAssigner.ConcretePanelSourceAssigner(
+            self.config, self.prompt_handler
+        )
 
     def test_hallucinated_files_validation(self):
         """Test that hallucinated file paths are rejected."""
@@ -368,11 +374,6 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
             "suppl_data/figure_1.zip:A/real_file2.xlsx",
             "suppl_data/figure_1.zip:B/real_file3.csv",
         ]
-
-        ValidatedFile = create_file_validator(valid_files)
-
-        class ValidatedAsignedFiles(AsignedFiles):
-            panel_sd_files: List[ValidatedFile]
 
         # Test multiple scenarios
         test_cases = [
@@ -409,28 +410,36 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
         ]
 
         for case in test_cases:
+            filtered_assigned, _ = self.assigner.filter_files(
+                assigned_files=[
+                    AsignedFiles(
+                        panel_label=case["panel_label"],
+                        panel_sd_files=case["panel_sd_files"],
+                    )
+                ],
+                not_assigned_files=[],
+                allowed_files=valid_files,
+            )
+
             if case["should_pass"]:
-                try:
-                    valid_data = AsignedFiles.model_validate(
-                        {
-                            "panel_label": case["panel_label"],
-                            "panel_sd_files": case["panel_sd_files"],
-                        },
-                        context={"allowed_files": valid_files},
-                    )
-                    self.assertIsNotNone(valid_data)
-                except ValidationError:
-                    self.fail(
-                        f"Validation failed for valid files: {case['panel_sd_files']}"
-                    )
+                # For valid cases, check that we have results and they're all valid
+                self.assertTrue(
+                    len(filtered_assigned) > 0, "Expected valid files but got none"
+                )
+                self.assertTrue(
+                    all(f in valid_files for f in filtered_assigned[0].panel_sd_files),
+                    f"Invalid files found in results: {filtered_assigned[0].panel_sd_files}",
+                )
             else:
-                with self.assertRaises(ValidationError):
-                    AsignedFiles.model_validate(
-                        {
-                            "panel_label": case["panel_label"],
-                            "panel_sd_files": case["panel_sd_files"],
-                        },
-                        context={"allowed_files": valid_files},
+                # For invalid cases, either the panel should be removed (empty list)
+                # or all its files should be valid
+                if filtered_assigned:
+                    self.assertTrue(
+                        all(
+                            f in valid_files
+                            for f in filtered_assigned[0].panel_sd_files
+                        ),
+                        f"Invalid files were not filtered out: {filtered_assigned[0].panel_sd_files}",
                     )
 
     def test_unicode_path_handling(self):
@@ -524,3 +533,187 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
             self.assertFalse(any("desktop.ini" in path for path in file_list))
             self.assertFalse(any(".DS_Store" in path for path in file_list))
             self.assertFalse(any("__MACOSX" in path for path in file_list))
+
+    def test_filter_files(self):
+        """Test the filter_files static method."""
+        # Define test data
+        assigned_files = [
+            AsignedFiles(
+                panel_label="A",
+                panel_sd_files=[
+                    "valid_file1.csv",
+                    "invalid_file1.csv",
+                    "valid_file2.csv",
+                ],
+            ),
+            AsignedFiles(
+                panel_label="B", panel_sd_files=["invalid_file2.csv", "valid_file3.csv"]
+            ),
+        ]
+        not_assigned_files = ["valid_file4.csv", "invalid_file3.csv"]
+        allowed_files = [
+            "valid_file1.csv",
+            "valid_file2.csv",
+            "valid_file3.csv",
+            "valid_file4.csv",
+        ]
+
+        # Call the filter method
+        filtered_assigned, filtered_not_assigned = self.assigner.filter_files(
+            assigned_files=assigned_files,
+            not_assigned_files=not_assigned_files,
+            allowed_files=allowed_files,
+        )
+
+        # Check filtered assigned files
+        self.assertEqual(len(filtered_assigned), 2)
+        self.assertEqual(filtered_assigned[0].panel_label, "A")
+        self.assertEqual(
+            filtered_assigned[0].panel_sd_files, ["valid_file1.csv", "valid_file2.csv"]
+        )
+        self.assertEqual(filtered_assigned[1].panel_label, "B")
+        self.assertEqual(filtered_assigned[1].panel_sd_files, ["valid_file3.csv"])
+
+        # Check filtered not assigned files
+        self.assertEqual(filtered_not_assigned, ["valid_file4.csv"])
+
+    def test_assigned_files_list_validation(self):
+        """Test validation of AsignedFilesList with filtering."""
+        # Define allowed files
+        allowed_files = [
+            "suppl_data/figure_1.zip:A/file1.csv",
+            "suppl_data/figure_1.zip:B/file2.csv",
+            "suppl_data/figure_1.zip:C/file3.csv",
+        ]
+
+        # Test data with both valid and invalid assignments
+        assigned_files = [
+            AsignedFiles(
+                panel_label="A", panel_sd_files=["suppl_data/figure_1.zip:A/file1.csv"]
+            ),
+            AsignedFiles(panel_label="B", panel_sd_files=["invalid_file.csv"]),
+            AsignedFiles(
+                panel_label="C", panel_sd_files=["suppl_data/figure_1.zip:C/file3.csv"]
+            ),
+        ]
+
+        not_assigned_files = [
+            "suppl_data/figure_1.zip:B/file2.csv",
+            "invalid_not_assigned.csv",
+        ]
+
+        # Filter files
+        filtered_assigned, filtered_not_assigned = self.assigner.filter_files(
+            assigned_files=assigned_files,
+            not_assigned_files=not_assigned_files,
+            allowed_files=allowed_files,
+        )
+
+        # Create AsignedFilesList with filtered data
+        result = AsignedFilesList(
+            assigned_files=filtered_assigned, not_assigned_files=filtered_not_assigned
+        )
+
+        # Check that only valid assignments remain
+        self.assertEqual(len(result.assigned_files), 2)  # Only A and C should remain
+        self.assertEqual(result.assigned_files[0].panel_label, "A")
+        self.assertEqual(
+            result.assigned_files[0].panel_sd_files,
+            ["suppl_data/figure_1.zip:A/file1.csv"],
+        )
+        self.assertEqual(result.assigned_files[1].panel_label, "C")
+        self.assertEqual(
+            result.assigned_files[1].panel_sd_files,
+            ["suppl_data/figure_1.zip:C/file3.csv"],
+        )
+
+        # Check that not_assigned_files only contains valid files
+        self.assertEqual(
+            result.not_assigned_files, ["suppl_data/figure_1.zip:B/file2.csv"]
+        )
+
+    def test_panels_always_have_sd_files(self):
+        """Test that panels always have sd_files list, even when empty."""
+        # Create a figure with no source data files
+        figure = Figure(
+            figure_label="Figure 1",
+            panels=[
+                Panel(panel_label="A", panel_caption=""),
+                Panel(panel_label="B", panel_caption=""),
+            ],
+            sd_files=[],
+            img_files=[],
+        )
+
+        # Process the figure
+        self.assigner._assign_to_figure(figure)
+
+        # Verify that each panel has sd_files as an empty list
+        for panel in figure.panels:
+            self.assertTrue(
+                hasattr(panel, "sd_files"),
+                f"Panel {panel.panel_label} missing sd_files attribute",
+            )
+            self.assertEqual(
+                panel.sd_files,
+                [],
+                f"Panel {panel.panel_label} sd_files should be empty list",
+            )
+
+    def test_parse_assigned_files_to_panels_empty_assignments(self):
+        """Test that parse_assigned_files_to_panels creates panels with empty sd_files."""
+        # Create an empty assigned files list
+        assigned_files_list = AsignedFilesList(assigned_files=[], not_assigned_files=[])
+
+        # Parse the empty assignments
+        panels = self.assigner.parse_assigned_files_to_panels(assigned_files_list)
+
+        # Verify result is an empty list
+        self.assertEqual(panels, [])
+
+        # Test with assigned files that have empty sd_files
+        assigned_files_list = AsignedFilesList(
+            assigned_files=[
+                AsignedFiles(panel_label="A", panel_sd_files=[]),
+                AsignedFiles(panel_label="B", panel_sd_files=[]),
+            ],
+            not_assigned_files=[],
+        )
+
+        # Parse the assignments
+        panels = self.assigner.parse_assigned_files_to_panels(assigned_files_list)
+
+        # Verify each panel has empty sd_files
+        self.assertEqual(len(panels), 2)
+        for panel in panels:
+            self.assertTrue(hasattr(panel, "sd_files"))
+            self.assertEqual(panel.sd_files, [])
+
+    def test_update_figure_with_assignments_preserves_empty_sd_files(self):
+        """Test that _update_figure_with_assignments preserves empty sd_files."""
+        # Create a figure with existing panels
+        figure = Figure(
+            figure_label="Figure 1",
+            panels=[
+                Panel(panel_label="A", panel_caption=""),
+                Panel(panel_label="B", panel_caption=""),
+            ],
+            sd_files=[],
+            img_files=[],
+        )
+
+        # Create new panels with empty sd_files
+        new_panels = [
+            Panel(panel_label="A", panel_caption="", sd_files=[]),
+            Panel(panel_label="B", panel_caption="", sd_files=[]),
+        ]
+
+        # Update figure with assignments
+        self.assigner._update_figure_with_assignments(
+            figure=figure, panels=new_panels, not_assigned_files=[]
+        )
+
+        # Verify that each panel still has sd_files as an empty list
+        for panel in figure.panels:
+            self.assertTrue(hasattr(panel, "sd_files"))
+            self.assertEqual(panel.sd_files, [])
