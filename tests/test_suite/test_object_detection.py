@@ -5,9 +5,14 @@ It tests various aspects of image conversion, resizing, and panel detection usin
 The tests use mock objects to simulate file operations and model predictions.
 """
 
+import os
+import shutil
 import subprocess
+import tempfile
+import unittest
 from unittest.mock import Mock, patch
 
+import cv2
 import numpy as np
 import pytest
 from PIL import Image, UnidentifiedImageError
@@ -17,6 +22,7 @@ from src.soda_curation.pipeline.match_caption_panel.object_detection import (
     convert_and_resize_image,
     convert_to_pil_image,
     create_object_detection,
+    scale_down_large_image,
 )
 
 
@@ -277,17 +283,13 @@ def mocker(monkeypatch):
 
 
 def test_convert_to_pil_image_ai_failure(mock_subprocess, mock_os):
-    """
-    Test handling of AI conversion failures.
-
-    This test verifies that appropriate errors are raised when AI conversion fails.
-    """
-    # Create a CalledProcessError instance directly
+    """Test handling of AI conversion failures."""
     mock_subprocess.run.side_effect = subprocess.CalledProcessError(1, "gs")
     mock_os.path.exists.return_value = True
 
-    with pytest.raises(subprocess.CalledProcessError):
+    with pytest.raises(ValueError) as exc_info:
         convert_to_pil_image("test.ai")
+    assert "Failed to convert or open image" in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
@@ -529,5 +531,51 @@ def test_convert_to_pil_image_with_zero_byte_file(mock_os):
 
     with patch("PIL.Image.open") as mock_open:
         mock_open.side_effect = UnidentifiedImageError("cannot identify image file")
-        with pytest.raises(UnidentifiedImageError):
+        with pytest.raises(ValueError) as exc_info:
             convert_to_pil_image("empty.jpg")
+        assert "Failed to open image" in str(exc_info.value)
+
+
+class TestObjectDetection(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def create_test_image(self, size=(15000, 12000)):
+        """Helper to create a test image file."""
+        img_path = os.path.join(self.test_dir, "test.png")
+        img = np.zeros((size[1], size[0], 3), dtype=np.uint8)
+        cv2.imwrite(img_path, img)
+        return img_path
+
+    def test_scale_down_large_image(self):
+        """Test that large images are properly scaled down."""
+        original_path = self.create_test_image((15000, 12000))
+
+        scaled_path = scale_down_large_image(original_path)
+
+        self.assertNotEqual(original_path, scaled_path)
+        self.assertTrue(os.path.exists(scaled_path))
+
+        # Check dimensions of scaled image
+        img = cv2.imread(scaled_path)
+        height, width = img.shape[:2]
+        self.assertLess(width * height, 178956970)
+
+        # Check aspect ratio
+        original_ratio = 15000 / 12000
+        scaled_ratio = width / height
+        self.assertAlmostEqual(original_ratio, scaled_ratio, places=2)
+
+    def test_small_image_not_scaled(self):
+        """Test that small images are not scaled."""
+        original_path = self.create_test_image((800, 600))
+        scaled_path = scale_down_large_image(original_path)
+
+        self.assertEqual(original_path, scaled_path)
+
+        img = cv2.imread(scaled_path)
+        height, width = img.shape[:2]
+        self.assertEqual((width, height), (800, 600))
