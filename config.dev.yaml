@@ -261,6 +261,7 @@ default: &default
                   {
                       "panel_label": "A",
                       "panel_sd_files": ['suppl_data/figure_1.zip:A/A_1.csv', 'suppl_data/figure_1.zip:A/A_2.csv', 'suppl_data/figure_1.zip:A/A_3.csv'],
+                  },
                   {
                     "panel_label": "B",
                     panel_sd_files: ['suppl_data/figure_1.zip:B/B_1.csv', 'suppl_data/figure_1.zip:B/B_2.csv', 'suppl_data/figure_1.zip:B/B_3.csv'],

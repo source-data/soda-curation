@@ -2,7 +2,6 @@
 
 import os
 from enum import Enum
-from pathlib import Path
 from typing import Any, Dict
 
 import yaml
@@ -43,15 +42,11 @@ class ConfigurationLoader:
     def _load_environment(self) -> None:
         """Load environment variables from appropriate .env file."""
         env_file = f".env.{self.environment}"
-        if not Path(env_file).exists():
-            raise FileNotFoundError(
-                f"{env_file} not found. Please create it from the template."
-            )
 
         load_dotenv(env_file)
 
         # Validate required environment variables
-        required_vars = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "MODEL_PROVIDER"]
+        required_vars = ["OPENAI_API_KEY"]
 
         missing_vars = [var for var in required_vars if not os.getenv(var)]
         if missing_vars:
