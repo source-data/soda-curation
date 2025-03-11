@@ -100,18 +100,20 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
             # Assign panel source
             panel_source_assigner = PanelSourceAssignerOpenAI(
-                config_loader.config, prompt_handler
+                config_loader.config, prompt_handler, extractor.manuscript_extract_dir
             )
             # Pass only
             processed_figures = panel_source_assigner.assign_panel_source(
-                zip_structure  # Pass figures list instead of whole structure
+                zip_structure,  # Pass figures list instead of whole structure
             )
             # Preserve all ZipStructure data while updating figures
             zip_structure.figures = processed_figures
 
             # Match panels with captions using object detection
             panel_matcher = MatchPanelCaptionOpenAI(
-                config_loader.config, prompt_handler
+                config=config_loader.config,
+                prompt_handler=prompt_handler,
+                extract_dir=extractor.manuscript_extract_dir,  # Pass the manuscript-specific directory
             )
             _ = panel_matcher.process_figures(zip_structure)
 

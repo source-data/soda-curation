@@ -53,13 +53,13 @@ def temp_extract_dir(tmp_path):
 
 
 @pytest.fixture
-def create_test_zip():
-    """Create a test ZIP file with specified structure."""
+def create_test_zip(tmp_path):
+    """Create a test ZIP file with required structure."""
 
     def _create_zip(include_files=None):
         """Create test ZIP with specific content."""
         include_files = include_files or {"docx", "pdf", "figures", "source_data"}
-        zip_path = Path("/tmp") / f"{MANUSCRIPT_ID}.zip"
+        zip_path = tmp_path / f"{MANUSCRIPT_ID}.zip"
 
         with zipfile.ZipFile(zip_path, "w") as zf:
             # Create XML content with all figures and appropriate source data
@@ -73,7 +73,7 @@ def create_test_zip():
                     </front>
                     <notes>
                         <doc object-type="Manuscript Text">
-                            <object_id>{MANUSCRIPT_ID}/Doc/{MANUSCRIPT_ID}Manuscript_TextIG.docx</object_id>
+                            <object_id>Doc/{MANUSCRIPT_ID}Manuscript_TextIG.docx</object_id>
                         </doc>"""
             ]
 
@@ -105,15 +105,13 @@ def create_test_zip():
             """
             )
 
-            # Write XML to ZIP
-            xml_content = "".join(xml_parts)
-            zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+            # Add XML file
+            zf.writestr(f"{MANUSCRIPT_ID}.xml", "".join(xml_parts))
 
-            # Add DOCX if requested
+            # Add DOCX file in correct structure
             if "docx" in include_files:
                 zf.writestr(
-                    f"{MANUSCRIPT_ID}/Doc/{MANUSCRIPT_ID}Manuscript_TextIG.docx",
-                    "docx content",
+                    f"Doc/{MANUSCRIPT_ID}Manuscript_TextIG.docx", "test content"
                 )
 
             # Add figures if requested
@@ -251,6 +249,34 @@ def test_docx_path_mismatch(temp_extract_dir, create_test_zip):
         extractor.extract_structure()
 
 
+def test_extract_docx_content(temp_extract_dir, create_test_zip):
+    """Test DOCX content extraction with manuscript ID directory structure."""
+    zip_path = create_test_zip()
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    # Get the DOCX path from structure
+    docx_path = structure.docx
+
+    # Mock pypandoc.convert_file to avoid actual conversion
+    with patch("pypandoc.convert_file", return_value="<html>test content</html>"):
+        content = extractor.extract_docx_content(docx_path)
+        assert content == "<html>test content</html>"
+
+    # Verify the file exists in the manuscript directory
+    full_path = extractor.manuscript_extract_dir / docx_path
+    assert full_path.exists()
+
+
+def test_extract_docx_content_not_found(temp_extract_dir, create_test_zip):
+    """Test error handling when DOCX file is not found."""
+    zip_path = create_test_zip()
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+
+    with pytest.raises(NoManuscriptFileError, match="DOCX file not found"):
+        extractor.extract_docx_content("nonexistent.docx")
+
+
 def test_complete_structure(temp_extract_dir, create_test_zip):
     """Test extraction of complete valid structure."""
     zip_path = create_test_zip()
@@ -332,7 +358,7 @@ def test_extraction_preserves_manuscript_structure(temp_extract_dir, create_test
     # Verify file contents
     assert (
         manuscript_dir / "Doc" / f"{MANUSCRIPT_ID}Manuscript_TextIG.docx"
-    ).read_text() == "docx content"
+    ).read_text() == "test content"  # Changed from "docx content" to "test content"
 
     # Check XML was properly handled
     assert extractor.manuscript_id == MANUSCRIPT_ID
@@ -379,7 +405,7 @@ class TestManuscriptXMLParser(unittest.TestCase):
         self.parser = XMLStructureExtractor(zip_path, extract_dir)
 
     def test_extract_source_data_files(self):
-        # Mock XML content for testing - using real XML structure
+        """Test extraction of source data files from XML."""
         xml_content = """
         <article>
             <notes>
@@ -401,17 +427,99 @@ class TestManuscriptXMLParser(unittest.TestCase):
             </notes>
         </article>
         """
-        # Parse the test XML content and ensure it's set as the main XML content
         self.parser.xml_content = etree.fromstring(xml_content)
 
-        # Verify the XML content is what we expect
-        print(etree.tostring(self.parser.xml_content, pretty_print=True).decode())
-
-        # Now test the method
+        # Test the method
         source_data_files = self.parser._get_source_data_files("Figure 1")
 
-        expected_files = [
-            "EMM-2023-18636/suppl_data/Figure 1.zip",
-            "EMBOR-2023-58706-T/suppl_data/Fig1.zip",
-        ]
+        # Expected cleaned paths (without manuscript ID)
+        expected_files = ["suppl_data/Figure 1.zip", "suppl_data/Fig1.zip"]
+
         self.assertEqual(sorted(source_data_files), sorted(expected_files))
+
+    def test_clean_path_handles_different_manuscript_ids(self):
+        """Test that _clean_path removes different manuscript ID formats."""
+        test_cases = [
+            ("EMM-2023-18636/suppl_data/Figure 1.zip", "suppl_data/Figure 1.zip"),
+            ("EMBOR-2023-58706-T/suppl_data/Fig1.zip", "suppl_data/Fig1.zip"),
+            ("MSB-2024-12345/graphic/Figure 2.tif", "graphic/Figure 2.tif"),
+            ("suppl_data/Figure 1.zip", "suppl_data/Figure 1.zip"),  # No manuscript ID
+            ("", ""),  # Empty path
+        ]
+
+        for input_path, expected_output in test_cases:
+            cleaned = self.parser._clean_path(input_path)
+            self.assertEqual(
+                cleaned,
+                expected_output,
+                f"Failed to clean path correctly. Input: {input_path}, Expected: {expected_output}, Got: {cleaned}",
+            )
+
+
+def test_path_handling(temp_extract_dir, create_test_zip):
+    """Test both extraction structure and output paths."""
+    zip_path = create_test_zip()
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    # Test extraction structure
+    manuscript_dir = temp_extract_dir / MANUSCRIPT_ID
+    assert manuscript_dir.exists()
+    assert (manuscript_dir / "Doc").exists()
+    assert (manuscript_dir / "graphic").exists()
+
+    # Test output paths don't have manuscript ID
+    assert not structure.docx.startswith(f"{MANUSCRIPT_ID}/")
+    assert all(
+        not f.img_files[0].startswith(f"{MANUSCRIPT_ID}/") for f in structure.figures
+    )
+
+    # Test file access works
+    docx_path = extractor.get_full_path(structure.docx)
+    assert docx_path.exists()
+    assert docx_path == manuscript_dir / structure.docx
+
+
+def test_source_data_paths_cleaned(temp_extract_dir, create_test_zip):
+    """Test that source data file paths don't include manuscript ID prefix."""
+    zip_path = create_test_zip()
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    # Test source data paths in figures
+    for figure in structure.figures:
+        for sd_file in figure.sd_files:
+            # Check that the path doesn't start with manuscript ID
+            assert not sd_file.startswith(f"{MANUSCRIPT_ID}/")
+            # But the file should exist in the manuscript directory
+            full_path = extractor.get_full_path(sd_file)
+            assert full_path.exists()
+
+
+def test_path_cleaning(temp_extract_dir, create_test_zip):
+    """Test that paths are properly cleaned of manuscript ID."""
+    zip_path = create_test_zip()
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    # Test figure paths
+    for figure in structure.figures:
+        # Check image files
+        for img_file in figure.img_files:
+            assert not img_file.startswith(f"{MANUSCRIPT_ID}/")
+            assert img_file.startswith("graphic/")
+            # Verify file exists in manuscript directory
+            full_path = extractor.manuscript_extract_dir / img_file
+            assert full_path.exists()
+
+        # Check source data files
+        for sd_file in figure.sd_files:
+            assert not sd_file.startswith(f"{MANUSCRIPT_ID}/")
+            assert sd_file.startswith("suppl_data/")
+            # Verify file exists in manuscript directory
+            full_path = extractor.manuscript_extract_dir / sd_file
+            assert full_path.exists()
+
+    # Test DOCX path
+    assert not structure.docx.startswith(f"{MANUSCRIPT_ID}/")
+    assert structure.docx.startswith("Doc/")

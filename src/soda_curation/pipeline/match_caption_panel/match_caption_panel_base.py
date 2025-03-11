@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 from PIL import Image
 from pydantic import BaseModel
 
+from ...pipeline.prompt_handler import PromptHandler
 from ..manuscript_structure.manuscript_structure import Panel, ZipStructure
 from .object_detection import convert_to_pil_image, create_object_detection
 
@@ -23,9 +24,15 @@ class PanelObject(BaseModel):
 
 
 class MatchPanelCaption(ABC):
-    def __init__(self, config: Dict[str, Any], prompt_handler: Any):
+    def __init__(
+        self, config: Dict[str, Any], prompt_handler: PromptHandler, extract_dir: Path
+    ):
+        """Initialize with configuration."""
         self.config = config
         self.prompt_handler = prompt_handler
+        self.extract_dir = Path(
+            extract_dir
+        )  # This is now the manuscript-specific directory
         self._validate_config()
         # Initialize object detector using the create_object_detection helper
         self.object_detector = create_object_detection(config)
@@ -43,10 +50,10 @@ class MatchPanelCaption(ABC):
                 original_panels = {panel.panel_label: panel for panel in figure.panels}
 
                 # Convert figure file to PIL Image
-                full_path = str(
-                    Path(self.config.get("extraction_dir")) / figure.img_files[0]
-                )
-                image, _ = convert_to_pil_image(full_path)
+                full_path = self.extract_dir / figure.img_files[0]
+                if not full_path.exists():
+                    raise FileNotFoundError(f"File not found: {full_path}")
+                image, _ = convert_to_pil_image(str(full_path))
 
                 # Get only bounding boxes from detection
                 detected_regions = self.object_detector.detect_panels(image)

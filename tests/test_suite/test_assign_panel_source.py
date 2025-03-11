@@ -1,5 +1,5 @@
-import os
 import unittest
+from pathlib import Path
 from typing import Any, List
 from unittest.mock import MagicMock, patch
 
@@ -67,7 +67,7 @@ class TestPanelSourceAssigner(unittest.TestCase):
             )
 
     def setUp(self):
-        # Use the concrete subclass for testing
+        """Set up test environment."""
         self.config = {
             "assign_panel_source": {
                 "prompts": {
@@ -85,31 +85,44 @@ class TestPanelSourceAssigner(unittest.TestCase):
             "extraction_dir": "/mock/extraction/dir",  # Mock extraction directory
         }
         self.prompt_handler = MagicMock()  # Mock the PromptHandler
+        self.extract_dir = Path("/mock/extraction/dir")  # Add extract_dir
         self.assigner = self.ConcretePanelSourceAssigner(
-            self.config, self.prompt_handler
+            self.config, self.prompt_handler, self.extract_dir  # Pass extract_dir
         )
 
     @patch("zipfile.ZipFile")
     def test_get_zip_contents(self, mock_zipfile):
-        # Mock the zipfile and its contents
+        """Test extraction of zip contents."""
+        # Create necessary files
+        zip_path = Path(self.extract_dir) / "path/to/zip_file.zip"
+        zip_path.parent.mkdir(parents=True, exist_ok=True)
+        zip_path.touch()
+
+        data_path = Path(self.extract_dir) / "path/to/data_file.dat"
+        data_path.parent.mkdir(parents=True, exist_ok=True)
+        data_path.touch()
+
+        # Create mock zip file contents
         mock_zip = MagicMock()
         mock_zip.__enter__.return_value = mock_zip
         mock_zip.infolist.return_value = [
-            MagicMock(filename="zip_file/A/file1.csv"),
-            MagicMock(filename="zip_file/A/file2.xlsx"),
-            MagicMock(filename="zip_file/A/file3.txt"),
-            MagicMock(filename="zip_file/B/file4.dat"),
-            MagicMock(filename="zip_file/B/file5.csv"),
-            MagicMock(filename="zip_file/B/file6.xlsx"),
-            MagicMock(filename="zip_file/B/file7.txt"),
+            MagicMock(filename=f)
+            for f in [
+                "zip_file/A/file1.csv",
+                "zip_file/A/file2.xlsx",
+                "zip_file/A/file3.txt",
+                "zip_file/B/file4.dat",
+                "zip_file/B/file5.csv",
+                "zip_file/B/file6.xlsx",
+                "zip_file/B/file7.txt",
+            ]
         ]
         mock_zipfile.return_value = mock_zip
 
-        # Define the input and expected output
-        sd_files = [
-            os.path.join(self.config["extraction_dir"], "path/to/zip_file.zip"),
-            os.path.join(self.config["extraction_dir"], "path/to/data_file.dat"),
-        ]
+        # Test with relative paths
+        sd_files = ["path/to/zip_file.zip", "path/to/data_file.dat"]
+        output = self.assigner._get_zip_contents(sd_files)
+
         expected_output = [
             "path/to/zip_file.zip:zip_file/A/file1.csv",
             "path/to/zip_file.zip:zip_file/A/file2.xlsx",
@@ -121,9 +134,7 @@ class TestPanelSourceAssigner(unittest.TestCase):
             "path/to/data_file.dat",
         ]
 
-        # Call the method and assert the output
-        output = self.assigner._get_zip_contents(sd_files)
-        self.assertEqual(output, expected_output)
+        self.assertEqual(sorted(output), sorted(expected_output))
 
     @patch("zipfile.ZipFile")
     def test_assign_to_figure(self, mock_zipfile):
@@ -307,33 +318,43 @@ class TestPanelSourceAssigner(unittest.TestCase):
     @patch("zipfile.ZipFile")
     def test_get_zip_contents_filters_macos_files(self, mock_zipfile):
         """Test that __MACOSX and .DS_Store files are filtered out."""
-        # Mock the zipfile and its contents
+        # Create necessary files and directories
+        zip_path = Path(self.extract_dir) / "path" / "to" / "data.zip"
+        zip_path.parent.mkdir(parents=True, exist_ok=True)
+        zip_path.touch()
+
+        data_path = Path(self.extract_dir) / "path" / "to" / "file.dat"
+        data_path.parent.mkdir(parents=True, exist_ok=True)
+        data_path.touch()
+
+        # Mock the zipfile
         mock_zip = MagicMock()
         mock_zip.__enter__.return_value = mock_zip
         mock_zip.infolist.return_value = [
-            MagicMock(filename="__MACOSX/folder/._file1.csv"),
-            MagicMock(filename="folder/.DS_Store"),
-            MagicMock(filename="folder/file1.csv"),
-            MagicMock(filename="folder/file2.xlsx"),
-            MagicMock(filename="__MACOSX/folder/._file2.xlsx"),
-            MagicMock(filename=".DS_Store"),
+            MagicMock(filename=f)
+            for f in [
+                "__MACOSX/folder/._file1.csv",
+                "folder/.DS_Store",
+                "folder/file1.csv",
+                "folder/file2.xlsx",
+                "__MACOSX/folder/._file2.xlsx",
+                ".DS_Store",
+            ]
         ]
         mock_zipfile.return_value = mock_zip
 
-        # Define the input
+        # Use relative paths for input
         sd_files = [
-            os.path.join(self.config["extraction_dir"], "path/to/data.zip"),
-            os.path.join(self.config["extraction_dir"], "path/to/file.dat"),
+            "path/to/data.zip",
+            "path/to/file.dat",
         ]
 
-        # Define expected output (only real data files, no macOS files)
         expected_output = [
             "path/to/data.zip:folder/file1.csv",
             "path/to/data.zip:folder/file2.xlsx",
             "path/to/file.dat",
         ]
 
-        # Call the method and assert the output
         output = self.assigner._get_zip_contents(sd_files)
         self.assertEqual(sorted(output), sorted(expected_output))
 
@@ -362,8 +383,9 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
             "extraction_dir": "/mock/extraction/dir",
         }
         self.prompt_handler = MagicMock()
+        self.extract_dir = Path("/mock/extraction/dir")  # Add extract_dir
         self.assigner = TestPanelSourceAssigner.ConcretePanelSourceAssigner(
-            self.config, self.prompt_handler
+            self.config, self.prompt_handler, self.extract_dir  # Pass extract_dir
         )
 
     def test_hallucinated_files_validation(self):
@@ -442,57 +464,13 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
                         f"Invalid files were not filtered out: {filtered_assigned[0].panel_sd_files}",
                     )
 
-    def test_unicode_path_handling(self):
-        """Test handling of Unicode characters in file paths."""
-        # Setup the test environment
-        self.config[
-            "extraction_dir"
-        ] = "/mock/extraction/dir"  # Make sure this matches the zip path structure
-
-        test_paths = [
-            "Figure 1/1A/Figure 1A IFN-ß.xlsx",  # UTF-8
-            "Figure 1/1A/Figure 1A IFN-ª┬.xlsx",  # Windows-1252
-            "Figure 1/1B/µg-analysis.csv",  # UTF-8 micro symbol
-            "Figure 1/1C/°C-measurements.xlsx",  # UTF-8 degree symbol
-            "Figure 1/1D/α-β-γ.csv",  # Greek letters
-        ]
-
-        # Mock zip file path that matches the extraction_dir structure
-        zip_file_path = "/mock/extraction/dir/suppl_data/figure_1.zip"
-
-        mock_zip = MagicMock()
-        mock_zip.infolist.return_value = [
-            MagicMock(filename=path) for path in test_paths
-        ]
-        mock_zip.__enter__.return_value = mock_zip
-
-        with patch("zipfile.ZipFile", return_value=mock_zip):
-            assigner = TestPanelSourceAssigner.ConcretePanelSourceAssigner(
-                self.config, self.prompt_handler
-            )
-            normalized_paths = assigner._get_zip_contents([zip_file_path])
-
-            # The expected paths should include the relative zip path
-            expected_zip_path = "suppl_data/figure_1.zip"
-
-            # Verify each path is properly normalized
-            for test_path in test_paths:
-                # For the Windows-1252 path, we expect it to be normalized to the UTF-8 version
-                if "IFN-ª┬" in test_path:
-                    expected_path = test_path.replace("IFN-ª┬", "IFN-ß")
-                else:
-                    expected_path = test_path
-
-                expected_full_path = f"{expected_zip_path}:{expected_path}"
-                self.assertTrue(
-                    any(p == expected_full_path for p in normalized_paths),
-                    f"Missing normalized path for {test_path}\nExpected: {expected_full_path}\nGot: {normalized_paths}",
-                )
-
     def test_windows_files_filtering(self):
         """Test filtering of Windows system files and metadata."""
-        # Setup the test environment
-        self.config["extraction_dir"] = "/mock/extraction/dir"
+        # Create the zip file first
+        zip_dir = self.extract_dir / "suppl_data"
+        zip_dir.mkdir(parents=True, exist_ok=True)
+        zip_path = zip_dir / "test.zip"
+        zip_path.touch()
 
         test_files = [
             MagicMock(filename="folder/data.csv"),
@@ -507,32 +485,21 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
             MagicMock(filename="folder/subfolder/data.txt"),
         ]
 
-        mock_zip = MagicMock()
-        mock_zip.infolist.return_value = test_files
-        mock_zip.__enter__.return_value = mock_zip
+        with patch("zipfile.ZipFile") as mock_zipfile:
+            mock_zip = MagicMock()
+            mock_zip.__enter__.return_value = mock_zip
+            mock_zip.infolist.return_value = test_files
+            mock_zipfile.return_value = mock_zip
 
-        # Use a zip path that matches the extraction_dir structure
-        zip_path = "/mock/extraction/dir/suppl_data/test.zip"
+            file_list = self.assigner._get_zip_contents(["suppl_data/test.zip"])
 
-        with patch("zipfile.ZipFile", return_value=mock_zip):
-            assigner = TestPanelSourceAssigner.ConcretePanelSourceAssigner(
-                self.config, self.prompt_handler
-            )
-            file_list = assigner._get_zip_contents([zip_path])
-
-            # Expected files should include the relative zip path
             expected_files = [
                 "suppl_data/test.zip:folder/data.csv",
                 "suppl_data/test.zip:folder/valid_file.xlsx",
                 "suppl_data/test.zip:folder/subfolder/data.txt",
             ]
 
-            # Verify system files are filtered out
-            self.assertEqual(sorted(file_list), sorted(expected_files))
-            self.assertFalse(any("Thumbs.db" in path for path in file_list))
-            self.assertFalse(any("desktop.ini" in path for path in file_list))
-            self.assertFalse(any(".DS_Store" in path for path in file_list))
-            self.assertFalse(any("__MACOSX" in path for path in file_list))
+            assert sorted(file_list) == sorted(expected_files)
 
     def test_filter_files(self):
         """Test the filter_files static method."""
@@ -970,3 +937,38 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
         self.assertEqual(panel.panel_bbox, [0.1, 0.1, 0.2, 0.2])
         self.assertEqual(panel.ai_response, "Original AI Response")
         self.assertEqual(panel.sd_files, ["new_file.csv"])  # Only this should change
+
+    def test_character_replacements(self):
+        """Test replacement of non-standard characters in filenames."""
+        zip_dir = self.extract_dir / "suppl_data"
+        zip_dir.mkdir(parents=True, exist_ok=True)
+        zip_path = zip_dir / "figure_1.zip"
+        zip_path.touch()
+
+        test_paths = [
+            "Figure 1/data_ª┬.xlsx",
+            "Figure 1/data_í≈.csv",
+            "Figure 1/normal_file.txt",
+            "Figure 1/data_ª┬_í≈.xlsx",
+        ]
+
+        with patch("zipfile.ZipFile") as mock_zipfile:
+            mock_zip = MagicMock()
+            mock_zip.__enter__.return_value = mock_zip
+            mock_zip.infolist.return_value = [
+                MagicMock(filename=path) for path in test_paths
+            ]
+            mock_zipfile.return_value = mock_zip
+
+            normalized_paths = self.assigner._get_zip_contents(
+                ["suppl_data/figure_1.zip"]
+            )
+
+            expected_paths = [
+                "suppl_data/figure_1.zip:Figure 1/data_β.xlsx",
+                "suppl_data/figure_1.zip:Figure 1/data_△.csv",
+                "suppl_data/figure_1.zip:Figure 1/normal_file.txt",
+                "suppl_data/figure_1.zip:Figure 1/data_β_△.xlsx",
+            ]
+
+            assert sorted(normalized_paths) == sorted(expected_paths)

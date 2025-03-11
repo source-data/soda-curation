@@ -46,8 +46,6 @@ class XMLStructureExtractor:
         """
         self.zip_path = zip_path
         self.extract_dir = Path(extract_dir)
-
-        # Create extraction directory
         self.extract_dir.mkdir(parents=True, exist_ok=True)
 
         # First extract just the XML to get manuscript ID
@@ -59,9 +57,11 @@ class XMLStructureExtractor:
 
             # Get manuscript ID from XML filename
             self.manuscript_id = Path(xml_file).stem
-            manuscript_dir = self.extract_dir / self.manuscript_id
-            manuscript_dir.mkdir(parents=True, exist_ok=True)
-            logger.info(f"Created manuscript directory: {manuscript_dir}")
+
+            # Create manuscript-specific extraction directory
+            self.manuscript_extract_dir = self.extract_dir / self.manuscript_id
+            self.manuscript_extract_dir.mkdir(parents=True, exist_ok=True)
+            logger.info(f"Created manuscript directory: {self.manuscript_extract_dir}")
 
             # Extract XML first to get content
             zip_ref.extract(xml_file, self.extract_dir)
@@ -72,11 +72,9 @@ class XMLStructureExtractor:
 
             # Now extract everything to manuscript_id subdirectory
             for item in zip_ref.namelist():
-                # Skip XML file as we already extracted it
-                if item == xml_file:
+                if item == xml_file:  # Skip XML as already extracted
                     continue
 
-                # Extract other files to manuscript_id subdirectory
                 if not item.endswith("/"):  # Skip directories
                     # Remove manuscript ID prefix if it exists
                     item_path = Path(item)
@@ -86,7 +84,7 @@ class XMLStructureExtractor:
                         relative_path = item_path
 
                     # Extract to manuscript_id subdirectory
-                    target_path = manuscript_dir / relative_path
+                    target_path = self.manuscript_extract_dir / relative_path
                     target_path.parent.mkdir(parents=True, exist_ok=True)
 
                     # Extract file
@@ -95,7 +93,7 @@ class XMLStructureExtractor:
                     ) as target:
                         shutil.copyfileobj(source, target)
 
-            logger.info(f"Extracted contents to {manuscript_dir}")
+            logger.info(f"Extracted contents to {self.manuscript_extract_dir}")
 
     def _extract_xml_content(self) -> etree._Element:
         """Extract and parse XML content."""
@@ -120,7 +118,7 @@ class XMLStructureExtractor:
         Get the DOCX manuscript file path from XML and verify it exists in ZIP.
 
         Returns:
-            str: Path to DOCX file as referenced in XML (with manuscript ID prefix)
+            str: Path to DOCX file as referenced in XML (without manuscript ID prefix)
 
         Raises:
             NoManuscriptFileError: If DOCX file is not found or there's a mismatch
@@ -149,8 +147,8 @@ class XMLStructureExtractor:
             raise NoManuscriptFileError("No DOCX file referenced in XML")
 
         # Verify DOCX exists in extracted ZIP content
-        full_path = os.path.join(self.extract_dir, docx_path)
-        if not os.path.exists(full_path):
+        full_path = self.manuscript_extract_dir / docx_path
+        if not full_path.exists():
             # For test differentiation - if path contains unexpected structure, it's a path mismatch
             if any(x in docx_path for x in ["wrong/path", "incorrect"]):
                 raise NoManuscriptFileError(
@@ -159,31 +157,32 @@ class XMLStructureExtractor:
             # Otherwise, file is referenced but missing
             raise NoManuscriptFileError("DOCX file referenced in XML not found in ZIP")
 
-        return raw_path  # Return the original path from XML
+        return docx_path  # Return the cleaned path instead of raw_path
 
     def _get_source_data_files(self, figure_label: str) -> List[str]:
-        """Get source data files for a specific figure."""
-        # Extract the figure number
-        figure_num = "".join(filter(str.isdigit, figure_label))
+        """Get source data files associated with a figure."""
+        source_data_files = []
 
-        # Build XPath for source data elements
-        xpath_query = f"//form[@object-type='Figure Source Data Files'][contains(label, '{figure_num}')]"
+        # Normalize figure label by removing spaces
+        figure_number = figure_label.replace("Figure ", "").strip()
 
-        sd_files = self.xml_content.xpath(xpath_query)
-
-        # Also check for associated datasets
-        dataset_query = " | ".join(
-            [f"//form[@object-type='{type}']" for type in self.DATA_SET_TYPES]
+        # Find all source data files for this figure using form elements
+        # Match both "Figure X" and "FigureX" formats
+        xpath_query = (
+            f"//form[@object-type='Figure Source Data Files']"
+            f"[contains(translate(label, ' ', ''), 'Figure{figure_number}') or "
+            f"contains(translate(label, ' ', ''), 'Fig{figure_number}')]"
         )
-        dataset_files = self.xml_content.xpath(dataset_query)
 
-        files = []
-        if sd_files:
-            files.extend([sd.xpath(".//object_id")[0].text for sd in sd_files])
-        if dataset_files:
-            files.extend([ds.xpath(".//object_id")[0].text for ds in dataset_files])
+        for sd_element in self.xml_content.xpath(xpath_query):
+            object_id = sd_element.xpath(".//object_id")
+            if object_id:
+                # Clean the path to remove manuscript ID prefix
+                raw_path = object_id[0].text
+                cleaned_path = self._clean_path(raw_path)
+                source_data_files.append(cleaned_path)
 
-        return files
+        return source_data_files
 
     def _get_appendix(self) -> List[str]:
         """Get list of appendix files."""
@@ -196,11 +195,37 @@ class XMLStructureExtractor:
         )
 
         appendix = self.xml_content.xpath(xpath_query)
-        return [app.xpath(".//object_id")[0].text for app in appendix]
+        return [self._clean_path(app.xpath(".//object_id")[0].text) for app in appendix]
 
     def _clean_path(self, path: str) -> str:
-        """Clean file path without removing manuscript ID prefix."""
-        return path
+        """Clean path by removing any manuscript ID prefix and normalizing separators."""
+        if not path:
+            return path
+
+        # Split path into parts
+        parts = Path(path).parts
+
+        # If first part looks like a manuscript ID (contains hyphen and numbers), remove it
+        if parts and (
+            parts[0] == self.manuscript_id  # Exact match
+            or (  # Or general manuscript ID pattern
+                "-" in parts[0]  # Contains hyphen
+                and any(c.isdigit() for c in parts[0])  # Contains numbers
+            )
+        ):
+            parts = parts[1:]
+
+        # Rejoin path parts
+        cleaned_path = str(Path(*parts))
+
+        # Ensure forward slashes
+        cleaned_path = cleaned_path.replace("\\", "/")
+
+        return cleaned_path
+
+    def get_full_path(self, relative_path: str) -> Path:
+        """Get full path in extraction directory."""
+        return self.manuscript_extract_dir / relative_path
 
     def extract_structure(self) -> ZipStructure:
         """
@@ -246,7 +271,7 @@ class XMLStructureExtractor:
         """Get PDF file path from XML."""
         pdf = self.xml_content.xpath("//merged_pdf[@object-type='Merged PDF']")
         if pdf:
-            return pdf[0].xpath(".//object_id")[0].text
+            return self._clean_path(pdf[0].xpath(".//object_id")[0].text)
         logger.warning("No PDF file found")
         return ""
 
@@ -279,7 +304,8 @@ class XMLStructureExtractor:
 
             # Normalize the figure label
             label = self.normalize_figure_label(raw_label)
-            img_files = [fig.xpath(".//object_id")[0].text]
+            # Clean the image file paths to remove manuscript ID prefix
+            img_files = [self._clean_path(fig.xpath(".//object_id")[0].text)]
             sd_files = self._get_source_data_files(label)
 
             logger.info(f"Processing figure: {label}")
@@ -297,7 +323,8 @@ class XMLStructureExtractor:
     def extract_docx_content(self, docx_path: str) -> str:
         """Extract content from DOCX file."""
         try:
-            full_path = self.extract_dir / docx_path
+            # Use manuscript_extract_dir instead of extract_dir
+            full_path = self.manuscript_extract_dir / docx_path
             if not full_path.exists():
                 raise NoManuscriptFileError(f"DOCX file not found at {full_path}")
 
@@ -305,7 +332,3 @@ class XMLStructureExtractor:
         except Exception as e:
             logger.error(f"Error extracting DOCX content: {str(e)}")
             raise
-
-    def get_full_path(self, relative_path: str) -> Path:
-        """Get full path including manuscript ID directory."""
-        return self.extract_dir / self.manuscript_id / relative_path

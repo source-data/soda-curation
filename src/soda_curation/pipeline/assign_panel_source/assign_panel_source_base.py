@@ -3,6 +3,7 @@ import os
 import re
 import zipfile
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 from pydantic import BaseModel
@@ -29,10 +30,21 @@ logger = logging.getLogger(__name__)
 
 
 class PanelSourceAssigner(ABC):
-    def __init__(self, config: Dict[str, Any], prompt_handler: PromptHandler):
-        self.extraction_dir = config["extraction_dir"]
+    """Base class for assigning source data files to panels."""
+
+    # Add character replacement dictionary
+    CHAR_REPLACEMENTS = {
+        "ª┬": "β",
+        "í≈": "△",
+        # Add more replacements as needed
+    }
+
+    def __init__(
+        self, config: Dict[str, Any], prompt_handler: PromptHandler, extract_dir: Path
+    ):
         self.config = config
         self.prompt_handler = prompt_handler
+        self.extraction_dir = Path(extract_dir)  # Changed from config["extraction_dir"]
         self._validate_config()
         logger.info("PanelSourceAssigner initialized successfully")
 
@@ -44,6 +56,13 @@ class PanelSourceAssigner(ABC):
         if match:
             return match.group(0).rstrip("0123456789")
         return label.upper()
+
+    def _normalize_filename(self, filename: str) -> str:
+        """Normalize filename by replacing non-standard characters."""
+        normalized = filename
+        for old_char, new_char in self.CHAR_REPLACEMENTS.items():
+            normalized = normalized.replace(old_char, new_char)
+        return normalized
 
     @abstractmethod
     def _validate_config(self) -> None:
@@ -130,37 +149,39 @@ class PanelSourceAssigner(ABC):
     def _get_zip_contents(self, sd_files: List[str]) -> List[str]:
         """Extract file list from zip files and return paths in a specific format."""
         extracted_files = []
-        windows_system_files = {"Thumbs.db", "desktop.ini"}
+        # Define system files to filter out
+        system_files = {"Thumbs.db", "desktop.ini", ".DS_Store"}
 
         for file_path in sd_files:
-            if file_path.endswith(".zip"):
-                with zipfile.ZipFile(file_path, "r") as zip_ref:
+            full_path = self.extraction_dir / file_path
+            if not full_path.exists():
+                logger.warning(f"Source data file not found: {full_path}")
+                continue
+
+            if str(full_path).endswith(".zip"):
+                with zipfile.ZipFile(full_path, "r") as zip_ref:
                     for file_info in zip_ref.infolist():
-                        # Skip directories, macOS metadata, and Windows system files
                         filename = file_info.filename
+
+                        # Skip if any of these conditions are met
                         if (
                             filename.endswith("/")
-                            or "__MACOSX" in filename
-                            or ".DS_Store" in filename
-                            or any(wsf in filename for wsf in windows_system_files)
-                        ):
+                            or "__MACOSX" in filename  # Directory
+                            or any(  # macOS metadata
+                                sf in filename for sf in system_files
+                            )
+                            or filename.startswith(".")  # System files
+                        ):  # Hidden files
                             continue
 
-                        # Normalize Unicode characters
-                        try:
-                            filename = filename.encode("cp1252").decode("utf-8")
-                        except (UnicodeEncodeError, UnicodeDecodeError):
-                            # If encoding fails, keep original filename
-                            pass
-
-                        # Construct the path format
-                        zip_relative_path = os.path.relpath(
-                            file_path, self.extraction_dir
+                        # Normalize the filename
+                        normalized_filename = self._normalize_filename(filename)
+                        relative_path = (
+                            Path(full_path).relative_to(self.extraction_dir).as_posix()
                         )
-                        extracted_files.append(f"{zip_relative_path}:{filename}")
+                        extracted_files.append(f"{relative_path}:{normalized_filename}")
             else:
-                # Non-zip files are added directly
-                extracted_files.append(os.path.relpath(file_path, self.extraction_dir))
+                extracted_files.append(file_path)
 
         return extracted_files
 

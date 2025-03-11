@@ -7,6 +7,7 @@ matching them based on the visual content and the full figure caption.
 """
 
 import logging
+from pathlib import Path
 from typing import Any, Dict
 
 import openai
@@ -33,8 +34,8 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         extract_dir (str): Directory containing extracted files from the ZIP archive.
     """
 
-    def __init__(self, config: Dict[str, Any], prompt_handler: Any):
-        super().__init__(config, prompt_handler)
+    def __init__(self, config: Dict[str, Any], prompt_handler: Any, extract_dir: Path):
+        super().__init__(config, prompt_handler, extract_dir)
 
         # Initialize OpenAI client
         self.client = openai.OpenAI()

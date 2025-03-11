@@ -1,6 +1,6 @@
 import json
 import logging
-import os
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import openai
@@ -18,16 +18,12 @@ logger = logging.getLogger(__name__)
 
 
 class PanelSourceAssignerOpenAI(PanelSourceAssigner):
-    def __init__(self, config: Dict[str, Any], prompt_handler: PromptHandler):
+    def __init__(
+        self, config: Dict[str, Any], prompt_handler: PromptHandler, extract_dir: Path
+    ):
         """Initialize with OpenAI configuration."""
-        super().__init__(config, prompt_handler)
-
-        # Initialize OpenAI client
-        api_key = os.environ.get("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY environment variable is not set")
-
-        self.client = openai.OpenAI(api_key=api_key)
+        super().__init__(config, prompt_handler, extract_dir)
+        self.client = openai.OpenAI()
 
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
