@@ -52,64 +52,50 @@ soda-curation is a professional Python package for automated data curation of sc
    Using environment variables is the recommended way to store sensitive information like API keys:
 
     ```
-    # .env.dev for development
-    # .env.test for testing
-    # .env.prod for production
-
     OPENAI_API_KEY=your_openai_key
-    ANTHROPIC_API_KEY=your_anthropic_key # Currently we use OpenAI
     ENVIRONMENT=test  # or dev or prod
-    MODEL_PROVIDER=openai  # or anthropic, currently we use OpenAI
     ```
 
 ## Configuration
 
-The configuration system supports different environments (dev, test, prod) with environment-specific settings. Configuration is managed through YAML files and environment variables.
+The configuration system uses a flexible, hierarchical approach supporting different environments (dev, test, prod) with environment-specific settings. Configuration is managed through:
+
+1. YAML files for general settings
+2. Environment variables for sensitive information
+3. Command-line arguments for runtime options
 
 ### Configuration Files Structure
 The configuration files follow this structure:
 
 ```yaml
 default: &default
-  # General settings
-  debug:
-    enabled: false
-    debug_dir: logs/debug
-    process_first_figure_only: false
-
-  # Provider-specific base configurations
-  providers:
-    openai: &openai_base
-      temperature: 0.3
-      top_p: 1.0
-      max_tokens: 2048
-      
-    anthropic: &anthropic_base
-      temperature: 0.3
-      top_p: 1.0
-      max_tokens_to_sample: 8192
-      top_k: 128
-
   # Pipeline step configurations
   pipeline:
     assign_panel_source:
       openai:
-        <<: *openai_base
-        model: gpt-4
-        system_prompt: "system prompt for panel source assignment"
+        # OpenAI-specific parameters for this step only
+        model: gpt-4o
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            Your prompt goes here
+            In a multi line fassion
+          user: | 
+            The user prompt goes here
 
-    extract_captions:
-      openai:
-        <<: *openai_base
-        model: gpt-4
-        system_prompt: "system prompt for caption extraction"
-
+    extract_sections:
+      # Options as in `assign_panel_source`
+    extract_individual_captions:
+      # Options for the agent
+    extract_data_sources:
+      # Options for this step
     match_caption_panel:
-      openai:
-        <<: *openai_base
-        model: gpt-4-vision-preview
-        system_prompt: "system prompt for caption panel matching"
-
+      # Options as above
     object_detection:
       model_path: "data/models/panel_detection_model_no_labels.pt"
       confidence_threshold: 0.25
@@ -117,19 +103,6 @@ default: &default
       image_size: 512
       max_detections: 30
 
-test:
-  <<: *default
-  debug:
-    enabled: true
-    debug_dir: logs/debug/test
-    process_first_figure_only: true
-
-production:
-  <<: *default
-  debug:
-    enabled: false
-    debug_dir: logs/debug/prod
-    process_first_figure_only: false
 ```
 
 ## Docker
@@ -140,9 +113,6 @@ The application supports different environments through Docker:
 ```bash
 # For CPU-only environments
 docker build -t soda-curation-cpu . -f Dockerfile.cpu --target development
-
-# For environments with GPU support (Currently still not supported, but on the plan.)
-docker build -t soda-curation .
 ```
 
 ### Running the different environments
@@ -156,30 +126,6 @@ docker-compose -f docker-compose.dev.yml run --rm soda /bin/bash
 
 # Development with console access
 docker-compose -f docker-compose.dev.yml run --rm --entrypoint=/bin/bash soda
-
-```
-
-#### 2. Test Environment
-
-```bash
-# Build and run test environment
-docker-compose -f docker-compose.test.yml build
-docker-compose -f docker-compose.test.yml run --rm soda /bin/bash
-
-# Testing with console access
-docker-compose -f docker-compose.test.yml run --rm --entrypoint=/bin/bash soda
-
-```
-
-#### 3. Production Environment
-
-```bash
-# Build and run production environment
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml run --rm soda /bin/bash
-
-# Production with console access
-docker-compose -f docker-compose.prod.yml run --rm --entrypoint=/bin/bash soda
 ```
 
 ### Running the application
@@ -199,133 +145,95 @@ poetry run python -m src.soda_curation.main \
 
 ```bash
 # Inside the container
-poetry run pytest tests/
+poetry run pytest tests/test_suite
 
 # With coverage report
-poetry run pytest --cov=src tests/
-
-# Generate HTML coverage report
-poetry run pytest --cov=src tests/ --cov-report=html
+poetry run pytest tests/test_suite --cov=src tests/ --cov-report=html
 ```
 
-### Running the model evaluation
+### Model Benchmarking
 
-This section is TBD!
+The package includes a comprehensive benchmarking system for evaluating model performance across different tasks and configurations. The benchmarking system is configured through `config.benchmark.yaml` and runs using pytest.
 
-<!-- ## Prompts
-
-The soda-curation package uses AI-generated prompts for various tasks in the pipeline. These prompts are stored in separate files and can be modified to fine-tune the behavior of the AI models.
-
-### Prompt Locations
-
-Prompts are stored in the following locations within the project structure:
-
-1. ZIP Structure Analysis: `src/soda_curation/pipeline/zip_structure/zip_structure_prompts.py`
-2. Figure Caption Extraction: `src/soda_curation/pipeline/extract_captions/extract_captions_prompts.py`
-3. Panel Caption Matching: `src/soda_curation/pipeline/match_caption_panel/match_caption_panel_prompts.py`
-
-### Modifying Prompts
-
-You can modify these prompt files to adjust the instructions given to the AI models. This allows you to customize the behavior of the pipeline for specific use cases or to improve performance.
-
-To modify a prompt:
-
-1. Open the relevant prompt file in a text editor.
-2. Locate the prompt template or string you wish to modify.
-3. Make your changes, ensuring to maintain the overall structure and any placeholder variables used in the prompt.
-4. Save the file.
-
-### Prompt Handling Differences
-
-1. **OpenAI**:
-
-   - For OpenAI, prompts are typically stored in the AI assistant and updated when the script runs.
-   - Changes to the prompt files will be reflected the next time you run the pipeline.
-   - The `structure_zip_assistant_id` in the configuration is used to identify and update the assistant with the new prompt.
-
-### Example: Modifying a Prompt
-
-Let's say you want to modify the ZIP structure analysis prompt. You would:
-
-1. Open `src/soda_curation/pipeline/zip_structure/zip_structure_prompts.py`
-2. Locate the `STRUCTURE_ZIP_PROMPT` template
-3. Modify the instructions or add new ones as needed
-4. Save the file
-
-For OpenAI, these changes will be applied to the assistant the next time you run the pipeline.
-
-Remember to test your changes thoroughly, as modifications to prompts can significantly impact the pipeline's performance and output quality.
-
-## Usage
-
-The soda-curation package can be used both as a Python module and through provided shell scripts for Docker-based execution.
-
-### Using as a Python Module
-
-To process a ZIP file using soda-curation as a Python module:
-
-```python
-from soda_curation.main import main
-import sys
-
-sys.argv = ['main.py', '--zip', '/path/to/your/manuscript.zip', '--config', '/path/to/your/config.yaml']
-main()
-```
-
-### Using Shell Scripts
-
-Two shell scripts are provided for easy execution of the soda-curation package in a Docker environment:
-
-First you need to build the Docker image:
+#### Running Benchmarks
 
 ```bash
-# For CPU only
-docker build -t soda-curation-cpu . -f Dockerfile.cpu --target development
-# For GPU support
-docker build -t soda-curation .
+# Run the benchmark tests
+poetry run pytest tests/test_pipeline/benchmark.py
 ```
 
-Then you can run the following scripts:
+#### Benchmark Configuration
 
-1. `run_soda_curation.sh`: For systems with GPU support
-2. `run_soda_curation_cpu.sh`: For CPU-only systems
+The benchmarking system is configured through `config.benchmark.yaml`:
 
-#### Running with GPU Support
+```yaml
+# Global settings
+output_dir: "/app/data/benchmark/"
+ground_truth_dir: "/app/data/ground_truth"
+manuscript_dir: "/app/data/archives"
+prompts_source: "/app/config.dev.yaml"
 
-```bash
-./run_soda_curation.sh /path/to/your/manuscript.zip [/path/to/output/file.json]
+# Test selection
+enabled_tests:
+  - extract_sections
+  - extract_individual_captions
+  - assign_panel_source
+  - extract_data_availability
+
+# Model configurations to test
+providers:
+  openai:
+    models:
+      - name: "gpt-4o"
+        temperatures: [0.0, 0.1, 0.5]
+        top_p: [0.1, 1.0]
+
+# Test run configuration  
+test_runs:
+  n_runs: 1  # Number of times to run each configuration
+  manuscripts: "all"  # Can be "all", a number, or specific IDs
 ```
 
-#### Running on CPU
+#### Benchmark Components
 
-```bash
-./run_soda_curation_cpu.sh /path/to/your/manuscript.zip [/path/to/output/file.json]
-```
+1. **Test Selection**: Choose which pipeline components to evaluate:
+   - Section extraction
+   - Individual caption extraction
+   - Panel source assignment
+   - Data availability extraction
 
-```bash
-# Run with entrypoint override to get a shell
-docker run -it --name soda-curation-dev --shm-size=1g -v $(pwd):/app --entrypoint /bin/bash soda-curation-cpu
-```
+2. **Model Configuration**: Configure different models and parameters:
+   - Multiple providers (OpenAI, Anthropic)
+   - Various models per provider
+   - Temperature and top_p parameter combinations
+   - Multiple runs per configuration
 
-Both scripts take the path to the input ZIP file as a required argument and an optional path for the output JSON file. If no output path is specified, the results will be printed to the console.
+3. **Output and Metrics**:
+   - Results are saved in the specified output directory
+   - Generates CSV files with detailed metrics
+   - Saves prompts used for each test
+   - Creates comprehensive test reports
 
-### Shell Script Details
+#### Benchmark Results
 
-The `run_soda_curation_cpu.sh` script performs the following actions:
+The benchmark system generates several output files:
 
-1. Checks for the correct number of arguments
-2. Verifies the existence of the input ZIP file
-3. Determines absolute paths for input and configuration files
-4. Sets up Docker volume mounts for input, output, and configuration
-5. Runs the Docker container with the appropriate arguments
+1. `metrics.csv`: Contains detailed performance metrics including:
+   - Task-specific scores
+   - Model parameters
+   - Execution times
+   - Input/output comparisons
 
-Example of script usage:
+2. `prompts.csv`: Documents the prompts used for each task:
+   - System prompts
+   - User prompts
+   - Task-specific configurations
 
-```bash
-./run_soda_curation_cpu.sh data/manuscript.zip data/output/results.json
-```
-
-This command processes `manuscript.zip` and saves the results to `results.json`. -->
+3. `results.json`: Detailed test results including:
+   - Raw model outputs
+   - Expected outputs
+   - Scoring details
+   - Error information
 
 ## Pipeline Steps
 
@@ -452,92 +360,9 @@ The soda-curation pipeline generates a JSON output that represents the structure
     - `accession_number`: Accession number or identifier
     - `url`: URL to the data source. **It can also be a DOI in case that is the identifier**
 
-## Testing
 
-To run the test suite with coverage:
+# Model benchmarking
 
-```bash
-./run_tests.sh
-````
-
-This script builds a Docker image with the testing stage and runs the tests within a container. It uses pytest for running tests and generates a coverage report.
-
-### Writing Tests
-
-When adding new features or modifying existing ones, please ensure to write corresponding tests. Tests are located in the `tests/` directory and follow the pytest framework.
-
-## Docker
-
-### Building the Docker image
-
-To build the Docker image for soda-curation:
-
-```bash
-docker build -t soda-curation . # For GPU support
-
-docker build -t soda-curation-cpu . -f Dockerfile.cpu --target development # For CPU-only
-```
-
-### Running with Docker
-
-For GPU support:
-
-```bash
-./run_soda_curation.sh /path/to/your/manuscript.zip
-```
-
-For CPU-only:
-
-```bash
-./run_soda_curation_cpu.sh /path/to/your/manuscript.zip
-```
-
-Make sure to update the `config.yaml` file with your API keys before running the Docker container.
-
-### Running model evaluation
-
-To run the model evaluation script, use the following command:
-
-```bash
-
-# Test environment
-docker-compose -f docker-compose.test.yml build
-docker-compose -f docker-compose.test.yml run --rm soda /bin/bash
-docker-compose -f docker-compose.test.yml run --rm --entrypoint=/bin/bash soda
-
-# Development environment
-docker-compose -f docker-compose.dev.yml build
-#Running the container
-docker-compose -f docker-compose.dev.yml run --rm soda /bin/bash
-# Into containers with entrypoint override and into the console
-docker-compose -f docker-compose.dev.yml run --rm --entrypoint=/bin/bash soda
-
-# Production environment
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml run --rm soda /bin/bash
-docker-compose -f docker-compose.prod.yml run --rm --entrypoint=/bin/bash soda
-
-
-
-docker build -t soda-curation-test . -f Dockerfile.cpu --target testing
-
-docker run -it \
-  -v $(pwd):/app \
-  -e STRATEGIES='gpt-4o_temp=0' \
-  -e MANUSCRIPTS=MSB-2023-12087 \
-  -e RUNS=5 \
-  soda-curation-test \
-  poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
-
-  # Add the following to be able to entry in the container afterwards
-docker run -it --name soda-curation-test -v $(pwd):/app soda-curation-test /bin/bash
-
-STRATEGIES='openai_gpt-4o-mini_temp=0.1' MANUSCRIPTS='EMM-2023-18636' RUNS=1 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
-
-sh run_soda_curation_cpu.sh
-
-STRATEGIES='openai_gpt-4o-mini_temp=0.1,openai_gpt-4o-mini_temp=0.5,openai_gpt-4o_temp=0.1,openai_gpt-4o_temp=0.5' MANUSCRIPTS='all' RUNS=3 poetry run pytest -s --html report.html --self-contained-html -v tests/test_pipeline/test_extract_captions/test_eval.py
-```
 
 ### Code Formatting and Linting
 
@@ -579,9 +404,33 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
-### v1.0.0 (In development)
+### 1.0.2 (In progress)
+- Updated README.md
+- Generating output captions keeping the `HTML` text from the `docx` file
+- No panels allowed for figures with single panels
+- Ensure no panel duplication
+- Addition of panel label position to the panel matching prompt searching to increase the performance
+- Benchmarking changes
+- Ground truth modified to accept the `HTML` text and to remove `manuscript_id` from the file pths in output
 
-### v0.2.3 (2024-02-05)
+### 1.0.1 (2025-03-11)
+- Removal of manuscript ID from the source data file outputs
+- Correction of non standard encoding in file names
+
+### 1.0.0 (2025-03-10)
+- Major changes
+  - Changes in the configuration and environment definition
+  - Pipeline configurable at every single step, allowing for total flexibility in AI model and parameter selection
+  - Extraction of data availability and figure legends sections into a single step
+  - Fusion of match panel caption and object detection into a single step
+- Minor changes:
+  - Support for large images
+  - Support for `.ai` image files
+  - Removal of hallucinated files from the list of `sd_files` in output
+  - Ignoring windows cache files from the file assignation
+
+
+### v0.2.3 (2025-02-05)
 - Updated output schema documentation to match actual output structure
 - Improved panel source data assignment with full path preservation
 - Enhanced error handling in panel caption matching

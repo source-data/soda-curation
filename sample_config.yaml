@@ -2,56 +2,73 @@
 #################
 # config/config.yaml
 default: &default
-  # General settings
-  debug:
-    enabled: false
-    debug_dir: logs/debug
-    process_first_figure_only: false
-
   # Provider-specific base configurations
   providers:
     openai: &openai_base
-      temperature: 0.3
-      top_p: 1.0
-      max_tokens: 2048
-      
-    anthropic: &anthropic_base
-      temperature: 0.3
-      top_p: 1.0
-      max_tokens_to_sample: 8192
-      top_k: 128
+        model: gpt-4o
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
 
   # Pipeline step configurations
   pipeline:
+    extract_sections:
+      openai:
+        <<: *openai_base
+        model: gpt-4
+        prompts:
+          system: |
+            Your prompt goes here
+            In a multi line fassion
+          user: | 
+            The user prompt goes here
+
+    extract_individual_captions:
+      openai:
+        <<: *openai_base
+        model: gpt-4
+        prompts:
+          system: |
+            Your prompt goes here
+            In a multi line fassion
+          user: | 
+            The user prompt goes here
+
+    extract_data_sources:
+      openai:
+        <<: *openai_base
+        model: gpt-4
+        prompts:
+          system: |
+            Your prompt goes here
+            In a multi line fassion
+          user: | 
+            The user prompt goes here
+
     assign_panel_source:
       openai:
         <<: *openai_base
         model: gpt-4
-        system_prompt: "system prompt for panel source assignment"
-      anthropic:
-        <<: *anthropic_base
-        model: claude-3-5-sonnet-20241022
-        system_prompt: "system prompt for panel source assignment"
-
-    extract_captions:
-      openai:
-        <<: *openai_base
-        model: gpt-4
-        system_prompt: "system prompt for caption extraction"
-      anthropic:
-        <<: *anthropic_base
-        model: claude-3-5-sonnet-20241022
-        system_prompt: "system prompt for caption extraction"
+        prompts:
+          system: |
+            Your prompt goes here
+            In a multi line fassion
+          user: | 
+            The user prompt goes here
 
     match_caption_panel:
       openai:
         <<: *openai_base
-        model: gpt-4-vision-preview
-        system_prompt: "system prompt for caption panel matching"
-      anthropic:
-        <<: *anthropic_base
-        model: claude-3-5-sonnet-20241022
-        system_prompt: "system prompt for caption panel matching"
+        model: gpt-4
+        prompts:
+          system: |
+            Your prompt goes here
+            In a multi line fassion
+          user: | 
+            The user prompt goes here
 
     object_detection:
       model_path: "data/models/panel_detection_model_no_labels.pt"
@@ -60,16 +77,3 @@ default: &default
       image_size: 512
       max_detections: 30
 
-test:
-  <<: *default
-  debug:
-    enabled: true
-    debug_dir: logs/debug/test
-    process_first_figure_only: true
-
-production:
-  <<: *default
-  debug:
-    enabled: false
-    debug_dir: logs/debug/prod
-    process_first_figure_only: false
