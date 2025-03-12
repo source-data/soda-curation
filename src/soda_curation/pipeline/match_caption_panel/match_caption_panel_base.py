@@ -45,75 +45,84 @@ class MatchPanelCaption(ABC):
         """Process all figures in the manuscript."""
         self.zip_structure = zip_structure
         for figure in zip_structure.figures:
-            try:
-                # Store original panels in a dictionary for quick lookup by label
-                original_panels = {panel.panel_label: panel for panel in figure.panels}
+            if len(figure.panels) > 1:
+                try:
+                    # Store original panels in a dictionary for quick lookup by label
+                    original_panels = {
+                        panel.panel_label: panel for panel in figure.panels
+                    }
 
-                # Convert figure file to PIL Image
-                full_path = self.extract_dir / figure.img_files[0]
-                if not full_path.exists():
-                    raise FileNotFoundError(f"File not found: {full_path}")
-                image, _ = convert_to_pil_image(str(full_path))
+                    # Convert figure file to PIL Image
+                    full_path = self.extract_dir / figure.img_files[0]
+                    if not full_path.exists():
+                        raise FileNotFoundError(f"File not found: {full_path}")
+                    image, _ = convert_to_pil_image(str(full_path))
 
-                # Get only bounding boxes from detection
-                detected_regions = self.object_detector.detect_panels(image)
+                    # Get only bounding boxes from detection
+                    detected_regions = self.object_detector.detect_panels(image)
 
-                if not detected_regions:
-                    logger.warning(
-                        f"No panels detected in figure {figure.figure_label}"
-                    )
-                    continue
-
-                # Process each detected region and collect AI results
-                panel_matches = []
-                for idx, detection in enumerate(detected_regions):
-                    if detection["confidence"] < 0.25:
+                    if not detected_regions:
                         logger.warning(
-                            f"Low confidence detection ({detection['confidence']:.2f}) in figure {figure.figure_label}"
+                            f"No panels detected in figure {figure.figure_label}"
                         )
                         continue
 
-                    encoded_image = self._extract_panel_image(image, detection["bbox"])
+                    # Process each detected region and collect AI results
+                    panel_matches = []
+                    for idx, detection in enumerate(detected_regions):
+                        if detection["confidence"] < 0.25:
+                            logger.warning(
+                                f"Low confidence detection ({detection['confidence']:.2f}) in figure {figure.figure_label}"
+                            )
+                            continue
 
-                    if encoded_image:
-                        panel_object = self._match_panel_caption(
-                            encoded_image, figure.figure_caption
-                        )
-                        panel_object = (
-                            PanelObject(**json.loads(panel_object))
-                            if isinstance(panel_object, str)
-                            else panel_object
-                        )
-
-                        # Store the detection index with the panel match
-                        panel_matches.append(
-                            {
-                                "panel_object": panel_object,
-                                "detection": detection,
-                                "detection_idx": idx,
-                            }
+                        encoded_image = self._extract_panel_image(
+                            image, detection["bbox"]
                         )
 
-                # Resolve any duplicate panel label assignments
-                processed_panels = self._resolve_panel_conflicts(
-                    figure, panel_matches, original_panels
-                )
+                        if encoded_image:
+                            panel_object = self._match_panel_caption(
+                                encoded_image, figure.figure_caption
+                            )
+                            panel_object = (
+                                PanelObject(**json.loads(panel_object))
+                                if isinstance(panel_object, str)
+                                else panel_object
+                            )
 
-                # Add any unmatched original panels
-                processed_panel_labels = {p.panel_label for p in processed_panels}
-                for label, panel in original_panels.items():
-                    if label not in processed_panel_labels:
-                        logger.info(
-                            f"Preserving unmatched original panel {label} in figure {figure.figure_label}"
-                        )
-                        processed_panels.append(panel)
+                            # Store the detection index with the panel match
+                            panel_matches.append(
+                                {
+                                    "panel_object": panel_object,
+                                    "detection": detection,
+                                    "detection_idx": idx,
+                                }
+                            )
 
-                # Update figure panels
-                figure.panels = processed_panels
+                    # Resolve any duplicate panel label assignments
+                    processed_panels = self._resolve_panel_conflicts(
+                        figure, panel_matches, original_panels
+                    )
 
-            except Exception as e:
-                logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
-                continue
+                    # Add any unmatched original panels
+                    processed_panel_labels = {p.panel_label for p in processed_panels}
+                    for label, panel in original_panels.items():
+                        if label not in processed_panel_labels:
+                            logger.info(
+                                f"Preserving unmatched original panel {label} in figure {figure.figure_label}"
+                            )
+                            processed_panels.append(panel)
+
+                    # Update figure panels
+                    figure.panels = processed_panels
+
+                except Exception as e:
+                    logger.error(
+                        f"Error processing figure {figure.figure_label}: {str(e)}"
+                    )
+                    continue
+            else:
+                figure.panels = []
 
         return zip_structure
 

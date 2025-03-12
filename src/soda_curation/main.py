@@ -103,10 +103,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 section_text=data_availability_text, zip_structure=zip_structure
             )
 
-            import pdb
-
-            pdb.set_trace()
-
             # Assign panel source
             panel_source_assigner = PanelSourceAssignerOpenAI(
                 config_loader.config, prompt_handler, extractor.manuscript_extract_dir
@@ -117,20 +113,14 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             )
             # Preserve all ZipStructure data while updating figures
             zip_structure.figures = processed_figures
-            for fig in zip_structure.figures:
-                if len(fig.panels) <= 1:
-                    fig.panels = []
-                    logger.info(
-                        f"Skipping panel processing for {fig.figure_label} (single-panel or no-panel figure)"
-                    )
-                else:
-                    # Match panels with captions using object detection
-                    panel_matcher = MatchPanelCaptionOpenAI(
-                        config=config_loader.config,
-                        prompt_handler=prompt_handler,
-                        extract_dir=extractor.manuscript_extract_dir,  # Pass the manuscript-specific directory
-                    )
-                    _ = panel_matcher.process_figures(zip_structure)
+
+            # Match panels with captions using object detection
+            panel_matcher = MatchPanelCaptionOpenAI(
+                config=config_loader.config,
+                prompt_handler=prompt_handler,
+                extract_dir=extractor.manuscript_extract_dir,  # Pass the manuscript-specific directory
+            )
+            _ = panel_matcher.process_figures(zip_structure)
 
             # Update total costs before returning results
             zip_structure.update_total_cost()
