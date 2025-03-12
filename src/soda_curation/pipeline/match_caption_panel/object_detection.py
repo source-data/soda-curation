@@ -11,27 +11,72 @@ import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+import cv2
 import numpy as np
 import pdf2image
 from PIL import Image
+from PIL.Image import DecompressionBombError
 from ultralytics import YOLOv10
 
 logger = logging.getLogger(__name__)
 
 
+def scale_down_large_image(file_path: str, max_pixels: int = 178956970) -> str:
+    """
+    Scale down an image file if it exceeds the maximum pixel limit.
+    Uses OpenCV for memory-efficient processing of large images.
+
+    Args:
+        file_path (str): Path to the image file
+        max_pixels (int): Maximum number of pixels allowed (default: 178956970)
+
+    Returns:
+        str: Path to the scaled down image
+    """
+    try:
+        # Read image dimensions first
+        img = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
+        if img is None:
+            raise ValueError(f"Failed to open image: {file_path}")
+
+        height, width = img.shape[:2]
+        total_pixels = width * height
+
+        if total_pixels <= max_pixels:
+            return file_path
+
+        # Calculate scaling factor
+        scale_factor = (max_pixels / total_pixels) ** 0.5
+        new_width = int(width * scale_factor)
+        new_height = int(height * scale_factor)
+
+        # Create scaled image path
+        scaled_path = (
+            os.path.splitext(file_path)[0] + "_scaled" + os.path.splitext(file_path)[1]
+        )
+
+        # Resize using OpenCV
+        img_scaled = cv2.resize(
+            img, (new_width, new_height), interpolation=cv2.INTER_LANCZOS4
+        )
+        cv2.imwrite(scaled_path, img_scaled)
+
+        return scaled_path
+    except Exception as e:
+        raise ValueError(f"Failed to scale image: {str(e)}")
+
+
 def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, str]:
     """
     Convert various image formats (PDF, EPS, TIFF, JPG, PNG) to a PIL image.
-
-    This function handles different file formats and converts them to a PIL Image object.
-    For PDF files, it converts the first page to a PNG image and saves it.
+    Large images are automatically scaled down if they exceed the pixel limit.
 
     Args:
         file_path (str): The path to the image file.
         dpi (int): Dots per inch for high-resolution conversion. Default is 300.
 
     Returns:
-        Tuple[PIL.Image, str]: The converted PIL image and the path to the new image file (if converted from PDF).
+        Tuple[PIL.Image, str]: The converted PIL image and the path to the new image file.
 
     Raises:
         FileNotFoundError: If the specified file does not exist.
@@ -46,7 +91,6 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
     new_file_path = file_path
 
     if file_ext == ".pdf":
-        # Convert PDF to PNG
         pages = pdf2image.convert_from_path(file_path, dpi=dpi)
         if pages:
             new_file_path = file_path.replace(".pdf", ".png")
@@ -55,21 +99,42 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
         else:
             raise ValueError("PDF conversion failed: no pages found")
     elif file_ext in [".jpg", ".jpeg", ".png", ".tif", ".tiff"]:
-        image = Image.open(file_path)
-    elif file_ext == ".eps":
-        # Convert EPS to PNG
-        new_file_path = file_path.replace(".eps", ".png")
-        command = [
-            "gs",
-            "-dNOPAUSE",
-            "-dBATCH",
-            "-sDEVICE=pngalpha",
-            f"-r{dpi}",
-            f"-sOutputFile={new_file_path}",
-            file_path,
-        ]
-        subprocess.run(command, check=True)
-        image = Image.open(new_file_path)
+        try:
+            image = Image.open(file_path)
+        except DecompressionBombError:
+            # Scale down the image and try again
+            scaled_path = scale_down_large_image(file_path)
+            try:
+                image = Image.open(scaled_path)
+                new_file_path = scaled_path
+            except Exception as e:
+                raise ValueError(f"Failed to process scaled image: {str(e)}")
+        except Exception as e:
+            raise ValueError(f"Failed to open image: {str(e)}")
+    elif file_ext in [".eps", ".ai"]:
+        try:
+            new_file_path = file_path.replace(file_ext, ".png")
+            command = [
+                "gs",
+                "-dNOPAUSE",
+                "-dBATCH",
+                "-sDEVICE=pngalpha",
+                f"-r{dpi}",
+                f"-sOutputFile={new_file_path}",
+                file_path,
+            ]
+            subprocess.run(command, check=True)
+            image = Image.open(new_file_path)
+        except DecompressionBombError:
+            # Scale down the converted PNG and try again
+            scaled_path = scale_down_large_image(new_file_path)
+            try:
+                image = Image.open(scaled_path)
+                new_file_path = scaled_path
+            except Exception as e:
+                raise ValueError(f"Failed to process scaled image: {str(e)}")
+        except Exception as e:
+            raise ValueError(f"Failed to convert or open image: {str(e)}")
     else:
         raise ValueError(f"Unsupported file format: {file_ext}")
 
@@ -129,7 +194,7 @@ class ObjectDetection:
         iou: float = 0.1,
         imgsz: int = 512,
         max_det: int = 30,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, float]]:
         """
         Detect panels in the given image using YOLOv10.
 
@@ -144,37 +209,35 @@ class ObjectDetection:
             max_det (int): Maximum number of detections. Default is 30.
 
         Returns:
-            List[Dict[str, Any]]: List of dictionaries containing detected panel information.
-                Each dictionary includes 'panel_label', 'panel_caption', and 'panel_bbox'.
+            List[Dict[str, float]]: List of detected panels with bbox and confidence
 
         Raises:
             Exception: If there's an error during the detection process.
         """
+        if image is None:
+            raise ValueError("Input image cannot be None")
+
         logger.info("Detecting panels in image")
 
         try:
-            # Convert PIL Image to numpy array
             np_image = np.array(image)
-
             results = self.model(
                 np_image, conf=conf, iou=iou, imgsz=imgsz, max_det=max_det
             )
 
-            panels = []
+            detections = []
             for i, box in enumerate(results[0].boxes.xyxyn.tolist()):
                 x1, y1, x2, y2 = box
                 confidence = float(results[0].boxes.conf[i])
 
-                panel_info = {
-                    "panel_label": chr(65 + i),
-                    "panel_caption": "TO BE ADDED IN LATER STEP",
-                    "panel_bbox": [x1, y1, x2, y2],
+                detection_info = {
+                    "bbox": [x1, y1, x2, y2],
                     "confidence": confidence,
                 }
-                panels.append(panel_info)
+                detections.append(detection_info)
 
-            logger.info(f"Detected {len(panels)} panels")
-            return panels
+            logger.info(f"Detected {len(detections)} panels")
+            return detections
 
         except Exception as e:
             logger.error(f"Error detecting panels: {str(e)}")

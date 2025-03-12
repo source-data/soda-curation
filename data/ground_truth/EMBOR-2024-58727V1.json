@@ -3,221 +3,208 @@
   "docx": "Doc/YY1XXXXXXXXXXXXXXX1004.docx",
   "figures": [
     {
-      "figure_caption": "<p>A. Forest plot of the hazard ratio (HR) showing the association\nbetween high expression levels of KDM5C and overall survival in multiple\ncancers. For each type of cancer, the HR and 95% confidence interval\n(CI) are plotted as red dots and horizontal lines on the basis of a Cox\nproportional hazards model; when the HR=1, the study object had no\neffect on overall survival; when the HR&gt;1, the study object was\ndetermined to be a risk factor; and when the HR&lt;1, the study object\nwas identified as a protective factor.</p>\n<p>B. Strategy for identifying KDM5C-binding partners in HEK293T cells\nvia TAP-MS.</p>\n<p>C-D. Co-IP followed by Western blotting was used to detect the\ninteraction between KDM5C and YY1 exogenously (C) and endogenously (D)\nin HEK 293 cells.</p>\n<p>E. Semi-endogenous co-IP with KDM5C-Flag and YY1 in the renal cancer\ncell line 769-P.</p>\n<p>F. Schematic representation of KDM5C domains and corresponding\nconstructs.</p>\n<p>G. Semi-endogenous co-IP with KDM5C truncation mutants and endogenous\nYY1 in HEK293T cells.</p>",
+      "figure_caption": "A. Forest plot of the hazard ratio (HR) showing the association between high expression levels of KDM5C and overall survival in multiple cancers. For each type of cancer, the HR and 95% confidence interval (CI) are plotted as red dots and horizontal lines on the basis of a Cox proportional hazards model; when the HR=1, the study object had no effect on overall survival; when the HR>1, the study object was determined to be a risk factor; and when the HR<1, the study object was identified as a protective factor.\n\nB. Strategy for identifying KDM5C-binding partners in HEK293T cells via TAP-MS.\n\nC-D. Co-IP followed by Western blotting was used to detect the interaction between KDM5C and YY1 exogenously (C) and endogenously (D) in HEK 293 cells.\n\nE. Semi-endogenous co-IP with KDM5C-Flag and YY1 in the renal cancer cell line 769-P.\n\nF. Schematic representation of KDM5C domains and corresponding constructs.\n\nG. Semi-endogenous co-IP with KDM5C truncation mutants and endogenous YY1 in HEK293T cells.",
       "figure_label": "Figure 1",
-      "caption_title": "YY1 was identified as a KDM5C binding\nprotein",
+      "caption_title": "YY1 was identified as a KDM5C binding protein",
       "panels": [
-        {
-          "panel_caption": "Forest plot of the hazard ratio (HR) showing the association between high expression levels of KDM5C and overall survival in multiple cancers. For each type of cancer, the HR and 95% confidence interval (CI) are plotted as red dots and horizontal lines on the basis of a Cox proportional hazards model; when the HR=1, the study object had no effect on overall survival; when the HR>1, the study object was determined to be a risk factor; and when the HR<1, the study object was identified as a protective factor.",
-          "panel_label": "A",
-          "sd_files": []
-        },
-        {
-          "panel_caption": "Strategy for identifying KDM5C-binding partners in HEK293T cells via TAP-MS.",
-          "panel_label": "B",
-          "sd_files": []
-        },
-        {
-          "panel_caption": "Co-IP followed by Western blotting was used to detect the interaction between KDM5C and YY1 exogenously in HEK 293 cells.",
-          "panel_label": "C",
-          "sd_files": []
-        },
-        {
-          "panel_caption": "Co-IP followed by Western blotting was used to detect the interaction between KDM5C and YY1 endogenously in HEK 293 cells.",
-          "panel_label": "D",
-          "sd_files": []
-        },
-        {
-          "panel_caption": "Semi-endogenous co-IP with KDM5C-Flag and YY1 in the renal cancer cell line 769-P.",
-          "panel_label": "E",
-          "sd_files": []
-        },
-        {
-          "panel_caption": "Schematic representation of KDM5C domains and corresponding constructs.",
-          "panel_label": "F",
-          "sd_files": []
-        },
-        {
-          "panel_caption": "Semi-endogenous co-IP with KDM5C truncation mutants and endogenous YY1 in HEK293T cells.",
-          "panel_label": "G",
-          "sd_files": []
-        }
+            {
+              "panel_label": "A",
+              "panel_caption": "",
+              "sd_files": []
+            },
+            {
+              "panel_label": "B",
+              "panel_caption": "",
+              "sd_files": []
+            },
+            {
+              "panel_label": "C",
+              "panel_caption": "",
+              "sd_files": []
+            },
+            {
+              "panel_label": "D",
+              "panel_caption": "",
+              "sd_files": []
+            },
+            {
+              "panel_label": "E",
+              "panel_caption": "",
+              "sd_files": []
+            },
+            {
+              "panel_label": "F",
+              "panel_caption": "",
+              "sd_files": []
+            },
+            {
+              "panel_label": "G",
+              "panel_caption": "",
+              "sd_files": []
+            }
       ]
     },
     {
-      "figure_caption": "<p>A. Western blotting showing KDM5C expression in HK-2 human kidney\nproximal tubular epithelial cells and renal cancer cell lines (ACHN,\n769-P and RCC4).</p>\n<p>B. Effect of YY1 knockdown on the survival of the indicated tumor\ncell lines as measured by a colony formation assay (n=3 biological\nreplicates).</p>\n<p>C. Proliferation of the indicated cell lines after YY1 was depleted,\nas measured by a CCK8 assay. The data are shown as the mean ± SD of\nthree independent experiments after analysis by one-way ANOVA. In ACHN\ncells, <em>P</em>=0.116 (shYY1-1) and <em>P</em>=0.1222 (shYY1-2); in\n769-P cells, <em>P</em>=0.7353 (shYY1-1) and <em>P</em>=0.9113\n(shYY1-2); and in RCC4 cells, <em>P</em>=0.0007 (shYY1-1) and\n<em>P</em>=2E-05 (shYY1-2).</p>\n<p>D. Xenograft tumors excised from nude mice (n = 6/group) that had\nbeen subcutaneously injected with the indicated tumor cells. Statistical\nsignificance was determined by one-way ANOVA. <em>P</em>=1E-05</p>",
+      "figure_caption": "A. Western blotting showing KDM5C expression in HK-2 human kidney proximal tubular epithelial cells and renal cancer cell lines (ACHN, 769-P and RCC4).\n\nB. Effect of YY1 knockdown on the survival of the indicated tumor cell lines as measured by a colony formation assay (n=3 biological replicates).\n\nC. Proliferation of the indicated cell lines after YY1 was depleted, as measured by a CCK8 \n\n\n\nassay. The data are shown as the mean ± SD of three independent experiments after analysis by one-way ANOVA. In ACHN cells, P=0.116 (shYY1-1) and P=0.1222 (shYY1-2); in 769-P cells, P=0.7353 (shYY1-1) and P=0.9113 (shYY1-2); and in RCC4 cells, P=0.0007 (shYY1-1) and P=2E-05 (shYY1-2).\n\nD. Xenograft tumors excised from nude mice (n = 6/group) that had been subcutaneously injected with the indicated tumor cells. Statistical significance was determined by one-way ANOVA. P=1E-05",
       "figure_label": "Figure 2",
-      "caption_title": "YYY1 is a vulnerable target in KDM5C-deficient tumor\ncells",
+      "caption_title": "YYY1 is a vulnerable target in KDM5C-deficient tumorcells",
       "panels": [
         {
-          "panel_caption": "Western blotting showing KDM5C expression in HK-2 human kidney proximal tubular epithelial cells and renal cancer cell lines (ACHN, 769-P and RCC4).",
           "panel_label": "A",
+          "panel_caption": "",
           "sd_files": []
         },
         {
-          "panel_caption": "Effect of YY1 knockdown on the survival of the indicated tumor cell lines as measured by a colony formation assay (n=3 biological replicates).",
           "panel_label": "B",
+          "panel_caption": "",
           "sd_files": []
         },
         {
-          "panel_caption": "Proliferation of the indicated cell lines after YY1 was depleted, as measured by a CCK8 assay. The data are shown as the mean \u00b1 SD of three independent experiments after analysis by one-way ANOVA. In ACHN cells, P=0.116 (shYY1-1) and P=0.1222 (shYY1-2); in 769-P cells, P=0.7353 (shYY1-1) and P=0.9113 (shYY1-2); and in RCC4 cells, P=0.0007 (shYY1-1) and P=2E-05 (shYY1-2).",
           "panel_label": "C",
+          "panel_caption": "",
           "sd_files": []
         },
         {
-          "panel_caption": "Xenograft tumors excised from nude mice (n = 6/group) that had been subcutaneously injected with the indicated tumor cells. Statistical significance was determined by one-way ANOVA. P=1E-05",
           "panel_label": "D",
+          "panel_caption": "",
           "sd_files": []
         }
       ]
     },
     {
-      "figure_caption": "<p>A. Violin plot showing the alteration in YY1 binding peaks after\nKDM5C depletion. YY1 binding peaks in both ACHN parental and shKDM5C\ncells were counted (n=17,030). The data are presented as mean ± SD.\nStatistical significance was determined by the Mann-Whitney U test,\n<em>P</em>= 2.22E-16.</p>\n<p>B. Venn diagram showing the overlapping peaks of YY1 and KDM5C in the\nco-occupied regions. Representative data from two independent CUT-Tag\nexperiments.</p>\n<p>C. Heatmap and metaplot showing the chromatin enrichment of YY1 at\noverlapping YY1 and KDM5C peak regions (n=3645) in ACHN parental and\nshKDM5C cells.</p>\n<p>D. Pie chart showing the annotated genomic distribution of altered\nYY1 peaks on different DNA elements in shKDM5C or KDM5C overexpressing\ncells.</p>",
+      "figure_caption": "A. Violin plot showing the alteration in YY1 binding peaks after KDM5C depletion. YY1 binding peaks in both ACHN parental and shKDM5C cells were counted (n=17,030). The data are presented as mean ± SD. Statistical significance was determined by the Mann-Whitney U test, P= 2.22E-16.\n\nB. Venn diagram showing the overlapping peaks of YY1 and KDM5C in the co-occupied regions. Representative data from two independent CUT-Tag experiments.\n\nC. Heatmap and metaplot showing the chromatin enrichment of YY1 at overlapping YY1 and KDM5C peak regions (n=3645) in ACHN parental and shKDM5C cells.\n\nD. Pie chart showing the annotated genomic distribution of altered YY1 peaks on different DNA elements in shKDM5C or KDM5C overexpressing cells.",
       "figure_label": "Figure 3",
-      "caption_title": "KDM5C is essential for YY1 genome-wide chromatin\nrecruitment",
+      "caption_title": "KDM5C is essential for YY1 genome-wide chromatin recruitment",
       "panels": [
         {
-          "panel_caption": "Violin plot showing the alteration in YY1 binding peaks after KDM5C depletion. YY1 binding peaks in both ACHN parental and shKDM5C cells were counted (n=17,030). The data are presented as mean \u00b1 SD. Statistical significance was determined by the Mann-Whitney U test, P= 2.22E-16.",
           "panel_label": "A",
+          "panel_caption": "",
           "sd_files": []
         },
         {
-          "panel_caption": "Venn diagram showing the overlapping peaks of YY1 and KDM5C in the co-occupied regions. Representative data from two independent CUT-Tag experiments.",
           "panel_label": "B",
+          "panel_caption": "",
           "sd_files": []
         },
         {
-          "panel_caption": "Heatmap and metaplot showing the chromatin enrichment of YY1 at overlapping YY1 and KDM5C peak regions (n=3645) in ACHN parental and shKDM5C cells.",
           "panel_label": "C",
+          "panel_caption": "",
           "sd_files": []
         },
         {
-          "panel_caption": "Pie chart showing the annotated genomic distribution of altered YY1 peaks on different DNA elements in shKDM5C or KDM5C overexpressing cells.",
           "panel_label": "D",
+          "panel_caption": "",
           "sd_files": []
         }
       ]
     },
     {
-      "figure_caption": "<p>A. Heatmap and metaplot showing the distribution of YY1 peaks in the\noverlapping regions of YY1 and KDM5C (n=3645) in ACHN cells expressing\nthe KDM5C-WT or KDM5C-H514A mutant.</p>\n<p>B. Loss of KDMC5 resulted in increased H3K4me3 signal intensity in\nthe YY1 and KDM5C overlapping region (n=3645) in ACHN parental and\nshKDM5C cells.</p>\n<p>C. Venn diagram showing the number of YY1 peaks in the H3K4me3/YY1\noverlapping region (n=11087) with or without modulation by KDM5C.</p>\n<p>D-E. Heatmaps and metaplots revealed reduced YY1 enrichment at KDM5C\ndemethylase dependent regions (n=9943) or KDM5C demethylase independent\nregions (n=1144) in ACHN parental and shKDM5C cells.</p>\n<p>F. KDM5C protein levels in whole-cell lysates or chromatin fractions\nfrom HEK293T cells transfected with KDM5C-WT or KDM5C-H514A mutant\nconstruct.</p>\n<p>G-I. Effect of the re-expression of the KDM5C-WT or KDM5C-H514A\nmutant on the proliferation of ACHN (G), 769-P (H) or RCC4 (I) cells\nafter the depletion KDM5C, YY1 or both, as determined by the CCK8 assay.\nEach experiment was repeated three times with similar results. “Dsh”\nindicates cells in which KDM5C and YY1 were both knocked down. The data\nare shown as the mean ± SD of three independent experiments after\nanalysis via Student’s t test. In ACHN cells, <em>P</em>=5.37E-08 (Dsh)\nand <em>P</em>=3.48E-07 (Dsh+KDM5C); in 769-P cells, <em>P</em>=4.45E-10\n(Dsh) and <em>P</em>=7.49E-10 (Dsh+KDM5C); in ACHN cells,\n<em>P</em>=5.86E-09 (Dsh) and <em>P</em>=2.72E-07 (Dsh+KDM5C).</p>\n<p>J. Colony formation assay with the indicated cell lines(n=3). “Dsh”\nindicates cells with KDM5C and YY1 simultaneously knocked down.</p>",
+      "figure_caption": "A. Heatmap and metaplot showing the distribution of YY1 peaks in the overlapping regions \n\n\n\nof YY1 and KDM5C (n=3645) in ACHN cells expressing the KDM5C-WT or KDM5C-H514A mutant.\n\nB. Loss of KDMC5 resulted in increased H3K4me3 signal intensity in the YY1 and KDM5C overlapping region (n=3645) in ACHN parental and shKDM5C cells.\n\nC. Venn diagram showing the number of YY1 peaks in the H3K4me3/YY1 overlapping region (n=11087) with or without modulation by KDM5C.\n\nD-E. Heatmaps and metaplots revealed reduced YY1 enrichment at KDM5C demethylase dependent regions (n=9943) or KDM5C demethylase independent regions (n=1144) in ACHN parental and shKDM5C cells.\n\nF. KDM5C protein levels in whole-cell lysates or chromatin fractions from HEK293T cells transfected with KDM5C-WT or KDM5C-H514A mutant construct.\n\nG-I. Effect of the re-expression of the KDM5C-WT or KDM5C-H514A mutant on the proliferation of ACHN (G), 769-P (H) or RCC4 (I) cells after the depletion KDM5C, YY1 or both, as determined by the CCK8 assay. Each experiment was repeated three times with similar results. “Dsh” indicates cells in which KDM5C and YY1 were both knocked down. The data are shown as the mean ± SD of three independent experiments after analysis via Student’s t test. In ACHN cells, P=5.37E-08 (Dsh) and P=3.48E-07 (Dsh+KDM5C); in 769-P cells, P=4.45E-10 (Dsh) and P=7.49E-10 (Dsh+KDM5C); in ACHN cells, P=5.86E-09 (Dsh) and P=2.72E-07 (Dsh+KDM5C).\n\nJ. Colony formation assay with the indicated cell lines(n=3). “Dsh” indicates cells with KDM5C and YY1 simultaneously knocked down.",
       "figure_label": "Figure 4",
-      "caption_title": "An intact JmjC domain but not KDM5C H3K4\ndemethylation activity is required for KDM5C-mediated YY1\nrecruitment",
+      "caption_title": "An intact JmjC domain but not KDM5C H3K4 demethylation activity is required for KDM5C-mediated YY1 recruitment",
       "panels": [
         {
-          "panel_caption": "Heatmap and metaplot showing the distribution of YY1 peaks in the overlapping regions of YY1 and KDM5C (n=3645) in ACHN cells expressing the KDM5C-WT or KDM5C-H514A mutant.",
           "panel_label": "A",
+          "panel_caption": "",
           "sd_files": []
         },
         {
-          "panel_caption": "Loss of KDMC5 resulted in increased H3K4me3 signal intensity in the YY1 and KDM5C overlapping region (n=3645) in ACHN parental and shKDM5C cells.",
           "panel_label": "B",
+          "panel_caption": "",
           "sd_files": []
         },
         {
-          "panel_caption": "Venn diagram showing the number of YY1 peaks in the H3K4me3/YY1 overlapping region (n=11087) with or without modulation by KDM5C.",
           "panel_label": "C",
+          "panel_caption": "",
           "sd_files": []
         },
         {
-          "panel_caption": "Heatmaps and metaplots revealed reduced YY1 enrichment at KDM5C demethylase dependent regions (n=9943) in ACHN parental and shKDM5C cells.",
           "panel_label": "D",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "Heatmaps and metaplots revealed reduced YY1 enrichment at KDM5C demethylase independent regions (n=1144) in ACHN parental and shKDM5C cells.",
           "panel_label": "E",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "KDM5C protein levels in whole-cell lysates or chromatin fractions from HEK293T cells transfected with KDM5C-WT or KDM5C-H514A mutant construct.",
           "panel_label": "F",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "Effect of the re-expression of the KDM5C-WT or KDM5C-H514A mutant on the proliferation of ACHN as determined by the CCK8 assay. Each experiment was repeated three times with similar results. \"Dsh\" indicates cells in which KDM5C and YY1 were both knocked down. The data are shown as the mean \u00b1 SD of three independent experiments after analysis via Student's t test. In ACHN cells, P=5.37E-08 (Dsh) and P=3.48E-07 (Dsh+KDM5C); in ACHN cells, P=5.86E-09 (Dsh) and P=2.72E-07 (Dsh+KDM5C).",
           "panel_label": "G",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "Effect of the re-expression of the KDM5C-WT or KDM5C-H514A mutant on the proliferation of 769-P as determined by the CCK8 assay. Each experiment was repeated three times with similar results. \"Dsh\" indicates cells in which KDM5C and YY1 were both knocked down. The data are shown as the mean \u00b1 SD of three independent experiments after analysis via Student's t test. in 769-P cells, P=4.45E-10 (Dsh) and P=7.49E-10 (Dsh+KDM5C)",
           "panel_label": "H",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "Effect of the re-expression of the KDM5C-WT or KDM5C-H514A mutant on the proliferation of RCC4 cells after the depletion KDM5C, YY1 or both, as determined by the CCK8 assay. Each experiment was repeated three times with similar results. The data are shown as the mean \u00b1 SD of three independent experiments after analysis via Student's t test.",
           "panel_label": "I",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "Colony formation assay with the indicated cell lines(n=3). \"Dsh\" indicates cells with KDM5C and YY1 simultaneously knocked down.",
           "panel_label": "J",
+          "panel_caption": "",
           "sd_files": []
-
         }
       ]
     },
     {
-      "figure_caption": "<p>A-C. Volcano plots showing the change in the number of transcripts in\nshKDM5C, shYY1 or double shKDM5C ACHN cells, as determined by RNA-seq\nanalysis (|log<sub>2</sub> FC|&gt;1.5, p value &lt;0.05). “Double sh”\nindicates cells with KDM5C and YY1 simultaneously knocked down.</p>\n<p>D. Venn diagrams showing the number of downregulated genes in\nshKDM5C, shYY1 or shKDM5C/YY1 double-knockdown cells.</p>\n<p>E. Heatmap showing the normalized gene expression profile in shKDM5C,\nshYY1 or double sh ACHN cells. “Double sh” indicates cells with KDM5C\nand YY1 simultaneously knocked down.</p>\n<p>F. qPCR was used to assess the transcription of select genes in the\nindicated ACHN cells. Each experiment was repeated three times with\nsimilar results. “Double sh” indicates cells with KDM5C and YY1 double\nknocked down. The data are shown as the mean ± SD of three independent\nexperiments after analysis by two tailed Student’s T-test.\n<em>P</em>=2.86E-05 (JAM3), <em>P</em>=4.06E-06 (KNTC1),\n<em>P</em>=1.31E-04(SMC2), <em>P</em>=9.18E-06(SMC4),\n<em>P</em>=1.91E-05(LMNB1) and <em>P</em>=1.47E-04 (FOXM1).</p>",
+      "figure_caption": "A-C. Volcano plots showing the change in the number of transcripts in shKDM5C, shYY1 or double shKDM5C ACHN cells, as determined by RNA-seq analysis (|log2 FC|>1.5, p value <0.05). “Double sh” indicates cells with KDM5C and YY1 simultaneously knocked down.\n\nD. Venn diagrams showing the number of downregulated genes in shKDM5C, shYY1 or shKDM5C/YY1 double-knockdown cells.\n\nE. Heatmap showing the normalized gene expression profile in shKDM5C, shYY1 or double sh ACHN cells. “Double sh” indicates cells with KDM5C and YY1 simultaneously knocked down.\n\nF. qPCR was used to assess the transcription of select genes in the indicated ACHN cells. Each experiment was repeated three times with similar results. “Double sh” indicates cells with KDM5C and YY1 double knocked down. The data are shown as the mean ± SD of three independent experiments after analysis by two tailed Student’s T-test. P=2.86E-05 (JAM3), P=4.06E-06 (KNTC1), P=1.31E-04(SMC2), P=9.18E-06(SMC4), P=1.91E-05(LMNB1) and P=1.47E-04 (FOXM1).",
       "figure_label": "Figure 5",
-      "caption_title": "KDM5C and YY1 coregulate the expression of a number\nof essential cell-fate genes",
+      "caption_title": "KDM5C and YY1 coregulate the expression of a number of essential cell-fate genes",
       "panels": [
         {
-          "panel_caption": "Volcano plots showing the change in the number of transcripts in shKDM5C ACHN cells, as determined by RNA-seq analysis (|log2 FC|>1.5, p value <0.05).",
           "panel_label": "A",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "Volcano plots showing the change in the number of transcripts in shYY1 ACHN cells, as determined by RNA-seq analysis (|log2 FC|>1.5, p value <0.05).",
           "panel_label": "B",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "Volcano plots showing the change in the number of transcripts in double shKDM5C ACHN cells, as determined by RNA-seq analysis (|log2 FC|>1.5, p value <0.05). \"Double sh\" indicates cells with KDM5C and YY1 simultaneously knocked down.",
           "panel_label": "C",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "Venn diagrams showing the number of downregulated genes in shKDM5C, shYY1 or shKDM5C/YY1 double-knockdown cells.",
           "panel_label": "D",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "Heatmap showing the normalized gene expression profile in shKDM5C, shYY1 or double sh ACHN cells. \"Double sh\" indicates cells with KDM5C and YY1 simultaneously knocked down.",
           "panel_label": "E",
+          "panel_caption": "",
           "sd_files": []
-
         },
         {
-          "panel_caption": "qPCR was used to assess the transcription of select genes in the indicated ACHN cells. Each experiment was repeated three times with similar results. \"Double sh\" indicates cells with KDM5C and YY1 double knocked down. The data are shown as the mean \u00b1 SD of three independent experiments after analysis by two tailed Student's T-test. P=2.86E-05 (JAM3), P=4.06E-06 (KNTC1), P=1.31E-04(SMC2), P=9.18E-06(SMC4), P=1.91E-05(LMNB1) and P=1.47E-04 (FOXM1).",
           "panel_label": "F",
+          "panel_caption": "",
           "sd_files": []
-
         }
       ]
     },
     {
-      "figure_caption": "<p>A. Cell cycle analysis with the indicated cell lines via flow\ncytometry. The percentage of cells in each phase of the cell cycle is\nshown on the Y-axis. Each experiment was repeated three times with\nsimilar results. “Double sh” indicates cells with simultaneous knockdown\nof KDM5C and YY1.</p>\n<p>B. Flow cytometry–based Annexin-V/PI staining showing cells in the\nindicated lineages undergoing apoptosis. The quantitative results\nindicate the ratio of apoptotic cells. Each experiment was repeated\nthree times with similar results. “Double sh” indicates cells with\nsimultaneous knockdown of KDM5C and YY1. The data are shown as the mean\n± SD of three independent experiments after analysis by two tailed\nStudent’s T-test. <em>P</em>=5.3E-05 (RCC4) and <em>P</em>=1.1E-06\n(769-P).</p>",
+      "figure_caption": "A. Cell cycle analysis with the indicated cell lines via flow cytometry. The percentage of cells in each phase of the cell cycle is shown on the Y-axis. Each experiment was repeated \n\n\n\nthree times with similar results. “Double sh” indicates cells with simultaneous knockdown of KDM5C and YY1.\n\nB. Flow cytometry–based Annexin-V/PI staining showing cells in the indicated lineages undergoing apoptosis. The quantitative results indicate the ratio of apoptotic cells. Each experiment was repeated three times with similar results. “Double sh” indicates cells with simultaneous knockdown of KDM5C and YY1. The data are shown as the mean ± SD of three independent experiments after analysis by two tailed Student’s T-test. P=5.3E-05 (RCC4) and P=1.1E-06 (769-P).",
       "figure_label": "Figure 6",
-      "caption_title": "Simultaneous targeting of KDM5C and YY1 effectively\ninduces cell cycle arrest in the G2/M phase and apoptosis.",
+      "caption_title": "Simultaneous targeting of KDM5C and YY1 effectively induces cell cycle arrest in the G2/M phase and apoptosis.",
       "panels": [
         {
-          "panel_caption": "Cell cycle analysis with the indicated cell lines via flow cytometry. The percentage of cells in each phase of the cell cycle is shown on the Y-axis. Each experiment was repeated three times with similar results. \"Double sh\" indicates cells with simultaneous knockdown of KDM5C and YY1.",
+          "panel_caption": "",
           "panel_label": "A",
           "sd_files": []
 
         },
         {
-          "panel_caption": "Flow cytometry-based Annexin-V/PI staining showing cells in the indicated lineages undergoing apoptosis. The quantitative results indicate the ratio of apoptotic cells. Each experiment was repeated three times with similar results. \"Double sh\" indicates cells with simultaneous knockdown of KDM5C and YY1. The data are shown as the mean \u00b1 SD of three independent experiments after analysis by two tailed Student's T-test. P=5.3E-05 (RCC4) and P=1.1E-06 (769-P).",
+          "panel_caption": "",
           "panel_label": "B",
           "sd_files": []
 
@@ -225,37 +212,37 @@
       ]
     },
     {
-      "figure_caption": "<p>YY1 and KDM5C constitute a pair of synthetic lethal genes. KDM5C\nrecruits YY1 to the promoter regions of cell cycle- or apoptosis-related\ngenes. Targeting YY1 increases the vulnerability of KDM5C-deficient\ncancer cells.</p>\n<p><strong><br />\n</strong></p>",
+      "figure_caption": "YY1 and KDM5C constitute a pair of synthetic lethal genes. KDM5C recruits YY1 to the promoter regions of cell cycle- or apoptosis-related genes. Targeting YY1 increases the vulnerability of KDM5C-deficient cancer cells.",
       "figure_label": "Figure 7",
-      "caption_title": "A mechanistic hypothesis model for KDM5C-mediated\nYY1 recruitment.",
+      "caption_title": "A mechanistic hypothesis model for KDM5C-mediated YY1 recruitment.",
       "panels": [
         {
-          "panel_caption": "YY1 and KDM5C constitute a pair of synthetic lethal genes. KDM5C\nrecruits YY1 to the promoter regions of cell cycle- or apoptosis-related\ngenes. Targeting YY1 increases the vulnerability of KDM5C-deficient\ncancer cells.",
-          "panel_label": "",
+          "panel_caption": "",
+          "panel_label": "A",
           "sd_files": []
         }
       ]
     }
   ],
   "data_availability": {
-    "section_text": "<p>The sequencing data are available in GEO Data Sets with the accession number GSE270718 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270718), GSE270719 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270719) and GSE275838 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE275838). All other raw data support the findings of this study are available from the corresponding author upon reasonable request.</p> <p><strong><br/> </strong></p> ",
+    "section_text": "The sequencing data are available in GEO Data Sets with the accession number GSE270718 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270718), GSE270719 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270719) and GSE275838 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE275838). All other raw data support the findings of this study are available from the corresponding author upon reasonable request.",
     "data_sources": [
       {
-        "database": "GEO",
+        "database": "GEO Data Sets",
         "accession_number": "GSE270718",
         "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270718"
       },
       {
-        "database": "GEO",
+        "database": "GEO Data Sets",
         "accession_number": "GSE270719",
         "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270719"
       },
       {
-        "database": "GEO",
+        "database": "GEO Data Sets",
         "accession_number": "GSE275838",
         "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE275838"
       }
     ]
   },
-  "all_captions": "<p><strong>Figure Legends</strong></p>\n<p><strong>Figure 1 YY1 was identified as a KDM5C binding\nprotein</strong></p>\n<p>A. Forest plot of the hazard ratio (HR) showing the association\nbetween high expression levels of KDM5C and overall survival in multiple\ncancers. For each type of cancer, the HR and 95% confidence interval\n(CI) are plotted as red dots and horizontal lines on the basis of a Cox\nproportional hazards model; when the HR=1, the study object had no\neffect on overall survival; when the HR&gt;1, the study object was\ndetermined to be a risk factor; and when the HR&lt;1, the study object\nwas identified as a protective factor.</p>\n<p>B. Strategy for identifying KDM5C-binding partners in HEK293T cells\nvia TAP-MS.</p>\n<p>C-D. Co-IP followed by Western blotting was used to detect the\ninteraction between KDM5C and YY1 exogenously (C) and endogenously (D)\nin HEK 293 cells.</p>\n<p>E. Semi-endogenous co-IP with KDM5C-Flag and YY1 in the renal cancer\ncell line 769-P.</p>\n<p>F. Schematic representation of KDM5C domains and corresponding\nconstructs.</p>\n<p>G. Semi-endogenous co-IP with KDM5C truncation mutants and endogenous\nYY1 in HEK293T cells.</p>\n<p><strong>Figure 2 YY1 is a vulnerable target in KDM5C-deficient tumor\ncells</strong></p>\n<p>A. Western blotting showing KDM5C expression in HK-2 human kidney\nproximal tubular epithelial cells and renal cancer cell lines (ACHN,\n769-P and RCC4).</p>\n<p>B. Effect of YY1 knockdown on the survival of the indicated tumor\ncell lines as measured by a colony formation assay (n=3 biological\nreplicates).</p>\n<p>C. Proliferation of the indicated cell lines after YY1 was depleted,\nas measured by a CCK8 assay. The data are shown as the mean ± SD of\nthree independent experiments after analysis by one-way ANOVA. In ACHN\ncells, <em>P</em>=0.116 (shYY1-1) and <em>P</em>=0.1222 (shYY1-2); in\n769-P cells, <em>P</em>=0.7353 (shYY1-1) and <em>P</em>=0.9113\n(shYY1-2); and in RCC4 cells, <em>P</em>=0.0007 (shYY1-1) and\n<em>P</em>=2E-05 (shYY1-2).</p>\n<p>D. Xenograft tumors excised from nude mice (n = 6/group) that had\nbeen subcutaneously injected with the indicated tumor cells. Statistical\nsignificance was determined by one-way ANOVA. <em>P</em>=1E-05</p>\n<p><strong>Figure 3 KDM5C is essential for YY1 genome-wide chromatin\nrecruitment</strong></p>\n<p>A. Violin plot showing the alteration in YY1 binding peaks after\nKDM5C depletion. YY1 binding peaks in both ACHN parental and shKDM5C\ncells were counted (n=17,030). The data are presented as mean ± SD.\nStatistical significance was determined by the Mann-Whitney U test,\n<em>P</em>= 2.22E-16.</p>\n<p>B. Venn diagram showing the overlapping peaks of YY1 and KDM5C in the\nco-occupied regions. Representative data from two independent CUT-Tag\nexperiments.</p>\n<p>C. Heatmap and metaplot showing the chromatin enrichment of YY1 at\noverlapping YY1 and KDM5C peak regions (n=3645) in ACHN parental and\nshKDM5C cells.</p>\n<p>D. Pie chart showing the annotated genomic distribution of altered\nYY1 peaks on different DNA elements in shKDM5C or KDM5C overexpressing\ncells.</p>\n<p><strong>Figure 4 An intact JmjC domain but not KDM5C H3K4\ndemethylation activity is required for KDM5C-mediated YY1\nrecruitment</strong></p>\n<p>A. Heatmap and metaplot showing the distribution of YY1 peaks in the\noverlapping regions of YY1 and KDM5C (n=3645) in ACHN cells expressing\nthe KDM5C-WT or KDM5C-H514A mutant.</p>\n<p>B. Loss of KDMC5 resulted in increased H3K4me3 signal intensity in\nthe YY1 and KDM5C overlapping region (n=3645) in ACHN parental and\nshKDM5C cells.</p>\n<p>C. Venn diagram showing the number of YY1 peaks in the H3K4me3/YY1\noverlapping region (n=11087) with or without modulation by KDM5C.</p>\n<p>D-E. Heatmaps and metaplots revealed reduced YY1 enrichment at KDM5C\ndemethylase dependent regions (n=9943) or KDM5C demethylase independent\nregions (n=1144) in ACHN parental and shKDM5C cells.</p>\n<p>F. KDM5C protein levels in whole-cell lysates or chromatin fractions\nfrom HEK293T cells transfected with KDM5C-WT or KDM5C-H514A mutant\nconstruct.</p>\n<p>G-I. Effect of the re-expression of the KDM5C-WT or KDM5C-H514A\nmutant on the proliferation of ACHN (G), 769-P (H) or RCC4 (I) cells\nafter the depletion KDM5C, YY1 or both, as determined by the CCK8 assay.\nEach experiment was repeated three times with similar results. “Dsh”\nindicates cells in which KDM5C and YY1 were both knocked down. The data\nare shown as the mean ± SD of three independent experiments after\nanalysis via Student’s t test. In ACHN cells, <em>P</em>=5.37E-08 (Dsh)\nand <em>P</em>=3.48E-07 (Dsh+KDM5C); in 769-P cells, <em>P</em>=4.45E-10\n(Dsh) and <em>P</em>=7.49E-10 (Dsh+KDM5C); in ACHN cells,\n<em>P</em>=5.86E-09 (Dsh) and <em>P</em>=2.72E-07 (Dsh+KDM5C).</p>\n<p>J. Colony formation assay with the indicated cell lines(n=3). “Dsh”\nindicates cells with KDM5C and YY1 simultaneously knocked down.</p>\n<p><strong>Figure 5 KDM5C and YY1 coregulate the expression of a number\nof essential cell-fate genes</strong></p>\n<p>A-C. Volcano plots showing the change in the number of transcripts in\nshKDM5C, shYY1 or double shKDM5C ACHN cells, as determined by RNA-seq\nanalysis (|log<sub>2</sub> FC|&gt;1.5, p value &lt;0.05). “Double sh”\nindicates cells with KDM5C and YY1 simultaneously knocked down.</p>\n<p>D. Venn diagrams showing the number of downregulated genes in\nshKDM5C, shYY1 or shKDM5C/YY1 double-knockdown cells.</p>\n<p>E. Heatmap showing the normalized gene expression profile in shKDM5C,\nshYY1 or double sh ACHN cells. “Double sh” indicates cells with KDM5C\nand YY1 simultaneously knocked down.</p>\n<p>F. qPCR was used to assess the transcription of select genes in the\nindicated ACHN cells. Each experiment was repeated three times with\nsimilar results. “Double sh” indicates cells with KDM5C and YY1 double\nknocked down. The data are shown as the mean ± SD of three independent\nexperiments after analysis by two tailed Student’s T-test.\n<em>P</em>=2.86E-05 (JAM3), <em>P</em>=4.06E-06 (KNTC1),\n<em>P</em>=1.31E-04(SMC2), <em>P</em>=9.18E-06(SMC4),\n<em>P</em>=1.91E-05(LMNB1) and <em>P</em>=1.47E-04 (FOXM1).</p>\n<p><strong>Figure 6 Simultaneous targeting of KDM5C and YY1 effectively\ninduces cell cycle arrest in the G2/M phase and apoptosis.</strong></p>\n<p>A. Cell cycle analysis with the indicated cell lines via flow\ncytometry. The percentage of cells in each phase of the cell cycle is\nshown on the Y-axis. Each experiment was repeated three times with\nsimilar results. “Double sh” indicates cells with simultaneous knockdown\nof KDM5C and YY1.</p>\n<p>B. Flow cytometry–based Annexin-V/PI staining showing cells in the\nindicated lineages undergoing apoptosis. The quantitative results\nindicate the ratio of apoptotic cells. Each experiment was repeated\nthree times with similar results. “Double sh” indicates cells with\nsimultaneous knockdown of KDM5C and YY1. The data are shown as the mean\n± SD of three independent experiments after analysis by two tailed\nStudent’s T-test. <em>P</em>=5.3E-05 (RCC4) and <em>P</em>=1.1E-06\n(769-P).</p>\n<p><strong>Figure 7 A mechanistic hypothesis model for KDM5C-mediated\nYY1 recruitment.</strong></p>\n<p>YY1 and KDM5C constitute a pair of synthetic lethal genes. KDM5C\nrecruits YY1 to the promoter regions of cell cycle- or apoptosis-related\ngenes. Targeting YY1 increases the vulnerability of KDM5C-deficient\ncancer cells.</p>\n<p><strong><br />\n</strong></p>\n<p><strong>Expanded View Figure Legends</strong></p>\n<p><strong>Figure EV1 Validation of the constructed cell lines used in\nthis study</strong></p>\n<p>A-D. KDM5C and YY1 protein levels in the indicated cells were\nmeasured via Western blotting. “Dsh” indicates cells in which KDM5C and\nYY1 were both knocked down.</p>\n<p>E-F. Proliferation rate of the indicated cell lines upon KDM5C\ndepletion, as determined via a CCK8 assay. The data are shown as the\nmean ± SD of three independent experiments after analysis via one-way\nANOVA. In 769-P cells, <em>P</em>=0.2701 (shKDM5C -1) and\n<em>P</em>=0.4753 (shKDM5C-2); in ACHN cells, <em>P</em>=0.4308\n(shKDM5C-1) and <em>P</em>=0.3869 (shYY1-2).</p>\n<p><strong>Figure EV2 ChIP-seq experiments targeting YY1 in HK-2\ncells</strong></p>\n<p>A. Heatmap and metaplot showing the chromatin enrichment of YY1 in\nHK-2 cells in the presence or absence of KDM5C.</p>\n<p>B-C. ChIP-PCR assay showing the enrichment of YY1 at the promoters of\nthe indicated genes in HK-2 cells after the depletion of YY1, KDM5C or\nboth (B), or in cells expressing KDM5C-WT or KDM5C-H514A mutant (C).\nEach experiment was repeated three times with similar results.\nStatistical significate was determined by one-way ANOVA. In B,\n<em>P</em>=1.24E-06 (JAM3), <em>P</em>=2.27E-06 (KNTC1),\n<em>P</em>=2.82E-08 (SMC2), <em>P</em>=2.41E-05 (SMC4) and\n<em>P</em>=3.96E-05 (FOXM1), respectively. In C, <em>P</em>=4.53E-06\n(JAM3), <em>P</em>=4.46E-06 (KNTC1), <em>P</em>=5.53E-06(SMC2),\n<em>P</em>=6.82E-06 (SMC4), <em>P</em>=1.05E-06 (FOXM1) and\n<em>P</em>=0.0002 (LMNB1), respectively.</p>\n<p><strong>Figure EV3 Evaluation of the interaction between YY1 and\nKDM5C-WT or KDM5C-H514A mutant.</strong></p>\n<p>Co-IP followed by Western blotting showing the interaction between\nYY1 and KDM5C-WT or KDM5C-H514A mutant in HEK293T cells.</p>\n<p><strong>Figure EV4 RNA-seq in HK-2 derived cells.</strong></p>\n<p>A-C. Volcano plots showing the change in the number of transcripts in\nshKDM5C, shYY1 or double-knockdown HK-2 cells, as determined by RNA-seq\nanalysis (|log<sub>2</sub> FC|&gt;1.5, p value &lt;0.05).</p>\n<p>D. Heatmap showing the normalized gene expression profile in shKDM5C,\nshYY1 or double sh ACHN cells. “Double sh” indicates cells in which\nKDM5C and YY1 were both knocked down.</p>\n<p><strong>Figure EV5 Effects of KDM5C on YY1 enrichment at promoter\nregions of specific genes</strong></p>\n<p>A-B. The connections between the ChIP-seq and RNA-seq data were\nanalyzed, and the genomic regions of the downregulated genes in the\nKDM5C/YY1 double-knockdown group were annotated.</p>\n<p>C-D. ChIP-seq snapshots reflecting changes in YY1 enrichment at the\npromoter regions of the JAM3, LNMB1, FOXM1, KNTC1, SMC2 and SMC4 genes\nin the indicated cell lines. The promoters are indicated by H3K4me3\npeaks.</p>\n"
+  "all_captions": "Figure 1 YY1 was identified as a KDM5C binding protein\n\nA. Forest plot of the hazard ratio (HR) showing the association between high expression levels of KDM5C and overall survival in multiple cancers. For each type of cancer, the HR and 95% confidence interval (CI) are plotted as red dots and horizontal lines on the basis of a Cox proportional hazards model; when the HR=1, the study object had no effect on overall survival; when the HR>1, the study object was determined to be a risk factor; and when the HR<1, the study object was identified as a protective factor.\n\nB. Strategy for identifying KDM5C-binding partners in HEK293T cells via TAP-MS.\n\nC-D. Co-IP followed by Western blotting was used to detect the interaction between KDM5C and YY1 exogenously (C) and endogenously (D) in HEK 293 cells.\n\nE. Semi-endogenous co-IP with KDM5C-Flag and YY1 in the renal cancer cell line 769-P.\n\nF. Schematic representation of KDM5C domains and corresponding constructs.\n\nG. Semi-endogenous co-IP with KDM5C truncation mutants and endogenous YY1 in HEK293T cells.\n\nFigure 2 YY1 is a vulnerable target in KDM5C-deficient tumor cells\n\nA. Western blotting showing KDM5C expression in HK-2 human kidney proximal tubular epithelial cells and renal cancer cell lines (ACHN, 769-P and RCC4).\n\nB. Effect of YY1 knockdown on the survival of the indicated tumor cell lines as measured by a colony formation assay (n=3 biological replicates).\n\nC. Proliferation of the indicated cell lines after YY1 was depleted, as measured by a CCK8 \n\n\n\nassay. The data are shown as the mean ± SD of three independent experiments after analysis by one-way ANOVA. In ACHN cells, P=0.116 (shYY1-1) and P=0.1222 (shYY1-2); in 769-P cells, P=0.7353 (shYY1-1) and P=0.9113 (shYY1-2); and in RCC4 cells, P=0.0007 (shYY1-1) and P=2E-05 (shYY1-2).\n\nD. Xenograft tumors excised from nude mice (n = 6/group) that had been subcutaneously injected with the indicated tumor cells. Statistical significance was determined by one-way ANOVA. P=1E-05\n\nFigure 3 KDM5C is essential for YY1 genome-wide chromatin recruitment\n\nA. Violin plot showing the alteration in YY1 binding peaks after KDM5C depletion. YY1 binding peaks in both ACHN parental and shKDM5C cells were counted (n=17,030). The data are presented as mean ± SD. Statistical significance was determined by the Mann-Whitney U test, P= 2.22E-16.\n\nB. Venn diagram showing the overlapping peaks of YY1 and KDM5C in the co-occupied regions. Representative data from two independent CUT-Tag experiments.\n\nC. Heatmap and metaplot showing the chromatin enrichment of YY1 at overlapping YY1 and KDM5C peak regions (n=3645) in ACHN parental and shKDM5C cells.\n\nD. Pie chart showing the annotated genomic distribution of altered YY1 peaks on different DNA elements in shKDM5C or KDM5C overexpressing cells.\n\nFigure 4 An intact JmjC domain but not KDM5C H3K4 demethylation activity is required for KDM5C-mediated YY1 recruitment\n\nA. Heatmap and metaplot showing the distribution of YY1 peaks in the overlapping regions \n\n\n\nof YY1 and KDM5C (n=3645) in ACHN cells expressing the KDM5C-WT or KDM5C-H514A mutant.\n\nB. Loss of KDMC5 resulted in increased H3K4me3 signal intensity in the YY1 and KDM5C overlapping region (n=3645) in ACHN parental and shKDM5C cells.\n\nC. Venn diagram showing the number of YY1 peaks in the H3K4me3/YY1 overlapping region (n=11087) with or without modulation by KDM5C.\n\nD-E. Heatmaps and metaplots revealed reduced YY1 enrichment at KDM5C demethylase dependent regions (n=9943) or KDM5C demethylase independent regions (n=1144) in ACHN parental and shKDM5C cells.\n\nF. KDM5C protein levels in whole-cell lysates or chromatin fractions from HEK293T cells transfected with KDM5C-WT or KDM5C-H514A mutant construct.\n\nG-I. Effect of the re-expression of the KDM5C-WT or KDM5C-H514A mutant on the proliferation of ACHN (G), 769-P (H) or RCC4 (I) cells after the depletion KDM5C, YY1 or both, as determined by the CCK8 assay. Each experiment was repeated three times with similar results. “Dsh” indicates cells in which KDM5C and YY1 were both knocked down. The data are shown as the mean ± SD of three independent experiments after analysis via Student’s t test. In ACHN cells, P=5.37E-08 (Dsh) and P=3.48E-07 (Dsh+KDM5C); in 769-P cells, P=4.45E-10 (Dsh) and P=7.49E-10 (Dsh+KDM5C); in ACHN cells, P=5.86E-09 (Dsh) and P=2.72E-07 (Dsh+KDM5C).\n\nJ. Colony formation assay with the indicated cell lines(n=3). “Dsh” indicates cells with KDM5C and YY1 simultaneously knocked down.\n\n\n\nFigure 5 KDM5C and YY1 coregulate the expression of a number of essential cell-fate genes\n\nA-C. Volcano plots showing the change in the number of transcripts in shKDM5C, shYY1 or double shKDM5C ACHN cells, as determined by RNA-seq analysis (|log2 FC|>1.5, p value <0.05). “Double sh” indicates cells with KDM5C and YY1 simultaneously knocked down.\n\nD. Venn diagrams showing the number of downregulated genes in shKDM5C, shYY1 or shKDM5C/YY1 double-knockdown cells.\n\nE. Heatmap showing the normalized gene expression profile in shKDM5C, shYY1 or double sh ACHN cells. “Double sh” indicates cells with KDM5C and YY1 simultaneously knocked down.\n\nF. qPCR was used to assess the transcription of select genes in the indicated ACHN cells. Each experiment was repeated three times with similar results. “Double sh” indicates cells with KDM5C and YY1 double knocked down. The data are shown as the mean ± SD of three independent experiments after analysis by two tailed Student’s T-test. P=2.86E-05 (JAM3), P=4.06E-06 (KNTC1), P=1.31E-04(SMC2), P=9.18E-06(SMC4), P=1.91E-05(LMNB1) and P=1.47E-04 (FOXM1).\n\nFigure 6 Simultaneous targeting of KDM5C and YY1 effectively induces cell cycle arrest in the G2/M phase and apoptosis.\n\nA. Cell cycle analysis with the indicated cell lines via flow cytometry. The percentage of cells in each phase of the cell cycle is shown on the Y-axis. Each experiment was repeated \n\n\n\nthree times with similar results. “Double sh” indicates cells with simultaneous knockdown of KDM5C and YY1.\n\nB. Flow cytometry–based Annexin-V/PI staining showing cells in the indicated lineages undergoing apoptosis. The quantitative results indicate the ratio of apoptotic cells. Each experiment was repeated three times with similar results. “Double sh” indicates cells with simultaneous knockdown of KDM5C and YY1. The data are shown as the mean ± SD of three independent experiments after analysis by two tailed Student’s T-test. P=5.3E-05 (RCC4) and P=1.1E-06 (769-P).\n\nFigure 7 A mechanistic hypothesis model for KDM5C-mediated YY1 recruitment. \n\nYY1 and KDM5C constitute a pair of synthetic lethal genes. KDM5C recruits YY1 to the promoter regions of cell cycle- or apoptosis-related genes. Targeting YY1 increases the vulnerability of KDM5C-deficient cancer cells."
 }

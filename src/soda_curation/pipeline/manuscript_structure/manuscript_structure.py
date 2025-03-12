@@ -33,8 +33,8 @@ class Panel:
 
     panel_label: str
     panel_caption: str
-    panel_bbox: List[float]
-    confidence: float
+    panel_bbox: List[float] = field(default_factory=list)
+    confidence: float = 0.0
     ai_response: Optional[str] = None
     sd_files: List[str] = field(default_factory=list)
 
@@ -53,7 +53,6 @@ class Figure:
         duplicated_panels (str): Flag indicating if panels are duplicated.
         ai_response_panel_source_assign (Optional[str]): AI response for panel source assignment.
         possible_hallucination (bool): Flag indicating if caption might be hallucinated.
-        rouge_l_score (float): ROUGE-L F-measure score between extracted and original caption.
         unassigned_sd_files (List[str]): Source data files not assigned to specific panels.
         _full_img_files (List[str]): Full paths to image files.
         _full_sd_files (List[str]): Full paths to source data files.
@@ -68,13 +67,8 @@ class Figure:
     _full_sd_files: List[str] = field(default_factory=list)
     duplicated_panels: str = "false"
     ai_response_panel_source_assign: Optional[str] = None
-    possible_hallucination: bool = False
-    ai_response_locate_captions: Optional[str] = None
-    ai_response_extract_captions: Optional[str] = None
-    rouge_l_score: float = 0.0
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
-    diff: str = ""  # New field for diff output
 
 
 @dataclass
@@ -91,11 +85,11 @@ class TokenUsage:
 class ProcessingCost:
     """Tracks token usage and costs across different processing steps."""
 
-    extract_captions: TokenUsage = field(default_factory=TokenUsage)
+    extract_sections: TokenUsage = field(default_factory=TokenUsage)
     extract_individual_captions: TokenUsage = field(default_factory=TokenUsage)
     assign_panel_source: TokenUsage = field(default_factory=TokenUsage)
     match_caption_panel: TokenUsage = field(default_factory=TokenUsage)
-    assign_source_data: TokenUsage = field(default_factory=TokenUsage)
+    extract_data_sources: TokenUsage = field(default_factory=TokenUsage)
     total: TokenUsage = field(default_factory=TokenUsage)
 
 
@@ -131,7 +125,7 @@ class ZipStructure:
     docx: str = ""
     pdf: str = ""
     ai_response_locate_captions: Optional[str] = None
-    ai_response_extract_captions: Optional[str] = None
+    ai_response_extract_individual_captions: Optional[str] = ""
     cost: ProcessingCost = field(default_factory=ProcessingCost)
     _full_docx: str = ""
     _full_pdf: str = ""
@@ -155,11 +149,11 @@ class ZipStructure:
 
         # Add up each component
         for component in [
-            self.cost.extract_captions,
+            self.cost.extract_sections,
             self.cost.extract_individual_captions,
             self.cost.assign_panel_source,
             self.cost.match_caption_panel,
-            self.cost.assign_source_data,
+            self.cost.extract_data_sources,
         ]:
             total.prompt_tokens += component.prompt_tokens
             total.completion_tokens += component.completion_tokens
@@ -176,14 +170,30 @@ class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         """Convert dataclass objects to dictionaries, excluding private fields."""
         if isinstance(obj, (ZipStructure, Figure, Panel, ProcessingCost, TokenUsage)):
-            # Convert to dict and filter out private fields
-            dict_obj = {k: v for k, v in vars(obj).items() if not k.startswith("_")}
-            # Remove any None values and empty collections
+            # Get all non-private attributes
+            dict_obj = {}
+            for k, v in vars(obj).items():
+                if k.startswith("_"):
+                    continue
+
+                # Handle special cases that might cause circular references
+                if k == "figures" and isinstance(obj, ZipStructure):
+                    dict_obj[k] = [self.default(fig) for fig in v]
+                elif k == "panels" and isinstance(obj, Figure):
+                    dict_obj[k] = [self.default(panel) for panel in v]
+                elif k == "sd_files":  # Changed this condition
+                    # Always include sd_files, even if empty
+                    dict_obj[k] = [str(f) for f in v] if v else []
+                else:
+                    dict_obj[k] = v
+
+            # Remove None values and empty collections, but preserve sd_files
             return {
                 k: v
                 for k, v in dict_obj.items()
-                if v is not None and v != {} and v != []
+                if v is not None and (k == "sd_files" or (v != {} and v != []))
             }
+
         return super().default(obj)
 
     def serialize_dataclass(self, obj):

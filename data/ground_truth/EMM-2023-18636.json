@@ -1,488 +1,488 @@
 {
   "manuscript_id": "EMM-2023-18636",
-  "xml": "EMM-2023-18636.xml",
-  "docx": "doc/240429 EMM  DUSP6 targeting abrogates HER3 R2.docx",
-  "pdf": "pdf/EMM-2023-18636.pdf",
+  "xml": "EMM-2023-18636/EMM-2023-18636.xml",
+  "docx": "EMM-2023-18636/doc/240429 EMM  DUSP6 targeting abrogates HER3 R2.docx",
+  "pdf": "EMM-2023-18636/pdf/EMM-2023-18636.pdf",
   "appendix": [
-    "graphic/EV1.eps",
-    "graphic/EV2.eps",
-    "graphic/EV3.eps",
-    "graphic/EV4.eps",
-    "graphic/EV5.eps",
-    "suppl_data/Table EV1.docx",
-    "suppl_data/Table EV2.docx",
-    "suppl_data/Table EV3.docx",
-    "suppl_data/EMM202318636V3Appendix.pdf",
-    "suppl_data/Dataset EV1.xlsx",
-    "suppl_data/Dataset EV2.xlsx",
-    "suppl_data/Dataset EV3.xlsx",
-    "suppl_data/Dataset EV4.xlsx"
+    "EMM-2023-18636/graphic/EV1.eps",
+    "EMM-2023-18636/graphic/EV2.eps",
+    "EMM-2023-18636/graphic/EV3.eps",
+    "EMM-2023-18636/graphic/EV4.eps",
+    "EMM-2023-18636/graphic/EV5.eps",
+    "EMM-2023-18636/suppl_data/Table EV1.docx",
+    "EMM-2023-18636/suppl_data/Table EV2.docx",
+    "EMM-2023-18636/suppl_data/Table EV3.docx",
+    "EMM-2023-18636/suppl_data/EMM202318636V3Appendix.pdf",
+    "EMM-2023-18636/suppl_data/Dataset EV1.xlsx",
+    "EMM-2023-18636/suppl_data/Dataset EV2.xlsx",
+    "EMM-2023-18636/suppl_data/Dataset EV3.xlsx",
+    "EMM-2023-18636/suppl_data/Dataset EV4.xlsx"
   ],
   "figures": [
     {
       "figure_label": "Figure 1",
-      "img_files": ["graphic/Figure 1.eps"],
-      "sd_files": ["suppl_data/Figure 1.zip"],
-      "figure_caption": "(A)</strong> Development of lapatinib resistance in HER2+ breast cancer cells. BT474 and BT474Br cells were treated with 1 μM of lapatinib for 9 days (d), 6 months (mos) and 9 mos to yield Drug-tolerant persister (DTP), Drug-tolerant expanding perister (DTEP) and Long term resistant (LR) clones, respectively. The cells were stained with crystal violet (0.5% w/v) and the images were acquired with an inverted microscope. The transcriptional profiles from each functional state of lapatinib drug tolerance and resistance development from three parallel BT474 cell plates were surveyed by RNA-sequencing. <strong>(B)</strong> The number of the genes with a significant change in their expression during the resistance acquisition (see Dataset EV1 for individual gene names). Transcription factor (TF) binding motifs significantly enriched in significantly regulated genes in each transition are indicated. Bolding indicates shared TF binding sites between DTP downregulated and DTEP upregulated genes. <strong>(C)</strong> Differentially expressed pathways were identified using the R package limma and hallmark gene sets were used for GSVA analysis to reveal hallmarks and signal transduction pathways involved in each step of the resistance acquisition. Red indicates those hallmarks and pathways that are overlapping with processes regulated by DUSP6 depletion in figure 3F.</p>\n<p>",
+      "img_files": ["EMM-2023-18636/graphic/Figure 1.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 1.zip"],
+      "figure_caption": "(A) Development of lapatinib resistance in HER2+ breast cancer cells. BT474 and BT474Br cells were treated with 1 M of lapatinib for 9 days (d), 6 months (mos) and 9 mos to yield Drug-tolerant persister (DTP), Drug-tolerant expanding perister (DTEP) and Long term resistant (LR) clones, respectively. The cells were stained with crystal violet (0.5% w/v) and the images were acquired with an inverted microscope. The transcriptional profiles from each functional state of lapatinib drug tolerance and resistance development from three parallel BT474 cell plates were surveyed by RNA-sequencing. (B) The number of the genes with a significant change in their expression during the resistance acquisition (see Dataset EV1 for individual gene names). Transcription factor (TF) binding motifs significantly enriched in significantly regulated genes in each transition are indicated. Bolding indicates shared TF binding sites between DTP downregulated and DTEP upregulated genes. (C) Differentially expressed pathways were identified using the R package limma and hallmark gene sets were used for GSVA analysis to reveal hallmarks and signal transduction pathways involved in each step of the resistance acquisition. Red indicates those hallmarks and pathways that are overlapping with processes regulated by DUSP6 depletion in figure 3F.\n\nFigure 2: Clinical association of DUSP6 overexpression with poor prognosis HER2+ breast cancers. (A, B) Volcano plots visualizing differentially expressed genes in (A) Control-DTP and (B) DTP-DTEP transitions. The volcano blots indicate \n\n\n\nall genes that were significantly regulated during these transitions (|logFC |<2 and FDR <0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (DUSP6, CDC25A, CDC25C, and SYNJ1) are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). (C) Changes in the DUSP6, CDC25A, CDC25C, and SYNJ1 mRNA levels during the acquisition of lapatinib resistance in BT474 cells. Data is based on RNA sequencing analysis (Dataset EV1) and was analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05, **p < 0.01 and ***p < 0.001 were determined (n=3). (D) Differential expression of DUSP6, CDC25A, CDC25C, and SYNJ1 in different breast cancer subtypes. Data were extracted from the METABRIC dataset and categorized into five molecular subtypes according to the PAM50 gene expression subtype classification (basal, claudin-low, HER2+, Luminal A, and Luminal B). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test and shown as mean  standard deviation (SD). Statistically significant values of *p < 0.05, **p < 0.01 and ****p < 0.0001 were determined (basal=209, claudin-low=218, HER2+=224, LumA=700 and LumB=475). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) groups and the clinical breast cancer subtypes were compared between the two groups. NA; not available. (F,G) Subgroup of 113 patient cases with high tumor ERBB2 mRNA expression (LogFC>1, FDR<0.05) were divided into DUSP6high and DUSP6low groups and their overall survival (OS) (G) (Log-rank Test p value=0.0220) and disease-specific progression free survival (PFS)(H)(Log-rank Test p value=0.0259) was tested according to DUSP6 status. \n\n\n\nFigure 3: Functional involvement of DUSP6 in HER2i tolerance development. \n\n(A) Expression of DUSP6 protein in different stages of lapatinib resistance development by Western blot analysis. (B) Relative expression of DUSP6 mRNA in indicated cell lines either at the untreated control situation, or in the DTP state after following treatments: BT474Br, Lapatinib 1M for 9 days; EFM192A and HCC1419, Lapatinib 2.5 M for 14 days; HCC827(EGFRmut NSCLC), 1 µM Osimertinib for 10 days; A375(BRAFV600E mutant malignant melanoma (MM)), 1 µM dabrafenib+100 nM trametinib for 10 days; and HT-29(BRAFV600E mutant colorectal cancer (CRC)), 1 µM dabrafenib+10 µg/ml cetuximab for 10 days. Data for EFM192 and HCC1419 cells was obtained from (DataRef: (Chang et al., 2022)(GSE155342), and for other cells by qRT-PCR analysis of the de novo treated samples. Shown is data from two-three repeat samples. (C) Transcriptional profile of MDA-MB-453 cells after DUSP6 knockdown by 3 different siRNA and compared with 3 different scramble controls, followed by the GSVA analysis of the Hallmark gene sets. The Hallmark gene sets overlapping with the gene sets regulated to same direction in DUSP6 low expressing DTEP cells (Fig. 1C) are indicated with red.  (D, E) Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on cell viability (G) and apoptosis (H), as measured by WST1 cell viability assay and caspase 3/7 activity, respectively. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. n=3.  (F) Ectopic overexpression of either wild-type DUSP6 (DUSPWT) or ERK binding deficient KIM mutant of DUSP6 (DUSP6MUT) in BT474 cells inhibits lapatinib effects on apoptosis. Shown is a result from a representative experiment from three repeats with similar results. Data were analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (G) \n\n\n\nDUSP6 inhibitor BCI preempts DTEP development in BT474 cells treated with either lapatinib or neratinib for 6 months. The cells were stained and fixed with crystal violet in methanol (0.5% w/v) and the images were acquired with an inverted microscope. \n\nFigure 4: Both genetic and pharmacological DUSP6 targeting overcomes HER2i resistance. (A) RNAi-mediated DUSP6 knockdown, but not of DUSP1, induces apoptotic cell death in MDA-MB-453 cells, as shown by Western blotting for PARP-1 cleavage. (B) CRISPR/CAS9-mediated DUSP6 knockout hinders the clonogenic growth of MDA-MB-453 cells, as compared to the CAS9 expressing controls. Shown are three independent single cell clones created with two independent gRNAs (g1 and g2). The cells were seeded at low density and maintained for 10 d. The colonies were stained/fixed with 0.5% crystal violet in methanol and imaged using an inverted microscope. (C) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to HER2-targeted therapies. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01, ***p < 0.001 and ****p < 0.0001 were determined. (D) A 2D synergy map of neratinib-BCI combination in MDA-MB-453 cells calculated by Bliss SynergyFinder (Ianevski et al., 2017). Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (E) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to combination with capecitabine and neratinib. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and \n\n\n\nanalyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined.\n\nFigure 5: DUSP6 inhibition overcomes HER2 inhibitor resistance in vivo. (A) Subcutaneous xenograft growth of two independent DUSP6 single cell knockout clones of MDA-MB-453 cells targeted with two different gRNA guides. One-way ANOVA followed by Tukey's multiple comparisons test **p < 0.01 comparing each clone to CAS9 expressing control cells . Data are shown as mean  SD (n=5) (B-E) The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft models: HCC1954 (B, C) or MDA-MB-453 (D, E). Data are shown as mean  SD (n=10 in each treatment group). Mice with tumor size ∼100 mm3 were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined. C and E panels display percentual change in the tumor volume from the start of the therapy as water-fall blots in HCC1954 and MDA-MB453 models, respectively. (F) H&E staining of the representative MDA-MB-453 xenograft tumors from the control, lapatinib, BCI and lapatinib+BCI groups at day 24. Scale bar 200 µm.  \n\nFigure 6: DUSP6 targeting inhibits HER3 expression  (A) A 2D synergy map of lapatinib+MK2206(AKTi) or (B) lapatinib+BCI(DUSP6i) combination in MDA-MB-453 cells calculated by the Bliss SynergyFinder. Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (C) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on apoptosis \n\n\n\ninduction (PARP-1 cleavage), and HER2 or HER3 protein levels by Western blot analysis. The cells were treated with lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) and their combinations for 48 h. (D) Quantification of PARP1 cleavage from three repeats of (C). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (E,F) The dose-dependent effects of MK2206 (E) and BCI (F) on the expression of HER2 and HER3 protein levels in MDA-MB-453 cells by Western blot analysis after 48h of treatment. (G) The time-dependent effects of BCI (2.5 µM) on the expression of HER2 and HER3 protein levels and apoptosis induction (PARP cleavage) in MDA-MB-453 cells by Western blot analysis. Increase in phosphorylated ERK (p-ERK1/2) and inhibition of DUSP6 both indicate for early target engagement by BCI.  (H) DUSP6 knockdown by siRNA inhibits HER2 and HER3 protein expression in MDA-MB-453 cells. (I) Effects of BCI (50 mg/kg) therapy on HER2 and HER3 protein levels in the MDA-MB-453 xenograft tissue on day 24. Shown is immunohistochemical analysis of HER2 and HER3 from the adjacent paraffin embedded tissue slices from Fig. 5F. Scale bar 200 µm. (J) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and expression of phosphorylated HER3 (p-HER3Y1298) was compared between the two groups. Data were analyzed by two-tailed t test; **p < 0.01. (DUSP6high=142, DUSP6low=149).\n\nFig. 7. DUSP6 targeting overcomes Neuregulin/HER3-mediated HER2i therapy tolerance\n\n(A) Comparison of the potential of BCI or MK2206 treatment to overcome Neuregulin (NRG)-mediated rescue from the anti-proliferative activity of neratinib. The cells were \n\n\n\ntreated with NRG (10 ng/mL), lapatinib (1 µM), MK2206 (1, 2.5, and 5 µM), and BCI (1, 2.5, and 5 µM) for 48 h and cell viability was measured by WST-1 assay.  Data were collected from three independent experiments each performed with three technical repeat samples. (B) Comparison of the effects of BCI and MK2206 on NRG-mediated evasion from neratinib-induced apoptotic cell death, as measured by Western blot analysis for cleaved PARP-1. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h. (C) HER3 overexpression rescues MDA-MB-453 cells from BCI-elicited inhibition of cell viability. The control or HER3 overexpressing MDA-MB-453 were treated with BCI (3 µM) for 48 h and cell viability was measured by WST-1 assay. Shown is data from four technical replicate samples from a representative of three experiments with similar results. The data was analysed by Two-way ANOVA + Tukey’s post hoc test, ****p < 0.0001 (D) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on NRG-mediated rescue from the anti-growth activity of lapatinib, as shown by crystal violet staining. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h, stained/fixed with 0.5% crystal violet in methanol and imaged by an inverted microscope (images acquired at 10x magnification). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and the neuregulin (NRG1) mRNA levels were compared between the two groups. Data were analyzed by two-tailed t test; ****p < 0.0001. (DUSP6high=167, DUSP6low=181).  (F) The effect of DUSP6 knockdown on the brain metastatic outgrowth of MDA-MB-361 cells in a zebrafish model. GFP positive MDA-MB-361 cells transfected either with control scrambled siRNA or DUSP6 siRNA were injected into zebrafish embryo brain and the GFP intensity was measured 3 days after by microscopy. Data were analyzed \n\n\n\nby two-tailed t test; ****p < 0.0001. Scale bar 100 µm (siSCR=37, siDUSP6=43). (G) Improved overall survival of mice with intracranially injected DUSP6 KO MDA-MB-453 cells as compared to the CAS9 positive control cell injected mice. Survival data were analyzed by log-rank Mantel–Cox test, **p < 0.01.\n\nFigure 8. Feed-forward loop between NRG/HER3 and DUSP6 determines HER2i sensitivity\n\n(A) DUSP1 and DUSP6 mRNA levels were determined by qRT-PCR analysis after treatment with increasing concentrations of neratinib for 48 h in indicated cell lines. Red denotes for HER2i resistant cell lines and green HER2i sensitive cells. Data were collected from three independent experiments each performed in triplicate. (B, C) Comparison of the effect of neratinib treatment (48 h) on DUSP6, p-AKT and p-ERK1/2 between HER2i sensitive BT474Br (B) and HER2i resistant MDA-MB-361 (C) cells, respectively. (D) The effect of siRNA-mediated HER3 knockdown on DUSP6 expression in MDA-MB-453 cells by Western blot analysis. (E) NRG-mediated induction of DUSP6 mRNA via MEK activation as measured by qRT-PCR analysis after treatment with NRG (10 ng/mL), MK2206(AKTi) (2.5 µM), and trametinib(MEKi) (100 nM) for 48 h. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05 and ****p < 0.0001 were determined (n=3). (F) The effect of NRG on DUSP6 protein expression BT474 cells via MEK activation. The cells were serum-starved for 24 h, followed by treatment with NRG (10 ng/mL), MK2206 (2.5 µM) and trametinib (100 nM) for 48 h. (G) Inhibition of DUSP6 expression in HER2i resistant MDA-MB-453 cells by MEKi Trametinib. The cells were treated with MK2206 (2.5 µM) or trametinib (100 nM) for \n\n\n\n48 h. (H) A schematic illustration of the discovered HER3/DUSP6 feed forward loop in HER2+ breast cancer cells. NRG binding to HER3 induces MEK/ERK-mediated DUSP6 expression which feeds back to increased HER2 and HER3 expression (left panel). In HER2i sensitive cells (middle panel) inhibition of HER3 results in DUSP6 inhibition and loss of DUSP6 driven cancer hallmarks. In HER2i resistant cells (right panel), MEK is not inhibited by HER2i but its constitutive activity (MEKca.) drives DUSP6-HER2/3 positive feed-back loop resulting in HER3-mediated multitherapy resistance and cancer progression.",
       "caption_title": "Transcriptional landscape of lapatinib tolerance and resistance development in HER2+ cells.",
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "Development of lapatinib resistance in HER2+ breast cancer cells. BT474 and BT474Br cells were treated with 1 μM of lapatinib for 9 days (d), 6 months (mos) and 9 mos to yield Drug-tolerant persister (DTP), Drug-tolerant expanding perister (DTEP) and Long term resistant (LR) clones, respectively. The cells were stained with crystal violet (0.5% w/v) and the images were acquired with an inverted microscope. The transcriptional profiles from each functional state of lapatinib drug tolerance and resistance development from three parallel BT474 cell plates were surveyed by RNA-sequencing.",
-          "sd_files": ["suppl_data/Figure 1.zip:Figure 1/1A/1A.tiff"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 1.zip:Figure 1/1A/1A.tiff"]
         },
         {
           "panel_label": "B",
-          "panel_caption": "The number of the genes with a significant change in their expression during the resistance acquisition (see Dataset EV1 for individual gene names). Transcription factor (TF) binding motifs significantly enriched in significantly regulated genes in each transition are indicated. Bolding indicates shared TF binding sites between DTP downregulated and DTEP upregulated genes.",
-          "sd_files": ["suppl_data/Figure 1.zip:Figure 1/1B/1B.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 1.zip:Figure 1/1B/1B.xlsx"]
         },
         {
           "panel_label": "C",
-          "panel_caption": "Differentially expressed pathways were identified using the R package limma and hallmark gene sets were used for GSVA analysis to reveal hallmarks and signal transduction pathways involved in each step of the resistance acquisition. Red indicates those hallmarks and pathways that are overlapping with processes regulated by DUSP6 depletion in figure 3F.",
-          "sd_files": ["suppl_data/Figure 1.zip:Figure 1/1C/1C.csv"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 1.zip:Figure 1/1C/1C.csv"]
         }
       ]
     },
     {
       "figure_label": "Figure 2",
-      "img_files": ["graphic/Figure 2.eps"],
-      "sd_files": ["suppl_data/Figure 2.zip"],
-      "figure_caption": "(A, B)</strong> Volcano plots visualizing differentially expressed genes in (A) Control-DTP and (B) DTP-DTEP transitions. The volcano blots indicate all genes that were significantly regulated during these transitions (|logFC |&lt;2 and FDR &lt;0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (<em>DUSP6, CDC25A</em>, <em>CDC25C</em>, and <em>SYNJ1)</em> are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). <strong>(C)</strong> Changes in the <em>DUSP6, CDC25A</em>, <em>CDC25C</em>, and <em>SYNJ1</em> mRNA levels during the acquisition of lapatinib resistance in BT474 cells. Data is based on RNA sequencing analysis (Dataset EV1) and was analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *<em>p</em> &lt; 0.05, **<em>p</em> &lt; 0.01 and ***<em>p</em> &lt; 0.001 were determined (n=3). <strong>(D)</strong> Differential expression of <em>DUSP6,</em> <em>CDC25A</em>, <em>CDC25C,</em> and <em>SYNJ1</em> in different breast cancer subtypes. Data were extracted from the METABRIC dataset and categorized into five molecular subtypes according to the PAM50 gene expression subtype classification (basal, claudin-low, HER2+, Luminal A, and Luminal B). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test and shown as mean ± standard deviation (SD). Statistically significant values of *<em>p</em> &lt; 0.05, **<em>p</em> &lt; 0.01 and ****<em>p</em> &lt; 0.0001 were determined (basal=209, claudin-low=218, HER2+=224, LumA=700 and LumB=475). <strong>(E)</strong> Breast cancer patients from the TCGA-BRCA dataset were divided into <em>DUSP6</em> high (LogFC&gt;1, FDR&lt;0.05) and low expression (LogFC&lt;-1, FDR&lt;0.05) groups and the clinical breast cancer subtypes were compared between the two groups. NA; not available. <strong>(F,G)</strong> Subgroup of 113 patient cases with high tumor <em>ERBB2</em> mRNA expression (LogFC&gt;1, FDR&lt;0.05) were divided into <em>DUSP6</em>high and <em>DUSP6</em>low groups and their overall survival (OS) (G) (Log-rank Test <em>p</em> value=0.0220) and disease-specific progression free survival (PFS)(H)(Log-rank Test <em>p</em> value=0.0259) was tested according to <em>DUSP6</em> status.</p>\n<p>",
-      "caption_title": "Clinical association of <em>DUSP6</em> overexpression with poor prognosis HER2+ breast cancers.",
+      "img_files": ["EMM-2023-18636/graphic/Figure 2.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip"],
+      "figure_caption": "(A, B) Volcano plots visualizing differentially expressed genes in (A) Control-DTP and (B) DTP-DTEP transitions. The volcano blots indicate  all genes that were significantly regulated during these transitions (|logFC |<2 and FDR <0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (DUSP6, CDC25A, CDC25C, and SYNJ1) are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). (C) Changes in the DUSP6, CDC25A, CDC25C, and SYNJ1 mRNA levels during the acquisition of lapatinib resistance in BT474 cells. Data is based on RNA sequencing analysis (Dataset EV1) and was analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05, **p < 0.01 and ***p < 0.001 were determined (n=3). (D) Differential expression of DUSP6, CDC25A, CDC25C, and SYNJ1 in different breast cancer subtypes. Data were extracted from the METABRIC dataset and categorized into five molecular subtypes according to the PAM50 gene expression subtype classification (basal, claudin-low, HER2+, Luminal A, and Luminal B). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test and shown as mean  standard deviation (SD). Statistically significant values of *p < 0.05, **p < 0.01 and ****p < 0.0001 were determined (basal=209, claudin-low=218, HER2+=224, LumA=700 and LumB=475). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) groups and the clinical breast cancer subtypes were compared between the two groups. NA; not available. (F,G) Subgroup of 113 patient cases with high tumor ERBB2 mRNA expression (LogFC>1, FDR<0.05) were divided into DUSP6high and DUSP6low groups and their overall survival (OS) (G) (Log-rank Test p value=0.0220) and disease-specific progression free survival (PFS)(H)(Log-rank Test p value=0.0259) was tested according to DUSP6 status.",
+      "caption_title": "Clinical association of DUSP6 overexpression with poor prognosis HER2+ breast cancers.",
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "Volcano plots visualizing differentially expressed genes in Control-DTP transitions. The volcano blots indicate all genes that were significantly regulated during these transitions (|logFC |<2 and FDR <0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (DUSP6, CDC25A, CDC25C, and SYNJ1) are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). ",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2A/2A.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip:Figure 2/2A/2A.xlsx"]
         },
         {
           "panel_label": "B",
-          "panel_caption": "Volcano plots visualizing differentially expressed genes in DTP-DTEP transitions. The volcano blots indicate all genes that were significantly regulated during these transitions (|logFC |<2 and FDR <0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (DUSP6, CDC25A, CDC25C, and SYNJ1) are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). ",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2B/2B.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip:Figure 2/2B/2B.xlsx"]
         },
         {
           "panel_label": "C",
-          "panel_caption": "Changes in the DUSP6, CDC25A, CDC25C, and SYNJ1 mRNA levels during the acquisition of lapatinib resistance in BT474 cells. Data is based on RNA sequencing analysis (Dataset EV1) and was analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05, **p < 0.01 and ***p < 0.001 were determined (n=3).",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2C/2C.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip:Figure 2/2C/2C.xlsx"]
         },
         {
           "panel_label": "D",
-          "panel_caption": "Differential expression of DUSP6, CDC25A, CDC25C, and SYNJ1 in different breast cancer subtypes. Data were extracted from the METABRIC dataset and categorized into five molecular subtypes according to the PAM50 gene expression subtype classification (basal, claudin-low, HER2+, Luminal A, and Luminal B). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test and shown as mean ± standard deviation (SD). Statistically significant values of *p < 0.05, **p < 0.01 and ****p < 0.0001 were determined (basal=209, claudin-low=218, HER2+=224, LumA=700 and LumB=475).",
-          "sd_files": ["suppl_data/Figure 2.zip:Figure 2/2D/2D.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 2.zip:Figure 2/2D/2D.xlsx"]
         },
         {
           "panel_label": "E",
-          "panel_caption": "Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) groups and the clinical breast cancer subtypes were compared between the two groups. NA; not available.",
+          "panel_caption": "",
           "sd_files": []
         },
         {
           "panel_label": "F",
-          "panel_caption": "Subgroup of 113 patient cases with high tumor ERBB2 mRNA expression (LogFC>1, FDR<0.05) were divided into DUSP6high and DUSP6low groups and their overall survival (OS) (Log-rank Test p value=0.0220) was tested according to DUSP6 status.",
+          "panel_caption": "",
           "sd_files": []
         },
         {
           "panel_label": "G",
-          "panel_caption": "Subgroup of 113 patient cases with high tumor ERBB2 mRNA expression (LogFC>1, FDR<0.05) were divided into DUSP6high and DUSP6low groups and their disease-specific progression free survival (PFS) (Log-rank Test p value=0.0259) was tested according to DUSP6 status. (Log-rank Test <em>p</em> value=0.0220) and disease-specific progression free survival (PFS)",
+          "panel_caption": "",
           "sd_files": []
         }
       ]
     },
     {
       "figure_label": "Figure 3",
-      "img_files": ["graphic/Figure 3.eps"],
-      "sd_files": ["suppl_data/Figure 3.zip"],
-      "figure_caption": "<strong>(A)</strong> Expression of DUSP6 protein in different stages of lapatinib resistance development by Western blot analysis. <strong>(B)</strong> Relative expression of <em>DUSP6</em> mRNA in indicated cell lines either at the untreated control situation, or in the DTP state after following treatments: BT474Br, Lapatinib 1μM for 9 days; EFM192A and HCC1419, Lapatinib 2.5 μM for 14 days; HCC827(EGFRmut NSCLC), 1 µM Osimertinib for 10 days; A375(BRAFV600E mutant malignant melanoma (MM)), 1 µM dabrafenib+100 nM trametinib for 10 days; and HT-29(BRAFV600E mutant colorectal cancer (CRC)), 1 µM dabrafenib+10 µg/ml cetuximab for 10 days. Data for EFM192 and HCC1419 cells was obtained from (DataRef: (Chang <em>et al.</em>, 2022)(GSE155342), and for other cells by qRT-PCR analysis of the <em>de novo</em> treated samples. Shown is data from two-three repeat samples. <strong>(C)</strong> Transcriptional profile of MDA-MB-453 cells after <em>DUSP6</em> knockdown by 3 different siRNA and compared with 3 different scramble controls, followed by the GSVA analysis of the Hallmark gene sets. The Hallmark gene sets overlapping with the gene sets regulated to same direction in DUSP6 low expressing DTEP cells (Fig. 1C) are indicated with red. <strong>(D, E)</strong> Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on cell viability (G) and apoptosis (H), as measured by WST1 cell viability assay and caspase 3/7 activity, respectively. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **<em>p</em> &lt; 0.01 and ****<em>p</em> &lt; 0.0001 were determined. n=3. <strong>(F)</strong> Ectopic overexpression of either wild-type DUSP6 (DUSPWT) or ERK binding deficient KIM mutant of DUSP6 (DUSP6MUT) in BT474 cells inhibits lapatinib effects on apoptosis. Shown is a result from a representative experiment from three repeats with similar results. Data were analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **<em>p</em> &lt; 0.01 and ****<em>p</em> &lt; 0.0001 were determined. <strong>(G)</strong> DUSP6 inhibitor BCI preempts DTEP development in BT474 cells treated with either lapatinib or neratinib for 6 months. The cells were stained and fixed with crystal violet in methanol (0.5% w/v) and the images were acquired with an inverted microscope.</p>\n<p><strong>",
+      "img_files": ["EMM-2023-18636/graphic/Figure 3.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip"],
+      "figure_caption": "(A) Expression of DUSP6 protein in different stages of lapatinib resistance development by Western blot analysis. (B) Relative expression of DUSP6 mRNA in indicated cell lines either at the untreated control situation, or in the DTP state after following treatments: BT474Br, Lapatinib 1M for 9 days; EFM192A and HCC1419, Lapatinib 2.5 M for 14 days; HCC827(EGFRmut NSCLC), 1 µM Osimertinib for 10 days; A375(BRAFV600E mutant malignant melanoma (MM)), 1 µM dabrafenib+100 nM trametinib for 10 days; and HT-29(BRAFV600E mutant colorectal cancer (CRC)), 1 µM dabrafenib+10 µg/ml cetuximab for 10 days. Data for EFM192 and HCC1419 cells was obtained from (DataRef: (Chang et al., 2022)(GSE155342), and for other cells by qRT-PCR analysis of the de novo treated samples. Shown is data from two-three repeat samples. (C) Transcriptional profile of MDA-MB-453 cells after DUSP6 knockdown by 3 different siRNA and compared with 3 different scramble controls, followed by the GSVA analysis of the Hallmark gene sets. The Hallmark gene sets overlapping with the gene sets regulated to same direction in DUSP6 low expressing DTEP cells (Fig. 1C) are indicated with red.  (D, E) Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on cell viability (G) and apoptosis (H), as measured by WST1 cell viability assay and caspase 3/7 activity, respectively. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. n=3.  (F) Ectopic overexpression of either wild-type DUSP6 (DUSPWT) or ERK binding deficient KIM mutant of DUSP6 (DUSP6MUT) in BT474 cells inhibits lapatinib effects on apoptosis. Shown is a result from a representative experiment from three repeats with similar results. Data were analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (G)  DUSP6 inhibitor BCI preempts DTEP development in BT474 cells treated with either lapatinib or neratinib for 6 months. The cells were stained and fixed with crystal violet in methanol (0.5% w/v) and the images were acquired with an inverted microscope.",
       "caption_title": "Functional involvement of DUSP6 in HER2i tolerance development.",
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "Expression of DUSP6 protein in different stages of lapatinib resistance development by Western blot analysis.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 3.zip:Figure 3/3A/1st/DUSP6-1.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/1st/B-actin 1.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/1st/DUSP1-1.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/2nd/DUSP1-2.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/2nd/B-actin 2.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/2nd/DUSP6-2.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/3rd/DUSP6.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/3rd/B-actin.tiff",
-            "suppl_data/Figure 3.zip:Figure 3/3A/3rd/DUSP1.tiff"
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/1st/DUSP6-1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/1st/B-actin 1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/1st/DUSP1-1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/2nd/DUSP1-2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/2nd/B-actin 2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/2nd/DUSP6-2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/3rd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3A/3rd/DUSP1.tiff"
           ]
         },
         {
           "panel_label": "B",
-          "panel_caption": "Relative expression of DUSP6 mRNA in indicated cell lines either at the untreated control situation, or in the DTP state after following treatments: BT474Br, Lapatinib 1μM for 9 days; EFM192A and HCC1419, Lapatinib 2.5 μM for 14 days; HCC827(EGFRmut NSCLC), 1 µM Osimertinib for 10 days; A375(BRAFV600E mutant malignant melanoma (MM)), 1 µM dabrafenib+100 nM trametinib for 10 days; and HT-29(BRAFV600E mutant colorectal cancer (CRC)), 1 µM dabrafenib+10 µg/ml cetuximab for 10 days. Data for EFM192 and HCC1419 cells was obtained from (DataRef: (Chang et al., 2022)(GSE155342), and for other cells by qRT-PCR analysis of the de novo treated samples. Shown is data from two-three repeat samples. ",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3B/Fig. 3B.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3B/Fig. 3B.xlsx"]
         },
         {
           "panel_label": "C",
-          "panel_caption": "Transcriptional profile of MDA-MB-453 cells after DUSP6 knockdown by 3 different siRNA and compared with 3 different scramble controls, followed by the GSVA analysis of the Hallmark gene sets. The Hallmark gene sets overlapping with the gene sets regulated to same direction in DUSP6 low expressing DTEP cells (Fig. 1C) are indicated with red.",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3C/3C.csv"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3C/3C.csv"]
         },
         {
           "panel_label": "D",
-          "panel_caption": "Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on cell viability, as measured by WST1 cell viability assay. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. n=3.",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3D/3D.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3D/3D.xlsx"]
         },
         {
           "panel_label": "E",
-          "panel_caption": "Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on and apoptosis, as measured by caspase 3/7 activity. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. n=3.",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3E/3E.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3E/3E.xlsx"]
         },
         {
           "panel_label": "F",
-          "panel_caption": "Ectopic overexpression of either wild-type DUSP6 (DUSPWT) or ERK binding deficient KIM mutant of DUSP6 (DUSP6MUT) in BT474 cells inhibits lapatinib effects on apoptosis. Shown is a result from a representative experiment from three repeats with similar results. Data were analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined.",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3F/3F.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3F/3F.xlsx"]
         },
         {
           "panel_label": "G",
-          "panel_caption": "DUSP6 inhibitor BCI preempts DTEP development in BT474 cells treated with either lapatinib or neratinib for 6 months. The cells were stained and fixed with crystal violet in methanol (0.5% w/v) and the images were acquired with an inverted microscope.",
-          "sd_files": ["suppl_data/Figure 3.zip:Figure 3/3G/3G.tiff"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 3.zip:Figure 3/3G/3G.tiff"]
         }
       ]
     },
     {
       "figure_label": "Figure 4",
-      "img_files": ["graphic/Figure 4.eps"],
-      "sd_files": ["suppl_data/Figure 4.zip"],
-      "figure_caption": "(A)</strong> RNAi-mediated <em>DUSP6</em> knockdown, but not of <em>DUSP1</em>, induces apoptotic cell death in MDA-MB-453 cells, as shown by Western blotting for PARP-1 cleavage. <strong>(B)</strong> CRISPR/CAS9-mediated <em>DUSP6</em> knockout hinders the clonogenic growth of MDA-MB-453 cells, as compared to the CAS9 expressing controls. Shown are three independent single cell clones created with two independent gRNAs (g1 and g2). The cells were seeded at low density and maintained for 10 d. The colonies were stained/fixed with 0.5% crystal violet in methanol and imaged using an inverted microscope. <strong>(C)</strong> <em>DUSP6</em> siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to HER2-targeted therapies. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **<em>p</em> &lt; 0.01, ***<em>p</em> &lt; 0.001 and ****<em>p</em> &lt; 0.0001 were determined. <strong>(D)</strong> A 2D synergy map of neratinib-BCI combination in MDA-MB-453 cells calculated by Bliss SynergyFinder (Ianevski <em>et al.</em>, 2017). Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. <strong>(E)</strong> <em>DUSP6</em> siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to combination with capecitabine and neratinib. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****<em>p</em> &lt; 0.0001 were determined.</p>\n<p><strong>",
+      "img_files": ["EMM-2023-18636/graphic/Figure 4.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip"],
+      "figure_caption": "(A) RNAi-mediated DUSP6 knockdown, but not of DUSP1, induces apoptotic cell death in MDA-MB-453 cells, as shown by Western blotting for PARP-1 cleavage. (B) CRISPR/CAS9-mediated DUSP6 knockout hinders the clonogenic growth of MDA-MB-453 cells, as compared to the CAS9 expressing controls. Shown are three independent single cell clones created with two independent gRNAs (g1 and g2). The cells were seeded at low density and maintained for 10 d. The colonies were stained/fixed with 0.5% crystal violet in methanol and imaged using an inverted microscope. (C) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to HER2-targeted therapies. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01, ***p < 0.001 and ****p < 0.0001 were determined. (D) A 2D synergy map of neratinib-BCI combination in MDA-MB-453 cells calculated by Bliss SynergyFinder (Ianevski et al., 2017). Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (E) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to combination with capecitabine and neratinib. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and  analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined.",
       "caption_title": "Both genetic and pharmacological DUSP6 targeting overcomes HER2i resistance.",
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "RNAi-mediated DUSP6 knockdown, but not of DUSP1, induces apoptotic cell death in MDA-MB-453 cells, as shown by Western blotting for PARP-1 cleavage.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/DUSP6.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/B-actin.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/DUSP1.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/3rd/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/DUSP6.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/B-actin.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/DUSP1.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/1st/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/DUSP6.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/B-actin.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/DUSP1.tiff",
-            "suppl_data/Figure 4.zip:Figure 4/4A/2nd/Cl-PARP, 89.tiff"
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/DUSP1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/3rd/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/DUSP1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/1st/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/DUSP1.tiff",
+            "EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4A/2nd/Cl-PARP, 89.tiff"
           ]
         },
         {
           "panel_label": "B",
-          "panel_caption": "CRISPR/CAS9-mediated DUSP6 knockout hinders the clonogenic growth of MDA-MB-453 cells, as compared to the CAS9 expressing controls. Shown are three independent single cell clones created with two independent gRNAs (g1 and g2). The cells were seeded at low density and maintained for 10 d. The colonies were stained/fixed with 0.5% crystal violet in methanol and imaged using an inverted microscope.",
-          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4B/4B.tiff"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4B/4B.tiff"]
         },
         {
           "panel_label": "C",
-          "panel_caption": "DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to HER2-targeted therapies. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01, ***p < 0.001 and ****p < 0.0001 were determined.",
-          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4C/4C.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4C/4C.xlsx"]
         },
         {
           "panel_label": "D",
-          "panel_caption": "A 2D synergy map of neratinib-BCI combination in MDA-MB-453 cells calculated by Bliss SynergyFinder (Ianevski et al., 2017). Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay.",
-          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4D/4D.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4D/4D.xlsx"]
         },
         {
           "panel_label": "E",
-          "panel_caption": "DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to combination with capecitabine and neratinib. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined.",
-          "sd_files": ["suppl_data/Figure 4.zip:Figure 4/4E/4E.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 4.zip:Figure 4/4E/4E.xlsx"]
         }
       ]
     },
     {
       "figure_label": "Figure 5",
-      "img_files": ["graphic/Figure 5.eps"],
-      "sd_files": ["suppl_data/Figure 5.zip"],
-      "figure_caption": "(A)</strong> Subcutaneous xenograft growth of two independent <em>DUSP6</em> single cell knockout clones of MDA-MB-453 cells targeted with two different gRNA guides. One-way ANOVA followed by Tukey's multiple comparisons test **<em>p</em> &lt; 0.01 comparing each clone to CAS9 expressing control cells . Data are shown as mean ± SD (n=5) <strong>(B-E)</strong> The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft models: HCC1954 <strong>(B, C)</strong> or MDA-MB-453 <strong>(D, E)</strong>. Data are shown as mean ± SD (n=10 in each treatment group). Mice with tumor size ∼100 mm<sup>3</sup> were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****<em>p</em> &lt; 0.0001 were determined. <strong>C</strong> and <strong>E</strong> panels display percentual change in the tumor volume from the start of the therapy as water-fall blots in HCC1954 and MDA-MB453 models, respectively. <strong>(F)</strong> H&amp;E staining of the representative MDA-MB-453 xenograft tumors from the control, lapatinib, BCI and lapatinib+BCI groups at day 24. Scale bar 200 µm.</p>\n<p><strong>",
-      "caption_title": "DUSP6 inhibition overcomes HER2 inhibitor resistance <em>in vivo.</em>",
+      "img_files": ["EMM-2023-18636/graphic/Figure 5.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip"],
+      "figure_caption": "(A) Subcutaneous xenograft growth of two independent DUSP6 single cell knockout clones of MDA-MB-453 cells targeted with two different gRNA guides. One-way ANOVA followed by Tukey's multiple comparisons test **p < 0.01 comparing each clone to CAS9 expressing control cells . Data are shown as mean  SD (n=5) (B-E) The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft models: HCC1954 (B, C) or MDA-MB-453 (D, E). Data are shown as mean  SD (n=10 in each treatment group). Mice with tumor size ∼100 mm3 were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined. C and E panels display percentual change in the tumor volume from the start of the therapy as water-fall blots in HCC1954 and MDA-MB453 models, respectively. (F) H&E staining of the representative MDA-MB-453 xenograft tumors from the control, lapatinib, BCI and lapatinib+BCI groups at day 24. Scale bar 200 µm.",
+      "caption_title": "DUSP6 inhibition overcomes HER2 inhibitor resistance in vivo.",
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "Subcutaneous xenograft growth of two independent DUSP6 single cell knockout clones of MDA-MB-453 cells targeted with two different gRNA guides. One-way ANOVA followed by Tukey's multiple comparisons test **p < 0.01 comparing each clone to CAS9 expressing control cells . Data are shown as mean ± SD (n=5)",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5A/5A.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5A/5A.xlsx"]
         },
         {
           "panel_label": "B",
-          "panel_caption": "The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft model HCC1954. Data are shown as mean ± SD (n=10 in each treatment group). Mice with tumor size ∼100 mm<sup>3</sup> were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****<em>p</em> &lt; 0.0001 were determined.",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5B/5B.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5B/5B.xlsx"]
         },
         {
           "panel_label": "C",
-          "panel_caption": "The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft model HCC1954. Percentual change in the tumor volume from the start of the therapy as water-fall blots. Data are shown as mean ± SD (n=10 in each treatment group). Mice with tumor size ∼100 mm3 were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined.",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5C/5C.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5C/5C.xlsx"]
         },
         {
           "panel_label": "D",
-          "panel_caption": "The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft model MDA-MB-453. Data are shown as mean ± SD (n=10 in each treatment group). Mice with tumor size ∼100 mm3 were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined.",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5D/5D.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5D/5D.xlsx"]
         },
         {
           "panel_label": "E",
-          "panel_caption": "The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft model MDA-MB-453. Percentual change in the tumor volume from the start of the therapy as water-fall blots. Data are shown as mean ± SD (n=10 in each treatment group). Mice with tumor size ∼100 mm3 were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined.",
-          "sd_files": ["suppl_data/Figure 5.zip:Figure 5/5E/5E.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5E/5E.xlsx"]
         },
         {
           "panel_label": "F",
-          "panel_caption": "H&E staining of the representative MDA-MB-453 xenograft tumors from the control, lapatinib, BCI and lapatinib+BCI groups at day 24. Scale bar 200 µm.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 5.zip:Figure 5/5F/BCI.tiff",
-            "suppl_data/Figure 5.zip:Figure 5/5F/Control.tiff",
-            "suppl_data/Figure 5.zip:Figure 5/5F/Lapatinib.tiff",
-            "suppl_data/Figure 5.zip:Figure 5/5F/Lapatinib+BCI.tiff"
+            "EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5F/BCI.tiff",
+            "EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5F/Control.tiff",
+            "EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5F/Lapatinib.tiff",
+            "EMM-2023-18636/suppl_data/Figure 5.zip:Figure 5/5F/Lapatinib+BCI.tiff"
           ]
         }
       ]
     },
     {
       "figure_label": "Figure 6",
-      "img_files": ["graphic/Figure 6.eps"],
-      "sd_files": ["suppl_data/Figure 6.zip"],
-      "figure_caption": "<strong>(A)</strong> A 2D synergy map of lapatinib+MK2206(AKTi) or <strong>(B)</strong> lapatinib+BCI(DUSP6i) combination in MDA-MB-453 cells calculated by the Bliss SynergyFinder. Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. <strong>(C)</strong> Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on apoptosis induction (PARP-1 cleavage), and HER2 or HER3 protein levels by Western blot analysis. The cells were treated with lapatinib (1 μM), MK2206 (2.5 µM) and BCI (2.5 µM) and their combinations for 48 h. <strong>(D)</strong> Quantification of PARP1 cleavage from three repeats of (C). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **<em>p</em> &lt; 0.01 and ****<em>p</em> &lt; 0.0001 were determined. <strong>(E,F)</strong> The dose-dependent effects of MK2206 (E) and BCI (F) on the expression of HER2 and HER3 protein levels in MDA-MB-453 cells by Western blot analysis after 48h of treatment. <strong>(G)</strong> The time-dependent effects of BCI (2.5 µM) on the expression of HER2 and HER3 protein levels and apoptosis induction (PARP cleavage) in MDA-MB-453 cells by Western blot analysis. Increase in phosphorylated ERK (p-ERK1/2) and inhibition of DUSP6 both indicate for early target engagement by BCI. <strong>(H)</strong> <em>DUSP6</em> knockdown by siRNA inhibits HER2 and HER3 protein expression in MDA-MB-453 cells. <strong>(I)</strong> Effects of BCI (50 mg/kg) therapy on HER2 and HER3 protein levels in the MDA-MB-453 xenograft tissue on day 24. Shown is immunohistochemical analysis of HER2 and HER3 from the adjacent paraffin embedded tissue slices from Fig. 5F. Scale bar 200 µm. <strong>(J)</strong> Breast cancer patients from the TCGA-BRCA dataset were divided into <em>DUSP6</em> high (LogFC&gt;1, FDR&lt;0.05) and low expression (LogFC&lt;-1, FDR&lt;0.05) profiles and expression of phosphorylated HER3 (p-HER3<sup>Y1298</sup>) was compared between the two groups. Data were analyzed by two-tailed t test; **<em>p</em> &lt; 0.01. (DUSP6high=142, DUSP6low=149).</p>\n<p><strong>",
+      "img_files": ["EMM-2023-18636/graphic/Figure 6.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip"],
+      "figure_caption": "(A) A 2D synergy map of lapatinib+MK2206(AKTi) or (B) lapatinib+BCI(DUSP6i) combination in MDA-MB-453 cells calculated by the Bliss SynergyFinder. Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (C) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on apoptosis induction (PARP-1 cleavage), and HER2 or HER3 protein levels by Western blot analysis. The cells were treated with lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) and their combinations for 48 h. (D) Quantification of PARP1 cleavage from three repeats of (C). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (E,F) The dose-dependent effects of MK2206 (E) and BCI (F) on the expression of HER2 and HER3 protein levels in MDA-MB-453 cells by Western blot analysis after 48h of treatment. (G) The time-dependent effects of BCI (2.5 µM) on the expression of HER2 and HER3 protein levels and apoptosis induction (PARP cleavage) in MDA-MB-453 cells by Western blot analysis. Increase in phosphorylated ERK (p-ERK1/2) and inhibition of DUSP6 both indicate for early target engagement by BCI.  (H) DUSP6 knockdown by siRNA inhibits HER2 and HER3 protein expression in MDA-MB-453 cells. (I) Effects of BCI (50 mg/kg) therapy on HER2 and HER3 protein levels in the MDA-MB-453 xenograft tissue on day 24. Shown is immunohistochemical analysis of HER2 and HER3 from the adjacent paraffin embedded tissue slices from Fig. 5F. Scale bar 200 µm. (J) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and expression of phosphorylated HER3 (p-HER3Y1298) was compared between the two groups. Data were analyzed by two-tailed t test; **p < 0.01. (DUSP6high=142, DUSP6low=149).",
       "caption_title": "DUSP6 targeting inhibits HER3 expression",
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "A 2D synergy map of lapatinib+MK2206(AKTi) combination in MDA-MB-453 cells calculated by the Bliss SynergyFinder. Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay.",
-          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6A/6A updated.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6A/6A updated.xlsx"]
         },
         {
           "panel_label": "B",
-          "panel_caption": "A 2D synergy map of lapatinib+BCI(DUSP6i) combination in MDA-MB-453 cells calculated by the Bliss SynergyFinder. Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay.",
-          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6B/6B updated.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6B/6B updated.xlsx"]
         },
         {
           "panel_label": "C",
-          "panel_caption": "Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on apoptosis induction (PARP-1 cleavage), and HER2 or HER3 protein levels by Western blot analysis. The cells were treated with lapatinib (1 μM), MK2206 (2.5 µM) and BCI (2.5 µM) and their combinations for 48 h.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/p-AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/1st/HER3.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/p-AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/2nd/HER3.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/p-AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6C/3rd/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/1st/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/2nd/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6C/3rd/HER3.tiff"
           ]
         },
         {
           "panel_label": "D",
-          "panel_caption": "Quantification of PARP1 cleavage from three repeats of (C). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined.",
-          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6D/6D.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6D/6D.xlsx"]
         },
         {
           "panel_label": "E",
-          "panel_caption": "The dose-dependent effects of MK2206 on the expression of HER2 and HER3 protein levels in MDA-MB-453 cells by Western blot analysis after 48h of treatment.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6E/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6E/p-AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6E/AKT.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6E/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6E/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6E/HER3.tiff"
           ]
         },
         {
           "panel_label": "F",
-          "panel_caption": "The dose-dependent effects of BCI on the expression of HER2 and HER3 protein levels in MDA-MB-453 cells by Western blot analysis after 48h of treatment.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6F/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6F/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6F/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6F/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6F/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6F/HER3.tiff"
           ]
         },
         {
           "panel_label": "G",
-          "panel_caption": "The time-dependent effects of BCI (2.5 µM) on the expression of HER2 and HER3 protein levels and apoptosis induction (PARP cleavage) in MDA-MB-453 cells by Western blot analysis. Increase in phosphorylated ERK (p-ERK1/2) and inhibition of DUSP6 both indicate for early target engagement by BCI.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6G/DUSP6.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/p-ERK1:2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/Cl-PARP, 89.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6G/HER3.png"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/Cl-PARP, 89.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6G/HER3.png"
           ]
         },
         {
           "panel_label": "H",
-          "panel_caption": "DUSP6 knockdown by siRNA inhibits HER2 and HER3 protein expression in MDA-MB-453 cells.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6H/1st/DUSP6.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/1st/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/1st/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/1st/HER3.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/2nd/DUSP6.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/2nd/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/2nd/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/2nd/HER3.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/3rd/DUSP6.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/3rd/B-actin.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/3rd/HER2.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6H/3rd/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/1st/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/1st/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/1st/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/1st/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/2nd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/2nd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/2nd/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/2nd/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/3rd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/3rd/HER2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6H/3rd/HER3.tiff"
           ]
         },
         {
           "panel_label": "I",
-          "panel_caption": "Effects of BCI (50 mg/kg) therapy on HER2 and HER3 protein levels in the MDA-MB-453 xenograft tissue on day 24. Shown is immunohistochemical analysis of HER2 and HER3 from the adjacent paraffin embedded tissue slices from Fig. 5F. Scale bar 200 µm.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 6.zip:Figure 6/6I/HER3, BCI.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6I/HER2, control.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6I/HER2, BCI.tiff",
-            "suppl_data/Figure 6.zip:Figure 6/6I/HER3, control.tiff"
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6I/HER3, BCI.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6I/HER2, control.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6I/HER2, BCI.tiff",
+            "EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6I/HER3, control.tiff"
           ]
         },
         {
           "panel_label": "J",
-          "panel_caption": "Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and expression of phosphorylated HER3 (p-HER3Y1298) was compared between the two groups. Data were analyzed by two-tailed t test; **p < 0.01. (DUSP6high=142, DUSP6low=149).",
-          "sd_files": ["suppl_data/Figure 6.zip:Figure 6/6J/6J.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 6.zip:Figure 6/6J/6J.xlsx"]
         }
       ]
     },
     {
       "figure_label": "Figure 7",
-      "img_files": ["graphic/Figure 7.eps"],
-      "sd_files": ["suppl_data/Figure 7.zip"],
-      "figure_caption": "<strong>(A)</strong> Comparison of the potential of BCI or MK2206 treatment to overcome Neuregulin (NRG)-mediated rescue from the anti-proliferative activity of neratinib. The cells were treated with NRG (10 ng/mL), lapatinib (1\\xa0µM), MK2206 (1, 2.5, and 5 µM), and BCI (1, 2.5, and 5 µM) for 48 h and cell viability was measured by WST-1 assay. Data were collected from three independent experiments each performed with three technical repeat samples. <strong>(B)</strong> Comparison of the effects of BCI and MK2206 on NRG-mediated evasion from neratinib-induced apoptotic cell death, as measured by Western blot analysis for cleaved PARP-1. The cells were treated with NRG (10 ng/mL), lapatinib (1 μM), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h. <strong>(C)</strong> HER3 overexpression rescues MDA-MB-453 cells from BCI-elicited inhibition of cell viability. The control or HER3 overexpressing MDA-MB-453 were treated with BCI (3 µM) for 48 h and cell viability was measured by WST-1 assay. Shown is data from four technical replicate samples from a representative of three experiments with similar results. The data was analysed by Two-way ANOVA + Tukey’s post hoc test, ****<em>p</em> &lt; 0.0001 <strong>(D)</strong> Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on NRG-mediated rescue from the anti-growth activity of lapatinib, as shown by crystal violet staining. The cells were treated with NRG (10 ng/mL), lapatinib (1 μM), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h, stained/fixed with 0.5% crystal violet in methanol and imaged by an inverted microscope (images acquired at 10x magnification). <strong>(E)</strong> Breast cancer patients from the TCGA-BRCA dataset were divided into <em>DUSP6</em> high (LogFC&gt;1, FDR&lt;0.05) and low expression (LogFC&lt;-1, FDR&lt;0.05) profiles and the neuregulin (<em>NRG1)</em> mRNA levels were compared between the two groups. Data were analyzed by two-tailed t test; ****<em>p</em> &lt; 0.0001. (DUSP6high=167, DUSP6low=181). <strong>(F)</strong> The effect of <em>DUSP6</em> knockdown on the brain metastatic outgrowth of MDA-MB-361 cells in a zebrafish model. GFP positive MDA-MB-361 cells transfected either with control scrambled siRNA or DUSP6 siRNA were injected into zebrafish embryo brain and the GFP intensity was measured 3 days after by microscopy. Data were analyzed by two-tailed <em>t</em> test; ****<em>p</em> &lt; 0.0001. Scale bar 100 µm (siSCR=37, siDUSP6=43). <strong>(G)</strong> Improved overall survival of mice with intracranially injected DUSP6 KO MDA-MB-453 cells as compared to the CAS9 positive control cell injected mice. Survival data were analyzed by log-rank Mantel–Cox test, **<em>p</em> &lt; 0.01.</p>\n<p>",
+      "img_files": ["EMM-2023-18636/graphic/Figure 7.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip"],
+      "figure_caption": "(A) Comparison of the potential of BCI or MK2206 treatment to overcome Neuregulin (NRG)-mediated rescue from the anti-proliferative activity of neratinib. The cells were treated with NRG (10 ng/mL), lapatinib (1 µM), MK2206 (1, 2.5, and 5 µM), and BCI (1, 2.5, and 5 µM) for 48 h and cell viability was measured by WST-1 assay.  Data were collected from three independent experiments each performed with three technical repeat samples. (B) Comparison of the effects of BCI and MK2206 on NRG-mediated evasion from neratinib-induced apoptotic cell death, as measured by Western blot analysis for cleaved PARP-1. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h. (C) HER3 overexpression rescues MDA-MB-453 cells from BCI-elicited inhibition of cell viability. The control or HER3 overexpressing MDA-MB-453 were treated with BCI (3 µM) for 48 h and cell viability was measured by WST-1 assay. Shown is data from four technical replicate samples from a representative of three experiments with similar results. The data was analysed by Two-way ANOVA + Tukey’s post hoc test, ****p < 0.0001 (D) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on NRG-mediated rescue from the anti-growth activity of lapatinib, as shown by crystal violet staining. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h, stained/fixed with 0.5% crystal violet in methanol and imaged by an inverted microscope (images acquired at 10x magnification). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and the neuregulin (NRG1) mRNA levels were compared between the two groups. Data were analyzed by two-tailed t test; ****p < 0.0001. (DUSP6high=167, DUSP6low=181).  (F) The effect of DUSP6 knockdown on the brain metastatic outgrowth of MDA-MB-361 cells in a zebrafish model. GFP positive MDA-MB-361 cells transfected either with control scrambled siRNA or DUSP6 siRNA were injected into zebrafish embryo brain and the GFP intensity was measured 3 days after by microscopy. Data were analyzed by two-tailed t test; ****p < 0.0001. Scale bar 100 µm (siSCR=37, siDUSP6=43). (G) Improved overall survival of mice with intracranially injected DUSP6 KO MDA-MB-453 cells as compared to the CAS9 positive control cell injected mice. Survival data were analyzed by log-rank Mantel–Cox test, **p < 0.01.",
       "caption_title": "DUSP6 targeting overcomes Neuregulin/HER3-mediated HER2i therapy tolerance",
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "Comparison of the potential of BCI or MK2206 treatment to overcome Neuregulin (NRG)-mediated rescue from the anti-proliferative activity of neratinib. The cells were treated with NRG (10 ng/mL), lapatinib (1 µM), MK2206 (1, 2.5, and 5 µM), and BCI (1, 2.5, and 5 µM) for 48 h and cell viability was measured by WST-1 assay. Data were collected from three independent experiments each performed with three technical repeat samples.",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7A/7A.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7A/7A.xlsx"]
         },
         {
           "panel_label": "B",
-          "panel_caption": "Comparison of the effects of BCI and MK2206 on NRG-mediated evasion from neratinib-induced apoptotic cell death, as measured by Western blot analysis for cleaved PARP-1. The cells were treated with NRG (10 ng/mL), lapatinib (1 μM), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 7.zip:Figure 7/7B/Cl-PARP, 25.tiff",
-            "suppl_data/Figure 7.zip:Figure 7/7B/B-actin.tiff",
-            "suppl_data/Figure 7.zip:Figure 7/7B/Cl-PARP, 89.tiff"
+            "EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7B/Cl-PARP, 25.tiff",
+            "EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7B/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7B/Cl-PARP, 89.tiff"
           ]
         },
         {
           "panel_label": "C",
-          "panel_caption": "HER3 overexpression rescues MDA-MB-453 cells from BCI-elicited inhibition of cell viability. The control or HER3 overexpressing MDA-MB-453 were treated with BCI (3 µM) for 48 h and cell viability was measured by WST-1 assay. Shown is data from four technical replicate samples from a representative of three experiments with similar results. The data was analysed by Two-way ANOVA + Tukey’s post hoc test, ****p < 0.0001",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7C/7C.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7C/7C.xlsx"]
         },
         {
           "panel_label": "D",
-          "panel_caption": "Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on NRG-mediated rescue from the anti-growth activity of lapatinib, as shown by crystal violet staining. The cells were treated with NRG (10 ng/mL), lapatinib (1 μM), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h, stained/fixed with 0.5% crystal violet in methanol and imaged by an inverted microscope (images acquired at 10x magnification).",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7D/7D.tiff"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7D/7D.tiff"]
         },
         {
           "panel_label": "E",
-          "panel_caption": "Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and the neuregulin (NRG1) mRNA levels were compared between the two groups. Data were analyzed by two-tailed t test; ****p < 0.0001. (DUSP6high=167, DUSP6low=181).",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7E/7E.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7E/7E.xlsx"]
         },
         {
           "panel_label": "F",
-          "panel_caption": "The effect of DUSP6 knockdown on the brain metastatic outgrowth of MDA-MB-361 cells in a zebrafish model. GFP positive MDA-MB-361 cells transfected either with control scrambled siRNA or DUSP6 siRNA were injected into zebrafish embryo brain and the GFP intensity was measured 3 days after by microscopy. Data were analyzed by two-tailed t test; ****p < 0.0001. Scale bar 100 µm (siSCR=37, siDUSP6=43).",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7F/7F.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7F/7F.xlsx"]
         },
         {
           "panel_label": "G",
-          "panel_caption": "Improved overall survival of mice with intracranially injected DUSP6 KO MDA-MB-453 cells as compared to the CAS9 positive control cell injected mice. Survival data were analyzed by log-rank Mantel–Cox test, **p < 0.01.",
-          "sd_files": ["suppl_data/Figure 7.zip:Figure 7/7G/7G.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 7.zip:Figure 7/7G/7G.xlsx"]
         }
       ]
     },
     {
       "figure_label": "Figure 8",
-      "img_files": ["graphic/Figure 8.eps"],
-      "sd_files": ["suppl_data/Figure 8.zip"],
-      "figure_caption": "<strong>(A)</strong> <em>DUSP1</em> and <em>DUSP6</em> mRNA levels were determined by qRT-PCR analysis after treatment with increasing concentrations of neratinib for 48 h in indicated cell lines. Red denotes for HER2i resistant cell lines and green HER2i sensitive cells. Data were collected from three independent experiments each performed in triplicate. <strong>(B, C)</strong> Comparison of the effect of n\\xad\\xaderatinib treatment (48 h) on DUSP6, p-AKT and p-ERK1/2 between HER2i sensitive BT474Br (B) and HER2i resistant MDA-MB-361 (C) cells, respectively. <strong>(D)</strong> The effect of siRNA-mediated <em>HER3</em> knockdown on DUSP6 expression in MDA-MB-453 cells by Western blot analysis. <strong>(E)</strong> NRG-mediated induction of <em>DUSP6</em> mRNA via MEK activation as measured by qRT-PCR analysis after treatment with NRG (10 ng/mL), MK2206(AKTi) (2.5\\xa0µM), and trametinib(MEKi) (100 nM)\\xa0\\xad\\xad\\xadfor 48 h. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *<em>p</em> &lt; 0.05 and ****<em>p</em> &lt; 0.0001 were determined (n=3). <strong>(F)</strong> The effect of NRG on DUSP6 protein expression BT474 cells via MEK activation. The cells were serum-starved for 24 h, followed by treatment with NRG (10 ng/mL), MK2206 (2.5 µM) and trametinib (100 nM) for 48 h. <strong>(G)</strong> Inhibition of DUSP6 expression in HER2i resistant MDA-MB-453 cells by MEKi Trametinib. The cells were treated with MK2206 (2.5 µM) or trametinib (100 nM) for 48 h. <strong>(H)</strong> A schematic illustration of the discovered HER3/DUSP6 feed forward loop in HER2+ breast cancer cells. NRG binding to HER3 induces MEK/ERK-mediated <em>DUSP6</em> expression which feeds back to increased HER2 and HER3 expression (left panel). In HER2i sensitive cells (middle panel) inhibition of HER3 results in <em>DUSP6</em> inhibition and loss of DUSP6 driven cancer hallmarks. In HER2i resistant cells (right panel), MEK is not inhibited by HER2i but its constitutive activity (MEKca.) drives DUSP6-HER2/3 positive feed-back loop resulting in HER3-mediated multitherapy resistance and cancer progression.</p>\n<p><strong>Expanded view figure legends</strong></p>\n<p>",
+      "img_files": ["EMM-2023-18636/graphic/Figure 8.eps"],
+      "sd_files": ["EMM-2023-18636/suppl_data/Figure 8.zip"],
+      "figure_caption": "(A) DUSP1 and DUSP6 mRNA levels were determined by qRT-PCR analysis after treatment with increasing concentrations of neratinib for 48 h in indicated cell lines. Red denotes for HER2i resistant cell lines and green HER2i sensitive cells. Data were collected from three independent experiments each performed in triplicate. (B, C) Comparison of the effect of neratinib treatment (48 h) on DUSP6, p-AKT and p-ERK1/2 between HER2i sensitive BT474Br (B) and HER2i resistant MDA-MB-361 (C) cells, respectively. (D) The effect of siRNA-mediated HER3 knockdown on DUSP6 expression in MDA-MB-453 cells by Western blot analysis. (E) NRG-mediated induction of DUSP6 mRNA via MEK activation as measured by qRT-PCR analysis after treatment with NRG (10 ng/mL), MK2206(AKTi) (2.5 µM), and trametinib(MEKi) (100 nM) for 48 h. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05 and ****p < 0.0001 were determined (n=3). (F) The effect of NRG on DUSP6 protein expression BT474 cells via MEK activation. The cells were serum-starved for 24 h, followed by treatment with NRG (10 ng/mL), MK2206 (2.5 µM) and trametinib (100 nM) for 48 h. (G) Inhibition of DUSP6 expression in HER2i resistant MDA-MB-453 cells by MEKi Trametinib. The cells were treated with MK2206 (2.5 µM) or trametinib (100 nM) for  48 h. (H) A schematic illustration of the discovered HER3/DUSP6 feed forward loop in HER2+ breast cancer cells. NRG binding to HER3 induces MEK/ERK-mediated DUSP6 expression which feeds back to increased HER2 and HER3 expression (left panel). In HER2i sensitive cells (middle panel) inhibition of HER3 results in DUSP6 inhibition and loss of DUSP6 driven cancer hallmarks. In HER2i resistant cells (right panel), MEK is not inhibited by HER2i but its constitutive activity (MEKca.) drives DUSP6-HER2/3 positive feed-back loop resulting in HER3-mediated multitherapy resistance and cancer progression.",
       "caption_title": "Feed-forward loop between NRG/HER3 and DUSP6 determines HER2i sensitivity",
       "panels": [
         {
           "panel_label": "A",
-          "panel_caption": "DUSP1 and DUSP6 mRNA levels were determined by qRT-PCR analysis after treatment with increasing concentrations of neratinib for 48 h in indicated cell lines. Red denotes for HER2i resistant cell lines and green HER2i sensitive cells. Data were collected from three independent experiments each performed in triplicate.",
-          "sd_files": ["suppl_data/Figure 8.zip:Figure 8/8A/8A.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8A/8A.xlsx"]
         },
         {
           "panel_label": "B",
-          "panel_caption": "Comparison of the effect of neratinib treatment (48 h) on DUSP6, p-AKT and p-ERK1/2 between HER2i sensitive BT474Br cells.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8B/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8B/p-AKT.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8B/ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8B/p-ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8B/AKT.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8B/AKT.tiff"
           ]
         },
         {
           "panel_label": "C",
-          "panel_caption": "Comparison of the effect of neratinib treatment (48 h) on DUSP6, p-AKT and p-ERK1/2 between HER2i sensitive HER2i resistant MDA-MB-361 cells.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8C/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8C/p-AKT.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8C/p-ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8C/AKT.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8C/ERK.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8C/ERK.tiff"
           ]
         },
         {
           "panel_label": "D",
-          "panel_caption": "The effect of siRNA-mediated HER3 knockdown on DUSP6 expression in MDA-MB-453 cells by Western blot analysis.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8D/3rd/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/3rd/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/3rd/HER3.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/1st/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/1st/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/1st/HER3.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/2nd/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/2nd/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8D/2nd/HER3.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/3rd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/3rd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/3rd/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/1st/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/1st/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/1st/HER3.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/2nd/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/2nd/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8D/2nd/HER3.tiff"
           ]
         },
         {
           "panel_label": "E",
-          "panel_caption": "NRG-mediated induction of DUSP6 mRNA via MEK activation as measured by qRT-PCR analysis after treatment with NRG (10 ng/mL), MK2206(AKTi) (2.5 µM), and trametinib(MEKi) (100 nM) ­­­for 48 h. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05 and ****p < 0.0001 were determined (n=3).",
-          "sd_files": ["suppl_data/Figure 8.zip:Figure 8/8E/8E.xlsx"]
+          "panel_caption": "",
+          "sd_files": ["EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8E/8E.xlsx"]
         },
         {
           "panel_label": "F",
-          "panel_caption": "The effect of NRG on DUSP6 protein expression BT474 cells via MEK activation. The cells were serum-starved for 24 h, followed by treatment with NRG (10 ng/mL), MK2206 (2.5 µM) and trametinib (100 nM) for 48 h.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8F/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8F/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8F/ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8F/p-ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8F/AKT.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8F/AKT.tiff"
           ]
         },
         {
           "panel_label": "G",
-          "panel_caption": "Inhibition of DUSP6 expression in HER2i resistant MDA-MB-453 cells by MEKi Trametinib. The cells were treated with MK2206 (2.5 µM) or trametinib (100 nM) for 48 h.",
+          "panel_caption": "",
           "sd_files": [
-            "suppl_data/Figure 8.zip:Figure 8/8G/DUSP6.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/B-actin.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/p-AKT.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/p-ERK1:2.tiff",
-            "suppl_data/Figure 8.zip:Figure 8/8G/AKT.tiff"
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/DUSP6.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/B-actin.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/p-AKT.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/p-ERK1:2.tiff",
+            "EMM-2023-18636/suppl_data/Figure 8.zip:Figure 8/8G/AKT.tiff"
           ]
         },
         {
           "panel_label": "H",
-          "panel_caption": "A schematic illustration of the discovered HER3/DUSP6 feed forward loop in HER2+ breast cancer cells. NRG binding to HER3 induces MEK/ERK-mediated DUSP6 expression which feeds back to increased HER2 and HER3 expression (left panel). In HER2i sensitive cells (middle panel) inhibition of HER3 results in DUSP6 inhibition and loss of DUSP6 driven cancer hallmarks. In HER2i resistant cells (right panel), MEK is not inhibited by HER2i but its constitutive activity (MEKca.) drives DUSP6-HER2/3 positive feed-back loop resulting in HER3-mediated multitherapy resistance and cancer progression.",
+          "panel_caption": "",
           "sd_files": []
         }
       ]
     }
   ],
   "data_availability": {
-    "section_text": "<p>The gene expression data from this publication have been deposited to the GEO database (https://www.ncbi.nlm.nih.gov/geo/) and assigned the identifier GSE231526 (<a href=\"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE231526\">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE231526</a>).</p>",
+    "section_text": "The gene expression data from this publication have been deposited to the GEO database (https://www.ncbi.nlm.nih.gov/geo/) and assigned the identifier GSE231526 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE231526).",
     "data_sources": [
       {
         "database": "GEO",
@@ -491,5 +491,5 @@
       }
     ]
   },
-  "all_captions": "<p><strong>Figure legends</strong></p>\n<p><strong>Figure 1: Transcriptional landscape of lapatinib tolerance and resistance development in HER2+ cells. (A)</strong> Development of lapatinib resistance in HER2+ breast cancer cells. BT474 and BT474Br cells were treated with 1 μM of lapatinib for 9 days (d), 6 months (mos) and 9 mos to yield Drug-tolerant persister (DTP), Drug-tolerant expanding perister (DTEP) and Long term resistant (LR) clones, respectively. The cells were stained with crystal violet (0.5% w/v) and the images were acquired with an inverted microscope. The transcriptional profiles from each functional state of lapatinib drug tolerance and resistance development from three parallel BT474 cell plates were surveyed by RNA-sequencing. <strong>(B)</strong> The number of the genes with a significant change in their expression during the resistance acquisition (see Dataset EV1 for individual gene names). Transcription factor (TF) binding motifs significantly enriched in significantly regulated genes in each transition are indicated. Bolding indicates shared TF binding sites between DTP downregulated and DTEP upregulated genes. <strong>(C)</strong> Differentially expressed pathways were identified using the R package limma and hallmark gene sets were used for GSVA analysis to reveal hallmarks and signal transduction pathways involved in each step of the resistance acquisition. Red indicates those hallmarks and pathways that are overlapping with processes regulated by DUSP6 depletion in figure 3F.</p>\n<p><strong>Figure 2: Clinical association of <em>DUSP6</em> overexpression with poor prognosis HER2+ breast cancers. (A, B)</strong> Volcano plots visualizing differentially expressed genes in (A) Control-DTP and (B) DTP-DTEP transitions. The volcano blots indicate all genes that were significantly regulated during these transitions (|logFC |&lt;2 and FDR &lt;0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (<em>DUSP6, CDC25A</em>, <em>CDC25C</em>, and <em>SYNJ1)</em> are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). <strong>(C)</strong> Changes in the <em>DUSP6, CDC25A</em>, <em>CDC25C</em>, and <em>SYNJ1</em> mRNA levels during the acquisition of lapatinib resistance in BT474 cells. Data is based on RNA sequencing analysis (Dataset EV1) and was analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *<em>p</em> &lt; 0.05, **<em>p</em> &lt; 0.01 and ***<em>p</em> &lt; 0.001 were determined (n=3). <strong>(D)</strong> Differential expression of <em>DUSP6,</em> <em>CDC25A</em>, <em>CDC25C,</em> and <em>SYNJ1</em> in different breast cancer subtypes. Data were extracted from the METABRIC dataset and categorized into five molecular subtypes according to the PAM50 gene expression subtype classification (basal, claudin-low, HER2+, Luminal A, and Luminal B). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test and shown as mean ± standard deviation (SD). Statistically significant values of *<em>p</em> &lt; 0.05, **<em>p</em> &lt; 0.01 and ****<em>p</em> &lt; 0.0001 were determined (basal=209, claudin-low=218, HER2+=224, LumA=700 and LumB=475). <strong>(E)</strong> Breast cancer patients from the TCGA-BRCA dataset were divided into <em>DUSP6</em> high (LogFC&gt;1, FDR&lt;0.05) and low expression (LogFC&lt;-1, FDR&lt;0.05) groups and the clinical breast cancer subtypes were compared between the two groups. NA; not available. <strong>(F,G)</strong> Subgroup of 113 patient cases with high tumor <em>ERBB2</em> mRNA expression (LogFC&gt;1, FDR&lt;0.05) were divided into <em>DUSP6</em>high and <em>DUSP6</em>low groups and their overall survival (OS) (G) (Log-rank Test <em>p</em> value=0.0220) and disease-specific progression free survival (PFS)(H)(Log-rank Test <em>p</em> value=0.0259) was tested according to <em>DUSP6</em> status.</p>\n<p><strong>Figure 3: Functional involvement of DUSP6 in HER2i tolerance development.</strong></p>\n<p><strong>(A)</strong> Expression of DUSP6 protein in different stages of lapatinib resistance development by Western blot analysis. <strong>(B)</strong> Relative expression of <em>DUSP6</em> mRNA in indicated cell lines either at the untreated control situation, or in the DTP state after following treatments: BT474Br, Lapatinib 1μM for 9 days; EFM192A and HCC1419, Lapatinib 2.5 μM for 14 days; HCC827(EGFRmut NSCLC), 1 µM Osimertinib for 10 days; A375(BRAFV600E mutant malignant melanoma (MM)), 1 µM dabrafenib+100 nM trametinib for 10 days; and HT-29(BRAFV600E mutant colorectal cancer (CRC)), 1 µM dabrafenib+10 µg/ml cetuximab for 10 days. Data for EFM192 and HCC1419 cells was obtained from (DataRef: (Chang <em>et al.</em>, 2022)(GSE155342), and for other cells by qRT-PCR analysis of the <em>de novo</em> treated samples. Shown is data from two-three repeat samples. <strong>(C)</strong> Transcriptional profile of MDA-MB-453 cells after <em>DUSP6</em> knockdown by 3 different siRNA and compared with 3 different scramble controls, followed by the GSVA analysis of the Hallmark gene sets. The Hallmark gene sets overlapping with the gene sets regulated to same direction in DUSP6 low expressing DTEP cells (Fig. 1C) are indicated with red. <strong>(D, E)</strong> Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on cell viability (G) and apoptosis (H), as measured by WST1 cell viability assay and caspase 3/7 activity, respectively. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **<em>p</em> &lt; 0.01 and ****<em>p</em> &lt; 0.0001 were determined. n=3. <strong>(F)</strong> Ectopic overexpression of either wild-type DUSP6 (DUSPWT) or ERK binding deficient KIM mutant of DUSP6 (DUSP6MUT) in BT474 cells inhibits lapatinib effects on apoptosis. Shown is a result from a representative experiment from three repeats with similar results. Data were analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of **<em>p</em> &lt; 0.01 and ****<em>p</em> &lt; 0.0001 were determined. <strong>(G)</strong> DUSP6 inhibitor BCI preempts DTEP development in BT474 cells treated with either lapatinib or neratinib for 6 months. The cells were stained and fixed with crystal violet in methanol (0.5% w/v) and the images were acquired with an inverted microscope.</p>\n<p><strong>Figure 4: Both genetic and pharmacological DUSP6 targeting overcomes HER2i resistance. (A)</strong> RNAi-mediated <em>DUSP6</em> knockdown, but not of <em>DUSP1</em>, induces apoptotic cell death in MDA-MB-453 cells, as shown by Western blotting for PARP-1 cleavage. <strong>(B)</strong> CRISPR/CAS9-mediated <em>DUSP6</em> knockout hinders the clonogenic growth of MDA-MB-453 cells, as compared to the CAS9 expressing controls. Shown are three independent single cell clones created with two independent gRNAs (g1 and g2). The cells were seeded at low density and maintained for 10 d. The colonies were stained/fixed with 0.5% crystal violet in methanol and imaged using an inverted microscope. <strong>(C)</strong> <em>DUSP6</em> siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to HER2-targeted therapies. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **<em>p</em> &lt; 0.01, ***<em>p</em> &lt; 0.001 and ****<em>p</em> &lt; 0.0001 were determined. <strong>(D)</strong> A 2D synergy map of neratinib-BCI combination in MDA-MB-453 cells calculated by Bliss SynergyFinder (Ianevski <em>et al.</em>, 2017). Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. <strong>(E)</strong> <em>DUSP6</em> siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to combination with capecitabine and neratinib. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****<em>p</em> &lt; 0.0001 were determined.</p>\n<p><strong>Figure 5: DUSP6 inhibition overcomes HER2 inhibitor resistance <em>in vivo.</em> (A)</strong> Subcutaneous xenograft growth of two independent <em>DUSP6</em> single cell knockout clones of MDA-MB-453 cells targeted with two different gRNA guides. One-way ANOVA followed by Tukey's multiple comparisons test **<em>p</em> &lt; 0.01 comparing each clone to CAS9 expressing control cells . Data are shown as mean ± SD (n=5) <strong>(B-E)</strong> The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft models: HCC1954 <strong>(B, C)</strong> or MDA-MB-453 <strong>(D, E)</strong>. Data are shown as mean ± SD (n=10 in each treatment group). Mice with tumor size ∼100 mm<sup>3</sup> were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****<em>p</em> &lt; 0.0001 were determined. <strong>C</strong> and <strong>E</strong> panels display percentual change in the tumor volume from the start of the therapy as water-fall blots in HCC1954 and MDA-MB453 models, respectively. <strong>(F)</strong> H&amp;E staining of the representative MDA-MB-453 xenograft tumors from the control, lapatinib, BCI and lapatinib+BCI groups at day 24. Scale bar 200 µm.</p>\n<p><strong>Figure 6: DUSP6 targeting inhibits HER3 expression</strong> <strong>(A)</strong> A 2D synergy map of lapatinib+MK2206(AKTi) or <strong>(B)</strong> lapatinib+BCI(DUSP6i) combination in MDA-MB-453 cells calculated by the Bliss SynergyFinder. Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. <strong>(C)</strong> Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on apoptosis induction (PARP-1 cleavage), and HER2 or HER3 protein levels by Western blot analysis. The cells were treated with lapatinib (1 μM), MK2206 (2.5 µM) and BCI (2.5 µM) and their combinations for 48 h. <strong>(D)</strong> Quantification of PARP1 cleavage from three repeats of (C). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **<em>p</em> &lt; 0.01 and ****<em>p</em> &lt; 0.0001 were determined. <strong>(E,F)</strong> The dose-dependent effects of MK2206 (E) and BCI (F) on the expression of HER2 and HER3 protein levels in MDA-MB-453 cells by Western blot analysis after 48h of treatment. <strong>(G)</strong> The time-dependent effects of BCI (2.5 µM) on the expression of HER2 and HER3 protein levels and apoptosis induction (PARP cleavage) in MDA-MB-453 cells by Western blot analysis. Increase in phosphorylated ERK (p-ERK1/2) and inhibition of DUSP6 both indicate for early target engagement by BCI. <strong>(H)</strong> <em>DUSP6</em> knockdown by siRNA inhibits HER2 and HER3 protein expression in MDA-MB-453 cells. <strong>(I)</strong> Effects of BCI (50 mg/kg) therapy on HER2 and HER3 protein levels in the MDA-MB-453 xenograft tissue on day 24. Shown is immunohistochemical analysis of HER2 and HER3 from the adjacent paraffin embedded tissue slices from Fig. 5F. Scale bar 200 µm. <strong>(J)</strong> Breast cancer patients from the TCGA-BRCA dataset were divided into <em>DUSP6</em> high (LogFC&gt;1, FDR&lt;0.05) and low expression (LogFC&lt;-1, FDR&lt;0.05) profiles and expression of phosphorylated HER3 (p-HER3<sup>Y1298</sup>) was compared between the two groups. Data were analyzed by two-tailed t test; **<em>p</em> &lt; 0.01. (DUSP6high=142, DUSP6low=149).</p>\n<p><strong>Fig. 7.</strong> <strong>DUSP6 targeting overcomes Neuregulin/HER3-mediated HER2i therapy tolerance</strong></p>\n<p><strong>(A)</strong> Comparison of the potential of BCI or MK2206 treatment to overcome Neuregulin (NRG)-mediated rescue from the anti-proliferative activity of neratinib. The cells were treated with NRG (10 ng/mL), lapatinib (1\\xa0µM), MK2206 (1, 2.5, and 5 µM), and BCI (1, 2.5, and 5 µM) for 48 h and cell viability was measured by WST-1 assay. Data were collected from three independent experiments each performed with three technical repeat samples. <strong>(B)</strong> Comparison of the effects of BCI and MK2206 on NRG-mediated evasion from neratinib-induced apoptotic cell death, as measured by Western blot analysis for cleaved PARP-1. The cells were treated with NRG (10 ng/mL), lapatinib (1 μM), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h. <strong>(C)</strong> HER3 overexpression rescues MDA-MB-453 cells from BCI-elicited inhibition of cell viability. The control or HER3 overexpressing MDA-MB-453 were treated with BCI (3 µM) for 48 h and cell viability was measured by WST-1 assay. Shown is data from four technical replicate samples from a representative of three experiments with similar results. The data was analysed by Two-way ANOVA + Tukey’s post hoc test, ****<em>p</em> &lt; 0.0001 <strong>(D)</strong> Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on NRG-mediated rescue from the anti-growth activity of lapatinib, as shown by crystal violet staining. The cells were treated with NRG (10 ng/mL), lapatinib (1 μM), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h, stained/fixed with 0.5% crystal violet in methanol and imaged by an inverted microscope (images acquired at 10x magnification). <strong>(E)</strong> Breast cancer patients from the TCGA-BRCA dataset were divided into <em>DUSP6</em> high (LogFC&gt;1, FDR&lt;0.05) and low expression (LogFC&lt;-1, FDR&lt;0.05) profiles and the neuregulin (<em>NRG1)</em> mRNA levels were compared between the two groups. Data were analyzed by two-tailed t test; ****<em>p</em> &lt; 0.0001. (DUSP6high=167, DUSP6low=181). <strong>(F)</strong> The effect of <em>DUSP6</em> knockdown on the brain metastatic outgrowth of MDA-MB-361 cells in a zebrafish model. GFP positive MDA-MB-361 cells transfected either with control scrambled siRNA or DUSP6 siRNA were injected into zebrafish embryo brain and the GFP intensity was measured 3 days after by microscopy. Data were analyzed by two-tailed <em>t</em> test; ****<em>p</em> &lt; 0.0001. Scale bar 100 µm (siSCR=37, siDUSP6=43). <strong>(G)</strong> Improved overall survival of mice with intracranially injected DUSP6 KO MDA-MB-453 cells as compared to the CAS9 positive control cell injected mice. Survival data were analyzed by log-rank Mantel–Cox test, **<em>p</em> &lt; 0.01.</p>\n<p><strong>Figure 8. Feed-forward loop between NRG/HER3 and DUSP6 determines HER2i sensitivity</strong></p>\n<p><strong>(A)</strong> <em>DUSP1</em> and <em>DUSP6</em> mRNA levels were determined by qRT-PCR analysis after treatment with increasing concentrations of neratinib for 48 h in indicated cell lines. Red denotes for HER2i resistant cell lines and green HER2i sensitive cells. Data were collected from three independent experiments each performed in triplicate. <strong>(B, C)</strong> Comparison of the effect of n\\xad\\xaderatinib treatment (48 h) on DUSP6, p-AKT and p-ERK1/2 between HER2i sensitive BT474Br (B) and HER2i resistant MDA-MB-361 (C) cells, respectively. <strong>(D)</strong> The effect of siRNA-mediated <em>HER3</em> knockdown on DUSP6 expression in MDA-MB-453 cells by Western blot analysis. <strong>(E)</strong> NRG-mediated induction of <em>DUSP6</em> mRNA via MEK activation as measured by qRT-PCR analysis after treatment with NRG (10 ng/mL), MK2206(AKTi) (2.5\\xa0µM), and trametinib(MEKi) (100 nM)\\xa0\\xad\\xad\\xadfor 48 h. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *<em>p</em> &lt; 0.05 and ****<em>p</em> &lt; 0.0001 were determined (n=3). <strong>(F)</strong> The effect of NRG on DUSP6 protein expression BT474 cells via MEK activation. The cells were serum-starved for 24 h, followed by treatment with NRG (10 ng/mL), MK2206 (2.5 µM) and trametinib (100 nM) for 48 h. <strong>(G)</strong> Inhibition of DUSP6 expression in HER2i resistant MDA-MB-453 cells by MEKi Trametinib. The cells were treated with MK2206 (2.5 µM) or trametinib (100 nM) for 48 h. <strong>(H)</strong> A schematic illustration of the discovered HER3/DUSP6 feed forward loop in HER2+ breast cancer cells. NRG binding to HER3 induces MEK/ERK-mediated <em>DUSP6</em> expression which feeds back to increased HER2 and HER3 expression (left panel). In HER2i sensitive cells (middle panel) inhibition of HER3 results in <em>DUSP6</em> inhibition and loss of DUSP6 driven cancer hallmarks. In HER2i resistant cells (right panel), MEK is not inhibited by HER2i but its constitutive activity (MEKca.) drives DUSP6-HER2/3 positive feed-back loop resulting in HER3-mediated multitherapy resistance and cancer progression.</p>\n<p><strong>Expanded view figure legends</strong></p>\n<p><strong>Figure EV1</strong>: <strong>Profiling of a panel of HER2+ breast cancer cell lines for their sensitivity to HER2 targeting small molecule tyrosine kinase inhibitors</strong></p>\n<p>The primary HER2i sensitive cells are marked on green, and the acquired HER2i resistant cells in red. The long-term resistant (LR) BT-474 and BT-474Br generated by 9-month treatment with lapatinib in this study are denoted in bold. The cells were treated with the increasing concentrations of the indicated HER2i compounds (in µM) for 48 h and cell viability was measured using WST-1 assay.</p>\n<p><strong>Figure EV2: E2F1 and FOXM1 target genes are inhibited across HER2+ DTP cells</strong></p>\n<p><strong>A)</strong> mRNA levels of selected predicted FOXM1 and E2F1 target genes regulated during different steps of acquisition of lapatinib resistance in BT474 cells (Fig. 1). Data is blotted based on RNA sequencing analysis (Dataset EV1). <strong>(B, C)</strong> Expression of the predicted FOXM1 and E2F1 target genes in HER2+ HCC1419 and EFM192A cells between the DTP and the control cells. The RNA-seq data was obtained from (Dataref: (Chang <em>et al.</em>, 2022)(GSE155342). The cells were treated with lapatinib (2.5 µM) for 14 days to reach the DTP state. Data are shown as mean ± SD (n=2) <strong>(D)</strong> Changes in the expression of FOXM1, PLK1, CCNB1, E2F1, CCNE2 and CDC6 in BT474Br cells between the control and the DTP cells treated for 9 days with lapatinib (1 µM). Data is based on Q-PCR analysis from three technical replicates. The analysis was limited to only these genes due to lack of sufficient mRNA material from the strongly growth suppressed DTP cells. Data are shown as mean ± SD (n=3).</p>\n<p><strong>Figure EV3: DUSP6 overexpression protects HER2+ cells from HER2i-induced cell death</strong></p>\n<p><strong>(A, B)</strong> Ectopic overexpression of DUSP6 in BT474 cells inhibits neratinib-elicited effects on cell viability and apoptosis, as measured by WST1 cell viability assay and caspase 3/7 activity, respectively. Data were collected from three independent experiments each performed in triplicate and analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of ****<em>p</em> &lt; 0.0001 were determined. <strong>(C)</strong> Ectopic overexpression of DUSP6 in BT474 cells inhibits the afatinib-elicited effects on cell viability, as measured by WST1 assay. Data were collected from three independent experiments each performed in triplicate and analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of ****<em>p</em> &lt; 0.0001 were determined. <strong>(D)</strong> Ectopic overexpression of DUSP6, but not of DUSP1, inhibits the Tucatinib-elicited effects on cell viability, as measured by WST1 assay. Data were collected from three independent experiments each performed in triplicate and analyzed by two-way ANOVA followed by Tukey' post hoc test. Statistically significant values of ****<em>p</em> &lt; 0.0001 were determined.</p>\n<p><strong>Figure EV4: The anti-proliferative activities of a library of small molecule modulators of phosphatases, kinases, and anti-apoptotic proteins in HER2i resistant cells.</strong> The indicated cells were treated with the increasing concentrations (in μM) of the compounds for 48 h and cell viability was measured using WST-1 assay. The long-term resistant (LR) BT474 and BT474Br generated <em>de novo</em> by 9-month treatment with lapatinib in this study had comparable drug sensitivity profile to acquired resistant cell line MDA-MB-453. The primary target of the used compound is indicated in parenthesis.</p>\n<p><strong>Figure EV5: Lack of DUSP6 inhibition is associated with HER2i resistance</strong></p>\n<p><strong>(A,B)</strong> The effects of tucatinib on DUSP6 expression and the signaling pathway activities in (A) HER2i sensitive (green) BT474 cells or (B) HER2i resistant (red) MDA-MB-453 and BT474BrLR cells. The cells were treated with increasing concentrations of tucatinib for 48 h, followed by Western blot analysis. <strong>(C)</strong> DUSP6 expression in MDA-MB-453 cells is resistant to multiple HER2is including antibody therapy with trastuzumab. The cells were treated with indicated drugs for 48 h, followed by Western blot analysis.</p>"
+  "all_captions": "Figure 1: Transcriptional landscape of lapatinib tolerance and resistance development in HER2+ cells. (A) Development of lapatinib resistance in HER2+ breast cancer cells. BT474 and BT474Br cells were treated with 1 M of lapatinib for 9 days (d), 6 months (mos) and 9 mos to yield Drug-tolerant persister (DTP), Drug-tolerant expanding perister (DTEP) and Long term resistant (LR) clones, respectively. The cells were stained with crystal violet (0.5% w/v) and the images were acquired with an inverted microscope. The transcriptional profiles from each functional state of lapatinib drug tolerance and resistance development from three parallel BT474 cell plates were surveyed by RNA-sequencing. (B) The number of the genes with a significant change in their expression during the resistance acquisition (see Dataset EV1 for individual gene names). Transcription factor (TF) binding motifs significantly enriched in significantly regulated genes in each transition are indicated. Bolding indicates shared TF binding sites between DTP downregulated and DTEP upregulated genes. (C) Differentially expressed pathways were identified using the R package limma and hallmark gene sets were used for GSVA analysis to reveal hallmarks and signal transduction pathways involved in each step of the resistance acquisition. Red indicates those hallmarks and pathways that are overlapping with processes regulated by DUSP6 depletion in figure 3F.\n\nFigure 2: Clinical association of DUSP6 overexpression with poor prognosis HER2+ breast cancers. (A, B) Volcano plots visualizing differentially expressed genes in (A) Control-DTP and (B) DTP-DTEP transitions. The volcano blots indicate \n\n\n\nall genes that were significantly regulated during these transitions (|logFC |<2 and FDR <0.05), whereas only the phosphatase genes among these are indicated by names. The four phosphatase genes significantly regulated in both transitions (DUSP6, CDC25A, CDC25C, and SYNJ1) are indicated in bold. Differentially expressed genes were identified using the R package limma (n=3). (C) Changes in the DUSP6, CDC25A, CDC25C, and SYNJ1 mRNA levels during the acquisition of lapatinib resistance in BT474 cells. Data is based on RNA sequencing analysis (Dataset EV1) and was analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05, **p < 0.01 and ***p < 0.001 were determined (n=3). (D) Differential expression of DUSP6, CDC25A, CDC25C, and SYNJ1 in different breast cancer subtypes. Data were extracted from the METABRIC dataset and categorized into five molecular subtypes according to the PAM50 gene expression subtype classification (basal, claudin-low, HER2+, Luminal A, and Luminal B). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test and shown as mean  standard deviation (SD). Statistically significant values of *p < 0.05, **p < 0.01 and ****p < 0.0001 were determined (basal=209, claudin-low=218, HER2+=224, LumA=700 and LumB=475). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) groups and the clinical breast cancer subtypes were compared between the two groups. NA; not available. (F,G) Subgroup of 113 patient cases with high tumor ERBB2 mRNA expression (LogFC>1, FDR<0.05) were divided into DUSP6high and DUSP6low groups and their overall survival (OS) (G) (Log-rank Test p value=0.0220) and disease-specific progression free survival (PFS)(H)(Log-rank Test p value=0.0259) was tested according to DUSP6 status. \n\n\n\nFigure 3: Functional involvement of DUSP6 in HER2i tolerance development. \n\n(A) Expression of DUSP6 protein in different stages of lapatinib resistance development by Western blot analysis. (B) Relative expression of DUSP6 mRNA in indicated cell lines either at the untreated control situation, or in the DTP state after following treatments: BT474Br, Lapatinib 1M for 9 days; EFM192A and HCC1419, Lapatinib 2.5 M for 14 days; HCC827(EGFRmut NSCLC), 1 µM Osimertinib for 10 days; A375(BRAFV600E mutant malignant melanoma (MM)), 1 µM dabrafenib+100 nM trametinib for 10 days; and HT-29(BRAFV600E mutant colorectal cancer (CRC)), 1 µM dabrafenib+10 µg/ml cetuximab for 10 days. Data for EFM192 and HCC1419 cells was obtained from (DataRef: (Chang et al., 2022)(GSE155342), and for other cells by qRT-PCR analysis of the de novo treated samples. Shown is data from two-three repeat samples. (C) Transcriptional profile of MDA-MB-453 cells after DUSP6 knockdown by 3 different siRNA and compared with 3 different scramble controls, followed by the GSVA analysis of the Hallmark gene sets. The Hallmark gene sets overlapping with the gene sets regulated to same direction in DUSP6 low expressing DTEP cells (Fig. 1C) are indicated with red.  (D, E) Ectopic overexpression of DUSP6 in BT474 cells inhibits lapatinib effects on cell viability (G) and apoptosis (H), as measured by WST1 cell viability assay and caspase 3/7 activity, respectively. Data was analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. n=3.  (F) Ectopic overexpression of either wild-type DUSP6 (DUSPWT) or ERK binding deficient KIM mutant of DUSP6 (DUSP6MUT) in BT474 cells inhibits lapatinib effects on apoptosis. Shown is a result from a representative experiment from three repeats with similar results. Data were analyzed by two-way ANOVA followed by Tukey' post hoc test.  Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (G) \n\n\n\nDUSP6 inhibitor BCI preempts DTEP development in BT474 cells treated with either lapatinib or neratinib for 6 months. The cells were stained and fixed with crystal violet in methanol (0.5% w/v) and the images were acquired with an inverted microscope. \n\nFigure 4: Both genetic and pharmacological DUSP6 targeting overcomes HER2i resistance. (A) RNAi-mediated DUSP6 knockdown, but not of DUSP1, induces apoptotic cell death in MDA-MB-453 cells, as shown by Western blotting for PARP-1 cleavage. (B) CRISPR/CAS9-mediated DUSP6 knockout hinders the clonogenic growth of MDA-MB-453 cells, as compared to the CAS9 expressing controls. Shown are three independent single cell clones created with two independent gRNAs (g1 and g2). The cells were seeded at low density and maintained for 10 d. The colonies were stained/fixed with 0.5% crystal violet in methanol and imaged using an inverted microscope. (C) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to HER2-targeted therapies. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01, ***p < 0.001 and ****p < 0.0001 were determined. (D) A 2D synergy map of neratinib-BCI combination in MDA-MB-453 cells calculated by Bliss SynergyFinder (Ianevski et al., 2017). Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (E) DUSP6 siRNA knockdown increases sensitivity of HER2i resistant MDA-MB-453 cells to combination with capecitabine and neratinib. Cell viability was measured by WST-1 assay after 48 h of drug treatment. Data were collected from three independent experiments each performed in triplicate and \n\n\n\nanalyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined.\n\nFigure 5: DUSP6 inhibition overcomes HER2 inhibitor resistance in vivo. (A) Subcutaneous xenograft growth of two independent DUSP6 single cell knockout clones of MDA-MB-453 cells targeted with two different gRNA guides. One-way ANOVA followed by Tukey's multiple comparisons test **p < 0.01 comparing each clone to CAS9 expressing control cells . Data are shown as mean  SD (n=5) (B-E) The effect of BCI in combination with lapatinib or neratinib in two HER2 inhibitor resistant xenograft models: HCC1954 (B, C) or MDA-MB-453 (D, E). Data are shown as mean  SD (n=10 in each treatment group). Mice with tumor size ∼100 mm3 were randomized into the experimental and the control groups and tumor volumes were measured every 3 d. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of ****p < 0.0001 were determined. C and E panels display percentual change in the tumor volume from the start of the therapy as water-fall blots in HCC1954 and MDA-MB453 models, respectively. (F) H&E staining of the representative MDA-MB-453 xenograft tumors from the control, lapatinib, BCI and lapatinib+BCI groups at day 24. Scale bar 200 µm.  \n\nFigure 6: DUSP6 targeting inhibits HER3 expression  (A) A 2D synergy map of lapatinib+MK2206(AKTi) or (B) lapatinib+BCI(DUSP6i) combination in MDA-MB-453 cells calculated by the Bliss SynergyFinder. Higher score (in red) indicates for higher degree of drug synergy. The cultures were treated with increasing concentrations of the compounds for 48 h and cell viability was measured by WST-1 assay. (C) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on apoptosis \n\n\n\ninduction (PARP-1 cleavage), and HER2 or HER3 protein levels by Western blot analysis. The cells were treated with lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) and their combinations for 48 h. (D) Quantification of PARP1 cleavage from three repeats of (C). Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of **p < 0.01 and ****p < 0.0001 were determined. (E,F) The dose-dependent effects of MK2206 (E) and BCI (F) on the expression of HER2 and HER3 protein levels in MDA-MB-453 cells by Western blot analysis after 48h of treatment. (G) The time-dependent effects of BCI (2.5 µM) on the expression of HER2 and HER3 protein levels and apoptosis induction (PARP cleavage) in MDA-MB-453 cells by Western blot analysis. Increase in phosphorylated ERK (p-ERK1/2) and inhibition of DUSP6 both indicate for early target engagement by BCI.  (H) DUSP6 knockdown by siRNA inhibits HER2 and HER3 protein expression in MDA-MB-453 cells. (I) Effects of BCI (50 mg/kg) therapy on HER2 and HER3 protein levels in the MDA-MB-453 xenograft tissue on day 24. Shown is immunohistochemical analysis of HER2 and HER3 from the adjacent paraffin embedded tissue slices from Fig. 5F. Scale bar 200 µm. (J) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and expression of phosphorylated HER3 (p-HER3Y1298) was compared between the two groups. Data were analyzed by two-tailed t test; **p < 0.01. (DUSP6high=142, DUSP6low=149).\n\nFig. 7. DUSP6 targeting overcomes Neuregulin/HER3-mediated HER2i therapy tolerance\n\n(A) Comparison of the potential of BCI or MK2206 treatment to overcome Neuregulin (NRG)-mediated rescue from the anti-proliferative activity of neratinib. The cells were \n\n\n\ntreated with NRG (10 ng/mL), lapatinib (1 µM), MK2206 (1, 2.5, and 5 µM), and BCI (1, 2.5, and 5 µM) for 48 h and cell viability was measured by WST-1 assay.  Data were collected from three independent experiments each performed with three technical repeat samples. (B) Comparison of the effects of BCI and MK2206 on NRG-mediated evasion from neratinib-induced apoptotic cell death, as measured by Western blot analysis for cleaved PARP-1. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h. (C) HER3 overexpression rescues MDA-MB-453 cells from BCI-elicited inhibition of cell viability. The control or HER3 overexpressing MDA-MB-453 were treated with BCI (3 µM) for 48 h and cell viability was measured by WST-1 assay. Shown is data from four technical replicate samples from a representative of three experiments with similar results. The data was analysed by Two-way ANOVA + Tukey’s post hoc test, ****p < 0.0001 (D) Comparison of the effects of lapatinib+BCI and lapatinib+MK2206 on NRG-mediated rescue from the anti-growth activity of lapatinib, as shown by crystal violet staining. The cells were treated with NRG (10 ng/mL), lapatinib (1 M), MK2206 (2.5 µM) and BCI (2.5 µM) for 48 h, stained/fixed with 0.5% crystal violet in methanol and imaged by an inverted microscope (images acquired at 10x magnification). (E) Breast cancer patients from the TCGA-BRCA dataset were divided into DUSP6 high (LogFC>1, FDR<0.05) and low expression (LogFC<-1, FDR<0.05) profiles and the neuregulin (NRG1) mRNA levels were compared between the two groups. Data were analyzed by two-tailed t test; ****p < 0.0001. (DUSP6high=167, DUSP6low=181).  (F) The effect of DUSP6 knockdown on the brain metastatic outgrowth of MDA-MB-361 cells in a zebrafish model. GFP positive MDA-MB-361 cells transfected either with control scrambled siRNA or DUSP6 siRNA were injected into zebrafish embryo brain and the GFP intensity was measured 3 days after by microscopy. Data were analyzed \n\n\n\nby two-tailed t test; ****p < 0.0001. Scale bar 100 µm (siSCR=37, siDUSP6=43). (G) Improved overall survival of mice with intracranially injected DUSP6 KO MDA-MB-453 cells as compared to the CAS9 positive control cell injected mice. Survival data were analyzed by log-rank Mantel–Cox test, **p < 0.01.\n\nFigure 8. Feed-forward loop between NRG/HER3 and DUSP6 determines HER2i sensitivity\n\n(A) DUSP1 and DUSP6 mRNA levels were determined by qRT-PCR analysis after treatment with increasing concentrations of neratinib for 48 h in indicated cell lines. Red denotes for HER2i resistant cell lines and green HER2i sensitive cells. Data were collected from three independent experiments each performed in triplicate. (B, C) Comparison of the effect of neratinib treatment (48 h) on DUSP6, p-AKT and p-ERK1/2 between HER2i sensitive BT474Br (B) and HER2i resistant MDA-MB-361 (C) cells, respectively. (D) The effect of siRNA-mediated HER3 knockdown on DUSP6 expression in MDA-MB-453 cells by Western blot analysis. (E) NRG-mediated induction of DUSP6 mRNA via MEK activation as measured by qRT-PCR analysis after treatment with NRG (10 ng/mL), MK2206(AKTi) (2.5 µM), and trametinib(MEKi) (100 nM) for 48 h. Data were analyzed by one-way ANOVA followed by Tukey's multiple comparisons test. Statistically significant values of *p < 0.05 and ****p < 0.0001 were determined (n=3). (F) The effect of NRG on DUSP6 protein expression BT474 cells via MEK activation. The cells were serum-starved for 24 h, followed by treatment with NRG (10 ng/mL), MK2206 (2.5 µM) and trametinib (100 nM) for 48 h. (G) Inhibition of DUSP6 expression in HER2i resistant MDA-MB-453 cells by MEKi Trametinib. The cells were treated with MK2206 (2.5 µM) or trametinib (100 nM) for \n\n\n\n48 h. (H) A schematic illustration of the discovered HER3/DUSP6 feed forward loop in HER2+ breast cancer cells. NRG binding to HER3 induces MEK/ERK-mediated DUSP6 expression which feeds back to increased HER2 and HER3 expression (left panel). In HER2i sensitive cells (middle panel) inhibition of HER3 results in DUSP6 inhibition and loss of DUSP6 driven cancer hallmarks. In HER2i resistant cells (right panel), MEK is not inhibited by HER2i but its constitutive activity (MEKca.) drives DUSP6-HER2/3 positive feed-back loop resulting in HER3-mediated multitherapy resistance and cancer progression."
 }

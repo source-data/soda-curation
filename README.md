@@ -47,91 +47,172 @@ soda-curation is a professional Python package for automated data curation of sc
    pip install -e .
    ```
 
-3. Set up environment variables:
+3. Set up environment variables: Create environment-specific .env files:
 
    Using environment variables is the recommended way to store sensitive information like API keys:
 
-   ```
-   export OPENAI_API_KEY=your_openai_key
-   ```
+    ```
+    # .env.dev for development
+    # .env.test for testing
+    # .env.prod for production
 
-   Replace `your_openai_key` in the `config.yaml` file. Not recommended for production use.
+    OPENAI_API_KEY=your_openai_key
+    ANTHROPIC_API_KEY=your_anthropic_key # Currently we use OpenAI
+    ENVIRONMENT=test  # or dev or prod
+    MODEL_PROVIDER=openai  # or anthropic, currently we use OpenAI
+    ```
 
 ## Configuration
 
-The `config.yaml` file controls the behavior of soda-curation. Key configuration options include:
+The configuration system supports different environments (dev, test, prod) with environment-specific settings. Configuration is managed through YAML files and environment variables.
 
-- `ai`: Choose between "openai" as the AI provider
-- `openai.model`: Specify the OpenAI model (e.g., "gpt-4-1106-preview")
-- `object_detection.model_path`: Path to the YOLOv10 model for panel detection
-
-For a complete list of configuration options, refer to the [Configuration](#configuration) section in the full documentation.
-
-### Configuration File Structure
-
-The configuration file (`config.yaml`) has the following structure:
+### Configuration Files Structure
+The configuration files follow this structure:
 
 ```yaml
-ai: "openai"
+default: &default
+  # General settings
+  debug:
+    enabled: false
+    debug_dir: logs/debug
+    process_first_figure_only: false
 
-openai:
-  api_key: "your_openai_key"
-  model: "gpt-4-1106-preview"
-  temperature: 1.0
-  top_p: 1.0
-  structure_zip_assistant_id: "asst_ID"
-  caption_extraction_assistant_id: "asst_ID"
-  panel_source_data_assistant_id: "asst_ID"
+  # Provider-specific base configurations
+  providers:
+    openai: &openai_base
+      temperature: 0.3
+      top_p: 1.0
+      max_tokens: 2048
+      
+    anthropic: &anthropic_base
+      temperature: 0.3
+      top_p: 1.0
+      max_tokens_to_sample: 8192
+      top_k: 128
 
-object_detection:
-  model_path: "data/models/panel_detection_model_no_labels.pt"
+  # Pipeline step configurations
+  pipeline:
+    assign_panel_source:
+      openai:
+        <<: *openai_base
+        model: gpt-4
+        system_prompt: "system prompt for panel source assignment"
 
-logging:
-  level: "INFO"
-  file: "soda_curation.log"
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  date_format: "%Y-%m-%d %H:%M:%S"
+    extract_captions:
+      openai:
+        <<: *openai_base
+        model: gpt-4
+        system_prompt: "system prompt for caption extraction"
 
-debug:
-  enabled: false
-  debug_dir: "data/output_debug"
-  process_first_figure_only: false
+    match_caption_panel:
+      openai:
+        <<: *openai_base
+        model: gpt-4-vision-preview
+        system_prompt: "system prompt for caption panel matching"
+
+    object_detection:
+      model_path: "data/models/panel_detection_model_no_labels.pt"
+      confidence_threshold: 0.25
+      iou_threshold: 0.1
+      image_size: 512
+      max_detections: 30
+
+test:
+  <<: *default
+  debug:
+    enabled: true
+    debug_dir: logs/debug/test
+    process_first_figure_only: true
+
+production:
+  <<: *default
+  debug:
+    enabled: false
+    debug_dir: logs/debug/prod
+    process_first_figure_only: false
 ```
 
-### Configuration Options
+## Docker
+The application supports different environments through Docker:
 
-1. **AI Provider**
+### Building Images
 
-   - `ai`: Specify the AI provider to use ("openai")
+```bash
+# For CPU-only environments
+docker build -t soda-curation-cpu . -f Dockerfile.cpu --target development
 
-2. **OpenAI Configuration**
+# For environments with GPU support (Currently still not supported, but on the plan.)
+docker build -t soda-curation .
+```
 
-   - `api_key`: Your OpenAI API key
-   - `model`: The GPT model to use (e.g., "gpt-4-1106-preview")
-   - `temperature`: Controls randomness in output (0.0 to 1.0)
-   - `top_p`: Controls diversity of output (0.0 to 1.0)
-   - `caption_extraction_assistant_id`: ID for OpenAI assistant for caption extraction
-   - `panel_source_data_assistant_id`: ID of the OpenAI assistant for panel source data assignation
+### Running the different environments
 
-3. **Object Detection**
+#### 1. Development Environment
 
-   - `model_path`: Path to the YOLOv10 model for panel detection
+```bash
+# Build and run development environment
+docker-compose -f docker-compose.dev.yml build
+docker-compose -f docker-compose.dev.yml run --rm soda /bin/bash
 
-4. **Logging**
+# Development with console access
+docker-compose -f docker-compose.dev.yml run --rm --entrypoint=/bin/bash soda
 
-   - `level`: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-   - `file`: Path to the log file
-   - `format`: Log message format
-   - `date_format`: Date format for log messages
+```
 
-5. **Debug Options**
-   - `enabled`: Enable or disable debug mode (true/false)
-   - `debug_dir`: Directory for saving debug output
-   - `process_first_figure_only`: Process only the first figure for faster debugging (true/false)
+#### 2. Test Environment
 
-Adjust these settings according to your needs and API access. Ensure that you have the necessary API keys for the AI provider you choose to use.
+```bash
+# Build and run test environment
+docker-compose -f docker-compose.test.yml build
+docker-compose -f docker-compose.test.yml run --rm soda /bin/bash
 
-## Prompts
+# Testing with console access
+docker-compose -f docker-compose.test.yml run --rm --entrypoint=/bin/bash soda
+
+```
+
+#### 3. Production Environment
+
+```bash
+# Build and run production environment
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml run --rm soda /bin/bash
+
+# Production with console access
+docker-compose -f docker-compose.prod.yml run --rm --entrypoint=/bin/bash soda
+```
+
+### Running the application
+
+Inside the container:
+
+```bash
+poetry run python -m src.soda_curation.main \
+  --zip /app/data/archives/your-manuscript.zip \
+  --config /app/config.yaml \
+  --output /app/data/output/results.json
+```
+
+## Testing
+
+### Running the test suite
+
+```bash
+# Inside the container
+poetry run pytest tests/
+
+# With coverage report
+poetry run pytest --cov=src tests/
+
+# Generate HTML coverage report
+poetry run pytest --cov=src tests/ --cov-report=html
+```
+
+### Running the model evaluation
+
+This section is TBD!
+
+<!-- ## Prompts
 
 The soda-curation package uses AI-generated prompts for various tasks in the pipeline. These prompts are stored in separate files and can be modified to fine-tune the behavior of the AI models.
 
@@ -244,7 +325,7 @@ Example of script usage:
 ./run_soda_curation_cpu.sh data/manuscript.zip data/output/results.json
 ```
 
-This command processes `manuscript.zip` and saves the results to `results.json`.
+This command processes `manuscript.zip` and saves the results to `results.json`. -->
 
 ## Pipeline Steps
 
@@ -285,11 +366,7 @@ In debug mode, the pipeline can be configured to process only the first figure, 
 
 The soda-curation pipeline generates a JSON output that represents the structured manuscript data. Here's an example of the output schema:
 
-## Output Schema
-
-The soda-curation pipeline generates a JSON output that represents the structured manuscript data. Here's the detailed schema:
-
-```json
+````json
 {
   "manuscript_id": "string",
   "xml": "string",
@@ -422,6 +499,26 @@ Make sure to update the `config.yaml` file with your API keys before running the
 To run the model evaluation script, use the following command:
 
 ```bash
+
+# Test environment
+docker-compose -f docker-compose.test.yml build
+docker-compose -f docker-compose.test.yml run --rm soda /bin/bash
+docker-compose -f docker-compose.test.yml run --rm --entrypoint=/bin/bash soda
+
+# Development environment
+docker-compose -f docker-compose.dev.yml build
+#Running the container
+docker-compose -f docker-compose.dev.yml run --rm soda /bin/bash
+# Into containers with entrypoint override and into the console
+docker-compose -f docker-compose.dev.yml run --rm --entrypoint=/bin/bash soda
+
+# Production environment
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml run --rm soda /bin/bash
+docker-compose -f docker-compose.prod.yml run --rm --entrypoint=/bin/bash soda
+
+
+
 docker build -t soda-curation-test . -f Dockerfile.cpu --target testing
 
 docker run -it \
@@ -482,6 +579,8 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### v1.0.0 (In development)
+
 ### v0.2.3 (2024-02-05)
 - Updated output schema documentation to match actual output structure
 - Improved panel source data assignment with full path preservation
@@ -490,8 +589,23 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ### v0.2.2 (2024-12-02)
 
-- The text output is now given as `html` format to keep all the information present int he DOCX manuscripts
-- Improved logging, generating now a log file each time the program is run and adding AI responses for possible analysis on errors
+- Changing from the AI assistant API to the Chat API in OpenAI
+- Supporting `test`, `dev` and `prod` environments
+- Addition of tests and CI/CD pipeline
+- Allow for storage of evaluation and model performance
+- Prompts defined in the configuration file, now keeping configuration separately for each pipeline step
+
+### v0.2.2 (2025-01-30)
+
+This tag is the stable version of the soda-curation package to extract the following information of papers using OpenAI
+
+- XML manifest and structure
+- Figure legends
+- Figure panels
+- Associate each figure panel to the corresponding caption test
+- Associate source data at a panel level
+- Extraction of the data availability section
+- Includes model benchmarking on ten annotated ground truth manuscripts
 
 ### v0.2.1 (2024-12-02)
 
