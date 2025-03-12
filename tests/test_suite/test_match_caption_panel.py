@@ -182,7 +182,6 @@ class TestMatchPanelCaptionBase:
             original_panel = sample_zip_structure.figures[0].panels[0]
 
             assert processed_panel.panel_label == "A"
-            assert processed_panel.panel_caption == "New caption A"  # New data
             assert processed_panel.sd_files == original_panel.sd_files  # Preserved
             assert (
                 processed_panel.ai_response == original_panel.ai_response
@@ -308,6 +307,229 @@ class TestMatchPanelCaptionBase:
             assert len(figure.panels) == 1
             assert figure.panels[0].panel_label == "A"
             assert figure.panels[0].panel_caption == "Test caption"
+
+    def test_resolve_panel_conflicts(
+        self,
+        mock_config,
+        mock_prompt_handler,
+        mock_image,
+        sample_zip_structure,
+        tmp_path,
+    ):
+        """Test that panel conflicts are properly resolved."""
+        manuscript_dir = tmp_path / "TEST-ID"
+        manuscript_dir.mkdir(parents=True)
+
+        # Create a test implementation that returns predefined responses
+        class TestMatchPanelCaption(MatchPanelCaption):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.match_count = 0
+
+            def _validate_config(self):
+                pass
+
+            def _match_panel_caption(self, panel_image, figure_caption):
+                # Return the same panel label "A" for first two panels
+                # to simulate conflict
+                if self.match_count < 2:
+                    self.match_count += 1
+                    return PanelObject(
+                        panel_label="A",
+                        panel_caption=f"Panel A caption {self.match_count}",
+                    )
+                else:
+                    return PanelObject(panel_label="B", panel_caption="Panel B caption")
+
+        # Create test figure and add original panel info
+        figure = Figure(
+            figure_label="Figure 1",
+            img_files=["test.png"],
+            sd_files=[],
+            panels=[
+                Panel(
+                    panel_label="A",
+                    panel_caption="Original Panel A",
+                    panel_bbox=[0.1, 0.1, 0.2, 0.2],
+                    sd_files=["data_A.csv"],
+                    ai_response="Original response A",
+                ),
+                Panel(
+                    panel_label="B",
+                    panel_caption="Original Panel B",
+                    panel_bbox=[0.5, 0.5, 0.6, 0.6],
+                    sd_files=["data_B.csv"],
+                    ai_response="Original response B",
+                ),
+            ],
+        )
+
+        zip_structure = ZipStructure(figures=[figure])
+
+        # Create a test image file
+        img_path = manuscript_dir / "test.png"
+        img_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(img_path, "wb") as f:
+            mock_image.save(f, format="PNG")
+
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+        ) as mock_convert, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector:
+            # Setup mocks
+            mock_convert.return_value = (mock_image, "test.png")
+            mock_detector = Mock()
+            # Create three detected panels to force conflict
+            mock_detector.detect_panels.return_value = [
+                {
+                    "bbox": [0.1, 0.1, 0.2, 0.2],
+                    "confidence": 0.9,
+                },  # Should match original panel A
+                {
+                    "bbox": [0.3, 0.3, 0.4, 0.4],
+                    "confidence": 0.8,
+                },  # Also assigned label A (conflict)
+                {
+                    "bbox": [0.5, 0.5, 0.6, 0.6],
+                    "confidence": 0.7,
+                },  # Should match original panel B
+            ]
+            mock_create_detector.return_value = mock_detector
+
+            # Process figures
+            matcher = TestMatchPanelCaption(
+                mock_config, mock_prompt_handler, extract_dir=manuscript_dir
+            )
+            result = matcher.process_figures(zip_structure)
+
+            # Check results
+            assert len(result.figures[0].panels) == 2  # Should have 2 panels, not 3
+
+            # Check that panel A was resolved correctly
+            panel_a = [p for p in result.figures[0].panels if p.panel_label == "A"][0]
+            assert panel_a.panel_bbox == [
+                0.1,
+                0.1,
+                0.2,
+                0.2,
+            ]  # Should match original position
+            assert panel_a.sd_files == ["data_A.csv"]  # Should preserve original data
+            assert (
+                panel_a.ai_response == "Original response A"
+            )  # Should preserve AI response
+
+            # Check that panel B was matched correctly
+            panel_b = [p for p in result.figures[0].panels if p.panel_label == "B"][0]
+            assert panel_b.panel_bbox == [
+                0.5,
+                0.5,
+                0.6,
+                0.6,
+            ]  # Should match original position
+
+            # Check that conflicts were tracked
+            assert hasattr(result.figures[0], "conflicting_panels")
+            assert len(result.figures[0].conflicting_panels) == 1
+            assert result.figures[0].conflicting_panels[0]["panel_label"] == "A"
+
+    def test_preserve_original_captions(
+        self,
+        mock_config,
+        mock_prompt_handler,
+        mock_image,
+        sample_zip_structure,
+        tmp_path,
+    ):
+        """Test that original panel captions are preserved during panel matching."""
+        manuscript_dir = tmp_path / "TEST-ID"
+        manuscript_dir.mkdir(parents=True)
+
+        # Create a test implementation that returns different captions
+        class TestMatchPanelCaption(MatchPanelCaption):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+
+            def _validate_config(self):
+                pass
+
+            def _match_panel_caption(self, panel_image, figure_caption):
+                # Return panel labels with different captions than original
+                if "A" in panel_image:  # Mock this check based on encoded image
+                    return PanelObject(
+                        panel_label="A", panel_caption="NEW Panel A caption"
+                    )
+                else:
+                    return PanelObject(
+                        panel_label="B", panel_caption="NEW Panel B caption"
+                    )
+
+        # Create test figure and add original panel info with specific captions
+        figure = Figure(
+            figure_label="Figure 1",
+            img_files=["test.png"],
+            sd_files=[],
+            panels=[
+                Panel(
+                    panel_label="A",
+                    panel_caption="ORIGINAL Panel A caption",  # Original caption to preserve
+                    panel_bbox=[0.1, 0.1, 0.2, 0.2],
+                    sd_files=["data_A.csv"],
+                    ai_response="Original response A",
+                ),
+                Panel(
+                    panel_label="B",
+                    panel_caption="ORIGINAL Panel B caption",  # Original caption to preserve
+                    panel_bbox=[0.5, 0.5, 0.6, 0.6],
+                    sd_files=["data_B.csv"],
+                    ai_response="Original response B",
+                ),
+            ],
+        )
+
+        zip_structure = ZipStructure(figures=[figure])
+
+        # Create a test image file
+        img_path = manuscript_dir / "test.png"
+        img_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(img_path, "wb") as f:
+            mock_image.save(f, format="PNG")
+
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+        ) as mock_convert, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
+        ) as mock_extract_image:
+            # Setup mocks
+            mock_convert.return_value = (mock_image, "test.png")
+            mock_detector = Mock()
+            mock_detector.detect_panels.return_value = [
+                {"bbox": [0.1, 0.1, 0.2, 0.2], "confidence": 0.9},  # Panel A
+                {"bbox": [0.5, 0.5, 0.6, 0.6], "confidence": 0.8},  # Panel B
+            ]
+            mock_create_detector.return_value = mock_detector
+
+            # Mock panel image extraction to control what gets passed to _match_panel_caption
+            mock_extract_image.side_effect = ["A_encoded_image", "B_encoded_image"]
+
+            # Process figures
+            matcher = TestMatchPanelCaption(
+                mock_config, mock_prompt_handler, extract_dir=manuscript_dir
+            )
+            result = matcher.process_figures(zip_structure)
+
+            # Check that original captions were preserved
+            panel_a = [p for p in result.figures[0].panels if p.panel_label == "A"][0]
+            panel_b = [p for p in result.figures[0].panels if p.panel_label == "B"][0]
+
+            assert panel_a.panel_caption == "ORIGINAL Panel A caption"
+            assert panel_b.panel_caption == "ORIGINAL Panel B caption"
+
+            # Verify other properties were updated
+            assert panel_a.panel_bbox == [0.1, 0.1, 0.2, 0.2]
+            assert panel_b.panel_bbox == [0.5, 0.5, 0.6, 0.6]
 
 
 class TestMatchPanelCaptionOpenAI:

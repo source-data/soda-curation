@@ -22,10 +22,9 @@ default: &default
             You will extract the sections `figure legends` and `data availability` from the manuscript text provided.
             Your task is ONLY to find and return the complete figure-related text content from the manuscript.
                 
-            The text will be encoded as a `HTML` string and you are required to keep all the information available,
-            but extracting only the text of both sections.
+            The text will be encoded as a `HTML` string and you are required to keep all the information available.
 
-            THE RETURN MUST BE DONE WITHOUT ANY HTML CODE ON IT. JUST PLANE TEXT.
+            Please extract the relevant portion(s) verbatim, exactly as they appear in the original text. 
 
             Key Instructions for extracting `Figure Legends` section:
             1. Look for figure captions throughout the entire document - they can appear:
@@ -48,7 +47,6 @@ default: &default
               - Scale bars and measurements
               - Panel labels and descriptions
               - Source references
-              - Do not include HTML tags in the response
 
             4. DO NOT:
               - Modify or rewrite the text
@@ -56,11 +54,12 @@ default: &default
               - Skip any figure-related content
               - Add any explanatory text of your own
 
+            Please extract the relevant portion(s) verbatim, exactly as they appear in the original text.
+
             Key Instructions for extracting `Data availability` section:
             1. Look for the section titled "Data Availability" or similar in the manuscript.
             2. Extract the content of this section.
-            3. If there are embedded hyperlinks in the HTML, please include them in the extracted text.
-            4. Follow same formating instructions as for the `Figure Legends` section.
+            3. Follow same formating instructions as for the `Figure Legends` section.
 
             INPUT: Expected figures: $expected_figure_count
 
@@ -108,7 +107,9 @@ default: &default
             1. You MUST extract EXACTLY $expected_figure_count figure captions from the provided text.
 
             2. For each caption (Figure 1 through Figure $expected_figure_count):
-              - Extract the TITLE of the figure (the main descriptive sentence before any panel descriptions)
+              - Extract the TITLE of the figure (the main descriptive sentence before any panel descriptions).
+                The title should not contain panel labels in it. If no title would be available, then return
+                an empty string as figure title.
               - Copy the ENTIRE caption text EXACTLY as it appears
               - Extract panel information, including:
                 * Panel labels (e.g., A, B, C)
@@ -116,6 +117,8 @@ default: &default
                 * Keep the panel captions EXACTLY as they are in the text
               - Maintain ALL formatting, punctuation, and special characters
               - DO NOT modify or summarize the text
+              - The caption show panels ordered in a sequencial and logical order,
+                beginning always by the first element of a sequence, such as A, 1, or i. Most commonly will be A.
 
             3. Create a JSON object where:
               - Keys are "Figure 1", "Figure 2", etc. (up to $expected_figure_count)
@@ -130,6 +133,9 @@ default: &default
               - Maintain consecutive numbering
               - Keep all statistical information and references
               - Do not include the title in the caption text
+
+            The text of the figure captions will be in HTML format. Make sure to do a 
+            verbatim extraction, exactly as they appear in the original text. Include all the HTML formatting in the output.
 
             The figures typically appear as:
 
@@ -302,24 +308,20 @@ default: &default
             1. Look at the provided panel image and read the full figure caption carefully.
             2. Identify which part of the caption corresponds to the panel image you see.
             3. Look for panel labels like (A), (B), etc., or descriptions that clearly match the image content.
-            4. Note that in some cases you will have the letter present in the panel image, but not always.
-            5. For each panel, you MUST:
-              - Extract the relevant caption text that specifically describes this panel
-              - Include any statistical information, methodological notes, or scale bars relevant to this panel
-              - Make the panel caption understandable on its own while staying true to the original text
+              - These panel labels will be in most of the cases upper case letters A, B, C..
+              - They will be located in most of the cases in the upper left corener of the image
+              - Please ensure to panel label detection as the primary panel assignement method.
+              - Only if you do not find the panel label follow the steps below. 
+            4. If you would not find a panel label in the image, then, assign a label to the panel image
+              by comparing to the most likely panel caption in the figure legend given to you int he context.
 
-            6. Key guidelines:
-              - Only include text relevant to the specific panel shown
-              - Maintain all scientific details and statistical information
-              - Keep original phrasing where possible
-              - Ensure panel labels are in the specified format below.
-              - If you can't determine the panel label, use visual and caption context to make your best assessment
+            5. Ensure panel labels are in the specified format below.
 
             Example response format:
 
             {
               "panel_label": "A",
-              "panel_caption": "This is the panel caption for panel A"
+              "panel_caption": ""
             }
 
           user: |
