@@ -29,6 +29,7 @@ class Panel:
         confidence (float): Confidence of the object detection algorithm.
         ai_response (Optional[str]): The raw AI response for this panel.
         sd_files (List[str]): Source data files for the panel.
+        hallucination_score (float): Score indicating possibility of hallucination (1) or perfect verbatim extraction (0)
     """
 
     panel_label: str
@@ -37,6 +38,7 @@ class Panel:
     confidence: float = 0.0
     ai_response: Optional[str] = None
     sd_files: List[str] = field(default_factory=list)
+    hallucination_score: float = 0.0
 
 
 @dataclass
@@ -52,7 +54,7 @@ class Figure:
         panels (List[Panel]): List of Panel objects representing individual panels.
         duplicated_panels (str): Flag indicating if panels are duplicated.
         ai_response_panel_source_assign (Optional[str]): AI response for panel source assignment.
-        possible_hallucination (bool): Flag indicating if caption might be hallucinated.
+        hallucination_score (float): Score indicating possibility of hallucination (1) or perfect verbatim extraction (0)
         unassigned_sd_files (List[str]): Source data files not assigned to specific panels.
         _full_img_files (List[str]): Full paths to image files.
         _full_sd_files (List[str]): Full paths to source data files.
@@ -66,6 +68,7 @@ class Figure:
     _full_img_files: List[str] = field(default_factory=list)
     _full_sd_files: List[str] = field(default_factory=list)
     ai_response_panel_source_assign: Optional[str] = None
+    hallucination_score: float = 0.0
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
     duplicated_panels: List[Panel] = field(
@@ -110,6 +113,8 @@ class ZipStructure:
         errors (List[str]): List of errors encountered during processing.
         ai_response (Optional[str]): The raw AI response for figure extraction.
         non_associated_sd_files (List[str]): List of non-associated source data files.
+        locate_captions_hallucination_score (float): Score indicating possibility of hallucination (1) or perfect verbatim extraction (0)
+        locate_data_section_hallucination_score (float): Score indicating possibility of hallucination (1) or perfect verbatim extraction (0)
         _full_docx (str): Full path to DOCX file.
         _full_pdf (str): Full path to PDF file.
         _full_appendix (List[str]): Full paths to appendix files.
@@ -122,6 +127,8 @@ class ZipStructure:
     _full_appendix: List[str] = field(default_factory=list)
     ai_config: Dict[str, Any] = field(default_factory=dict)
     data_availability: Dict = field(default_factory=dict)
+    locate_captions_hallucination_score: float = 0.0
+    locate_data_section_hallucination_score: float = 0.0
     manuscript_id: str = ""
     xml: str = ""
     docx: str = ""

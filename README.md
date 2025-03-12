@@ -270,9 +270,35 @@ Throughout these steps, the pipeline leverages AI capabilities to enhance the ac
 
 In debug mode, the pipeline can be configured to process only the first figure, saving time during development and testing. Debug images and additional logs are saved to help with troubleshooting and refinement of the curation process.
 
-## Output Schema
+## Hallucination Detection
 
-The soda-curation pipeline generates a JSON output that represents the structured manuscript data. Here's an example of the output schema:
+The pipeline now includes automatic detection of potential hallucinations in AI-generated or extracted text. This feature helps identify when content might have been fabricated rather than extracted from the source document.
+
+### How It Works
+
+The system compares extracted text (figure captions, panel descriptions, etc.) against the original document content using two methods:
+
+1. **Exact Matching**: Checks if the normalized text appears verbatim in the source document
+2. **Fuzzy Matching**: For cases where formatting differs but content is correct
+
+### Implementation Details
+
+- Text normalization removes HTML tags, standardizes whitespace, and performs other clean-up
+- Plain text extractions are properly matched against HTML source content
+- Special handling for scientific notation and superscript/subscript text
+
+### Hallucination scores
+
+Each analyzed element receives a `possible_hallucination` score between 0 and 1:
+
+- **0.0**: Content verified in source document (not hallucinated)
+- **0.0-0.3**: Minor differences, likely not hallucinated
+- **0.3-0.7**: Moderate differences, possible partial hallucination
+- **0.7-1.0**: Major differences, likely hallucinated
+- **1.0**: No match found in source document
+
+
+## Output Schema
 
 ````json
 {
@@ -291,16 +317,15 @@ The soda-curation pipeline generates a JSON output that represents the structure
       "panel_bbox": [number, number, number, number],
       "confidence": number,
       "ai_response": "string",
-      "sd_files": ["string"]
+      "sd_files": ["string"],
+      "hallucination_score": number
     }],
     "unassigned_sd_files": ["string"],
-    "duplicated_panels": "string",
+    "duplicated_panels": ["object"],
     "ai_response_panel_source_assign": "string",
-    "possible_hallucination": boolean,
-    "rouge_l_score": number,
+    "hallucination_score": number,
     "figure_caption": "string",
-    "caption_title": "string",
-    "diff": "string"
+    "caption_title": "string"
   }],
   "ai_config": {
     "provider": "string",
@@ -318,9 +343,54 @@ The soda-curation pipeline generates a JSON output that represents the structure
         "url": "string"
       }
     ]
+  },
+  "errors": ["string"],
+  "ai_response_locate_captions": "string",
+  "ai_response_extract_individual_captions": "string",
+  "non_associated_sd_files": ["string"],
+  "locate_captions_hallucination_score": number,
+  "locate_data_section_hallucination_score": number,
+  "ai_provider": "string",
+  "cost": {
+    "extract_sections": {
+      "prompt_tokens": number,
+      "completion_tokens": number,
+      "total_tokens": number,
+      "cost": number
+    },
+    "extract_individual_captions": {
+      "prompt_tokens": number,
+      "completion_tokens": number,
+      "total_tokens": number,
+      "cost": number
+    },
+    "assign_panel_source": {
+      "prompt_tokens": number,
+      "completion_tokens": number,
+      "total_tokens": number,
+      "cost": number
+    },
+    "match_caption_panel": {
+      "prompt_tokens": number,
+      "completion_tokens": number,
+      "total_tokens": number,
+      "cost": number
+    },
+    "extract_data_sources": {
+      "prompt_tokens": number,
+      "completion_tokens": number,
+      "total_tokens": number,
+      "cost": number
+    },
+    "total": {
+      "prompt_tokens": number,
+      "completion_tokens": number,
+      "total_tokens": number,
+      "cost": number
+    }
   }
 }
-```
+````
 
 ### Schema Explanation
 
@@ -334,6 +404,8 @@ The soda-curation pipeline generates a JSON output that represents the structure
   - `img_files`: List of paths to image files for this figure
   - `sd_files`: List of paths to source data files for this figure
   - `figure_caption`: Full caption of the figure
+  - `caption_title`: Title of the figure caption
+  - `hallucination_score`: Score between 0-1 indicating possibility of hallucination (0 = verified content, 1 = likely hallucinated)
   - `panels`: Array of panel objects, each containing:
     - `panel_label`: Label of the panel (e.g., "A", "B", "C")
     - `panel_caption`: Caption specific to this panel
@@ -341,28 +413,28 @@ The soda-curation pipeline generates a JSON output that represents the structure
     - `confidence`: Confidence score of the panel detection
     - `ai_response`: Raw AI response for this panel
     - `sd_files`: List of source data files specific to this panel
+    - `hallucination_score`: Score between 0-1 indicating possibility of hallucination (0 = verified content, 1 = likely hallucinated)
   - `unassigned_sd_files`: Source data files not assigned to specific panels
-  - `duplicated_panels`: Indicates if the figure contains duplicate panels ("true" or "false")
-  - `ai_response_panel_source_assign`: AI response for panel source assignment 
-  - `possible_hallucination`: Flag indicating potential AI hallucination **To be deprecated**
-  - `rouge_l_score`: ROUGE-L score for caption extraction accuracy **To be deprecated**
-  - `figure_caption`: Complete caption for the figure
-  - `caption_title`: Title of the figure caption
-  - `diff`: Difference analysis output () **To be deprecated**
+  - `duplicated_panels`: List of panels that appear to be duplicates
+  - `ai_response_panel_source_assign`: AI response for panel source assignment
 - `errors`: List of error messages encountered during processing
-- `ai_response`: Overall AI response for the manuscript
+- `ai_response_locate_captions`: Raw AI response for locating figure captions
+- `ai_response_extract_individual_captions`: Raw AI response for extracting individual captions
 - `non_associated_sd_files`: List of source data files not associated with any specific figure or panel
+- `locate_captions_hallucination_score`: Score between 0-1 indicating possibility of hallucination in the captions extraction
+- `locate_data_section_hallucination_score`: Score between 0-1 indicating possibility of hallucination in the data section extraction
 - `ai_config`: Configuration details of the AI processing
 - `data_availability`: Information about data availability
   - `section_text`: Text describing the data availability section
   - `data_sources`: List of data sources with database, accession number, and URL
-   - `database`: Name of the database
+    - `database`: Name of the database
     - `accession_number`: Accession number or identifier
-    - `url`: URL to the data source. **It can also be a DOI in case that is the identifier**
+    - `url`: URL to the data source (can also be a DOI)
+- `ai_provider`: Identifier for the AI provider used
+- `cost`: Detailed breakdown of token usage and costs for each processing step
 
 
-# Model benchmarking
-
+## Model benchmarking
 
 ### Code Formatting and Linting
 
@@ -406,12 +478,11 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ### 1.0.2 (In progress)
 - Updated README.md
+- Addition of hallucination scores to the output of the pipeline
+- Ensure no panel duplication
 - Generating output captions keeping the `HTML` text from the `docx` file
 - No panels allowed for figures with single panels
-- Ensure no panel duplication
 - Addition of panel label position to the panel matching prompt searching to increase the performance
-- Benchmarking changes
-- Ground truth modified to accept the `HTML` text and to remove `manuscript_id` from the file pths in output
 
 ### 1.0.1 (2025-03-11)
 - Removal of manuscript ID from the source data file outputs

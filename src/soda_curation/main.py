@@ -9,7 +9,12 @@ from src.soda_curation.pipeline.extract_sections.extract_sections_openai import 
     SectionExtractorOpenAI,
 )
 
-from ._main_utils import cleanup_extract_dir, setup_extract_dir, validate_paths
+from ._main_utils import (
+    calculate_hallucination_score,
+    cleanup_extract_dir,
+    setup_extract_dir,
+    validate_paths,
+)
 from .config import ConfigurationLoader
 from .logging_config import setup_logging
 from .pipeline.assign_panel_source.assign_panel_source_openai import (
@@ -119,6 +124,30 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
             # Update total costs before returning results
             zip_structure.update_total_cost()
+
+            # Check for possible hallucinations
+            zip_structure.locate_captions_hallucination_score = (
+                calculate_hallucination_score(
+                    zip_structure.ai_response_locate_captions, manuscript_content
+                )
+            )
+            zip_structure.locate_data_section_hallucination_score = (
+                calculate_hallucination_score(
+                    zip_structure.data_availability["section_text"], manuscript_content
+                )
+            )
+            for fig in zip_structure.figures:
+                if fig.figure_caption:
+                    fig.hallucination_score = calculate_hallucination_score(
+                        fig.figure_caption, manuscript_content
+                    )
+
+                # Check for hallucinations in panel captions
+                for panel in fig.panels:
+                    if panel.panel_caption:
+                        panel.hallucination_score = calculate_hallucination_score(
+                            panel.panel_caption, manuscript_content
+                        )
 
             # Convert to JSON using CustomJSONEncoder
             output_json = json.dumps(
