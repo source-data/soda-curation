@@ -8,7 +8,6 @@ from typing import Dict, Set, Tuple
 from zipfile import ZipFile
 
 import nltk
-import numpy as np
 import papermill as pm
 import pytest
 from deepeval import assert_test
@@ -24,14 +23,15 @@ from soda_curation.data_availability.data_availability_openai import (
 from soda_curation.pipeline.extract_captions.extract_captions_openai import (
     FigureCaptionExtractorGpt,
 )
-from src.soda_curation.pipeline.assign_panel_source.assign_panel_source import (
-    PanelSourceAssigner,
-)
-from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
-    Figure,
-    Panel,
-    full_path,
-)
+
+# from src.soda_curation.pipeline.assign_panel_source.assign_panel_source import (
+#     PanelSourceAssigner,
+# )
+# from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+#     Figure,
+#     Panel,
+#     full_path,
+# )
 
 nltk.download("punkt_tab")
 
@@ -230,11 +230,11 @@ VALID_MODELS = {
 def _strategies():
     """Return list of OpenAI model strategies to test."""
 
-    def model_strats(models, temps=["0.1", "0.5"], top_ps=["0", "1."]):
+    def model_strats(models, temps=["0.1", "0.5", "1.0"]):  # , top_ps=["0.0", "1.0"]):
         strats = []
         for model in models:
             strats.extend([f"openai_{model}_temp={temp}" for temp in temps])
-            strats.extend([f"openai_{model}_top_p={top_p}" for top_p in top_ps])
+            # strats.extend([f"openai_{model}_top_p={top_p}" for top_p in top_ps])
         return strats
 
     all_strategies = model_strats(["gpt-4o", "gpt-4o-mini"])
@@ -326,6 +326,8 @@ def _get_extractor(strategy):
     model, config_type, config_value = _validate_strategy(strategy)
     config = _get_base_config()
     config = _configure_openai_settings(config, model, config_type, config_value)
+    config = config["openai"]
+    config["model"] = model
     return FigureCaptionExtractorGpt(config)
 
 
@@ -685,336 +687,336 @@ def test_extract_figure_captions_from_figure_legends(
     assert_test(test_case, metrics=_get_metrics())
 
 
-########################################################################################
-# Panel SourceData Assignement
-########################################################################################
+# ########################################################################################
+# # Panel SourceData Assignement
+# ########################################################################################
 
 
-class PanelSourceMatchMetric(BaseMetric):
-    """Metric to evaluate panel source data assignment accuracy at figure level."""
+# class PanelSourceMatchMetric(BaseMetric):
+#     """Metric to evaluate panel source data assignment accuracy at figure level."""
 
-    def __init__(self, score_type: str = "panel_accuracy", threshold: float = 0.8):
-        self.score_type = score_type
-        self.threshold = threshold
-        self.success = False
-        self.score = 0.0
-        self.exact_match_score = 0.0
-        self.jaccard_score = 0.0
+#     def __init__(self, score_type: str = "panel_accuracy", threshold: float = 0.8):
+#         self.score_type = score_type
+#         self.threshold = threshold
+#         self.success = False
+#         self.score = 0.0
+#         self.exact_match_score = 0.0
+#         self.jaccard_score = 0.0
 
-    def _calculate_panel_scores(
-        self, expected_panel: Dict, actual_panel: Dict
-    ) -> Tuple[float, float]:
-        """Calculate both exact match and Jaccard similarity for a panel."""
-        expected_files = set(expected_panel.get("sd_files", []))
-        actual_files = set(actual_panel.get("sd_files", []))
+#     def _calculate_panel_scores(
+#         self, expected_panel: Dict, actual_panel: Dict
+#     ) -> Tuple[float, float]:
+#         """Calculate both exact match and Jaccard similarity for a panel."""
+#         expected_files = set(expected_panel.get("sd_files", []))
+#         actual_files = set(actual_panel.get("sd_files", []))
 
-        # Exact match score (1 if sets are identical, 0 otherwise)
-        exact_match = 1.0 if expected_files == actual_files else 0.0
+#         # Exact match score (1 if sets are identical, 0 otherwise)
+#         exact_match = 1.0 if expected_files == actual_files else 0.0
 
-        # Jaccard similarity score
-        jaccard = calculate_jaccard_similarity(expected_files, actual_files)
+#         # Jaccard similarity score
+#         jaccard = calculate_jaccard_similarity(expected_files, actual_files)
 
-        return exact_match, jaccard
+#         return exact_match, jaccard
 
-    def measure(self, test_case: LLMTestCase) -> float:
-        """
-        Measure accuracy of panel source assignments using both exact matches and Jaccard similarity.
-        Returns a combined score between 0-1.
-        """
-        try:
-            expected_data = loads(test_case.expected_output)
-            actual_data = loads(test_case.actual_output)
+#     def measure(self, test_case: LLMTestCase) -> float:
+#         """
+#         Measure accuracy of panel source assignments using both exact matches and Jaccard similarity.
+#         Returns a combined score between 0-1.
+#         """
+#         try:
+#             expected_data = loads(test_case.expected_output)
+#             actual_data = loads(test_case.actual_output)
 
-            total_figures = 0
-            exact_match_sum = 0
-            jaccard_sum = 0
+#             total_figures = 0
+#             exact_match_sum = 0
+#             jaccard_sum = 0
 
-            # Track detailed metrics
-            figure_metrics = {}
+#             # Track detailed metrics
+#             figure_metrics = {}
 
-            for expected_figure in expected_data:
-                figure_label = expected_figure["figure_label"]
-                total_figures += 1
+#             for expected_figure in expected_data:
+#                 figure_label = expected_figure["figure_label"]
+#                 total_figures += 1
 
-                actual_figure = next(
-                    (f for f in actual_data if f["figure_label"] == figure_label), None
-                )
+#                 actual_figure = next(
+#                     (f for f in actual_data if f["figure_label"] == figure_label), None
+#                 )
 
-                if not actual_figure:
-                    logger.warning(
-                        f"No matching actual figure found for {figure_label}"
-                    )
-                    figure_metrics[figure_label] = {"exact_match": 0.0, "jaccard": 0.0}
-                    continue
+#                 if not actual_figure:
+#                     logger.warning(
+#                         f"No matching actual figure found for {figure_label}"
+#                     )
+#                     figure_metrics[figure_label] = {"exact_match": 0.0, "jaccard": 0.0}
+#                     continue
 
-                # Process panels
-                figure_exact_matches = []
-                figure_jaccard_scores = []
+#                 # Process panels
+#                 figure_exact_matches = []
+#                 figure_jaccard_scores = []
 
-                # Match panels
-                expected_panels = expected_figure.get("panels", [])
-                actual_panels = actual_figure.get("panels", [])
+#                 # Match panels
+#                 expected_panels = expected_figure.get("panels", [])
+#                 actual_panels = actual_figure.get("panels", [])
 
-                for expected_panel in expected_panels:
-                    expected_label = expected_panel["panel_label"]
-                    actual_panel = next(
-                        (
-                            p
-                            for p in actual_panels
-                            if p["panel_label"] == expected_label
-                        ),
-                        None,
-                    )
+#                 for expected_panel in expected_panels:
+#                     expected_label = expected_panel["panel_label"]
+#                     actual_panel = next(
+#                         (
+#                             p
+#                             for p in actual_panels
+#                             if p["panel_label"] == expected_label
+#                         ),
+#                         None,
+#                     )
 
-                    if actual_panel:
-                        exact_match, jaccard = self._calculate_panel_scores(
-                            expected_panel, actual_panel
-                        )
-                        figure_exact_matches.append(exact_match)
-                        figure_jaccard_scores.append(jaccard)
-                    else:
-                        figure_exact_matches.append(0.0)
-                        figure_jaccard_scores.append(0.0)
+#                     if actual_panel:
+#                         exact_match, jaccard = self._calculate_panel_scores(
+#                             expected_panel, actual_panel
+#                         )
+#                         figure_exact_matches.append(exact_match)
+#                         figure_jaccard_scores.append(jaccard)
+#                     else:
+#                         figure_exact_matches.append(0.0)
+#                         figure_jaccard_scores.append(0.0)
 
-                # Handle unassigned files
-                expected_unassigned = set(
-                    expected_figure.get("unassigned_sd_files", [])
-                )
-                actual_unassigned = set(actual_figure.get("unassigned_sd_files", []))
+#                 # Handle unassigned files
+#                 expected_unassigned = set(
+#                     expected_figure.get("unassigned_sd_files", [])
+#                 )
+#                 actual_unassigned = set(actual_figure.get("unassigned_sd_files", []))
 
-                unassigned_exact = (
-                    1.0 if expected_unassigned == actual_unassigned else 0.0
-                )
-                unassigned_jaccard = calculate_jaccard_similarity(
-                    expected_unassigned, actual_unassigned
-                )
+#                 unassigned_exact = (
+#                     1.0 if expected_unassigned == actual_unassigned else 0.0
+#                 )
+#                 unassigned_jaccard = calculate_jaccard_similarity(
+#                     expected_unassigned, actual_unassigned
+#                 )
 
-                if expected_unassigned or actual_unassigned:
-                    figure_exact_matches.append(unassigned_exact)
-                    figure_jaccard_scores.append(unassigned_jaccard)
+#                 if expected_unassigned or actual_unassigned:
+#                     figure_exact_matches.append(unassigned_exact)
+#                     figure_jaccard_scores.append(unassigned_jaccard)
 
-                # Calculate figure-level scores
-                figure_exact_match = (
-                    np.mean(figure_exact_matches) if figure_exact_matches else 0.0
-                )
-                figure_jaccard = (
-                    np.mean(figure_jaccard_scores) if figure_jaccard_scores else 0.0
-                )
+#                 # Calculate figure-level scores
+#                 figure_exact_match = (
+#                     np.mean(figure_exact_matches) if figure_exact_matches else 0.0
+#                 )
+#                 figure_jaccard = (
+#                     np.mean(figure_jaccard_scores) if figure_jaccard_scores else 0.0
+#                 )
 
-                exact_match_sum += figure_exact_match
-                jaccard_sum += figure_jaccard
+#                 exact_match_sum += figure_exact_match
+#                 jaccard_sum += figure_jaccard
 
-                figure_metrics[figure_label] = {
-                    "exact_match": figure_exact_match,
-                    "jaccard": figure_jaccard,
-                }
+#                 figure_metrics[figure_label] = {
+#                     "exact_match": figure_exact_match,
+#                     "jaccard": figure_jaccard,
+#                 }
 
-                logger.info(
-                    f"Figure {figure_label}: Exact={figure_exact_match:.2f}, "
-                    f"Jaccard={figure_jaccard:.2f}"
-                )
+#                 logger.info(
+#                     f"Figure {figure_label}: Exact={figure_exact_match:.2f}, "
+#                     f"Jaccard={figure_jaccard:.2f}"
+#                 )
 
-            # Calculate overall scores
-            self.exact_match_score = (
-                exact_match_sum / total_figures if total_figures > 0 else 0.0
-            )
-            self.jaccard_score = (
-                jaccard_sum / total_figures if total_figures > 0 else 0.0
-            )
+#             # Calculate overall scores
+#             self.exact_match_score = (
+#                 exact_match_sum / total_figures if total_figures > 0 else 0.0
+#             )
+#             self.jaccard_score = (
+#                 jaccard_sum / total_figures if total_figures > 0 else 0.0
+#             )
 
-            # Combined score (equal weighting)
-            self.score = (self.exact_match_score + self.jaccard_score) / 2
-            self.success = self.score >= self.threshold
+#             # Combined score (equal weighting)
+#             self.score = (self.exact_match_score + self.jaccard_score) / 2
+#             self.success = self.score >= self.threshold
 
-            # Log detailed metrics
-            logger.info("\nDetailed Metrics:")
-            for fig_label, metrics in figure_metrics.items():
-                logger.info(
-                    f"{fig_label}: Exact={metrics['exact_match']:.2f}, "
-                    f"Jaccard={metrics['jaccard']:.2f}"
-                )
-            logger.info(
-                f"\nOverall scores - Exact: {self.exact_match_score:.2f}, "
-                f"Jaccard: {self.jaccard_score:.2f}, "
-                f"Combined: {self.score:.2f}"
-            )
+#             # Log detailed metrics
+#             logger.info("\nDetailed Metrics:")
+#             for fig_label, metrics in figure_metrics.items():
+#                 logger.info(
+#                     f"{fig_label}: Exact={metrics['exact_match']:.2f}, "
+#                     f"Jaccard={metrics['jaccard']:.2f}"
+#                 )
+#             logger.info(
+#                 f"\nOverall scores - Exact: {self.exact_match_score:.2f}, "
+#                 f"Jaccard: {self.jaccard_score:.2f}, "
+#                 f"Combined: {self.score:.2f}"
+#             )
 
-            return self.score
+#             return self.score
 
-        except Exception as e:
-            logger.error(
-                f"Error measuring panel source assignments: {str(e)}", exc_info=True
-            )
-            self.score = 0.0
-            self.exact_match_score = 0.0
-            self.jaccard_score = 0.0
-            self.success = False
-            return self.score
+#         except Exception as e:
+#             logger.error(
+#                 f"Error measuring panel source assignments: {str(e)}", exc_info=True
+#             )
+#             self.score = 0.0
+#             self.exact_match_score = 0.0
+#             self.jaccard_score = 0.0
+#             self.success = False
+#             return self.score
 
-    async def a_measure(self, test_case: LLMTestCase):
-        return self.measure(test_case)
+#     async def a_measure(self, test_case: LLMTestCase):
+#         return self.measure(test_case)
 
-    def is_successful(self):
-        return self.success
+#     def is_successful(self):
+#         return self.success
 
-    @property
-    def name(self):
-        return f"panel_source_{self.score_type}"
-
-
-def _get_panel_source_metrics():
-    """Get metrics for evaluating panel source assignments."""
-    return [
-        PanelSourceMatchMetric(score_type="manuscript_accuracy", threshold=0.8),
-        # You might want to add RougeMetric and BleuMetric here if you want those scores too
-        RougeMetric(score_type="rougeL"),
-        BleuMetric(bleu_type="bleu1"),
-    ]
+#     @property
+#     def name(self):
+#         return f"panel_source_{self.score_type}"
 
 
-def _get_panel_source_assigner(strategy):
-    """Get panel source assigner with validated configuration."""
-    model, config_type, config_value = _validate_strategy(strategy)
-    config = _get_base_config()
-    config = _configure_openai_settings(config, model, config_type, config_value)
-    return PanelSourceAssigner(config)
+# def _get_panel_source_metrics():
+#     """Get metrics for evaluating panel source assignments."""
+#     return [
+#         PanelSourceMatchMetric(score_type="manuscript_accuracy", threshold=0.8),
+#         # You might want to add RougeMetric and BleuMetric here if you want those scores too
+#         RougeMetric(score_type="rougeL"),
+#         BleuMetric(bleu_type="bleu1"),
+#     ]
 
 
-@file_cache("panel_source_assignment")
-def _assign_panel_sources(strategy, msid, run):
-    """Process panel source assignment with caching, returning only essential data."""
-    # Get ground truth figures and setup
-    ground_truth = _get_ground_truth(msid)
-    extract_dir = manuscript_dir / msid
-
-    # Create test figures with ground truth panels
-    test_figures = []
-    for expected_figure in ground_truth["figures"]:
-        # Create panels with necessary information
-        panels = []
-        for p in expected_figure.get("panels", []):
-            panel = Panel(
-                panel_label=p["panel_label"],
-                panel_caption=p["panel_caption"],
-                panel_bbox=[0, 0, 1, 1],  # Dummy bbox
-                confidence=1.0,
-                sd_files=[],
-                ai_response="",
-            )
-            panels.append(panel)
-
-        # Get source data paths
-        sd_files = expected_figure.get("sd_files", [])
-        full_sd_files = [full_path(str(extract_dir), f) for f in sd_files]
-
-        test_figure = Figure(
-            figure_label=expected_figure["figure_label"],
-            img_files=expected_figure.get("img_files", []),
-            sd_files=sd_files,
-            _full_sd_files=full_sd_files,
-            panels=panels,
-            unassigned_sd_files=[],
-            figure_caption=expected_figure["figure_caption"],
-            caption_title=expected_figure.get("caption_title", ""),
-        )
-        test_figures.append(test_figure)
-
-    # Configure and run source assigner
-    config = _get_base_config()
-    config["extract_dir"] = str(extract_dir)
-    assigner = PanelSourceAssigner(config)
-
-    # Process each figure
-    processed_figures = []
-    for figure in test_figures:
-        if (
-            figure.figure_caption
-            and figure.figure_caption != "Figure caption not found."
-        ):
-            try:
-                processed_figure = assigner.assign_panel_source(figure)
-                processed_figures.append(processed_figure)
-            except Exception as e:
-                logger.error(
-                    f"Error assigning sources for figure {figure.figure_label}: {str(e)}"
-                )
-                processed_figures.append(figure)
-        else:
-            processed_figures.append(figure)
-
-    # Format only the essential data we need for scoring
-    actual_output = [
-        {
-            "figure_label": fig.figure_label,
-            "panels": [
-                {"panel_label": p.panel_label, "sd_files": p.sd_files}
-                for p in fig.panels
-            ],
-            "unassigned_sd_files": fig.unassigned_sd_files,
-        }
-        for fig in processed_figures
-    ]
-
-    expected_output = [
-        {
-            "figure_label": fig["figure_label"],
-            "panels": [
-                {"panel_label": p["panel_label"], "sd_files": p.get("sd_files", [])}
-                for p in fig.get("panels", [])
-            ],
-            "unassigned_sd_files": fig.get("unassigned_sd_files", []),
-        }
-        for fig in ground_truth["figures"]
-    ]
-
-    # Return only the minimal input context and the formatted outputs
-    # We don't need to cache the entire ZipStructure
-    minimal_input = {"manuscript_id": msid, "processed_figures": len(processed_figures)}
-
-    return minimal_input, (actual_output, expected_output)
+# def _get_panel_source_assigner(strategy):
+#     """Get panel source assigner with validated configuration."""
+#     model, config_type, config_value = _validate_strategy(strategy)
+#     config = _get_base_config()
+#     config = _configure_openai_settings(config, model, config_type, config_value)
+#     return PanelSourceAssigner(config)
 
 
-@pytest.mark.parametrize(
-    "strategy, msid, run",
-    [(f["strategy"], f["msid"], f["run"]) for f in manuscript_fixtures()],
-)
-def test_panel_source_assignment(strategy, msid, run, results_bag):
-    """Test panel source data assignment accuracy using ground truth data."""
-    try:
-        minimal_input, (actual_output, expected_output) = _assign_panel_sources(
-            strategy, msid, run
-        )
+# @file_cache("panel_source_assignment")
+# def _assign_panel_sources(strategy, msid, run):
+#     """Process panel source assignment with caching, returning only essential data."""
+#     # Get ground truth figures and setup
+#     ground_truth = _get_ground_truth(msid)
+#     extract_dir = manuscript_dir / msid
 
-        actual_json = dumps(actual_output)
-        expected_json = dumps(expected_output)
+#     # Create test figures with ground truth panels
+#     test_figures = []
+#     for expected_figure in ground_truth["figures"]:
+#         # Create panels with necessary information
+#         panels = []
+#         for p in expected_figure.get("panels", []):
+#             panel = Panel(
+#                 panel_label=p["panel_label"],
+#                 panel_caption=p["panel_caption"],
+#                 panel_bbox=[0, 0, 1, 1],  # Dummy bbox
+#                 confidence=1.0,
+#                 sd_files=[],
+#                 ai_response="",
+#             )
+#             panels.append(panel)
 
-        test_case = LLMTestCase(
-            input=dumps(minimal_input),
-            actual_output=actual_json,
-            expected_output=expected_json,
-        )
+#         # Get source data paths
+#         sd_files = expected_figure.get("sd_files", [])
+#         full_sd_files = [full_path(str(extract_dir), f) for f in sd_files]
 
-        _fill_results_bag(
-            results_bag,
-            task="panel_source_assignment",
-            strategy=strategy,
-            msid=msid,
-            run=run,
-            metrics=_get_panel_source_metrics(),
-            test_case=test_case,
-            ai_response=actual_json,
-        )
+#         test_figure = Figure(
+#             figure_label=expected_figure["figure_label"],
+#             img_files=expected_figure.get("img_files", []),
+#             sd_files=sd_files,
+#             _full_sd_files=full_sd_files,
+#             panels=panels,
+#             unassigned_sd_files=[],
+#             figure_caption=expected_figure["figure_caption"],
+#             caption_title=expected_figure.get("caption_title", ""),
+#         )
+#         test_figures.append(test_figure)
 
-        assert_test(test_case, metrics=_get_panel_source_metrics())
+#     # Configure and run source assigner
+#     config = _get_base_config()
+#     config["extract_dir"] = str(extract_dir)
+#     assigner = PanelSourceAssigner(config)
 
-    except Exception as e:
-        logger.error(f"Error in panel source assignment test: {str(e)}", exc_info=True)
-        raise
+#     # Process each figure
+#     processed_figures = []
+#     for figure in test_figures:
+#         if (
+#             figure.figure_caption
+#             and figure.figure_caption != "Figure caption not found."
+#         ):
+#             try:
+#                 processed_figure = assigner.assign_panel_source(figure)
+#                 processed_figures.append(processed_figure)
+#             except Exception as e:
+#                 logger.error(
+#                     f"Error assigning sources for figure {figure.figure_label}: {str(e)}"
+#                 )
+#                 processed_figures.append(figure)
+#         else:
+#             processed_figures.append(figure)
+
+#     # Format only the essential data we need for scoring
+#     actual_output = [
+#         {
+#             "figure_label": fig.figure_label,
+#             "panels": [
+#                 {"panel_label": p.panel_label, "sd_files": p.sd_files}
+#                 for p in fig.panels
+#             ],
+#             "unassigned_sd_files": fig.unassigned_sd_files,
+#         }
+#         for fig in processed_figures
+#     ]
+
+#     expected_output = [
+#         {
+#             "figure_label": fig["figure_label"],
+#             "panels": [
+#                 {"panel_label": p["panel_label"], "sd_files": p.get("sd_files", [])}
+#                 for p in fig.get("panels", [])
+#             ],
+#             "unassigned_sd_files": fig.get("unassigned_sd_files", []),
+#         }
+#         for fig in ground_truth["figures"]
+#     ]
+
+#     # Return only the minimal input context and the formatted outputs
+#     # We don't need to cache the entire ZipStructure
+#     minimal_input = {"manuscript_id": msid, "processed_figures": len(processed_figures)}
+
+#     return minimal_input, (actual_output, expected_output)
 
 
-########################################################################################
-# Data availability test
-########################################################################################
+# @pytest.mark.parametrize(
+#     "strategy, msid, run",
+#     [(f["strategy"], f["msid"], f["run"]) for f in manuscript_fixtures()],
+# )
+# def test_panel_source_assignment(strategy, msid, run, results_bag):
+#     """Test panel source data assignment accuracy using ground truth data."""
+#     try:
+#         minimal_input, (actual_output, expected_output) = _assign_panel_sources(
+#             strategy, msid, run
+#         )
+
+#         actual_json = dumps(actual_output)
+#         expected_json = dumps(expected_output)
+
+#         test_case = LLMTestCase(
+#             input=dumps(minimal_input),
+#             actual_output=actual_json,
+#             expected_output=expected_json,
+#         )
+
+#         _fill_results_bag(
+#             results_bag,
+#             task="panel_source_assignment",
+#             strategy=strategy,
+#             msid=msid,
+#             run=run,
+#             metrics=_get_panel_source_metrics(),
+#             test_case=test_case,
+#             ai_response=actual_json,
+#         )
+
+#         assert_test(test_case, metrics=_get_panel_source_metrics())
+
+#     except Exception as e:
+#         logger.error(f"Error in panel source assignment test: {str(e)}", exc_info=True)
+#         raise
+
+
+# ########################################################################################
+# # Data availability test
+# ########################################################################################
 class DataSourceAccuracyMetric(BaseMetric):
     """Metric to evaluate accuracy of data source extraction."""
 

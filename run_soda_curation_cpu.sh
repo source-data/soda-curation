@@ -8,3 +8,5 @@ poetry run python -m src.soda_curation.main --zip data/archives/EMBOJ-2023-11525
 poetry run python -m src.soda_curation.main --zip data/archives/EMBOJ-2023-114195.zip --output /app/data/output/EMBOJ-2023-114195.json --config config.yaml
 poetry run python -m src.soda_curation.main --zip data/archives/EMBOR-2023-58706-T.zip --output /app/data/output/EMBOR-2023-58706-T.json --config config.yaml
 poetry run python -m src.soda_curation.main --zip data/archives/MSB-2023-12087.zip --output /app/data/output/MSB-2023-12087.json --config config.yaml
+poetry run python -m src.soda_curation.main --zip data/archives/EMBOJ-2024-116743.zip --output /app/data/output/EMBOJ-2024-116743.json --config config.yaml
+poetry run python -m src.soda_curation.main --zip data/archives/EMBOJ-2024-117116.zip --output /app/data/output/EMBOJ-2024-117116.json --config config.yaml

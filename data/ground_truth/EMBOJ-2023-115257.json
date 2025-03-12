@@ -5,15 +5,15 @@
   "pdf": "EMBOJ-2023-115257/pdf/EMBOJ-2023-115257.pdf",
   "appendix": ["EMBOJ-2023-115257/suppl_data/Appendix.pdf"],
   "sd_files": [
-    "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip",
-    "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_4sd.zip",
-    "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_5sd.zip",
-    "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_6sd.zip"
+    "suppl_data/EMBOJ2023115257RFigure_3sd.zip",
+    "suppl_data/EMBOJ2023115257RFigure_4sd.zip",
+    "suppl_data/EMBOJ2023115257RFigure_5sd.zip",
+    "suppl_data/EMBOJ2023115257RFigure_6sd.zip"
   ],
   "figures": [
     {
       "figure_label": "Figure 1",
-      "img_files": ["EMBOJ-2023-115257/graphic/FIGURE 1.tif"],
+      "img_files": ["graphic/FIGURE 1.tif"],
       "sd_files": [],
       "figure_caption": "A) Heatmap representation of RNAseq differentially expressed TEs (LogFC>0.5) between 4h post-injury and intact femurs at different time points of the bone healing process. N=5 biological replicates for each time point. N=10 biological replicates for intact femur. B) Heatmap representation of RNAseq upregulated TEs (LogFC>0.5) between 4h and intact at different time points of the bone healing process. N=5 biological replicates for each time point. N=10 biological replicates for intact femur. C) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral (n=27) and iliac (n=34) bone biopsies from healthy donors. D) Pie charts showing the number and percentage of differentially expressed TEs subfamilies between femoral and iliac healthy bone. E) Heatmap representation of RNAseq differentially expressed TEs analysis [Fragments Per Kilobase of transcript per Million (FPKM) fold change] in femoral (n=27) and iliac (n=34) bone biopsies from healthy donors. One heatmap for each TEs order is shown. ",
       "caption_title": "TEs expression is induced after fracture and in mechanically loaded bone.",
@@ -90,52 +90,52 @@
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3B/3B RT-qPCR rel expression.xlsx"
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3B/3B RT-qPCR rel expression.xlsx"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3C/3C micr image.TIF"
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3C/3C micr image.TIF"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D quantification.xlsx",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D170 osteo RFP.TIF",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D188 dapi L1.TIF",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D170 dapi L1.TIF",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D170 osteo L1.TIF",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D188 osteo L1.TIF",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D188 osteo RFP.TIF",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D170 dapi RFP.TIF",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D188 dapi RFP.TIF",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/D170 RFP.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/3D README.docx",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/D188 L1.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/D170 L1.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/D188 RFP.jpg"
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D quantification.xlsx",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D170 osteo RFP.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D188 dapi L1.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D170 dapi L1.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D170 osteo L1.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D188 osteo L1.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D188 osteo RFP.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D170 dapi RFP.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D osteoimages/D188 dapi RFP.TIF",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/D170 RFP.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/3D README.docx",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/D188 L1.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/D170 L1.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3D/3D  Alizarin images/D188 RFP.jpg"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 10,6 .jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 70.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 116.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 70.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP770.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/3E README.docx",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 32.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 3,5.jpg",
-            "EMBOJ-2023-115257/uppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 3,5.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 32.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 350.jpg",
-            "EMBOJ-2023-115257/suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 10,6.jpg"
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 10,6 .jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 70.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 116.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 70.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP770.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/3E README.docx",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 32.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 3,5.jpg",
+            "uppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 3,5.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 32.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 350.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 10,6.jpg"
           ]
         },
         {

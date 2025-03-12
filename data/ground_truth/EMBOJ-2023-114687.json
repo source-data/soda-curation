@@ -1,28 +1,28 @@
 {
   "manuscript_id": "EMBOJ-2023-114687",
-  "xml": "EMBOJ-2023-114687/EMBOJ-2023-114687.xml",
-  "docx": "EMBOJ-2023-114687/Doc/EMBOJ2023114687R2Manuscript_Textmstxt.docx",
-  "pdf": "EMBOJ-2023-114687/pdf/EMBOJ-2023-114687.pdf",
+  "xml": "EMBOJ-2023-114687.xml",
+  "docx": "Doc/EMBOJ2023114687R2Manuscript_Textmstxt.docx",
+  "pdf": "pdf/EMBOJ-2023-114687.pdf",
   "appendix": [
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_MovieEV1.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2Appendix_Figuressupp.pdf",
-    "EMBOJ-2023-114687/suppl_data/Extended View and Appendix Source Data.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2Peer Review File_figs in.pdf"
+    "suppl_data/EMBOJ2023114687_MovieEV1.zip",
+    "suppl_data/EMBOJ2023114687R2Appendix_Figuressupp.pdf",
+    "suppl_data/Extended View and Appendix Source Data.zip",
+    "suppl_data/EMBOJ2023114687R2Peer Review File_figs in.pdf"
   ],
   "sd_files": [
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFig3.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip",
-    "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip",
-    "EMBOJ-2023-114687/suppl_data/Extended View and Appendix Source Data.zip"
+    "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip",
+    "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip",
+    "suppl_data/EMBOJ2023114687_SourceDataForFig3.zip",
+    "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip",
+    "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip",
+    "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip",
+    "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip",
+    "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip",
+    "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip",
+    "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip",
+    "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip",
+    "suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip",
+    "suppl_data/Extended View and Appendix Source Data.zip"
   ],
   "figures": [
     {
@@ -36,49 +36,49 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1A/Fig1A_western.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1A/Fig1A_western.tiff"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1B/Fig1B bar graph.xlsx",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1B/Fig1B line graph.xlsx",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1B/Fig1B_1.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1B/Fig1B_2.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1B/Fig1B bar graph.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1B/Fig1B line graph.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1B/Fig1B_1.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1B/Fig1B_2.tiff"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1C/Fig1C.xlsx"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:1C/Fig1C.xlsx"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/Fig1D.xlsx",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/GFP x siControl.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/GFP x siFCHO2.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/GFPsrFCHO2 x siControl.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/GFPsrFCHO2 x siFCHO2.tif"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/Fig1D.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/GFP x siControl.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/GFP x siFCHO2.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/GFPsrFCHO2 x siControl.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1D/GFPsrFCHO2 x siFCHO2.tif"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1E/Fig1E.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1E/Fig1E.tiff"
           ]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1F/Fig1F.xlsx"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip:EMBOJ-2023-114687_SourceDataForFigure1/1F/Fig1F.xlsx"
           ]
         }
       ]
@@ -94,25 +94,25 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2A/ENaC x Clathrin.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2A/ENaC x FCHO2.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2A/Fig2A.xlsx"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2A/ENaC x Clathrin.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2A/ENaC x FCHO2.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2A/Fig2A.xlsx"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2B/Fig2B.xlsx",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2B/Nedd4LC922A x alphaENaC x FCHO2.tif"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2B/Fig2B.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2B/Nedd4LC922A x alphaENaC x FCHO2.tif"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2C/Fig2C.xlsx",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2C/Nedd4L x Clathrin x FCHO2.tif"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2C/Fig2C.xlsx",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip:Figure 2/2C/Nedd4L x Clathrin x FCHO2.tif"
           ]
         }
       ]
@@ -128,7 +128,7 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFig3.zip:EMBOJ-2023-114687_SourceDataForFig3/Fig. 3/Movie EV1.avi"
+            "suppl_data/EMBOJ2023114687_SourceDataForFig3.zip:EMBOJ-2023-114687_SourceDataForFig3/Fig. 3/Movie EV1.avi"
           ]
         }
       ]
@@ -144,22 +144,22 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/Amphiphysin x Nedd4L.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/FBP17 x Nedd4L.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/FCHO2 x Nedd4L.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/FCHO2 x Nedd4LC2.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/FCHO2 x Nedd4LdeltaC2.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/GFP x Nedd4L.tif"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/Amphiphysin x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/FBP17 x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/FCHO2 x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/FCHO2 x Nedd4LC2.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/FCHO2 x Nedd4LdeltaC2.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4A/GFP x Nedd4L.tif"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4B/Amphiphysin x Nedd4L.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4B/FBP17 x Nedd4L.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4B/FCHO2 x Nedd4L.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4B/GFP x Nedd4L.tif"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4B/Amphiphysin x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4B/FBP17 x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4B/FCHO2 x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip:EMBOJ-2023-114687_SourceDataForFigure4/4B/GFP x Nedd4L.tif"
           ]
         }
       ]
@@ -175,45 +175,45 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5A/Fig5A.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5A/Fig5A.tiff"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5B/Fig5B.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5B/Fig5B.tiff"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5C/FCHO2K146ER152E x Nedd4L.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5C/FCHO2L136E x Nedd4L.tif"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5C/FCHO2K146ER152E x Nedd4L.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5C/FCHO2L136E x Nedd4L.tif"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5D/Fig5D.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5D/Fig5D.tiff"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5E/FCHO2 x Nedd4LC922A.tif (RGB).tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5E/FCHO2 x Nedd4LI37AF38A.tif"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5E/FCHO2 x Nedd4LC922A.tif (RGB).tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5E/FCHO2 x Nedd4LI37AF38A.tif"
           ]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5F/Fig5F_1.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5F/Fig5F_2.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5F/Fig5F_1.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip:Figure 5/5F/Fig5F_2.tiff"
           ]
         }
       ]
@@ -229,16 +229,16 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:Figure 6/6A/Fig6A.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:Figure 6/6A/Fig6A.xlsx"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:Figure 6/6A/Fig6A.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:Figure 6/6A/Fig6A.xlsx"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:Figure 6/6B/Fig6B.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:Figure 6/6B/Fig6B.xlsx"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:Figure 6/6B/Fig6B.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip:Figure 6/6B/Fig6B.xlsx"
           ]
         }
       ]
@@ -254,23 +254,23 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7A/Fig7A.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7A/Fig7A.xlsx"
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7A/Fig7A.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7A/Fig7A.xlsx"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7B/Fig7B.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7B/Fig7B.xlsx"
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7B/Fig7B.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7B/Fig7B.xlsx"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7C/Fig7C.tiff"
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip:EMBOJ-2023-114687R2_SourceDataForFig7/7C/Fig7C.tiff"
           ]
         },
         {
@@ -299,27 +299,27 @@
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2F38A.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2I37A.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2I37AF38A.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2I37AL99A.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2L99A.tif",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2triple.tif"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2F38A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2I37A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2I37AF38A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2I37AL99A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2L99A.tif",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8B/FCHO2 x Nedd4LC2triple.tif"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8C/Fig8C.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8C/Fig8C.xlsx"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8C/Fig8C.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8C/Fig8C.xlsx"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8D/Fig8D.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip:Figure 8/8D/Fig8D.tiff"
           ]
         }
       ]
@@ -345,16 +345,16 @@
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9C/Fig9C.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9C/Fig9C.xlsx"
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9C/Fig9C.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9C/Fig9C.xlsx"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9D/Fig9D.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9D/Fig9D.xlsx"
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9D/Fig9D.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9D/Fig9D.xlsx"
           ]
         },
         {
@@ -369,8 +369,8 @@
           "panel_label": "F",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9F/Fig9F.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9F/Fig9F.xlsx"
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9F/Fig9F.tiff",
+            "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip:EMBOJ-2023-114687R2_SourceDataForFig9/9F/Fig9F.xlsx"
           ]
         }
       ]
@@ -386,36 +386,36 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10A/Fig10A.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10A/Fig10A.tiff"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10B/Fig10B.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10B/Fig10B.xlsx"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10B/Fig10B.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10B/Fig10B.xlsx"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10C/Fig10C.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10C/Fig10C.tiff"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10D/Fig10D.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10D/Fig10D.tiff"
           ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10E/Fig10E.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip:Figure 10/10E/Fig10E.tiff"
           ]
         }
       ]
@@ -431,29 +431,29 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11A/Fig11A.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11A/Fig11A.tiff"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11B/Fig11B.tiff",
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11B/Fig11B.xlsx"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11B/Fig11B.tiff",
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11B/Fig11B.xlsx"
           ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11C/Fig11C.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11C/Fig11C.tiff"
           ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11D/Fig11D.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip:Figure 11/11D/Fig11D.tiff"
           ]
         }
       ]
@@ -469,14 +469,14 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip:Figure 12/12A/Fig12A.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip:Figure 12/12A/Fig12A.tiff"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
           "sd_files": [
-            "EMBOJ-2023-114687/suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip:Figure 12/12B/Fig12B.tiff"
+            "suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip:Figure 12/12B/Fig12B.tiff"
           ]
         }
       ]
