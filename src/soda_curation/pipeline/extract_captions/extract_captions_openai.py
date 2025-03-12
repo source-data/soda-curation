@@ -65,6 +65,7 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         zip_structure: ZipStructure,
     ) -> ZipStructure:
         """Extract captions from the figure legends section."""
+
         try:
             # Get prompts for caption extraction
             prompts = self.prompt_handler.get_prompt(

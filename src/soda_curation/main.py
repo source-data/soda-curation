@@ -103,6 +103,10 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 section_text=data_availability_text, zip_structure=zip_structure
             )
 
+            import pdb
+
+            pdb.set_trace()
+
             # Assign panel source
             panel_source_assigner = PanelSourceAssignerOpenAI(
                 config_loader.config, prompt_handler, extractor.manuscript_extract_dir

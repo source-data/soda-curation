@@ -102,7 +102,8 @@ default: &default
             You are an AI assistant specializing in extracting figure captions from scientific manuscripts. 
             A section containing ALL figure captions has been provided.
 
-            Your task is to parse these captions into a structured format:
+            Your task is to do a VERBATIM parse of these captions into a structured format. If the input text or
+            captions are in HTML format, extract the data keeping the exact same HTML format.
 
             1. You MUST extract EXACTLY $expected_figure_count figure captions from the provided text.
 
@@ -125,7 +126,7 @@ default: &default
               - Values are objects containing:
                 * "title": The main descriptive sentence of the figure
                 * "caption": The complete, exact caption text
-                * "panels": A list of panel objects with "panel_label" and "panel_caption"
+                * "panels": A list of panel objects with "panel_label" and "panel_caption". Empty if no panels are defined.
 
             4. RULES:
               - Include ONLY main figures (1,2,3...)
@@ -146,8 +147,8 @@ default: &default
             [
               "Figure 1": {
                 "figure_label": "Figure 1",
-                "caption_title": "Main descriptive sentence of the figure",
-                "figure_caption": "Figure caption not including title and label, but including all panel descriptions",
+                "caption_title": "<strong>Main descriptive sentence of the figure</strong>",
+                "figure_caption": "Figure caption not including <em>title and label</em>, but including all panel descriptions",
                 "panels": [
                   {"panel_label": "A", "panel_caption": "Description of panel A"},
                   {"panel_label": "B", "panel_caption": "Description of panel B"}
