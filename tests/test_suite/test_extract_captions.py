@@ -10,9 +10,11 @@ from src.soda_curation.pipeline.extract_captions.extract_captions_openai import 
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
     Figure,
+    Panel,
     ProcessingCost,
     ZipStructure,
 )
+from src.soda_curation.pipeline.prompt_handler import PromptHandler
 
 # Test configurations
 VALID_CONFIG = {
@@ -247,3 +249,72 @@ class TestResponseParsing:
         result = extractor._parse_response("Invalid JSON content")
 
         assert result == {}
+
+
+class TestPanelDuplication:
+    def test_remove_duplicate_panels(self):
+        """Test that duplicate panels are properly removed."""
+        # Create a mock config and prompt handler
+        config = {
+            "pipeline": {
+                "extract_individual_captions": {
+                    "openai": {
+                        "model": "gpt-4o",
+                        "temperature": 0.1,
+                        "top_p": 1.0,
+                    }
+                }
+            }
+        }
+
+        # Create a proper pipeline config for the prompt handler
+        pipeline_config = {
+            "extract_individual_captions": {
+                "openai": {
+                    "prompts": {
+                        "system": "Mock system prompt",
+                        "user": "Mock user prompt",
+                    }
+                }
+            }
+        }
+
+        prompt_handler = PromptHandler(pipeline_config)
+
+        # Create an instance of the extractor
+        extractor = FigureCaptionExtractorOpenAI(config, prompt_handler)
+
+        # Create test figures with duplicate panels
+        figures = [
+            Figure(
+                figure_label="Figure 1",
+                img_files=["fig1.jpg"],
+                sd_files=[],
+                panels=[
+                    Panel(panel_label="A", panel_caption="Panel A caption"),
+                    Panel(panel_label="B", panel_caption="Panel B caption"),
+                    Panel(
+                        panel_label="A", panel_caption="Duplicate panel A"
+                    ),  # Duplicate
+                    Panel(panel_label="C", panel_caption="Panel C caption"),
+                ],
+                duplicated_panels=[],  # Initialize empty list
+            )
+        ]
+
+        # Create a ZipStructure with the test figures
+        zip_structure = ZipStructure(figures=figures)
+
+        # Call the method to remove duplicate panels
+        cleaned_structure = extractor._remove_duplicate_panels(zip_structure)
+
+        # Check that duplicates were removed
+        figure = cleaned_structure.figures[0]
+        assert len(figure.panels) == 3
+        panel_labels = [p.panel_label for p in figure.panels]
+        assert panel_labels == ["A", "B", "C"]
+
+        # Check that duplicates were tracked
+        assert len(figure.duplicated_panels) == 1
+        assert figure.duplicated_panels[0].panel_label == "A"
+        assert figure.duplicated_panels[0].panel_caption == "Duplicate panel A"

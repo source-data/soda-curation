@@ -8,7 +8,7 @@ from typing import Any, Dict
 import openai
 
 from ..cost_tracking import update_token_usage
-from ..manuscript_structure.manuscript_structure import Panel, ZipStructure
+from ..manuscript_structure.manuscript_structure import ZipStructure
 from ..prompt_handler import PromptHandler
 from .extract_captions_base import ExtractedCaptions, FigureCaptionExtractor
 
@@ -123,50 +123,3 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
                 ""  # Ensure this is set to an empty string
             )
             return zip_structure
-
-    def _update_figures_with_captions(
-        self, zip_structure: ZipStructure, caption_data: list
-    ) -> ZipStructure:
-        """Update figures in ZipStructure with extracted captions and panels.
-
-        Args:
-            zip_structure: The ZipStructure to update
-            caption_data: List of dictionaries containing caption information
-                Each dict should have:
-                - figure_label: The label of the figure
-                - caption_title: The title of the figure
-                - figure_caption: The full caption text
-                - panels: List of panel objects with "panel_label" and "panel_caption"
-
-        Returns:
-            Updated ZipStructure with captions and panels added to figures
-        """
-        # Create a mapping of figure labels to caption data for easier lookup
-        caption_map = {
-            item["figure_label"]: {
-                "caption": item["figure_caption"],
-                "title": item["caption_title"],
-                "panels": item.get("panels", []),
-            }
-            for item in caption_data
-        }
-
-        # Update each figure in place
-        for figure in zip_structure.figures:
-            if figure.figure_label in caption_map:
-                caption_info = caption_map[figure.figure_label]
-                figure.figure_caption = caption_info["caption"]
-                figure.caption_title = caption_info["title"]
-                figure.panels = [
-                    Panel(
-                        panel_label=panel["panel_label"],
-                        panel_caption=panel["panel_caption"],
-                    )
-                    for panel in caption_info["panels"]
-                ]
-            else:
-                logger.warning(f"No caption found for figure {figure.figure_label}")
-                figure.figure_caption = "Figure caption not found."
-                figure.caption_title = ""
-                figure.panels = []
-        return zip_structure

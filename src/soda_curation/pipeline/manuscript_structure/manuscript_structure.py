@@ -65,10 +65,12 @@ class Figure:
     unassigned_sd_files: List[str] = field(default_factory=list)
     _full_img_files: List[str] = field(default_factory=list)
     _full_sd_files: List[str] = field(default_factory=list)
-    duplicated_panels: str = "false"
     ai_response_panel_source_assign: Optional[str] = None
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
+    duplicated_panels: List[Panel] = field(
+        default_factory=list
+    )  # Add this field with default empty list
 
 
 @dataclass
