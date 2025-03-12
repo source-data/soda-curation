@@ -113,14 +113,20 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             )
             # Preserve all ZipStructure data while updating figures
             zip_structure.figures = processed_figures
-
-            # Match panels with captions using object detection
-            panel_matcher = MatchPanelCaptionOpenAI(
-                config=config_loader.config,
-                prompt_handler=prompt_handler,
-                extract_dir=extractor.manuscript_extract_dir,  # Pass the manuscript-specific directory
-            )
-            _ = panel_matcher.process_figures(zip_structure)
+            for fig in zip_structure.figures:
+                if len(fig.panels) <= 1:
+                    fig.panels = []
+                    logger.info(
+                        f"Skipping panel processing for {fig.figure_label} (single-panel or no-panel figure)"
+                    )
+                else:
+                    # Match panels with captions using object detection
+                    panel_matcher = MatchPanelCaptionOpenAI(
+                        config=config_loader.config,
+                        prompt_handler=prompt_handler,
+                        extract_dir=extractor.manuscript_extract_dir,  # Pass the manuscript-specific directory
+                    )
+                    _ = panel_matcher.process_figures(zip_structure)
 
             # Update total costs before returning results
             zip_structure.update_total_cost()
