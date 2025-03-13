@@ -4,7 +4,7 @@ import ast
 import json
 import logging
 import re
-from typing import Dict, List, Set
+from typing import List, Set
 
 from deepeval.metrics import BaseMetric
 from deepeval.scorer import Scorer
@@ -264,57 +264,3 @@ def get_metrics_for_task(task_name: str) -> List[BaseMetric]:
     elif task_name == "panel_source_assignment":
         return [PanelSourceMatchMetric()]
     return []
-
-
-def calculate_data_source_scores(
-    extracted_sources: List[Dict[str, str]], ground_truth_sources: List[Dict[str, str]]
-) -> Dict[str, float]:
-    """Calculate scores for different data source extraction tasks."""
-
-    # Extract lists for each type
-    extracted_databases = [source["database"] for source in extracted_sources]
-    ground_truth_databases = [source["database"] for source in ground_truth_sources]
-
-    extracted_urls = [source["url"] for source in extracted_sources]
-    ground_truth_urls = [source["url"] for source in ground_truth_sources]
-
-    extracted_accessions = [source["accession_number"] for source in extracted_sources]
-    ground_truth_accessions = [
-        source["accession_number"] for source in ground_truth_sources
-    ]
-
-    # Calculate database score (partial matching)
-    database_matches = 0
-    for gt_db in ground_truth_databases:
-        for ext_db in extracted_databases:
-            if gt_db.lower() in ext_db.lower() or ext_db.lower() in gt_db.lower():
-                database_matches += 1
-                break
-
-    # Calculate exact match scores for URLs and accession numbers
-    url_matches = sum(1 for url in extracted_urls if url in ground_truth_urls)
-    accession_matches = sum(
-        1 for acc in extracted_accessions if acc in ground_truth_accessions
-    )
-
-    # Calculate final scores
-    if not ground_truth_databases:
-        database_score = 1.0 if not extracted_databases else 0.0
-    else:
-        database_score = database_matches / len(ground_truth_databases)
-
-    if not ground_truth_urls:
-        url_score = 1.0 if not extracted_urls else 0.0
-    else:
-        url_score = url_matches / len(ground_truth_urls)
-
-    if not ground_truth_accessions:
-        accession_score = 1.0 if not extracted_accessions else 0.0
-    else:
-        accession_score = accession_matches / len(ground_truth_accessions)
-
-    return {
-        "database_score": database_score,
-        "url_score": url_score,
-        "accession_score": accession_score,
-    }
