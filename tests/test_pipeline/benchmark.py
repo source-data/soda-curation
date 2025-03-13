@@ -38,7 +38,7 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser impor
 )
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
 
-from .metrics import calculate_data_source_scores, get_metrics_for_task, normalize_text
+from .metrics import get_metrics_for_task, normalize_text
 
 
 # At the very top of the file, after imports
@@ -834,8 +834,67 @@ class BenchmarkRunner:
 
             duration_ms = (time.time() - start_time) * 1000
 
-            # Calculate scores
-            scores = calculate_data_source_scores(data_sources, ground_truth_sources)
+            # Extract database values correctly from both sources
+            actual_databases = [
+                source.get("database", "")
+                for source in data_sources
+                if "database" in source
+            ]
+            expected_databases = [
+                source.get("database", "")
+                for source in ground_truth_sources
+                if "database" in source
+            ]
+
+            # Extract URL values correctly from both sources
+            actual_urls = [
+                source.get("url", "") for source in data_sources if "url" in source
+            ]
+            expected_urls = [
+                source.get("url", "")
+                for source in ground_truth_sources
+                if "url" in source
+            ]
+
+            # Extract accession number values correctly from both sources
+            actual_accessions = [
+                source.get("accession_number", "")
+                for source in data_sources
+                if "accession_number" in source
+            ]
+            expected_accessions = [
+                source.get("accession_number", "")
+                for source in ground_truth_sources
+                if "accession_number" in source
+            ]
+
+            # Custom scoring logic that respects empty lists
+            database_score = (
+                1.0
+                if (not expected_databases and not actual_databases)
+                else float(len(set(expected_databases) & set(actual_databases)))
+                / max(1, len(set(expected_databases)))
+            )
+
+            url_score = (
+                1.0
+                if (not expected_urls and not actual_urls)
+                else float(len(set(expected_urls) & set(actual_urls)))
+                / max(1, len(set(expected_urls)))
+            )
+
+            accession_score = (
+                1.0
+                if (not expected_accessions and not actual_accessions)
+                else float(len(set(expected_accessions) & set(actual_accessions)))
+                / max(1, len(set(expected_accessions)))
+            )
+
+            scores = {
+                "database_score": database_score,
+                "url_score": url_score,
+                "accession_score": accession_score,
+            }
 
             # Fill results bag for each task
             base_result = {"input": docx_content, "ai_response": str(updated_structure)}
@@ -844,10 +903,8 @@ class BenchmarkRunner:
             self._fill_results_bag(
                 test_case={**test_case, "duration_ms": duration_ms},
                 result=base_result,
-                actual_output=str([source["database"] for source in data_sources]),
-                expected_output=str(
-                    [source["database"] for source in ground_truth_sources]
-                ),
+                actual_output=str(actual_databases),
+                expected_output=str(expected_databases),
                 task="database_extraction",
                 score=scores["database_score"],
             )
@@ -856,8 +913,8 @@ class BenchmarkRunner:
             self._fill_results_bag(
                 test_case={**test_case, "duration_ms": duration_ms},
                 result=base_result,
-                actual_output=str([source["url"] for source in data_sources]),
-                expected_output=str([source["url"] for source in ground_truth_sources]),
+                actual_output=str(actual_urls),
+                expected_output=str(expected_urls),
                 task="url_extraction",
                 score=scores["url_score"],
             )
@@ -866,12 +923,8 @@ class BenchmarkRunner:
             self._fill_results_bag(
                 test_case={**test_case, "duration_ms": duration_ms},
                 result=base_result,
-                actual_output=str(
-                    [source["accession_number"] for source in data_sources]
-                ),
-                expected_output=str(
-                    [source["accession_number"] for source in ground_truth_sources]
-                ),
+                actual_output=str(actual_accessions),
+                expected_output=str(expected_accessions),
                 task="access_number_extraction",
                 score=scores["accession_score"],
             )
@@ -1199,9 +1252,6 @@ class BenchmarkRunner:
                     expected_output=expected_output,
                 )
                 base_row["score"] = metric.measure(test_case_obj)
-                import pdb
-
-                pdb.set_trace()
             # Add row to DataFrame
             self.results_df = pd.concat(
                 [self.results_df, pd.DataFrame([base_row])], ignore_index=True

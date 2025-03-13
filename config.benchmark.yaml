@@ -36,6 +36,6 @@ providers:
 test_runs:
   n_runs: 1  # Number of times to run each configuration
   # manuscripts: "all"  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
-  manuscripts: ["EMM-2023-18636"]  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
+  manuscripts: all  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
 
 # Results configuration
