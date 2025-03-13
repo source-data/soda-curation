@@ -343,7 +343,7 @@
     }
   ],
   "data_availability": {
-    "section_text": "The RNA-seq transcriptomics data on human bone biopsies have been deposited to BioProject with the dataset identifier PRJNA764663 (https://www.ncbi.nlm.nih.gov/bioproject/PRJNA764663). The RNA-seq transcriptomics data on transfected osteoblasts have been deposited to GEO with the dataset identifier GSE201774 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE201774) (enter token: ififogaehzoxlgh). The mass spectrometry proteomics data have been deposited to the ProteomeXchange Consortium via the PRIDE partner repository with the dataset identifier PXD051195. Reviewer account details are username: reviewer_pxd051195@ebi.ac.uk ; password: R6v0mIYe",
+    "section_text": "\n\n<p>The RNA-seq transcriptomics data on human bone biopsies have been\ndeposited to BioProject with the dataset identifier PRJNA764663\n(https://www.ncbi.nlm.nih.gov/bioproject/PRJNA764663). The RNA-seq\ntranscriptomics data on transfected osteoblasts have been deposited to\nGEO with the dataset identifier GSE201774\n(https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE201774) (enter\ntoken: ififogaehzoxlgh).</p>\n<p>The mass spectrometry proteomics data have been deposited to the\nProteomeXchange Consortium via the PRIDE partner repository with the\ndataset identifier PXD051195. Reviewer account details are username: <a\nhref=\"mailto:reviewer_pxd051195@ebi.ac.uk\">reviewer_pxd051195@ebi.ac.uk</a>\n; password: R6v0mIYe</p>\n\n'",
     "data_sources": [
       {
         "database": "BioProject",

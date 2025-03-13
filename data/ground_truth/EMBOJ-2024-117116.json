@@ -582,7 +582,7 @@
           }
     ],
     "data_availability": {
-      "section_text": "The datasets produced in this study are available in the following databases:\n\nBasecalled nanopore sequencing data: Gene Expression Omnibus GSE272785 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE272785, consult the Dataset EV2 for sample accession numbers).\n\nRaw nanopore sequencing data: European Nucleotide Archive (consult the Dataset EV2 for sample accession numbers).\n\nSource data underlying each figure panel, R code to calculate γ_rate and  γ_shape, are deposited at Mendeley Data, doi: 10.17632/2j3hh37zzs.1. Additionally, the R code is also listed in the Appendix section 5.",
+      "section_text": "\n\n<p>The datasets produced in this study are available in the following\ndatabases:</p>\n<ul>\n<li><p>Basecalled nanopore sequencing data: Gene Expression\nOmnibus GSE272785 (<a\nhref=\"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE272785\">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE272785</a>,\nconsult the Dataset EV2 for sample accession numbers).</p></li>\n<li><p>Raw nanopore sequencing data: European Nucleotide Archive\n(consult the Dataset EV2 for sample accession numbers).</p></li>\n<li><p>Source data underlying each figure panel, R code to calculate\n<em>γ_rate</em> and <em>γ_shape</em>, are deposited at Mendeley Data,\ndoi: 10.17632/2j3hh37zzs.1. Additionally, the R code is also listed in\nthe Appendix section 5.</p></li>\n</ul>\n\n",
       "data_sources": [
         {
             "database": "Gene Expression Omnibus",
