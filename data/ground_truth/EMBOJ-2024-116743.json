@@ -18,9 +18,9 @@
     ],
     "figures": [
         {
-            "figure_caption": "A) GS mice showed a similar physical appearance as WT mice at 8M of age. \n\nB) Kaplan–Meier survival curves of WT and GS mice from a total of 76 8M old WT mice and 73 8M old GS mice. \n\nC) Average (±SEM) body mass of 8M old WT (n=20) and GS (n=15) mice. Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nD) Average (±SEM) whole blood iCa2+ level of 8M old WT (n=10) and GS (n=11) mice. Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nE) Average (±SEM) serum CK level in 8M old WT (n=5) and GS (n=6) mice. Significance was calculated using Mann Whitney test. The exact p-value is labeled in the figure when p<0.05.\n\nF) Representative H&E staining images of EDL muscle cross sections showed a similar percentage of central nucleation between 8M WT and GS mice. Average (±SEM) percentage of fibers with central nuclei was quantified from the position of nuclei in 300 muscle fibers/genotype. \n\nG and H) Average (±SEM) cross-sectional area (CSA) of different muscle fiber types in EDL (G) and SOL (H) muscles of 8M old WT and GS mice. For EDL muscle, n =2 and 4 for WT and GS group respectively. For SOL muscle, n=5 for both WT and GS group. \n\nI and J) Average (±SEM) fiber type distribution of EDL (I) and SOL (J) muscles of 8M WT and GS mice. For SOL muscle, n =2 and 4 for WT and GS group respectively. For EDL muscle, n=5 for both WT and GS group. \n\nK) Average (±SEM) tail bleeding time in 8M WT (n=8) and GS (n=9) mice. \n\nSource data: available online for Figure 1B-K",
+            "figure_caption": "\n\n<p>A) GS mice showed a similar physical appearance as WT mice at 8M of\nage.</p>\n<p>B) Kaplan–Meier survival curves of WT and GS mice from a total of 76\n8M old WT mice and 73 8M old GS mice.</p>\n<p>C) Average (±SEM) body mass of 8M old WT (n=20) and GS (n=15) mice.\nSignificance was calculated using student’s t-test. The exact\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>D) Average (±SEM) whole blood iCa<sup>2+</sup> level of 8M old WT\n(n=10) and GS (n=11) mice. Significance was calculated using student’s\nt-test. The exact <em>p</em>-value is labeled in the figure when\n<em>p</em>&lt;0.05.</p>\n<p>E) Average (±SEM) serum CK level in 8M old WT (n=5) and GS (n=6)\nmice. Significance was calculated using Mann Whitney test. The exact\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>F) Representative H&amp;E staining images of EDL muscle cross\nsections showed a similar percentage of central nucleation between 8M WT\nand GS mice. Average (±SEM) percentage of fibers with central nuclei was\nquantified from the position of nuclei in 300 muscle\nfibers/genotype.</p>\n<p>G and H) Average (±SEM) cross-sectional area (CSA) of different\nmuscle fiber types in EDL (G) and SOL (H) muscles of 8M old WT and GS\nmice. For EDL muscle, n =2 and 4 for WT and GS group respectively. For\nSOL muscle, n=5 for both WT and GS group.</p>\n<p>I and J) Average (±SEM) fiber type distribution of EDL (I) and SOL\n(J) muscles of 8M WT and GS mice. For SOL muscle, n =2 and 4 for WT and\nGS group respectively. For EDL muscle, n=5 for both WT and GS group.</p>\n<p>K) Average (±SEM) tail bleeding time in 8M WT (n=8) and GS (n=9)\nmice.</p>\n<p>Source data: available online for Figure 1B-K <strong><br />\n</strong></p>\n\n\n\n",
             "figure_label": "Figure 1",
-            "caption_title": "Phenotypic characterization of 8M old GS mice.",
+            "caption_title": "<p><strong>Figure 1. Phenotypic characterization of 8M old GS\nmice.</strong></p>",
             "sd_files": [],
           "panels": [
                 {
@@ -76,9 +76,9 @@
             ]
           },
           {
-            "figure_caption": "<p>A and B) Representative Gomori trichrome images of EDL muscles from 12M (A) and 18M (B) old WT (<em>left</em>) and GS (<em>right</em>) mice. TAs are visualized as pink/purple inclusions as indicated by red arrows.</p> <p>C and D) Representative EM images of cross sections of EDL (C) and FDB (D) muscles from 8M old WT (<em>left</em>) and GS (<em>right</em>) mice. Images were taken from different muscle fibers. TAs (colored in green for the GS EDL fiber shown in panel C) exhibit a honeycomb-like structure.</p> <p>E-G) Average (±SEM) percentage of fibers with TAs (E), number of TAs/fiber (F), and TA size (G) in EDL (<em>left</em>), FDB (<em>middle</em>), and <em>tibialis anterior</em> (<em>right</em>) muscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS mice in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em> test. The exact <em>p</em>-value is labeled in the figure when adjusted <em>p</em>&lt;0.05.</p> <p>Source data: available online for Figure 2A-G</p>",
+            "figure_caption": "\n\n<p>A and B) Representative Gomori trichrome images of EDL muscles from\n12M (A) and 18M (B) old WT (<em>left</em>) and GS (<em>right</em>) mice.\nTAs are visualized as pink/purple inclusions as indicated by red\narrows.</p>\n<p>C and D) Representative EM images of cross sections of EDL (C) and\nFDB (D) muscles from 8M old WT (<em>left</em>) and GS (<em>right</em>)\nmice. Images were taken from different muscle fibers. TAs (colored in\ngreen for the GS EDL fiber shown in panel C) exhibit a honeycomb-like\nstructure.</p>\n<p>E-G) Average (±SEM) percentage of fibers with TAs (E), number of\nTAs/fiber (F), and TA size (G) in EDL (<em>left</em>), FDB\n(<em>middle</em>), and <em>tibialis anterior</em> (<em>right</em>)\nmuscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS\nmice in sequential order. Significance was calculated using 2-way ANOVA\nfollowed by Holm-Sidak's multiple comparisons <em>post hoc</em> test.\nThe exact <em>p</em>-value is labeled in the figure when adjusted\n<em>p</em>&lt;0.05.</p>\n<p>Source data: available online for Figure 2A-G</p>\n\n",
             "figure_label": "Figure 2",
-            "caption_title": "<p><strong>Figure 2. Tubular aggregates in fast twitch muscles of GS mice.</strong></p>",
+            "caption_title": "<p><strong>Figure 2. Tubular aggregates in fast twitch muscles of GS\nmice.</strong></p>",
             "sd_files": [
               "suppl_data/Figure 2.zip"
             ],
@@ -87,73 +87,73 @@
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2A/12M GS GT.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2A/12M WT GS.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2A/README.txt"
+                        "suppl_data/Figure 2.zip:Figure 2/2A/12M GS GT.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2A/12M WT GS.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2A/README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2B/18M GS GT.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2B/18M WT  GT.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2B/README.txt"
+                        "suppl_data/Figure 2.zip:Figure 2/2B/18M GS GT.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2B/18M WT  GT.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2B/README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS EDL.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS FDB.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT EDL.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT FDB.tif"
+                        "suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS EDL.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS FDB.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT EDL.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT FDB.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS EDL.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS FDB.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT EDL.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT FDB.tif"
+                        "suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS EDL.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M GS FDB.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT EDL.tif",
+                        "suppl_data/Figure 2.zip:Figure 2/2C-D/Representative EM image for 8M WT FDB.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
+                        "suppl_data/Figure 2.zip:Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
+                        "suppl_data/Figure 2.zip:Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
+                        "suppl_data/Figure 2.zip:Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
+                        "suppl_data/Figure 2.zip:Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
+                        "suppl_data/Figure 2.zip:Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
+                        "suppl_data/Figure 2.zip:Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 2.zip:Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
+                        "suppl_data/Figure 2.zip:Figure 2/2E-G/EDL muscle TAs statistics.xlsx",
+                        "suppl_data/Figure 2.zip:Figure 2/2E-G/FDB muscle TAs statistics.xlsx",
+                        "suppl_data/Figure 2.zip:Figure 2/2E-G/Tibialis Anterior muscle TAs statistics.xlsx"
                     ]
                   }
             ]
           },
           {
-            "caption_title": "Increased muscle weakness and exercise intolerance of 8M old GS mice.",
+            "caption_title": "<p><strong>Figure 3. Increased muscle weakness and exercise intolerance\nof 8M old GS mice.</strong></p>",
             "figure_label": "Figure 3",
-            "figure_caption": "A) In vivo behavioral studies of average (±SEM) normalized grip strength in 8M old WT (n=9) and GS mice (n=11). Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nB and C) In vivo behavioral studies of treadmill endurance (B) and rotarod endurance (C) tests in 8M old WT (n=7) and GS (n=9) mice where averaged (±SEM) cumulative rest/fall were plotted. Significance was calculated using multiple t-test. * indicates adjusted p<0.05 (adjusted p=0.0316, 0.0088, 0.0006, 0.0001, <0.0001, <0.0001 in sequential order for figure B and adjusted p=0.0114, 0.0025, 0.0005, <0.0001, <0.0001, <0.0001 in sequential order for figure C). \n\nD-F) Average (±SEM) specific force-frequency curves (D), maximum rates of force production (\uf044rise) and relaxation (\uf044decline) during stimulation at 150 Hz (E), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (F) in EDL muscles from 8M old WT (n=9) and GS (n=9) mice. Significance was calculated using either \n\n\n\nmultiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test (for the bar graph). For the bar graph, the exact p-value is labeled in the figure when p<0.05. For the line graphs, * indicates adjusted p<0.05 (for figure D, all adjusted p<0.0001, except at 50Hz, the adjusted p=0.0015; for figure F, adjusted p=0.0216, 0.0028, 0.0008, 0.0012, 0.0033, 0.0149 in sequential order, starting from the 5th stimulation.).\n\nG-I) Average (±SEM) specific force-frequency curves (G), maximum rates of force production (\uf044rise) and relaxation (\uf044decline) during stimulation at 150 Hz (H), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (I) in SOL muscles from 8M old WT (n=8) and GS (n=7) mice. Significance was calculated using either multiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test (for the bar graph). For the bar graph, the exact p-value is labeled in the figure when p<0.05. For the line graphs, * indicates adjusted p<0.05 (for figure G, adjusted p=0.0279, 0.0031, 0.0014, 0.0013, 0.0012, 0.0012, 0.0012 in sequential order; for figure I, adjusted p=0.0465-0.0089, starting from the 36th stimulation.).\n\nJ and K) Normalized average (±SEM) specific force traces elicited during sustained 150 Hz stimulation (left), peak specific force (middle left), time to 50% relaxation (middle right), and maximum rate of contractile decay (right) of EDL (J) and SOL (K) muscles from 8M old WT and GS mice. For EDL muscle, n =7 and 9 for WT and GS groups, respectively. For SOL muscle, n=5 and 8 for WT and GS groups, respectively. Significance was calculated using either multiple t-test (for line graphs) or student’s t-test (for bar graphs). For the bar graphs, the exact p-value is labeled in the figure when p<0.05. For the line graphs, * indicates adjusted p<0.05. \n\nSource data: available online for Figure 3A-K",
+            "figure_caption": "\n\n<p>A) <em>In vivo</em> behavioral studies of average (±SEM) normalized\ngrip strength in 8M old WT (n=9) and GS mice (n=11). Significance was\ncalculated using student’s t-test. The exact <em>p</em>-value is labeled\nin the figure when <em>p</em>&lt;0.05.</p>\n<p>B and C) <em>In vivo</em> behavioral studies of treadmill endurance\n(B) and rotarod endurance (C) tests in 8M old WT (n=7) and GS (n=9) mice\nwhere averaged (±SEM) cumulative rest/fall were plotted. Significance\nwas calculated using multiple t-test. * indicates adjusted\n<em>p</em>&lt;0.05 (adjusted <em>p</em>=0.0316, 0.0088, 0.0006, 0.0001,\n&lt;0.0001, &lt;0.0001 in sequential order for figure B and adjusted\n<em>p</em>=0.0114, 0.0025, 0.0005, &lt;0.0001, &lt;0.0001, &lt;0.0001 in\nsequential order for figure C).</p>\n<p>D-F) Average (±SEM) specific force-frequency curves (D), maximum\nrates of force production (∆rise) and relaxation (∆decline) during\nstimulation at 150 Hz (E), and peak specific force production during\nrepetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation\n(F) in EDL muscles from 8M old WT (n=9) and GS (n=9) mice. Significance\nwas calculated using either multiple t-test (for line graphs) or 2-way\nANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em>\ntest (for the bar graph). For the bar graph, the exact <em>p</em>-value\nis labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, *\nindicates adjusted <em>p</em>&lt;0.05 (for figure D, all adjusted\n<em>p</em>&lt;0.0001, except at 50Hz, the adjusted <em>p</em>=0.0015;\nfor figure F, adjusted <em>p</em>=0.0216, 0.0028, 0.0008, 0.0012,\n0.0033, 0.0149 in sequential order, starting from the 5<sup>th</sup>\nstimulation.).</p>\n<p>G-I) Average (±SEM) specific force-frequency curves (G), maximum\nrates of force production (∆rise) and relaxation (∆decline) during\nstimulation at 150 Hz (H), and peak specific force production during\nrepetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation\n(I) in SOL muscles from 8M old WT (n=8) and GS (n=7) mice. Significance\nwas calculated using either multiple t-test (for line graphs) or 2-way\nANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em>\ntest (for the bar graph). For the bar graph, the exact <em>p</em>-value\nis labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, *\nindicates adjusted <em>p</em>&lt;0.05 (for figure G, adjusted\n<em>p</em>=0.0279, 0.0031, 0.0014, 0.0013, 0.0012, 0.0012, 0.0012 in\nsequential order; for figure I, adjusted <em>p</em>=0.0465-0.0089,\nstarting from the 36<sup>th</sup> stimulation.).</p>\n<p>J and K) Normalized average (±SEM) specific force traces elicited\nduring sustained 150 Hz stimulation (<em>left)</em>, peak specific force\n(<em>middle left</em>), time to 50% relaxation (<em>middle right</em>),\nand maximum rate of contractile decay (<em>right</em>) of EDL (J) and\nSOL (K) muscles from 8M old WT and GS mice. For EDL muscle, n =7 and 9\nfor WT and GS groups, respectively. For SOL muscle, n=5 and 8 for WT and\nGS groups, respectively. Significance was calculated using either\nmultiple t-test (for line graphs) or student’s t-test (for bar graphs).\nFor the bar graphs, the exact <em>p</em>-value is labeled in the figure\nwhen <em>p</em>&lt;0.05. For the line graphs, * indicates adjusted\n<em>p</em>&lt;0.05.</p>\n<p>Source data: available online for Figure 3A-K</p>\n\n",
             "sd_files": [
               "suppl_data/Figure 3.zip"
             ],
@@ -162,89 +162,89 @@
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3A/8M Grip Strength .xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3A/8M Grip Strength .xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3B/Treadmill Behavior.xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3B/Treadmill Behavior.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3C/Rotarod Behavior.xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3C/Rotarod Behavior.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3D/EDL Specific Force (Force Frequency).xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3D/EDL Specific Force (Force Frequency).xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3E/8M EDL Muscle Kinetics.xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3E/8M EDL Muscle Kinetics.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3F/8M EDL 50Hz Repetitive Stimulation.xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3F/8M EDL 50Hz Repetitive Stimulation.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3G/SOL Specific Force (Force Frequency).xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3G/SOL Specific Force (Force Frequency).xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3H/8M SOL muscle kinetics.xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3H/8M SOL muscle kinetics.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3I/8M SOL 50Hz Repetitive Stimulation.xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3I/8M SOL 50Hz Repetitive Stimulation.xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "J",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3J/Max Specific Force, Time to 50% max force and dF_dt at Decay.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3J/README.txt",
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3J/Raw data for EDL muscle 150Hz sustained stimulation (Used to plot traces).xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3J/Max Specific Force, Time to 50% max force and dF_dt at Decay.xlsx",
+                        "suppl_data/Figure 3.zip:Figure 3/3J/README.txt",
+                        "suppl_data/Figure 3.zip:Figure 3/3J/Raw data for EDL muscle 150Hz sustained stimulation (Used to plot traces).xlsx"
                     ]
                 },
                 {
                     "panel_caption": "",
                     "panel_label": "K",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3K/Max Specific Force, Time to 50% max force and dF_dt at Decay.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3K/README.txt",
-                        "EMBOJ-2024-116743/suppl_data/Figure 3.zip:Figure 3/3K/Raw data for SOL muscle 150Hz sustained stimulation (Used to plot traces).xlsx"
+                        "suppl_data/Figure 3.zip:Figure 3/3K/Max Specific Force, Time to 50% max force and dF_dt at Decay.xlsx",
+                        "suppl_data/Figure 3.zip:Figure 3/3K/README.txt",
+                        "suppl_data/Figure 3.zip:Figure 3/3K/Raw data for SOL muscle 150Hz sustained stimulation (Used to plot traces).xlsx"
                     ]
                 }
             ]
           },
           {
-            "figure_caption": "A) Representative Mn2+ quench of fura-2 fluorescence traces (left) in the absence of store depletion in naïve HEK293 cells transfected with mouse cDNA for WT Orai1 (WT, blue, n=2), G100S Orai1 (G100S, red, n=2), or a 1:1 ratio of WT and G100S (WT+G100S, green, n=2). Average (±SEM) maximum rate of Mn2+ quench (right) in the absence of store depletion for HEK293 cells \n\n\n\nexpression WT (blue), G100S (red), or a 1:1 ratio of WT and G100S (green). Significance was calculated using 1-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. The exact p-value is labeled in the figure when adjusted p<0.05.\n\nB and C) Representative traces of Mn2+ quench of fura-2 fluorescence in the absence of store depletion (constitutive Ca2+ entry) in FDB fibers isolated from 2WK (B) and 8M (C) old WT (black) and GS (pink) mice. \n\nD) Average (±SEM) maximum rate of Mn2+ quench in the absence of store depletion (constitutive Ca2+ entry) in myotubes and myofibers from WT (black) and GS (pink) mice. n=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS mice at the given ages in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. * indicates adjusted p<0.05 where all adjusted p<0.0001 except ‘Fiber 5WKS’ group whose p=0.0001.\n\nE and F) Representative traces of Mn2+ quench of fura-2 fluorescence following store depletion (SOCE) in FDB fibers isolated from 2WK (E) and 8M (F) old WT (black) and GS (pink) mice. \n\nG) Average (±SEM) maximum rate of Mn2+ quench following store depletion (SOCE) in myotubes and myofibers from WT (black) and GS (pink) mice. n=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS mice at the given ages in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. * indicates adjusted p<0.05 where all adjusted p<0.0001 except ‘Fiber 5WKS’ group whose p=0.0012.\n\nSource data: available online for Figure 4A-G",
+            "figure_caption": "\n\n<p>A) Representative Mn<sup>2+</sup> quench of fura-2 fluorescence\ntraces (<em>left</em>) in the absence of store depletion in naïve HEK293\ncells transfected with mouse cDNA for WT <em>Orai1</em> (WT, blue, n=2),\nG100S <em>Orai1</em> (G100S, red, n=2), or a 1:1 ratio of WT and G100S\n(WT+G100S, green, n=2). Average (±SEM) maximum rate of Mn<sup>2+</sup>\nquench (<em>right</em>) in the absence of store depletion for HEK293\ncells expression WT (blue), G100S (red), or a 1:1 ratio of WT and G100S\n(green). Significance was calculated using 1-way ANOVA followed by\nHolm-Sidak's multiple comparisons <em>post hoc</em> test. The exact\n<em>p</em>-value is labeled in the figure when adjusted\n<em>p</em>&lt;0.05.</p>\n<p>B and C) Representative traces of Mn<sup>2+</sup> quench of fura-2\nfluorescence in the absence of store depletion (constitutive\nCa<sup>2+</sup> entry) in FDB fibers isolated from 2WK (B) and 8M (C)\nold WT (black) and GS (pink) mice.</p>\n<p>D) Average (±SEM) maximum rate of Mn<sup>2+</sup> quench in the\nabsence of store depletion (constitutive Ca<sup>2+</sup> entry) in\nmyotubes and myofibers from WT (black) and GS (pink) mice.\nn=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS mice at the\ngiven ages in sequential order. Significance was calculated using 2-way\nANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em>\ntest. * indicates adjusted <em>p</em>&lt;0.05 where all adjusted\n<em>p</em>&lt;0.0001 except ‘Fiber 5WKS’ group whose\n<em>p</em>=0.0001.</p>\n<p>E and F) Representative traces of Mn<sup>2+</sup> quench of fura-2\nfluorescence following store depletion (SOCE) in FDB fibers isolated\nfrom 2WK (E) and 8M (F) old WT (black) and GS (pink) mice.</p>\n<p>G) Average (±SEM) maximum rate of Mn<sup>2+</sup> quench following\nstore depletion (SOCE) in myotubes and myofibers from WT (black) and GS\n(pink) mice. n=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS\nmice at the given ages in sequential order. Significance was calculated\nusing 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post\nhoc</em> test. * indicates adjusted <em>p</em>&lt;0.05 where all\nadjusted <em>p</em>&lt;0.0001 except ‘Fiber 5WKS’ group whose\n<em>p</em>=0.0012.</p>\n<p>Source data: available online for Figure 4A-G</p>\n\n",
             "figure_label": "Figure 4",
-            "caption_title": "Constitutive and store-operated Ca2+ entry.",
+            "caption_title": "<p><strong>Figure 4. Constitutive and store-operated Ca<sup>2+</sup>\nentry.</strong></p>",
             "sd_files": [
               "suppl_data/Figure 4.zip"
             ],
@@ -253,58 +253,58 @@
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4A/Raw Slope data for HEK293 cells transfected with different ORAI1 constructs.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4A/Representative traces of HEK293 cells transfected with WT OR G100S OR WT_G100S at 1_1 ratio.xlsx"
+                        "suppl_data/Figure 4.zip:Figure 4/4A/Raw Slope data for HEK293 cells transfected with different ORAI1 constructs.xlsx",
+                        "suppl_data/Figure 4.zip:Figure 4/4A/Representative traces of HEK293 cells transfected with WT OR G100S OR WT_G100S at 1_1 ratio.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4B/Representative traces of 2wks WT and GS constitutive calcium entry .xlsx"
+                        "suppl_data/Figure 4.zip:Figure 4/4B/Representative traces of 2wks WT and GS constitutive calcium entry .xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4C/Representative traces of 8M WT and GS constitutive calcium entry .xlsx"
+                        "suppl_data/Figure 4.zip:Figure 4/4C/Representative traces of 8M WT and GS constitutive calcium entry .xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4D/Rate of constitutive calcium entry .xlsx"
+                        "suppl_data/Figure 4.zip:Figure 4/4D/Rate of constitutive calcium entry .xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4E/Representative traces of 2wks WT and GS SOCE activity.xlsx"
+                        "suppl_data/Figure 4.zip:Figure 4/4E/Representative traces of 2wks WT and GS SOCE activity.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4F/Representative traces of 8M WT and GS SOCE activity.xlsx"
+                        "suppl_data/Figure 4.zip:Figure 4/4F/Representative traces of 8M WT and GS SOCE activity.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 4.zip:Figure 4/4G/Rate of store operated calcium entry.xlsx"
+                        "suppl_data/Figure 4.zip:Figure 4/4G/Rate of store operated calcium entry.xlsx"
                     ]
                   }
             ]
           },
           {
-            "figure_caption": "A) Representative western blots of STIM1L and STIM1S (upper blot) and CASQ1 (lower blot) in tibialis anterior muscles from 2WK (left) and 8M old (right) WT (n=4) and GS (n=3) mice. \n\nB) Average (±SEM) CASQ1 and STIM1 expression in tibialis anterior muscles from 2WK (left) and 8M (right) old WT (n=4) and GS (n=3) mice. STIM1 expression was measured as the sum of STIM1S and STIM1L. Protein expression levels were normalized to Ponceau S.\n\n\n\nC-E) Knock-in mice with a V5-3xHA epitope added to the extreme ORAI1 C-terminus (Orai1V5HA/+ or V5HA mice) exhibit similar physical appearance (C), SOCE activity (D), and ORAI1 subcellular localization (E) as age-matched WT mice. \n\nF) Representative western blot of quadricep muscle lysates from WT and V5HA/+ mice probed with rat HA antibody. \n\nG and H) Representative western blots (left) and average (±SEM) bar graphs (right) for ORAI1 expression probed with rat HA antibody in tibialis anterior muscles from 2WK (G) and 8M (H) old V5HA/+ and V5HA/GS mice. For 2WK condition, n =6 and 5 for WT and GS group respectively. For 8M condition, n=6 and 7 for WT and GS group respectively. ORAI1 expression level was measured as the sum of upper and lower bands. Protein expression levels were normalized to Ponceau S. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. The exact p-value is labeled in the figure when adjusted p<0.05.\n\nSource data: available online for Figure 5A-B and D-H.",
+            "figure_caption": "\n\n<p>A) Representative western blots of STIM1L and STIM1S (<em>upper\nblot</em>) and CASQ1 (<em>lower blot</em>) in <em>tibialis anterior</em>\nmuscles from 2WK (<em>left</em>) and 8M old (<em>right</em>) WT (n=4)\nand GS (n=3) mice.</p>\n<p>B) Average (±SEM) CASQ1 and STIM1 expression in <em>tibialis\nanterior</em> muscles from 2WK (<em>left</em>) and 8M (<em>right</em>)\nold WT (n=4) and GS (n=3) mice. STIM1 expression was measured as the sum\nof STIM1S and STIM1L. Protein expression levels were normalized to\nPonceau S.</p>\n<p>C-E) Knock-in mice with a V5-3xHA epitope added to the extreme ORAI1\nC-terminus <em>(Orai1<sup>V5HA/+</sup></em> or V5HA mice) exhibit\nsimilar physical appearance (C), SOCE activity (D), and ORAI1\nsubcellular localization (E) as age-matched WT mice.</p>\n<p>F) Representative western blot of quadricep muscle lysates from WT\nand V5HA/+ mice probed with rat HA antibody.</p>\n<p>G and H) Representative western blots (<em>left</em>) and average\n(±SEM) bar graphs (<em>right</em>) for ORAI1 expression probed with rat\nHA antibody in <em>tibialis anterior</em> muscles from 2WK (G) and 8M\n(H) old V5HA/+ and V5HA/GS mice. For 2WK condition, n =6 and 5 for WT\nand GS group respectively. For 8M condition, n=6 and 7 for WT and GS\ngroup respectively. ORAI1 expression level was measured as the sum of\nupper and lower bands. Protein expression levels were normalized to\nPonceau S. Significance was calculated using 2-way ANOVA followed by\nHolm-Sidak's multiple comparisons <em>post hoc</em> test. The exact\n<em>p</em>-value is labeled in the figure when adjusted\n<em>p</em>&lt;0.05.</p>\n<p>Source data: available online for Figure 5A-B and D-H.</p>\n\n",
             "figure_label": "Figure 5",
-            "caption_title": "CASQ, STIM1, and ORAI1 protein expression.",
+            "caption_title": "<p><strong>Figure 5. CASQ, STIM1, and ORAI1 protein\nexpression.</strong></p>",
             "sd_files": [
               "suppl_data/Figure 5.zip"
             ],
@@ -313,18 +313,18 @@
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5A/Normalised CASQ and STIM1 value in 2wks WT and GS conditon.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5A/Normalised CASQ and STIM1 value in 8 months WT and GS conditon.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5A/Western Blot for 2wks and 8M Casq1 and STIM1.tif"
+                        "suppl_data/Figure 5.zip:Figure 5/5A/Normalised CASQ and STIM1 value in 2wks WT and GS conditon.xlsx",
+                        "suppl_data/Figure 5.zip:Figure 5/5A/Normalised CASQ and STIM1 value in 8 months WT and GS conditon.xlsx",
+                        "suppl_data/Figure 5.zip:Figure 5/5A/Western Blot for 2wks and 8M Casq1 and STIM1.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5B/Normalised CASQ and STIM1 value in 2wks WT and GS conditon.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5B/Normalised CASQ and STIM1 value in 8 months WT and GS conditon.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5B/Western Blot for 2wks and 8M Casq1 and STIM1.tif"
+                        "suppl_data/Figure 5.zip:Figure 5/5B/Normalised CASQ and STIM1 value in 2wks WT and GS conditon.xlsx",
+                        "suppl_data/Figure 5.zip:Figure 5/5B/Normalised CASQ and STIM1 value in 8 months WT and GS conditon.xlsx",
+                        "suppl_data/Figure 5.zip:Figure 5/5B/Western Blot for 2wks and 8M Casq1 and STIM1.tif"
                     ]
                   },
                   {
@@ -337,61 +337,67 @@
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5D/Representative traces of WT and V5HA HET mice SOCE activity.xlsx"
+                        "suppl_data/Figure 5.zip:Figure 5/5D/Representative traces of WT and V5HA HET mice SOCE activity.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5E/ICC staining using EDL bundles_ HA antibody.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5E/ICC staining using EDL bundles_ ORAI1 antibody.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5E/ICC staining using EDL bundles_merged image.tif"
+                        "suppl_data/Figure 5.zip:Figure 5/5E/ICC staining using EDL bundles_ HA antibody.tif",
+                        "suppl_data/Figure 5.zip:Figure 5/5E/ICC staining using EDL bundles_ ORAI1 antibody.tif",
+                        "suppl_data/Figure 5.zip:Figure 5/5E/ICC staining using EDL bundles_merged image.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5F/Western blot marker.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5F/Western blot using HA antibodies.tif"
+                        "suppl_data/Figure 5.zip:Figure 5/5F/Western blot marker.tif",
+                        "suppl_data/Figure 5.zip:Figure 5/5F/Western blot using HA antibodies.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5G/2wks Orai1 western blot analysis in V5HA and V5HA_GS mice .xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5G/Western blot for Orai1-HA expression_2wks.tif"
+                        "suppl_data/Figure 5.zip:Figure 5/5G/2wks Orai1 western blot analysis in V5HA and V5HA_GS mice .xlsx",
+                        "suppl_data/Figure 5.zip:Figure 5/5G/Western blot for Orai1-HA expression_2wks.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5H/8M Orai1 western blot analysis in V5HA and V5HA_GS mice .xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 5.zip:Figure 5/5H/Western blot for Orai1-HA expression_8M.tif"
+                        "suppl_data/Figure 5.zip:Figure 5/5H/8M Orai1 western blot analysis in V5HA and V5HA_GS mice .xlsx",
+                        "suppl_data/Figure 5.zip:Figure 5/5H/Western blot for Orai1-HA expression_8M.tif"
                     ]
                   }
             ]
           },
           {
-            "figure_caption": "A and B) Pie charts (upper) and volcano plots (lower) of normalized abundance data depicting the proportion of significantly up (red) and down (blue) regulated proteins in tibialis anterior muscles of 2WK (A) and 8M (B) old WT and GS mice. Data were collected from 2 WT and 4 GS 2WK old mice and 3 WT and 4 GS 8M old mice.\n\nC) Venn analysis of proteins that were significantly up-regulated (upper panel) and down-regulated (lower panel) in tibialis anterior muscles of 2WK and 8M old WT and GS mice. \n\nD-G) Top 20 altered GO Cellular Component pathways (D and F) and associated network analyses (E and G) from proteomic analyses of tibialis anterior muscles from 2WK and 8M old WT and GS mice. Data were collected from 2 WT and 4 GS 2 WK old mice and 3 WT and 4 GS 8M old mice.",
+            "figure_caption": "\n\nA and B) Pie charts\n(<em>upper</em>) and volcano plots (<em>lower</em>) of normalized\nabundance data depicting the proportion of significantly up\n(<em>red</em>) and down (<em>blue</em>) regulated proteins in\n<em>tibialis anterior</em> muscles of 2WK (A) and 8M (B) old WT and GS\nmice. Data were collected from 2 WT and 4 GS 2WK old mice and 3 WT and 4\nGS 8M old mice.</p>\n<p>C) Venn analysis of proteins that were significantly up-regulated\n(<em>upper panel</em>) and down-regulated (<em>lower panel</em>) in\n<em>tibialis anterior</em> muscles of 2WK and 8M old WT and GS mice.</p>\n<p>D-G) Top 20 altered GO Cellular Component pathways (D and F) and\nassociated network analyses (E and G) from proteomic analyses of\n<em>tibialis anterior</em> muscles from 2WK and 8M old WT and GS mice.\nData were collected from 2 WT and 4 GS 2 WK old mice and 3 WT and 4 GS\n8M old mice.</p>\n\n",
             "figure_label": "Figure 6",
-            "caption_title": "Proteome analyses of tibialis anterior muscle from 2WK and 8M old WT and GS mice.",
+            "caption_title": "<strong>Figure 6. Proteome analyses of <em>tibialis anterior</em>\nmuscle from 2WK and 8M old WT and GS mice.</strong>",
             "panels": [
               {
                 "panel_caption": "",
-                "panel_label": "",
+                "panel_label": "A",
+                "sd_files":[
+                ]
+              },
+              {
+                "panel_caption": "",
+                "panel_label": "B",
                 "sd_files":[
                 ]
               }
             ]
           },
           {
-            "figure_caption": "A) Representative EM images of longitudinal sections of EDL muscles from 8M old WT and GS mice. Arrows: mitochondria at I band; M: severely altered mitochondria; *: mitochondrion at the A band. \n\nB) Average (±SEM) 16S rRNA transcript level in 8M WT (n=6) and GS (n=6) tibialis anterior muscles using RT-qPCR. 16S is a mitochondria specific ribosomal RNA. Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nC) Representative western blots (left) and average (±SEM) bar graphs (right) for VDAC expression in tibialis anterior muscles from 8M old WT (n=6) and GS (n=6) mice. Protein expression levels were normalized to Ponceau S. Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nD) Normalized average (±SEM) TMRE fluorescence (normalized to the final 40th measurement, DF/F40) of single FDB fibers from 8M old WT (n=6) and GS (n=6) mice before and during application of 1 µM FCCP (black bar). Significance was calculated using student’s t-test. * indicates adjusted p<0.05 (adjusted p=0.000035, 0.000035, 0.00004, 0.000034, 0.000028, 0.000003, 0.000018 in sequential order). \n\nE) Normalized average (±SEM) delta MitoSOX fluorescence over 10 min using FDB fibers from 8M WT and GS mice. MitoSOX is a mitochondrial specific superoxide indicator, used to indicate mitochondrial oxidative stress level. Significance was calculated using Mann Whitney test. The exact p-value is labeled in the figure when p<0.05.\n\nF) Average (±SEM) enzyme activity of proteins involved in electron transport chain (Complex I-V) using purified mitochondria from skeletal muscle of 8M old WT and GS mice. For Complex I activity, n =5 and 6 WT and GS mice, respectively. For complex II-V, n=6 WT and n=6 GS mice. Significance was calculated using either Mann Whitney test (Complex I and III activity) or student’s t-test (Complex activity). The exact p-value is labeled in the figure when p<0.05.\n\nG) Representative Clark’s electrode oxygen consumption traces using purified mitochondria from 8M WT (black) and GS (pink) skeletal muscle. \n\n\n\nH and I) Average (±SEM) oxygen consumption rate (OCR) at each state (H) and average (±SEM) respiratory control ratio (RCR – State 3/State4) (I) in purified mitochondria from 8M WT (n=5) and GS (n=7) skeletal mice. Significance was calculated using either 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test (OCR measurements) or Welch's t test (RCR level). The exact (adjusted) p-value is labeled in the figure when p<0.05.\n\nSource data: available online for Figure 7A-I",
+            "figure_caption": "\n\n<p>A) Representative EM images of longitudinal sections of EDL muscles\nfrom 8M old WT and GS mice. Arrows: mitochondria at I band; M: severely\naltered mitochondria; *: mitochondrion at the A band.</p>\n<p>B) Average (±SEM) <em>16S rRNA</em> transcript level in 8M WT (n=6)\nand GS (n=6) <em>tibialis anterior</em> muscles using RT-qPCR.\n<em>16S</em> is a mitochondria specific ribosomal RNA. Significance was\ncalculated using student’s t-test. The exact <em>p</em>-value is labeled\nin the figure when <em>p</em>&lt;0.05.</p>\n<p>C) Representative western blots (<em>left</em>) and average (±SEM)\nbar graphs (<em>right</em>) for VDAC expression in <em>tibialis\nanterior</em> muscles from 8M old WT (n=6) and GS (n=6) mice. Protein\nexpression levels were normalized to Ponceau S. Significance was\ncalculated using student’s t-test. The exact <em>p</em>-value is labeled\nin the figure when <em>p</em>&lt;0.05.</p>\n<p>D) Normalized average (±SEM) TMRE fluorescence (normalized to the\nfinal 40<sup>th</sup> measurement, ∆F/F<sub>40</sub>) of single FDB\nfibers from 8M old WT (n=6) and GS (n=6) mice before and during\napplication of 1 µM FCCP (black bar). Significance was calculated using\nstudent’s t-test. * indicates adjusted <em>p</em>&lt;0.05 (adjusted\n<em>p</em>=0.000035, 0.000035, 0.00004, 0.000034, 0.000028, 0.000003,\n0.000018 in sequential order).</p>\n<p>E) Normalized average (±SEM) delta MitoSOX fluorescence over 10 min\nusing FDB fibers from 8M WT and GS mice. MitoSOX is a mitochondrial\nspecific superoxide indicator, used to indicate mitochondrial oxidative\nstress level. Significance was calculated using Mann Whitney test. The\nexact <em>p</em>-value is labeled in the figure when\n<em>p</em>&lt;0.05.</p>\n<p>F) Average (±SEM) enzyme activity of proteins involved in electron\ntransport chain (Complex I-V) using purified mitochondria from skeletal\nmuscle of 8M old WT and GS mice. For Complex I activity, n =5 and 6 WT\nand GS mice, respectively. For complex II-V, n=6 WT and n=6 GS mice.\nSignificance was calculated using either Mann Whitney test (Complex I\nand III activity) or student’s t-test (Complex activity). The exact\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>G) Representative Clark’s electrode oxygen consumption traces using\npurified mitochondria from 8M WT (black) and GS (pink) skeletal\nmuscle.</p>\n<p>H and I) Average (±SEM) oxygen consumption rate (OCR) at each state\n(H) and average (±SEM) respiratory control ratio (RCR – State 3/State4)\n(I) in purified mitochondria from 8M WT (n=5) and GS (n=7) skeletal\nmice. Significance was calculated using either 2-way ANOVA followed by\nHolm-Sidak's multiple comparisons <em>post hoc</em> test (OCR\nmeasurements) or Welch's t test (RCR level). The exact (adjusted)\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>Source data: available online for Figure 7A-I<strong><br />\n</strong></p>\n\n",
             "figure_label": "Figure 7",
-            "caption_title": "Morphological and functional assessment of mitochondrial damage in 8M GS mice.",
+            "caption_title": "<p><strong>Figure 7. Morphological and functional assessment of\nmitochondrial damage in 8M GS mice.</strong></p>",
             "sd_files": [
               "suppl_data/Figure 7.zip"
             ],
@@ -400,66 +406,66 @@
                     "panel_caption": "",
                     "panel_label": "A",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7A/EM images of WT and GS EDL muscles looking at mitochondria morphology.tif"
+                        "suppl_data/Figure 7.zip:Figure 7/7A/EM images of WT and GS EDL muscles looking at mitochondria morphology.tif"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "B",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7B/16s Transcript level fold change.xlsx"
+                        "suppl_data/Figure 7.zip:Figure 7/7B/16s Transcript level fold change.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "C",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7C/Western blot for VDAC_8M.tif",
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7C/Western blot of VDAC protein expression level_8M.xlsx"
+                        "suppl_data/Figure 7.zip:Figure 7/7C/Western blot for VDAC_8M.tif",
+                        "suppl_data/Figure 7.zip:Figure 7/7C/Western blot of VDAC protein expression level_8M.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "D",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7D/8M WT and GS Mitochonrial membrane potential.xlsx"
+                        "suppl_data/Figure 7.zip:Figure 7/7D/8M WT and GS Mitochonrial membrane potential.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7E/Normalised delta value for MitoSOX_8M.xlsx"
+                        "suppl_data/Figure 7.zip:Figure 7/7E/Normalised delta value for MitoSOX_8M.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "F",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7F/Complex I enzyme activity measurement_8M.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7F/Complex II_III_IV_V enzyme activity measurement_8M.xlsx",
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7F/README.txt"
+                        "suppl_data/Figure 7.zip:Figure 7/7F/Complex I enzyme activity measurement_8M.xlsx",
+                        "suppl_data/Figure 7.zip:Figure 7/7F/Complex II_III_IV_V enzyme activity measurement_8M.xlsx",
+                        "suppl_data/Figure 7.zip:Figure 7/7F/README.txt"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "G",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7G/Representative clarks electrode trancesw for 8M WT and GS purified mitochondria.xlsx"
+                        "suppl_data/Figure 7.zip:Figure 7/7G/Representative clarks electrode trancesw for 8M WT and GS purified mitochondria.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "H",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7H/OCR calculated form clarks electrode_8M.xlsx"
+                        "suppl_data/Figure 7.zip:Figure 7/7H/OCR calculated form clarks electrode_8M.xlsx"
                     ]
                   },
                   {
                     "panel_caption": "",
                     "panel_label": "I",
                     "sd_files":[
-                        "EMBOJ-2024-116743/suppl_data/Figure 7.zip:Figure 7/7I/RCR levels calculated from clarks electrode.xlsx"
+                        "suppl_data/Figure 7.zip:Figure 7/7I/RCR levels calculated from clarks electrode.xlsx"
                     ]
                   }
             ]
@@ -475,6 +481,7 @@
         }
       ]
     },
-    "all_captions": "Figure 1. Phenotypic characterization of 8M old GS mice. \n\nA) GS mice showed a similar physical appearance as WT mice at 8M of age. \n\nB) Kaplan–Meier survival curves of WT and GS mice from a total of 76 8M old WT mice and 73 8M old GS mice. \n\nC) Average (±SEM) body mass of 8M old WT (n=20) and GS (n=15) mice. Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nD) Average (±SEM) whole blood iCa2+ level of 8M old WT (n=10) and GS (n=11) mice. Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nE) Average (±SEM) serum CK level in 8M old WT (n=5) and GS (n=6) mice. Significance was calculated using Mann Whitney test. The exact p-value is labeled in the figure when p<0.05.\n\nF) Representative H&E staining images of EDL muscle cross sections showed a similar percentage of central nucleation between 8M WT and GS mice. Average (±SEM) percentage of fibers with central nuclei was quantified from the position of nuclei in 300 muscle fibers/genotype. \n\nG and H) Average (±SEM) cross-sectional area (CSA) of different muscle fiber types in EDL (G) and SOL (H) muscles of 8M old WT and GS mice. For EDL muscle, n =2 and 4 for WT and GS group respectively. For SOL muscle, n=5 for both WT and GS group. \n\nI and J) Average (±SEM) fiber type distribution of EDL (I) and SOL (J) muscles of 8M WT and GS mice. For SOL muscle, n =2 and 4 for WT and GS group respectively. For EDL muscle, n=5 for both WT and GS group. \n\nK) Average (±SEM) tail bleeding time in 8M WT (n=8) and GS (n=9) mice. \n\nSource data: available online for Figure 1B-K \n\n\n\nFigure 2. Tubular aggregates in fast twitch muscles of GS mice. \n\nA and B) Representative Gomori trichrome images of EDL muscles from 12M (A) and 18M (B) old WT (left) and GS (right) mice. TAs are visualized as pink/purple inclusions as indicated by red arrows. \n\nC and D) Representative EM images of cross sections of EDL (C) and FDB (D) muscles from 8M old WT (left) and GS (right) mice. Images were taken from different muscle fibers. TAs (colored in green for the GS EDL fiber shown in panel C) exhibit a honeycomb-like structure. \n\nE-G) Average (±SEM) percentage of fibers with TAs (E), number of TAs/fiber (F), and TA size (G) in EDL (left), FDB (middle), and tibialis anterior (right) muscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS mice in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. The exact p-value is labeled in the figure when adjusted p<0.05.\n\nSource data: available online for Figure 2A-G \n\nFigure 3. Increased muscle weakness and exercise intolerance of 8M old GS mice. \n\nA) In vivo behavioral studies of average (±SEM) normalized grip strength in 8M old WT (n=9) and GS mice (n=11). Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nB and C) In vivo behavioral studies of treadmill endurance (B) and rotarod endurance (C) tests in 8M old WT (n=7) and GS (n=9) mice where averaged (±SEM) cumulative rest/fall were plotted. Significance was calculated using multiple t-test. * indicates adjusted p<0.05 (adjusted p=0.0316, 0.0088, 0.0006, 0.0001, <0.0001, <0.0001 in sequential order for figure B and adjusted p=0.0114, 0.0025, 0.0005, <0.0001, <0.0001, <0.0001 in sequential order for figure C). \n\nD-F) Average (±SEM) specific force-frequency curves (D), maximum rates of force production (\uf044rise) and relaxation (\uf044decline) during stimulation at 150 Hz (E), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (F) in EDL muscles from 8M old WT (n=9) and GS (n=9) mice. Significance was calculated using either \n\n\n\nmultiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test (for the bar graph). For the bar graph, the exact p-value is labeled in the figure when p<0.05. For the line graphs, * indicates adjusted p<0.05 (for figure D, all adjusted p<0.0001, except at 50Hz, the adjusted p=0.0015; for figure F, adjusted p=0.0216, 0.0028, 0.0008, 0.0012, 0.0033, 0.0149 in sequential order, starting from the 5th stimulation.).\n\nG-I) Average (±SEM) specific force-frequency curves (G), maximum rates of force production (\uf044rise) and relaxation (\uf044decline) during stimulation at 150 Hz (H), and peak specific force production during repetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation (I) in SOL muscles from 8M old WT (n=8) and GS (n=7) mice. Significance was calculated using either multiple t-test (for line graphs) or 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test (for the bar graph). For the bar graph, the exact p-value is labeled in the figure when p<0.05. For the line graphs, * indicates adjusted p<0.05 (for figure G, adjusted p=0.0279, 0.0031, 0.0014, 0.0013, 0.0012, 0.0012, 0.0012 in sequential order; for figure I, adjusted p=0.0465-0.0089, starting from the 36th stimulation.).\n\nJ and K) Normalized average (±SEM) specific force traces elicited during sustained 150 Hz stimulation (left), peak specific force (middle left), time to 50% relaxation (middle right), and maximum rate of contractile decay (right) of EDL (J) and SOL (K) muscles from 8M old WT and GS mice. For EDL muscle, n =7 and 9 for WT and GS groups, respectively. For SOL muscle, n=5 and 8 for WT and GS groups, respectively. Significance was calculated using either multiple t-test (for line graphs) or student’s t-test (for bar graphs). For the bar graphs, the exact p-value is labeled in the figure when p<0.05. For the line graphs, * indicates adjusted p<0.05. \n\nSource data: available online for Figure 3A-K\n\nFigure 4. Constitutive and store-operated Ca2+ entry. \n\nA) Representative Mn2+ quench of fura-2 fluorescence traces (left) in the absence of store depletion in naïve HEK293 cells transfected with mouse cDNA for WT Orai1 (WT, blue, n=2), G100S Orai1 (G100S, red, n=2), or a 1:1 ratio of WT and G100S (WT+G100S, green, n=2). Average (±SEM) maximum rate of Mn2+ quench (right) in the absence of store depletion for HEK293 cells \n\n\n\nexpression WT (blue), G100S (red), or a 1:1 ratio of WT and G100S (green). Significance was calculated using 1-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. The exact p-value is labeled in the figure when adjusted p<0.05.\n\nB and C) Representative traces of Mn2+ quench of fura-2 fluorescence in the absence of store depletion (constitutive Ca2+ entry) in FDB fibers isolated from 2WK (B) and 8M (C) old WT (black) and GS (pink) mice. \n\nD) Average (±SEM) maximum rate of Mn2+ quench in the absence of store depletion (constitutive Ca2+ entry) in myotubes and myofibers from WT (black) and GS (pink) mice. n=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS mice at the given ages in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. * indicates adjusted p<0.05 where all adjusted p<0.0001 except ‘Fiber 5WKS’ group whose p=0.0001.\n\nE and F) Representative traces of Mn2+ quench of fura-2 fluorescence following store depletion (SOCE) in FDB fibers isolated from 2WK (E) and 8M (F) old WT (black) and GS (pink) mice. \n\nG) Average (±SEM) maximum rate of Mn2+ quench following store depletion (SOCE) in myotubes and myofibers from WT (black) and GS (pink) mice. n=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS mice at the given ages in sequential order. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. * indicates adjusted p<0.05 where all adjusted p<0.0001 except ‘Fiber 5WKS’ group whose p=0.0012.\n\nSource data: available online for Figure 4A-G\n\nFigure 5. CASQ, STIM1, and ORAI1 protein expression. \n\nA) Representative western blots of STIM1L and STIM1S (upper blot) and CASQ1 (lower blot) in tibialis anterior muscles from 2WK (left) and 8M old (right) WT (n=4) and GS (n=3) mice. \n\nB) Average (±SEM) CASQ1 and STIM1 expression in tibialis anterior muscles from 2WK (left) and 8M (right) old WT (n=4) and GS (n=3) mice. STIM1 expression was measured as the sum of STIM1S and STIM1L. Protein expression levels were normalized to Ponceau S.\n\n\n\nC-E) Knock-in mice with a V5-3xHA epitope added to the extreme ORAI1 C-terminus (Orai1V5HA/+ or V5HA mice) exhibit similar physical appearance (C), SOCE activity (D), and ORAI1 subcellular localization (E) as age-matched WT mice. \n\nF) Representative western blot of quadricep muscle lysates from WT and V5HA/+ mice probed with rat HA antibody. \n\nG and H) Representative western blots (left) and average (±SEM) bar graphs (right) for ORAI1 expression probed with rat HA antibody in tibialis anterior muscles from 2WK (G) and 8M (H) old V5HA/+ and V5HA/GS mice. For 2WK condition, n =6 and 5 for WT and GS group respectively. For 8M condition, n=6 and 7 for WT and GS group respectively. ORAI1 expression level was measured as the sum of upper and lower bands. Protein expression levels were normalized to Ponceau S. Significance was calculated using 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test. The exact p-value is labeled in the figure when adjusted p<0.05.\n\nSource data: available online for Figure 5A-B and D-H.\n\nFigure 6. Proteome analyses of tibialis anterior muscle from 2WK and 8M old WT and GS mice. A and B) Pie charts (upper) and volcano plots (lower) of normalized abundance data depicting the proportion of significantly up (red) and down (blue) regulated proteins in tibialis anterior muscles of 2WK (A) and 8M (B) old WT and GS mice. Data were collected from 2 WT and 4 GS 2WK old mice and 3 WT and 4 GS 8M old mice.\n\nC) Venn analysis of proteins that were significantly up-regulated (upper panel) and down-regulated (lower panel) in tibialis anterior muscles of 2WK and 8M old WT and GS mice. \n\nD-G) Top 20 altered GO Cellular Component pathways (D and F) and associated network analyses (E and G) from proteomic analyses of tibialis anterior muscles from 2WK and 8M old WT and GS mice. Data were collected from 2 WT and 4 GS 2 WK old mice and 3 WT and 4 GS 8M old mice.\n\nFigure 7. Morphological and functional assessment of mitochondrial damage in 8M GS mice. \n\n\n\nA) Representative EM images of longitudinal sections of EDL muscles from 8M old WT and GS mice. Arrows: mitochondria at I band; M: severely altered mitochondria; *: mitochondrion at the A band. \n\nB) Average (±SEM) 16S rRNA transcript level in 8M WT (n=6) and GS (n=6) tibialis anterior muscles using RT-qPCR. 16S is a mitochondria specific ribosomal RNA. Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nC) Representative western blots (left) and average (±SEM) bar graphs (right) for VDAC expression in tibialis anterior muscles from 8M old WT (n=6) and GS (n=6) mice. Protein expression levels were normalized to Ponceau S. Significance was calculated using student’s t-test. The exact p-value is labeled in the figure when p<0.05.\n\nD) Normalized average (±SEM) TMRE fluorescence (normalized to the final 40th measurement, DF/F40) of single FDB fibers from 8M old WT (n=6) and GS (n=6) mice before and during application of 1 µM FCCP (black bar). Significance was calculated using student’s t-test. * indicates adjusted p<0.05 (adjusted p=0.000035, 0.000035, 0.00004, 0.000034, 0.000028, 0.000003, 0.000018 in sequential order). \n\nE) Normalized average (±SEM) delta MitoSOX fluorescence over 10 min using FDB fibers from 8M WT and GS mice. MitoSOX is a mitochondrial specific superoxide indicator, used to indicate mitochondrial oxidative stress level. Significance was calculated using Mann Whitney test. The exact p-value is labeled in the figure when p<0.05.\n\nF) Average (±SEM) enzyme activity of proteins involved in electron transport chain (Complex I-V) using purified mitochondria from skeletal muscle of 8M old WT and GS mice. For Complex I activity, n =5 and 6 WT and GS mice, respectively. For complex II-V, n=6 WT and n=6 GS mice. Significance was calculated using either Mann Whitney test (Complex I and III activity) or student’s t-test (Complex activity). The exact p-value is labeled in the figure when p<0.05.\n\nG) Representative Clark’s electrode oxygen consumption traces using purified mitochondria from 8M WT (black) and GS (pink) skeletal muscle. \n\n\n\nH and I) Average (±SEM) oxygen consumption rate (OCR) at each state (H) and average (±SEM) respiratory control ratio (RCR – State 3/State4) (I) in purified mitochondria from 8M WT (n=5) and GS (n=7) skeletal mice. Significance was calculated using either 2-way ANOVA followed by Holm-Sidak's multiple comparisons post hoc test (OCR measurements) or Welch's t test (RCR level). The exact (adjusted) p-value is labeled in the figure when p<0.05.\n\nSource data: available online for Figure 7A-I"
+    "all_captions": "\n\n<p><strong>Figure Legends</strong></p>\n<p><strong>Figure 1. Phenotypic characterization of 8M old GS\nmice.</strong></p>\n<p>A) GS mice showed a similar physical appearance as WT mice at 8M of\nage.</p>\n<p>B) Kaplan–Meier survival curves of WT and GS mice from a total of 76\n8M old WT mice and 73 8M old GS mice.</p>\n<p>C) Average (±SEM) body mass of 8M old WT (n=20) and GS (n=15) mice.\nSignificance was calculated using student’s t-test. The exact\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>D) Average (±SEM) whole blood iCa<sup>2+</sup> level of 8M old WT\n(n=10) and GS (n=11) mice. Significance was calculated using student’s\nt-test. The exact <em>p</em>-value is labeled in the figure when\n<em>p</em>&lt;0.05.</p>\n<p>E) Average (±SEM) serum CK level in 8M old WT (n=5) and GS (n=6)\nmice. Significance was calculated using Mann Whitney test. The exact\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>F) Representative H&amp;E staining images of EDL muscle cross\nsections showed a similar percentage of central nucleation between 8M WT\nand GS mice. Average (±SEM) percentage of fibers with central nuclei was\nquantified from the position of nuclei in 300 muscle\nfibers/genotype.</p>\n<p>G and H) Average (±SEM) cross-sectional area (CSA) of different\nmuscle fiber types in EDL (G) and SOL (H) muscles of 8M old WT and GS\nmice. For EDL muscle, n =2 and 4 for WT and GS group respectively. For\nSOL muscle, n=5 for both WT and GS group.</p>\n<p>I and J) Average (±SEM) fiber type distribution of EDL (I) and SOL\n(J) muscles of 8M WT and GS mice. For SOL muscle, n =2 and 4 for WT and\nGS group respectively. For EDL muscle, n=5 for both WT and GS group.</p>\n<p>K) Average (±SEM) tail bleeding time in 8M WT (n=8) and GS (n=9)\nmice.</p>\n<p>Source data: available online for Figure 1B-K <strong><br />\n</strong></p>\n<p><strong>Figure 2. Tubular aggregates in fast twitch muscles of GS\nmice.</strong></p>\n<p>A and B) Representative Gomori trichrome images of EDL muscles from\n12M (A) and 18M (B) old WT (<em>left</em>) and GS (<em>right</em>) mice.\nTAs are visualized as pink/purple inclusions as indicated by red\narrows.</p>\n<p>C and D) Representative EM images of cross sections of EDL (C) and\nFDB (D) muscles from 8M old WT (<em>left</em>) and GS (<em>right</em>)\nmice. Images were taken from different muscle fibers. TAs (colored in\ngreen for the GS EDL fiber shown in panel C) exhibit a honeycomb-like\nstructure.</p>\n<p>E-G) Average (±SEM) percentage of fibers with TAs (E), number of\nTAs/fiber (F), and TA size (G) in EDL (<em>left</em>), FDB\n(<em>middle</em>), and <em>tibialis anterior</em> (<em>right</em>)\nmuscles of 8M old WT and GS mice. n=8,5,4 for WT mice and n=7,4,4 for GS\nmice in sequential order. Significance was calculated using 2-way ANOVA\nfollowed by Holm-Sidak's multiple comparisons <em>post hoc</em> test.\nThe exact <em>p</em>-value is labeled in the figure when adjusted\n<em>p</em>&lt;0.05.</p>\n<p>Source data: available online for Figure 2A-G</p>\n<p><strong>Figure 3. Increased muscle weakness and exercise intolerance\nof 8M old GS mice.</strong></p>\n<p>A) <em>In vivo</em> behavioral studies of average (±SEM) normalized\ngrip strength in 8M old WT (n=9) and GS mice (n=11). Significance was\ncalculated using student’s t-test. The exact <em>p</em>-value is labeled\nin the figure when <em>p</em>&lt;0.05.</p>\n<p>B and C) <em>In vivo</em> behavioral studies of treadmill endurance\n(B) and rotarod endurance (C) tests in 8M old WT (n=7) and GS (n=9) mice\nwhere averaged (±SEM) cumulative rest/fall were plotted. Significance\nwas calculated using multiple t-test. * indicates adjusted\n<em>p</em>&lt;0.05 (adjusted <em>p</em>=0.0316, 0.0088, 0.0006, 0.0001,\n&lt;0.0001, &lt;0.0001 in sequential order for figure B and adjusted\n<em>p</em>=0.0114, 0.0025, 0.0005, &lt;0.0001, &lt;0.0001, &lt;0.0001 in\nsequential order for figure C).</p>\n<p>D-F) Average (±SEM) specific force-frequency curves (D), maximum\nrates of force production (∆rise) and relaxation (∆decline) during\nstimulation at 150 Hz (E), and peak specific force production during\nrepetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation\n(F) in EDL muscles from 8M old WT (n=9) and GS (n=9) mice. Significance\nwas calculated using either multiple t-test (for line graphs) or 2-way\nANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em>\ntest (for the bar graph). For the bar graph, the exact <em>p</em>-value\nis labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, *\nindicates adjusted <em>p</em>&lt;0.05 (for figure D, all adjusted\n<em>p</em>&lt;0.0001, except at 50Hz, the adjusted <em>p</em>=0.0015;\nfor figure F, adjusted <em>p</em>=0.0216, 0.0028, 0.0008, 0.0012,\n0.0033, 0.0149 in sequential order, starting from the 5<sup>th</sup>\nstimulation.).</p>\n<p>G-I) Average (±SEM) specific force-frequency curves (G), maximum\nrates of force production (∆rise) and relaxation (∆decline) during\nstimulation at 150 Hz (H), and peak specific force production during\nrepetitive, high frequency (50 Hz, 500 ms, every 2.5 sec) stimulation\n(I) in SOL muscles from 8M old WT (n=8) and GS (n=7) mice. Significance\nwas calculated using either multiple t-test (for line graphs) or 2-way\nANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em>\ntest (for the bar graph). For the bar graph, the exact <em>p</em>-value\nis labeled in the figure when <em>p</em>&lt;0.05. For the line graphs, *\nindicates adjusted <em>p</em>&lt;0.05 (for figure G, adjusted\n<em>p</em>=0.0279, 0.0031, 0.0014, 0.0013, 0.0012, 0.0012, 0.0012 in\nsequential order; for figure I, adjusted <em>p</em>=0.0465-0.0089,\nstarting from the 36<sup>th</sup> stimulation.).</p>\n<p>J and K) Normalized average (±SEM) specific force traces elicited\nduring sustained 150 Hz stimulation (<em>left)</em>, peak specific force\n(<em>middle left</em>), time to 50% relaxation (<em>middle right</em>),\nand maximum rate of contractile decay (<em>right</em>) of EDL (J) and\nSOL (K) muscles from 8M old WT and GS mice. For EDL muscle, n =7 and 9\nfor WT and GS groups, respectively. For SOL muscle, n=5 and 8 for WT and\nGS groups, respectively. Significance was calculated using either\nmultiple t-test (for line graphs) or student’s t-test (for bar graphs).\nFor the bar graphs, the exact <em>p</em>-value is labeled in the figure\nwhen <em>p</em>&lt;0.05. For the line graphs, * indicates adjusted\n<em>p</em>&lt;0.05.</p>\n<p>Source data: available online for Figure 3A-K</p>\n<p><strong>Figure 4. Constitutive and store-operated Ca<sup>2+</sup>\nentry.</strong></p>\n<p>A) Representative Mn<sup>2+</sup> quench of fura-2 fluorescence\ntraces (<em>left</em>) in the absence of store depletion in naïve HEK293\ncells transfected with mouse cDNA for WT <em>Orai1</em> (WT, blue, n=2),\nG100S <em>Orai1</em> (G100S, red, n=2), or a 1:1 ratio of WT and G100S\n(WT+G100S, green, n=2). Average (±SEM) maximum rate of Mn<sup>2+</sup>\nquench (<em>right</em>) in the absence of store depletion for HEK293\ncells expression WT (blue), G100S (red), or a 1:1 ratio of WT and G100S\n(green). Significance was calculated using 1-way ANOVA followed by\nHolm-Sidak's multiple comparisons <em>post hoc</em> test. The exact\n<em>p</em>-value is labeled in the figure when adjusted\n<em>p</em>&lt;0.05.</p>\n<p>B and C) Representative traces of Mn<sup>2+</sup> quench of fura-2\nfluorescence in the absence of store depletion (constitutive\nCa<sup>2+</sup> entry) in FDB fibers isolated from 2WK (B) and 8M (C)\nold WT (black) and GS (pink) mice.</p>\n<p>D) Average (±SEM) maximum rate of Mn<sup>2+</sup> quench in the\nabsence of store depletion (constitutive Ca<sup>2+</sup> entry) in\nmyotubes and myofibers from WT (black) and GS (pink) mice.\nn=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS mice at the\ngiven ages in sequential order. Significance was calculated using 2-way\nANOVA followed by Holm-Sidak's multiple comparisons <em>post hoc</em>\ntest. * indicates adjusted <em>p</em>&lt;0.05 where all adjusted\n<em>p</em>&lt;0.0001 except ‘Fiber 5WKS’ group whose\n<em>p</em>=0.0001.</p>\n<p>E and F) Representative traces of Mn<sup>2+</sup> quench of fura-2\nfluorescence following store depletion (SOCE) in FDB fibers isolated\nfrom 2WK (E) and 8M (F) old WT (black) and GS (pink) mice.</p>\n<p>G) Average (±SEM) maximum rate of Mn<sup>2+</sup> quench following\nstore depletion (SOCE) in myotubes and myofibers from WT (black) and GS\n(pink) mice. n=3,3,4,5,6,6,6,5 for WT mice and n=4,4,4,5,6,6,6,5 for GS\nmice at the given ages in sequential order. Significance was calculated\nusing 2-way ANOVA followed by Holm-Sidak's multiple comparisons <em>post\nhoc</em> test. * indicates adjusted <em>p</em>&lt;0.05 where all\nadjusted <em>p</em>&lt;0.0001 except ‘Fiber 5WKS’ group whose\n<em>p</em>=0.0012.</p>\n<p>Source data: available online for Figure 4A-G</p>\n<p><strong>Figure 5. CASQ, STIM1, and ORAI1 protein\nexpression.</strong></p>\n<p>A) Representative western blots of STIM1L and STIM1S (<em>upper\nblot</em>) and CASQ1 (<em>lower blot</em>) in <em>tibialis anterior</em>\nmuscles from 2WK (<em>left</em>) and 8M old (<em>right</em>) WT (n=4)\nand GS (n=3) mice.</p>\n<p>B) Average (±SEM) CASQ1 and STIM1 expression in <em>tibialis\nanterior</em> muscles from 2WK (<em>left</em>) and 8M (<em>right</em>)\nold WT (n=4) and GS (n=3) mice. STIM1 expression was measured as the sum\nof STIM1S and STIM1L. Protein expression levels were normalized to\nPonceau S.</p>\n<p>C-E) Knock-in mice with a V5-3xHA epitope added to the extreme ORAI1\nC-terminus <em>(Orai1<sup>V5HA/+</sup></em> or V5HA mice) exhibit\nsimilar physical appearance (C), SOCE activity (D), and ORAI1\nsubcellular localization (E) as age-matched WT mice.</p>\n<p>F) Representative western blot of quadricep muscle lysates from WT\nand V5HA/+ mice probed with rat HA antibody.</p>\n<p>G and H) Representative western blots (<em>left</em>) and average\n(±SEM) bar graphs (<em>right</em>) for ORAI1 expression probed with rat\nHA antibody in <em>tibialis anterior</em> muscles from 2WK (G) and 8M\n(H) old V5HA/+ and V5HA/GS mice. For 2WK condition, n =6 and 5 for WT\nand GS group respectively. For 8M condition, n=6 and 7 for WT and GS\ngroup respectively. ORAI1 expression level was measured as the sum of\nupper and lower bands. Protein expression levels were normalized to\nPonceau S. Significance was calculated using 2-way ANOVA followed by\nHolm-Sidak's multiple comparisons <em>post hoc</em> test. The exact\n<em>p</em>-value is labeled in the figure when adjusted\n<em>p</em>&lt;0.05.</p>\n<p>Source data: available online for Figure 5A-B and D-H.</p>\n<p><strong>Figure 6. Proteome analyses of <em>tibialis anterior</em>\nmuscle from 2WK and 8M old WT and GS mice.</strong> A and B) Pie charts\n(<em>upper</em>) and volcano plots (<em>lower</em>) of normalized\nabundance data depicting the proportion of significantly up\n(<em>red</em>) and down (<em>blue</em>) regulated proteins in\n<em>tibialis anterior</em> muscles of 2WK (A) and 8M (B) old WT and GS\nmice. Data were collected from 2 WT and 4 GS 2WK old mice and 3 WT and 4\nGS 8M old mice.</p>\n<p>C) Venn analysis of proteins that were significantly up-regulated\n(<em>upper panel</em>) and down-regulated (<em>lower panel</em>) in\n<em>tibialis anterior</em> muscles of 2WK and 8M old WT and GS mice.</p>\n<p>D-G) Top 20 altered GO Cellular Component pathways (D and F) and\nassociated network analyses (E and G) from proteomic analyses of\n<em>tibialis anterior</em> muscles from 2WK and 8M old WT and GS mice.\nData were collected from 2 WT and 4 GS 2 WK old mice and 3 WT and 4 GS\n8M old mice.</p>\n<p><strong>Figure 7. Morphological and functional assessment of\nmitochondrial damage in 8M GS mice.</strong></p>\n<p>A) Representative EM images of longitudinal sections of EDL muscles\nfrom 8M old WT and GS mice. Arrows: mitochondria at I band; M: severely\naltered mitochondria; *: mitochondrion at the A band.</p>\n<p>B) Average (±SEM) <em>16S rRNA</em> transcript level in 8M WT (n=6)\nand GS (n=6) <em>tibialis anterior</em> muscles using RT-qPCR.\n<em>16S</em> is a mitochondria specific ribosomal RNA. Significance was\ncalculated using student’s t-test. The exact <em>p</em>-value is labeled\nin the figure when <em>p</em>&lt;0.05.</p>\n<p>C) Representative western blots (<em>left</em>) and average (±SEM)\nbar graphs (<em>right</em>) for VDAC expression in <em>tibialis\nanterior</em> muscles from 8M old WT (n=6) and GS (n=6) mice. Protein\nexpression levels were normalized to Ponceau S. Significance was\ncalculated using student’s t-test. The exact <em>p</em>-value is labeled\nin the figure when <em>p</em>&lt;0.05.</p>\n<p>D) Normalized average (±SEM) TMRE fluorescence (normalized to the\nfinal 40<sup>th</sup> measurement, ∆F/F<sub>40</sub>) of single FDB\nfibers from 8M old WT (n=6) and GS (n=6) mice before and during\napplication of 1 µM FCCP (black bar). Significance was calculated using\nstudent’s t-test. * indicates adjusted <em>p</em>&lt;0.05 (adjusted\n<em>p</em>=0.000035, 0.000035, 0.00004, 0.000034, 0.000028, 0.000003,\n0.000018 in sequential order).</p>\n<p>E) Normalized average (±SEM) delta MitoSOX fluorescence over 10 min\nusing FDB fibers from 8M WT and GS mice. MitoSOX is a mitochondrial\nspecific superoxide indicator, used to indicate mitochondrial oxidative\nstress level. Significance was calculated using Mann Whitney test. The\nexact <em>p</em>-value is labeled in the figure when\n<em>p</em>&lt;0.05.</p>\n<p>F) Average (±SEM) enzyme activity of proteins involved in electron\ntransport chain (Complex I-V) using purified mitochondria from skeletal\nmuscle of 8M old WT and GS mice. For Complex I activity, n =5 and 6 WT\nand GS mice, respectively. For complex II-V, n=6 WT and n=6 GS mice.\nSignificance was calculated using either Mann Whitney test (Complex I\nand III activity) or student’s t-test (Complex activity). The exact\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>G) Representative Clark’s electrode oxygen consumption traces using\npurified mitochondria from 8M WT (black) and GS (pink) skeletal\nmuscle.</p>\n<p>H and I) Average (±SEM) oxygen consumption rate (OCR) at each state\n(H) and average (±SEM) respiratory control ratio (RCR – State 3/State4)\n(I) in purified mitochondria from 8M WT (n=5) and GS (n=7) skeletal\nmice. Significance was calculated using either 2-way ANOVA followed by\nHolm-Sidak's multiple comparisons <em>post hoc</em> test (OCR\nmeasurements) or Welch's t test (RCR level). The exact (adjusted)\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>Source data: available online for Figure 7A-I<strong><br />\n</strong></p>\n\n\n"
+
   }
   
