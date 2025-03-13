@@ -476,7 +476,7 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
-### 1.0.2 (In progress)
+### 1.0.2 (2025-03-12)
 - Updated README.md
 - Addition of hallucination scores to the output of the pipeline
 - Ensure no panel duplication

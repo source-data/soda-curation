@@ -1,16 +1,16 @@
 {
   "manuscript_id": "MSB-2023-12087",
-  "xml": "MSB-2023-12087/MSB-2023-12087.xml",
-  "docx": "MSB-2023-12087/doc/Munck3.docx",
-  "pdf": "MSB-2023-12087/pdf/MSB-2023-12087.pdf",
-  "appendix": ["MSB-2023-12087/suppl_data/EV Figures Source Data.zip"],
+  "xml": "MSB-2023-12087.xml",
+  "docx": "doc/Munck3.docx",
+  "pdf": "pdf/MSB-2023-12087.pdf",
+  "appendix": ["suppl_data/EV Figures Source Data.zip"],
   "figures": [
     {
       "figure_label": "Figure 1",
-      "img_files": ["MSB-2023-12087/graphic/Figure1.pdf"],
+      "img_files": ["graphic/Figure1.pdf"],
       "sd_files": [],
-      "figure_caption": "A) Illustration of Hamming code for error correction in data transmission. Transmission of data (d) and parity (p) bits enables error correction via redundancy (https://en.wikipedia.org/wiki/Hamming_code). B) Diagram showing the different sources of metadata information and how to bundle them. Three independent resources – the electronic labnotebook, the data-associated metadata, and the publication – are shown as redundant entries. An AI language model can be used to extract required and standardized data elements for verification, using codewords as a means of error correction analogous to error correction in communication. C) Heatmap display of similarities between sources by keyword. A Jupyter notebook using GPT-4 has been used to create a structured output in the form of a CSV file, (see Table 1). The digestion of a labnotebook entry, a metadata file server file, and this manuscript are used to check for keywords. The consistency of the keywords across the sources is displayed in a heatmap using the cosine distance for semantic similarity estimation (https://spacy.io/api/doc).",
-      "caption_title": "Linking metadata sources and digesting them with language models to generate structured outputs and representations of similarity.",
+      "figure_caption": "A) Illustration of Hamming code for error correction in data\ntransmission.</strong> Transmission of data (d) and parity (p) bits\nenables error correction via redundancy\n(https://en.wikipedia.org/wiki/Hamming_code). <strong>B) Diagram showing\nthe different sources of metadata information and how to bundle\nthem.</strong> Three independent resources – the electronic labnotebook,\nthe data-associated metadata, and the publication – are shown as\nredundant entries. An AI language model can be used to extract required\nand standardized data elements for verification, using codewords as a\nmeans of error correction analogous to error correction in\ncommunication. <strong>C) Heatmap display of similarities between\nsources by keyword.</strong> A Jupyter notebook using GPT-4 has been\nused to create a structured output in the form of a CSV file, (see Table\n1). The digestion of a labnotebook entry, a metadata file server file,\nand this manuscript are used to check for keywords. The consistency of\nthe keywords across the sources is displayed in a heatmap using the\ncosine distance for semantic similarity estimation <a\nhref=\"https://spacy.io/api/doc\">(<u>https://spacy.io/api/doc</u>)</a>.</p>",
+      "caption_title": "Linking metadata sources and digesting them with\nlanguage models to generate structured outputs and representations of\nsimilarity.",
       "panels": [
         {
           "panel_label": "A",
@@ -34,5 +34,5 @@
     "section_text": "",
     "data_sources": []
   },
-  "all_captions": ""
+  "all_captions": "\n<p><strong>Figure legends</strong></p>\n<p><strong>Figure 1. Linking metadata sources and digesting them with\nlanguage models to generate structured outputs and representations of\nsimilarity. A) Illustration of Hamming code for error correction in data\ntransmission.</strong> Transmission of data (d) and parity (p) bits\nenables error correction via redundancy\n(https://en.wikipedia.org/wiki/Hamming_code). <strong>B) Diagram showing\nthe different sources of metadata information and how to bundle\nthem.</strong> Three independent resources – the electronic labnotebook,\nthe data-associated metadata, and the publication – are shown as\nredundant entries. An AI language model can be used to extract required\nand standardized data elements for verification, using codewords as a\nmeans of error correction analogous to error correction in\ncommunication. <strong>C) Heatmap display of similarities between\nsources by keyword.</strong> A Jupyter notebook using GPT-4 has been\nused to create a structured output in the form of a CSV file, (see Table\n1). The digestion of a labnotebook entry, a metadata file server file,\nand this manuscript are used to check for keywords. The consistency of\nthe keywords across the sources is displayed in a heatmap using the\ncosine distance for semantic similarity estimation <a\nhref=\"https://spacy.io/api/doc\">(<u>https://spacy.io/api/doc</u>)</a>.</p>\n\n"
 }
