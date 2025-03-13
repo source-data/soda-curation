@@ -476,6 +476,10 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 1.0.3 (2025-03-13)
+- Figures with no or single panel return now a single panel object
+- Ground truth modified to include HTML and removed manuscript id from internal files
+
 ### 1.0.2 (2025-03-12)
 - Updated README.md
 - Addition of hallucination scores to the output of the pipeline
