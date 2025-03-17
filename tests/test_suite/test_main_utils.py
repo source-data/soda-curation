@@ -258,10 +258,13 @@ class TestHallucinationDetection(unittest.TestCase):
 
         # Example exact match (with HTML)
         self.exact_match = """
-        (D) Effects of Dyrk4 deficiency on the virus-induced transcription of
+        <p>(D) Effects of Dyrk4 deficiency on the virus-induced transcription of
         downstream antiviral genes. <em>Dyrk4</em><sup>+/+</sup> and
         <em>Dyrk</em>4<sup>-/-</sup> BMDMs were infected with SeV for 8 h before
-        qPCR analysis.
+        qPCR analysis. (<em>P</em> value; <em>Ifnb1</em>: 3.4 × 10<sup>-6</sup>,
+        <em>Isg15</em>: 2.6 × 10<sup>-5</sup>, <em>Cxcl10</em>: 3.3 ×
+        10<sup>-5</sup>, <em>Il6</em>: 1.6 × 10<sup>-6</sup>) (<em>n</em> = 3
+        biological replicates).</p>
         """
 
         # Plain text version (without HTML tags)
@@ -336,7 +339,9 @@ class TestHallucinationDetection(unittest.TestCase):
         # Verify that despite not being an exact match, the hallucination
         # score correctly identifies that this is not a hallucination
         self.assertEqual(
-            calculate_hallucination_score(self.plain_text_match, self.source_text), 0.0
+            calculate_hallucination_score(self.plain_text_match, self.source_text),
+            0.0,
+            f"EXACT_MATCH: {self.exact_match}, SOURCE_TEXT: {self.source_text}",
         )
 
         # Shouldn't find close matches or hallucinations
@@ -366,7 +371,11 @@ class TestHallucinationDetection(unittest.TestCase):
         """Test hallucination score calculation"""
         # Exact match should have 0 hallucination score
         exact_score = calculate_hallucination_score(self.exact_match, self.source_text)
-        self.assertEqual(exact_score, 0.0)
+        self.assertEqual(
+            exact_score,
+            0.0,
+            f"EXACT_MATCH: {self.exact_match}, SOURCE_TEXT: {self.source_text}",
+        )
 
         # Plain text match should also have 0 hallucination score
         plain_text_score = calculate_hallucination_score(
