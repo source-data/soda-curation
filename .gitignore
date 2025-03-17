@@ -11,7 +11,7 @@ naming
 .env
 *.env
 !.env.example
-
+generate_subpanel_images.ipynb
 # Python
 __pycache__/
 *.py[cod]

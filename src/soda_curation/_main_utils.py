@@ -226,7 +226,7 @@ def calculate_hallucination_score(extracted_text: str, source_text: str) -> floa
     # Convert similarity (0-100) to hallucination score (0-1)
     # Higher similarity = lower hallucination score
     # If similarity is very high (≥98), treat as not hallucinated
-    if similarity >= 98.0:
-        return 0.0
+    # if similarity >= 98.0:
+    #     return 0.0
 
     return 1.0 - (similarity / 100.0)

@@ -142,7 +142,7 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
     return image, new_file_path
 
 
-def convert_and_resize_image(image: Image.Image, max_size: int = 1024) -> Image.Image:
+def convert_and_resize_image(image: Image.Image, max_size: int = 2048) -> Image.Image:
     """
     Convert the image to RGB format if needed and resize it to have a maximum dimension of max_size.
 

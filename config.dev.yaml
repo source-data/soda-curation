@@ -120,6 +120,9 @@ default: &default
               - DO NOT modify or summarize the text
               - The caption show panels ordered in a sequencial and logical order,
                 beginning always by the first element of a sequence, such as A, 1, or i. Most commonly will be A.
+              - The panel naming conventions will be consistent within a figure
+              - The panel labels must follow a monotically increasing sequence, without missing any element.
+                - Example. If you have panels A, B, E, F --> Then you should response with the panels: A, B, C, D, E, F.
 
             3. Create a JSON object where:
               - Keys are "Figure 1", "Figure 2", etc. (up to $expected_figure_count)
