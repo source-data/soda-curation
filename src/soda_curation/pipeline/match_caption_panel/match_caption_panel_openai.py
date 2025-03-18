@@ -114,13 +114,13 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
                 presence_penalty=self.openai_config.get("presence_penalty", 0),
                 max_tokens=self.openai_config.get("max_tokens", 512),
             )
-
             # Track token usage
-            update_token_usage(
-                self.zip_structure.cost.match_caption_panel,
-                response,
-                self.openai_config["model"],
-            )
+            if hasattr(self, "zip_structure"):
+                update_token_usage(
+                    self.zip_structure.cost.match_caption_panel,
+                    response,
+                    self.openai_config["model"],
+                )
 
             return response.choices[0].message.content
 

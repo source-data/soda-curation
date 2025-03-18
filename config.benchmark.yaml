@@ -8,10 +8,11 @@ prompts_source: "/app/config.dev.yaml"
 
 # Test selection
 enabled_tests:
-  - extract_sections
-  - extract_individual_captions
-  - assign_panel_source
-  - extract_data_availability
+  # - extract_sections
+  # - extract_individual_captions
+  # - assign_panel_source
+  # - extract_data_availability
+  - match_caption_panel
 
 # Model configurations to test
 providers:

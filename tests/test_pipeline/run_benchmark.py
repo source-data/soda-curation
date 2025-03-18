@@ -14,6 +14,7 @@ import pytest
 import yaml
 
 from .benchmark.config import BenchmarkConfig
+from .benchmark.test_assign_panel import PanelAssignmentBenchmarkRunner
 from .benchmark.test_assign_panel_source import PanelSourceBenchmarkRunner
 from .benchmark.test_extract_data_availability import DataAvailabilityBenchmarkRunner
 from .benchmark.test_extract_individual_captions import (
@@ -64,6 +65,9 @@ runners = {
         config.as_dict(), results_dir, cache_dir
     ),
     "extract_data_availability": DataAvailabilityBenchmarkRunner(
+        config.as_dict(), results_dir, cache_dir
+    ),
+    "match_caption_panel": PanelAssignmentBenchmarkRunner(
         config.as_dict(), results_dir, cache_dir
     ),
 }
