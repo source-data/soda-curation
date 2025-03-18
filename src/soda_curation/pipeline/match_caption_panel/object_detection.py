@@ -21,6 +21,116 @@ from ultralytics import YOLOv10
 logger = logging.getLogger(__name__)
 
 
+def fallback_ghostscript_conversion(
+    eps_path: str, output_path: str, dpi: int = 300
+) -> str:
+    """
+    Fallback method to convert EPS to PNG using ghostscript.
+
+    Args:
+        eps_path (str): Path to the EPS file
+        output_path (str): Path to save the output PNG
+        dpi (int): DPI for conversion
+
+    Returns:
+        str: Path to the converted file
+    """
+    try:
+        command = [
+            "gs",
+            "-dNOPAUSE",
+            "-dBATCH",
+            "-sDEVICE=pngalpha",
+            f"-r{dpi}",
+            f"-sOutputFile={output_path}",
+            eps_path,
+        ]
+        subprocess.run(command, check=True)
+        return output_path
+    except Exception as e:
+        logger.error(f"Ghostscript conversion failed: {str(e)}")
+        raise ValueError(f"Failed to convert EPS with ghostscript: {str(e)}")
+
+
+def convert_eps_to_png(eps_path: str, output_path: str, dpi: int = 300) -> str:
+    """
+    Convert EPS to PNG using ImageMagick with proper bounds detection.
+
+    Args:
+        eps_path (str): Path to the EPS file
+        output_path (str): Path to save the output PNG
+        dpi (int): DPI for conversion
+
+    Returns:
+        str: Path to the converted file
+    """
+    try:
+        # -trim removes excess whitespace
+        # -density sets DPI for high quality conversion
+        # -flatten ensures transparency is handled properly
+        cmd = [
+            "convert",
+            "-density",
+            str(dpi),
+            "-trim",
+            "+repage",  # Reset page offsets after trimming
+            eps_path,
+            "-flatten",
+            output_path,
+        ]
+        subprocess.run(cmd, check=True)
+        return output_path
+    except Exception as e:
+        logger.error(f"ImageMagick conversion failed: {str(e)}")
+        # Fall back to ghostscript if ImageMagick fails
+        try:
+            return fallback_ghostscript_conversion(eps_path, output_path, dpi)
+        except Exception as fallback_e:
+            logger.error(f"All EPS conversion methods failed: {str(fallback_e)}")
+            raise ValueError(
+                f"Failed to convert EPS: {str(e)} and fallback failed: {str(fallback_e)}"
+            )
+
+
+def convert_tiff_with_cv2(tiff_path: str, output_path: str) -> str:
+    """
+    Convert TIFF to PNG using OpenCV for better compatibility.
+
+    Args:
+        tiff_path (str): Path to the TIFF file
+        output_path (str): Path to save the output PNG
+
+    Returns:
+        str: Path to the converted file
+    """
+    try:
+        # Read TIFF image with OpenCV
+        img = cv2.imread(tiff_path, cv2.IMREAD_UNCHANGED)
+
+        if img is None:
+            raise ValueError(f"Failed to read TIFF: {tiff_path}")
+
+        # Handle different bit depths
+        if img.dtype != np.uint8:
+            if img.max() > 0:  # Avoid division by zero
+                img = (img / img.max() * 255).astype(np.uint8)
+            else:
+                img = img.astype(np.uint8)
+
+        # Ensure RGB format
+        if len(img.shape) == 2:  # Grayscale
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        elif img.shape[2] == 4:  # RGBA
+            img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
+
+        # Save as PNG
+        cv2.imwrite(output_path, img)
+        return output_path
+    except Exception as e:
+        logger.error(f"OpenCV TIFF conversion failed: {str(e)}")
+        raise ValueError(f"Failed to convert TIFF with OpenCV: {str(e)}")
+
+
 def scale_down_large_image(file_path: str, max_pixels: int = 178956970) -> str:
     """
     Scale down an image file if it exceeds the maximum pixel limit.
@@ -66,6 +176,88 @@ def scale_down_large_image(file_path: str, max_pixels: int = 178956970) -> str:
         raise ValueError(f"Failed to scale image: {str(e)}")
 
 
+def create_standard_thumbnail(
+    image_path: str, output_path: str, max_size: int = 2048, dpi: int = 300
+) -> str:
+    """
+    Create standardized thumbnail for any image format with robust fallback mechanisms.
+
+    Args:
+        image_path (str): Path to the source image
+        output_path (str): Path to save the output thumbnail
+        max_size (int): Maximum dimension for the thumbnail
+        dpi (int): DPI for high-resolution conversion
+
+    Returns:
+        str: Path to the created thumbnail
+    """
+    file_ext = os.path.splitext(image_path)[1].lower()
+
+    # Route to specialized converters based on format
+    try:
+        if file_ext in [".eps", ".ai"]:
+            return convert_eps_to_png(image_path, output_path, dpi)
+
+        elif file_ext in [".tif", ".tiff"]:
+            try:
+                return convert_tiff_with_cv2(image_path, output_path)
+            except Exception as e:
+                logger.warning(f"TIFF conversion with CV2 failed: {str(e)}")
+                # Will fall through to generic approach
+                pass
+
+        elif file_ext == ".pdf":
+            pages = pdf2image.convert_from_path(image_path, dpi=dpi)
+            if pages:
+                pages[0].save(output_path, "PNG")
+                return output_path
+            else:
+                raise ValueError("PDF conversion failed: no pages found")
+
+        # Generic approach using cv2
+        img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+
+        if img is None:
+            raise ValueError(f"Could not read image: {image_path}")
+
+        # Get dimensions
+        height, width = img.shape[:2]
+
+        # Calculate scale factor
+        scale = (
+            min(max_size / width, max_size / height)
+            if width > 0 and height > 0
+            else 1.0
+        )
+
+        if scale < 1:  # Only resize if image is larger than max_size
+            new_width, new_height = int(width * scale), int(height * scale)
+            img = cv2.resize(
+                img, (new_width, new_height), interpolation=cv2.INTER_LANCZOS4
+            )
+
+        # Save as PNG
+        cv2.imwrite(output_path, img)
+        return output_path
+
+    except Exception as e:
+        logger.error(f"Standard thumbnail creation failed: {str(e)}")
+
+        # Ultimate fallback to PIL
+        try:
+            from PIL import Image
+
+            img = Image.open(image_path)
+            img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+            img.save(output_path, "PNG")
+            return output_path
+        except Exception as final_e:
+            logger.error(f"All conversion methods failed: {str(final_e)}")
+            raise ValueError(
+                f"Failed to convert image after all attempts: {str(final_e)}"
+            )
+
+
 def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, str]:
     """
     Convert various image formats (PDF, EPS, TIFF, JPG, PNG) to a PIL image.
@@ -88,58 +280,42 @@ def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, s
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
 
-    new_file_path = file_path
-
-    if file_ext == ".pdf":
-        pages = pdf2image.convert_from_path(file_path, dpi=dpi)
-        if pages:
-            new_file_path = file_path.replace(".pdf", ".png")
-            pages[0].save(new_file_path, "PNG")
-            image = pages[0]
-        else:
-            raise ValueError("PDF conversion failed: no pages found")
-    elif file_ext in [".jpg", ".jpeg", ".png", ".tif", ".tiff"]:
-        try:
-            image = Image.open(file_path)
-        except DecompressionBombError:
-            # Scale down the image and try again
-            scaled_path = scale_down_large_image(file_path)
-            try:
-                image = Image.open(scaled_path)
-                new_file_path = scaled_path
-            except Exception as e:
-                raise ValueError(f"Failed to process scaled image: {str(e)}")
-        except Exception as e:
-            raise ValueError(f"Failed to open image: {str(e)}")
-    elif file_ext in [".eps", ".ai"]:
-        try:
-            new_file_path = file_path.replace(file_ext, ".png")
-            command = [
-                "gs",
-                "-dNOPAUSE",
-                "-dBATCH",
-                "-sDEVICE=pngalpha",
-                f"-r{dpi}",
-                f"-sOutputFile={new_file_path}",
-                file_path,
-            ]
-            subprocess.run(command, check=True)
-            image = Image.open(new_file_path)
-        except DecompressionBombError:
-            # Scale down the converted PNG and try again
-            scaled_path = scale_down_large_image(new_file_path)
-            try:
-                image = Image.open(scaled_path)
-                new_file_path = scaled_path
-            except Exception as e:
-                raise ValueError(f"Failed to process scaled image: {str(e)}")
-        except Exception as e:
-            raise ValueError(f"Failed to convert or open image: {str(e)}")
+    # Create a temporary file for the converted image if needed
+    if file_ext in [".eps", ".ai", ".pdf", ".tif", ".tiff"]:
+        new_file_path = os.path.splitext(file_path)[0] + ".png"
     else:
-        raise ValueError(f"Unsupported file format: {file_ext}")
+        new_file_path = file_path
 
-    image = convert_and_resize_image(image)
-    return image, new_file_path
+    try:
+        # Use our robust thumbnail generator
+        if file_ext in [".eps", ".ai", ".tif", ".tiff", ".pdf"]:
+            new_file_path = create_standard_thumbnail(file_path, new_file_path, dpi=dpi)
+            try:
+                image = Image.open(new_file_path)
+            except DecompressionBombError:
+                # If the converted image is still too large, scale it down
+                scaled_path = scale_down_large_image(new_file_path)
+                image = Image.open(scaled_path)
+                new_file_path = scaled_path
+        else:
+            # For standard formats like JPG and PNG, use PIL directly
+            try:
+                image = Image.open(file_path)
+            except DecompressionBombError:
+                # Scale down the image and try again
+                scaled_path = scale_down_large_image(file_path)
+                image = Image.open(scaled_path)
+                new_file_path = scaled_path
+            except Exception as e:
+                raise ValueError(f"Failed to open image: {str(e)}")
+
+        # Ensure image is in correct format and size
+        image = convert_and_resize_image(image)
+        return image, new_file_path
+
+    except Exception as e:
+        logger.error(f"Image conversion failed: {str(e)}")
+        raise ValueError(f"Failed to convert or open image: {str(e)}")
 
 
 def convert_and_resize_image(image: Image.Image, max_size: int = 2048) -> Image.Image:
@@ -151,7 +327,7 @@ def convert_and_resize_image(image: Image.Image, max_size: int = 2048) -> Image.
 
     Args:
         image (PIL.Image): The input image.
-        max_size (int): The maximum size for the image's width or height. Default is 1024.
+        max_size (int): The maximum size for the image's width or height. Default is 2048.
 
     Returns:
         PIL.Image: The converted and resized PIL image.

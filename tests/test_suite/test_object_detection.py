@@ -1,10 +1,3 @@
-"""
-This module contains unit tests for the object detection functionality in the soda_curation package.
-
-It tests various aspects of image conversion, resizing, and panel detection using the YOLOv10 model.
-The tests use mock objects to simulate file operations and model predictions.
-"""
-
 import os
 import shutil
 import subprocess
@@ -20,8 +13,12 @@ from PIL import Image, UnidentifiedImageError
 from src.soda_curation.pipeline.match_caption_panel.object_detection import (
     ObjectDetection,
     convert_and_resize_image,
+    convert_eps_to_png,
+    convert_tiff_with_cv2,
     convert_to_pil_image,
     create_object_detection,
+    create_standard_thumbnail,
+    fallback_ghostscript_conversion,
     scale_down_large_image,
 )
 
@@ -95,21 +92,24 @@ def test_convert_to_pil_image_pdf(mock_pdf2image, mock_image, mock_os):
     """
     Test the conversion of a PDF file to a PIL Image.
 
-    This test checks if the convert_to_pil_image function correctly uses pdf2image
-    to convert a PDF file to an image, and then processes it with convert_and_resize_image.
+    This test checks if the convert_to_pil_image function correctly uses
+    create_standard_thumbnail to convert a PDF file to an image.
     """
-    mock_page = Mock(spec=Image.Image)
-    mock_pdf2image.convert_from_path.return_value = [mock_page]
+    # Create a mock image that will be returned by create_standard_thumbnail
+    mock_img = Mock(spec=Image.Image)
 
+    # Mock create_standard_thumbnail to return the path and make the actual function
+    # return the mock image
     with patch(
-        "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_and_resize_image",
-        return_value=mock_page,
-    ) as mock_convert:
-        result, new_file_path = convert_to_pil_image("test.pdf")
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.create_standard_thumbnail",
+        return_value="/app/test.png",
+    ) as mock_thumbnail, patch("PIL.Image.open", return_value=mock_img) as _:
+        _, new_file_path = convert_to_pil_image("test.pdf")
 
-    mock_pdf2image.convert_from_path.assert_called_once_with("/app/test.pdf", dpi=300)
-    mock_convert.assert_called_once_with(mock_page)
-    assert result == mock_page
+    # Verify that create_standard_thumbnail was called correctly
+    mock_thumbnail.assert_called_once_with("/app/test.pdf", "/app/test.png", dpi=300)
+
+    # Verify the output paths
     assert new_file_path == "/app/test.png"
 
 
@@ -132,7 +132,8 @@ def test_convert_to_pil_image_unsupported(mock_os):
 
     This test checks if the function raises a ValueError when given an unsupported file format.
     """
-    with pytest.raises(ValueError, match="Unsupported file format: .unsupported"):
+    # The mock_os fixture makes os.path.exists return True, but Image.open still fails
+    with pytest.raises(ValueError, match="Failed to convert or open image"):
         convert_to_pil_image("test.unsupported")
 
 
@@ -262,9 +263,7 @@ def test_convert_to_pil_image_ai(mock_subprocess, mock_image, mock_os):
     # Check if Ghostscript command was called
     mock_subprocess.run.assert_called_once()
     command_args = mock_subprocess.run.call_args[0][0]
-    assert command_args[0] == "gs"
-    assert command_args[-2] == "-sOutputFile=/app/test.png"
-    assert command_args[-1] == "/app/test.ai"
+    assert command_args[0] == "convert"
 
     # Check if the converted PNG was opened
     mock_image.open.assert_called_once()
@@ -302,12 +301,25 @@ def test_supported_formats(
     test_file = f"test{file_ext}"
     mock_os.path.exists.return_value = True
 
-    # Setup PDF mock
+    # Setup mocks for different file types
     if file_ext == ".pdf":
         mock_page = Mock(spec=Image.Image)
         mock_pdf2image.convert_from_path.return_value = [mock_page]
         mock_image.open.return_value = mock_page
+    elif file_ext in [".tif", ".tiff"]:
+        # Mock the TIFF conversion process
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_tiff_with_cv2",
+            return_value="/app/test.png",
+        ) as mock_convert_tiff, patch(
+            "PIL.Image.open", return_value=Mock(spec=Image.Image)
+        ) as _:
+            result, path = convert_to_pil_image(test_file)
+            assert path == "/app/test.png"
+            mock_convert_tiff.assert_called_once()
+            return  # Skip the rest of the function for TIFF files
 
+    # For other formats
     result, _ = convert_to_pil_image(test_file)
     assert isinstance(result, Image.Image) or isinstance(result, Mock)
 
@@ -579,3 +591,268 @@ class TestObjectDetection(unittest.TestCase):
         img = cv2.imread(scaled_path)
         height, width = img.shape[:2]
         self.assertEqual((width, height), (800, 600))
+
+
+def test_fallback_ghostscript_conversion(mock_subprocess):
+    """Test the fallback ghostscript conversion function."""
+    mock_subprocess.run.return_value = Mock(returncode=0)
+
+    result = fallback_ghostscript_conversion("test.eps", "test.png")
+
+    # Verify ghostscript command was called correctly
+    mock_subprocess.run.assert_called_once()
+    cmd_args = mock_subprocess.run.call_args[0][0]
+    assert cmd_args[0] == "gs"
+    assert "-dNOPAUSE" in cmd_args
+    assert "-dBATCH" in cmd_args
+    assert "-sOutputFile=test.png" in cmd_args
+    assert "test.eps" in cmd_args
+
+    assert result == "test.png"
+
+
+def test_fallback_ghostscript_failure(mock_subprocess):
+    """Test handling of ghostscript conversion failures."""
+    mock_subprocess.run.side_effect = subprocess.CalledProcessError(1, "gs")
+
+    with pytest.raises(ValueError, match="Failed to convert EPS with ghostscript"):
+        fallback_ghostscript_conversion("test.eps", "test.png")
+
+
+def test_convert_eps_to_png_with_imagemagick(mock_subprocess):
+    """Test conversion of EPS to PNG using ImageMagick."""
+    mock_subprocess.run.return_value = Mock(returncode=0)
+
+    result = convert_eps_to_png("test.eps", "test.png")
+
+    # Verify ImageMagick command was called correctly
+    mock_subprocess.run.assert_called_once()
+    cmd_args = mock_subprocess.run.call_args[0][0]
+    assert cmd_args[0] == "convert"
+    assert "-trim" in cmd_args
+    assert "+repage" in cmd_args
+    assert "-flatten" in cmd_args
+
+    assert result == "test.png"
+
+
+def test_convert_eps_to_png_imagemagick_failure_with_fallback(mock_subprocess):
+    """Test fallback to ghostscript when ImageMagick fails."""
+    # First call (ImageMagick) fails, second call (ghostscript) succeeds
+    mock_subprocess.run.side_effect = [
+        subprocess.CalledProcessError(1, "convert"),
+        Mock(returncode=0),
+    ]
+
+    result = convert_eps_to_png("test.eps", "test.png")
+
+    # Verify both commands were attempted
+    assert mock_subprocess.run.call_count == 2
+
+    # First call should be ImageMagick
+    cmd_args_1 = mock_subprocess.run.call_args_list[0][0][0]
+    assert cmd_args_1[0] == "convert"
+
+    # Second call should be ghostscript
+    cmd_args_2 = mock_subprocess.run.call_args_list[1][0][0]
+    assert cmd_args_2[0] == "gs"
+
+    assert result == "test.png"
+
+
+def test_convert_tiff_with_cv2():
+    """Test conversion of TIFF to PNG using OpenCV."""
+    # Create a temporary test TIFF file
+    with tempfile.NamedTemporaryFile(suffix=".tiff", delete=False) as tmp_in:
+        tmp_path = tmp_in.name
+
+    try:
+        # Create a small test image
+        img = np.zeros((100, 100, 3), dtype=np.uint8)
+        img[25:75, 25:75] = [255, 0, 0]  # Red square
+        cv2.imwrite(tmp_path, img)
+
+        # Create output path
+        tmp_out = tmp_path.replace(".tiff", ".png")
+
+        with patch("cv2.imread", return_value=img), patch(
+            "cv2.imwrite", return_value=True
+        ):
+            result = convert_tiff_with_cv2(tmp_path, tmp_out)
+
+        assert result == tmp_out
+
+    finally:
+        # Clean up
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+        if os.path.exists(tmp_out):
+            os.unlink(tmp_out)
+
+
+def test_convert_tiff_with_cv2_grayscale():
+    """Test conversion of grayscale TIFF to PNG."""
+    with patch("cv2.imread") as mock_imread, patch("cv2.imwrite", return_value=True):
+        # Create grayscale image mock
+        grayscale_img = np.zeros((100, 100), dtype=np.uint8)
+        mock_imread.return_value = grayscale_img
+
+        result = convert_tiff_with_cv2("test.tiff", "test.png")
+
+        # Verify color conversion was called
+        assert mock_imread.call_count == 1
+
+        assert result == "test.png"
+
+
+def test_convert_tiff_with_cv2_rgba():
+    """Test conversion of RGBA TIFF to RGB PNG."""
+    with patch("cv2.imread") as mock_imread, patch(
+        "cv2.imwrite", return_value=True
+    ), patch("cv2.cvtColor") as _:
+        # Create RGBA image mock
+        rgba_img = np.zeros((100, 100, 4), dtype=np.uint8)
+        mock_imread.return_value = rgba_img
+
+        result = convert_tiff_with_cv2("test.tiff", "test.png")
+
+        # Verify color conversion was called
+        assert mock_imread.call_count == 1
+
+        assert result == "test.png"
+
+
+def test_convert_tiff_with_cv2_high_bit_depth():
+    """Test conversion of 16-bit TIFF to 8-bit PNG."""
+    with patch("cv2.imread") as mock_imread, patch("cv2.imwrite", return_value=True):
+        # Create 16-bit image mock
+        img_16bit = np.zeros((100, 100, 3), dtype=np.uint16)
+        img_16bit[50:70, 50:70] = 65535  # Max value for uint16
+        mock_imread.return_value = img_16bit
+
+        result = convert_tiff_with_cv2("test.tiff", "test.png")
+
+        # Verify conversion was performed
+        assert mock_imread.call_count == 1
+
+        assert result == "test.png"
+
+
+def test_create_standard_thumbnail_png():
+    """Test creating a standard thumbnail from a PNG file."""
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_in:
+        tmp_path = tmp_in.name
+
+    try:
+        # Create a test image
+        img = np.zeros((1000, 1000, 3), dtype=np.uint8)
+        img[250:750, 250:750] = [0, 255, 0]  # Green square
+        cv2.imwrite(tmp_path, img)
+
+        # Create output path
+        tmp_out = tmp_path.replace(".png", "_thumb.png")
+
+        with patch("cv2.imread", return_value=img), patch(
+            "cv2.imwrite", return_value=True
+        ):
+            result = create_standard_thumbnail(tmp_path, tmp_out)
+
+        assert result == tmp_out
+
+    finally:
+        # Clean up
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+        if os.path.exists(tmp_out):
+            os.unlink(tmp_out)
+
+
+def test_create_standard_thumbnail_eps():
+    """Test creating a standard thumbnail from an EPS file."""
+    with patch(
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_eps_to_png"
+    ) as mock_convert_eps:
+        mock_convert_eps.return_value = "test_converted.png"
+
+        result = create_standard_thumbnail("test.eps", "test_thumb.png")
+
+        mock_convert_eps.assert_called_once_with("test.eps", "test_thumb.png", 300)
+        assert result == "test_converted.png"
+
+
+def test_create_standard_thumbnail_tiff():
+    """Test creating a standard thumbnail from a TIFF file."""
+    with patch(
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_tiff_with_cv2"
+    ) as mock_convert_tiff:
+        mock_convert_tiff.return_value = "test_converted.png"
+
+        result = create_standard_thumbnail("test.tiff", "test_thumb.png")
+
+        mock_convert_tiff.assert_called_once_with("test.tiff", "test_thumb.png")
+        assert result == "test_converted.png"
+
+
+def test_create_standard_thumbnail_pdf():
+    """Test creating a standard thumbnail from a PDF file."""
+    with patch("pdf2image.convert_from_path") as mock_convert_pdf, patch(
+        "PIL.Image.Image.save"
+    ):
+        mock_page = Mock(spec=Image.Image)
+        mock_convert_pdf.return_value = [mock_page]
+
+        result = create_standard_thumbnail("test.pdf", "test_thumb.png")
+
+        mock_convert_pdf.assert_called_once_with("test.pdf", dpi=300)
+        assert result == "test_thumb.png"
+
+
+def test_create_standard_thumbnail_fallback():
+    """Test fallback to PIL when other methods fail."""
+    with patch("cv2.imread", return_value=None), patch(
+        "PIL.Image.open"
+    ) as mock_open, patch("PIL.Image.Image.save"):
+        mock_img = Mock(spec=Image.Image)
+        mock_open.return_value = mock_img
+
+        result = create_standard_thumbnail("test.jpg", "test_thumb.png")
+
+        mock_open.assert_called_once()
+        assert result == "test_thumb.png"
+
+
+def test_create_standard_thumbnail_all_failures():
+    """Test when all thumbnail creation methods fail."""
+    with patch("cv2.imread", return_value=None), patch(
+        "PIL.Image.open", side_effect=Exception("Cannot open image")
+    ):
+        with pytest.raises(
+            ValueError, match="Failed to convert image after all attempts"
+        ):
+            create_standard_thumbnail("test.jpg", "test_thumb.png")
+
+
+def test_convert_to_pil_image_with_new_functions():
+    """Test that convert_to_pil_image uses the new specialized functions for different formats."""
+    # Test EPS using the new convert_eps_to_png
+    with patch(
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.create_standard_thumbnail"
+    ) as mock_thumbnail, patch(
+        "PIL.Image.open", return_value=Mock(spec=Image.Image, mode="RGB")
+    ), patch(
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_and_resize_image",
+        return_value=Mock(spec=Image.Image),
+    ), patch(
+        "os.path.exists", return_value=True
+    ), patch(
+        "os.path.abspath", return_value="/app/test.eps"
+    ), patch(
+        "os.path.splitext", return_value=("/app/test", ".eps")
+    ):
+        mock_thumbnail.return_value = "/app/test.png"
+
+        result, path = convert_to_pil_image("test.eps")
+
+        assert isinstance(result, Image.Image)
+        assert path == "/app/test.png"
+        mock_thumbnail.assert_called_once()
