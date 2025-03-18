@@ -602,3 +602,64 @@ class TestMatchPanelCaptionOpenAI:
             assert isinstance(result, PanelObject)
             assert result.panel_label == ""
             assert result.panel_caption == ""
+
+
+class TestPanelPreservation:
+    """Test that the number of panels in a figure remains constant after processing."""
+
+    def test_panel_preservation_after_matching(
+        self, mock_config, mock_prompt_handler, tmp_path
+    ):
+        """Ensure panels are preserved even if object detection misses some."""
+
+        # Create a mock figure with panels A, B, C, D
+        panels = [
+            Panel(panel_label="A", panel_caption="Caption A"),
+            Panel(panel_label="B", panel_caption="Caption B"),
+            Panel(panel_label="C", panel_caption="Caption C"),
+            Panel(panel_label="D", panel_caption="Caption D"),
+        ]
+        figure = Figure(
+            figure_label="Figure 1",
+            img_files=["figure1.png"],
+            sd_files=[],
+            panels=panels,
+            figure_caption="Figure 1 with panels A, B, C, D",
+        )
+        zip_structure = ZipStructure(figures=[figure])
+
+        # Mock the object detection to only detect panels A, B, C
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+        ) as mock_convert, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector:
+            mock_convert.return_value = (Mock(), "test.png")
+            mock_detector = Mock()
+            mock_detector.detect_panels.return_value = [
+                {"bbox": [0.1, 0.1, 0.2, 0.2], "confidence": 0.9, "label": "A"},
+                {"bbox": [0.3, 0.3, 0.4, 0.4], "confidence": 0.8, "label": "B"},
+                {"bbox": [0.5, 0.5, 0.6, 0.6], "confidence": 0.7, "label": "C"},
+            ]
+            mock_create_detector.return_value = mock_detector
+
+            # Create a test implementation of MatchPanelCaption
+            class TestMatchPanelCaption(MatchPanelCaption):
+                def _validate_config(self):
+                    pass
+
+                def _match_panel_caption(self, panel_image, figure_caption):
+                    return Panel(panel_label="A", panel_caption="Matched Caption A")
+
+            # Process the figure
+            matcher = TestMatchPanelCaption(mock_config, mock_prompt_handler, tmp_path)
+            result = matcher.process_figures(zip_structure)
+
+            # Verify that all original panels are preserved
+            assert len(result.figures[0].panels) == 4
+            assert {p.panel_label for p in result.figures[0].panels} == {
+                "A",
+                "B",
+                "C",
+                "D",
+            }
