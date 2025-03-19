@@ -13,6 +13,7 @@ from src.soda_curation._main_utils import (
     cleanup_extract_dir,
     exact_match_check,
     fuzzy_match_score,
+    normalize,
     normalize_text,
     setup_extract_dir,
     strip_html_tags,
@@ -52,13 +53,13 @@ def mock_zip_with_docx(tmp_path):
 def test_validate_paths_missing_zip():
     """Test validation fails when no ZIP path provided."""
     with pytest.raises(ValueError, match="ZIP path must be provided"):
-        validate_paths(None, "config.yaml")
+        validate_paths("", "config.yaml")
 
 
 def test_validate_paths_missing_config():
     """Test validation fails when no config path provided."""
     with pytest.raises(ValueError, match="config path must be provided"):
-        validate_paths("test.zip", None)
+        validate_paths("test.zip", "")
 
 
 def test_validate_paths_nonexistent_zip(mock_paths):
@@ -399,3 +400,225 @@ class TestHallucinationDetection(unittest.TestCase):
         self.assertEqual(calculate_hallucination_score("", self.source_text), 1.0)
         self.assertEqual(calculate_hallucination_score(self.exact_match, ""), 1.0)
         self.assertEqual(calculate_hallucination_score("", ""), 1.0)
+
+
+class TestNormalizeFunction(unittest.TestCase):
+    """Test the core normalize function with various options."""
+
+    def test_default_settings(self):
+        """Test normalize with default settings."""
+        original = (
+            "This is a TEST<em>with</em> punctuation: $100, 50% off!\nMultiple lines."
+        )
+        normalized = normalize(original)
+        self.assertIn("this is a test with punctuation", normalized)
+        self.assertNotIn("$", normalized)  # Punctuation removed
+        self.assertNotIn("\n", normalized)  # Line breaks converted to spaces
+
+    def test_selective_operations(self):
+        """Test normalize with specific operations."""
+        original = (
+            "This is a TEST<em>with</em> punctuation: $100, 50% off!\nMultiple lines."
+        )
+        selective_ops = normalize(original, do=["strip", "lower", "line_breaks"])
+        self.assertEqual(
+            "this is a test<em>with</em> punctuation: $100, 50% off! multiple lines.",
+            selective_ops,
+        )
+
+    def test_keep_punctuation(self):
+        """Test keeping certain punctuation."""
+        original = (
+            "This is a TEST<em>with</em> punctuation: $100, 50% off!\nMultiple lines."
+        )
+        keep_punct = normalize(
+            original,
+            do_not_remove="$%",
+            do=["strip", "lower", "punctuation", "line_breaks"],
+        )
+        self.assertIn("$", keep_punct)
+        self.assertIn("%", keep_punct)
+        self.assertNotIn(",", keep_punct)  # Other punctuation removed
+
+    def test_special_character_preservation(self):
+        """Test preservation of special character sequences."""
+        special_chars = normalize(
+            "Test with +/+ and -/- special sequences", do=["special_chars", "lower"]
+        )
+        self.assertIn("+/+", special_chars)
+        self.assertIn("-/-", special_chars)
+
+    def test_unicode_normalization(self):
+        """Test Unicode normalization."""
+        unicode_text = normalize("Café with açaí", do=["unicode", "lower"])
+        self.assertIn("cafe", unicode_text)
+        self.assertIn("acai", unicode_text)
+
+    def test_empty_string(self):
+        """Test handling of empty string."""
+        self.assertEqual("", normalize(""))
+
+
+class TestEnhancedNormalizeText(unittest.TestCase):
+    """Test the enhanced normalize_text function."""
+
+    def setUp(self):
+        self.html_content = "<p>This is a <strong>TEST</strong> with $100 value.</p>"
+
+    def test_default_parameters(self):
+        """Test with default parameters (should strip HTML)."""
+        default_norm = normalize_text(self.html_content)
+        self.assertNotIn("<p>", default_norm)
+        self.assertNotIn("<strong>", default_norm)
+        self.assertEqual("this is a test with $100 value.", default_norm)
+
+    def test_without_html_stripping(self):
+        """Test without HTML stripping."""
+        with_html = normalize_text(self.html_content, strip_html=False)
+        self.assertIn("<p>", with_html)
+        self.assertIn("<strong>", with_html)
+
+    def test_keep_chars_parameter(self):
+        """Test with keep_chars parameter."""
+        keep_dollars = normalize_text(
+            self.html_content, keep_chars="$", config={"remove_punctuation": True}
+        )
+        self.assertIn("$", keep_dollars)
+
+    def test_config_parameters(self):
+        """Test with config parameters."""
+        config_norm = normalize_text(
+            "Café with açaí and $100",
+            config={"normalize_unicode": True, "remove_punctuation": True},
+        )
+        self.assertIn("cafe", config_norm)
+        self.assertIn("acai", config_norm)
+        self.assertNotIn("$", config_norm)  # Removed as punctuation
+
+    def test_backward_compatibility(self):
+        """Test backward compatibility with original code."""
+        source_html = """
+        <p>(D) Effects of Dyrk4 deficiency on the virus-induced transcription of
+        downstream antiviral genes. <em>Dyrk4</em><sup>+/+</sup> and
+        <em>Dyrk</em>4<sup>-/-</sup> BMDMs were infected with SeV for 8 h before
+        qPCR analysis.</p>
+        """
+
+        normalized = normalize_text(source_html)
+        self.assertIn("+/+", normalized)  # Should preserve special sequences
+        self.assertIn("-/-", normalized)
+        self.assertNotIn("<p>", normalized)  # Should strip HTML
+        self.assertNotIn("<em>", normalized)
+
+    def test_special_case_handling(self):
+        """Test special case handling for data with superscripts."""
+        sup_text = (
+            "Wild-type (Dyrk4<sup>+/+</sup>) and knockout (Dyrk4<sup>-/-</sup>) mice"
+        )
+        normalized_sup = normalize_text(sup_text)
+        self.assertIn("+/+", normalized_sup)
+        self.assertIn("-/-", normalized_sup)
+
+
+class TestNormalizeWithComplexText(unittest.TestCase):
+    """Test normalize functions with more complex text examples."""
+
+    def setUp(self):
+        self.complex_html = """
+        <p class="section">Results from <em>in vivo</em> experiments</p>
+        <p>The wild-type (WT, <em>Dyrk4</em><sup>+/+</sup>) and knockout (KO, <em>Dyrk4</em><sup>-/-</sup>) 
+        mice were infected with 2×10<sup>4</sup> PFU of virus. Measurements were taken at 
+        24, 48, and 72 hours post-infection. The p-value was p &lt; 0.001.</p>
+        <ol>
+            <li>First measurement: 12.5 μg/mL</li>
+            <li>Second measurement: 24.7 μg/mL</li>
+        </ol>
+        """
+
+    def test_normalize_with_complex_html(self):
+        """Test normalize with complex HTML content."""
+        normalized = normalize(self.complex_html, do=["html_tags", "strip", "lower"])
+
+        # Check content preserved
+        self.assertIn("results from in vivo experiments", normalized)
+        self.assertIn("wild-type", normalized)
+        self.assertIn("dyrk4 +/+", normalized)
+        self.assertIn("dyrk4 -/-", normalized)
+        self.assertIn("2×10 4 pfu", normalized.lower())
+
+        # Check HTML removed
+        self.assertNotIn("<p>", normalized)
+        self.assertNotIn("<em>", normalized)
+        self.assertNotIn("<ol>", normalized)
+
+        # Check entities decoded
+        self.assertIn("p < 0.001", normalized)
+
+    def test_normalize_text_with_complex_html(self):
+        """Test normalize_text with complex HTML and various configs."""
+        # Basic normalization
+        basic = normalize_text(self.complex_html)
+        self.assertIn("results from in vivo experiments", basic)
+        self.assertNotIn("<p>", basic)
+        self.assertIn("dyrk4 +/+", basic)
+        self.assertIn("dyrk4 -/-", basic)
+
+        # Keep units in punctuation
+        with_units = normalize_text(
+            self.complex_html, keep_chars="/<>", config={"remove_punctuation": True}
+        )
+        self.assertIn("μg/ml", with_units.lower())
+        self.assertIn("<", with_units)  # preserved from p < 0.001
+
+        # Normalize unicode but keep special chars
+        unicode_norm = normalize_text(
+            self.complex_html, config={"normalize_unicode": True}
+        )
+        self.assertNotIn("μg", unicode_norm)  # Greek mu normalized
+        self.assertIn("dyrk4 +/+", unicode_norm)  # Special sequence preserved
+
+        # Test with no HTML stripping
+        with_html = normalize_text(self.complex_html, strip_html=False)
+        self.assertIn("<p", with_html)
+        self.assertIn("<em>", with_html)
+
+
+class TestNormalizeCompatibility(unittest.TestCase):
+    """Test compatibility with hallucination detection and other existing functionality."""
+
+    def test_hallucination_detection_compatibility(self):
+        """Ensure normalize functions work with hallucination detection."""
+        source = """
+        <p>The experiment showed <em>Dyrk4</em><sup>+/+</sup> mice had significantly higher 
+        expression of IFN-β compared to <em>Dyrk4</em><sup>-/-</sup> mice.</p>
+        """
+
+        extracted = "The experiment showed Dyrk4 +/+ mice had significantly higher expression of IFN-β"
+
+        # Test that this is properly detected as not hallucinated
+        norm_source = normalize_text(source)
+        norm_extracted = normalize_text(extracted)
+
+        self.assertIn(norm_extracted, norm_source)
+
+        # Verify hallucination score
+        self.assertEqual(calculate_hallucination_score(extracted, source), 0.0)
+
+        # Test with a hallucinated extract
+        hallucinated = (
+            "The experiment showed Dyrk4 +/+ mice had reduced viral titers in the lung."
+        )
+        self.assertGreater(calculate_hallucination_score(hallucinated, source), 0.2)
+
+    def test_fuzzy_matching_integration(self):
+        """Test integration with fuzzy matching."""
+        source = """
+        <p>Measurements were taken at 24, 48, and 72 hours post-infection.</p>
+        """
+
+        # Should still match with slight variations
+        close_extract = "Measurements were done at 24, 48, and 72h after infection."
+
+        # Calculate similarity score using fuzzy matching
+        similarity = fuzzy_match_score(close_extract, source)
+        self.assertGreater(similarity, 75)  # Should have good similarity

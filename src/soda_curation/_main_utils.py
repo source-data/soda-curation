@@ -1,12 +1,15 @@
 """Utility functions supporting the main entry point."""
 
+import html
 import logging
 import os
 import re
 import shutil
+import string
 import tempfile
+import unicodedata
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from rapidfuzz import fuzz
@@ -120,40 +123,136 @@ def strip_html_tags(text: str) -> str:
         return re.sub(r"<[^>]+>", " ", text)
 
 
-def normalize_text(text: str, strip_html: bool = True) -> str:
+def normalize(s: str, do_not_remove: str = "", do: Optional[List[str]] = None) -> str:
+    if not s:
+        return ""
+
+    if do is None:
+        do = [
+            "ctrl",
+            "strip",
+            "lower",
+            "html_unescape",
+            "html_tags",
+            "punctuation",
+            "unicode",
+            "special_chars",
+        ]
+
+    # ---- 1. Preserve newline and carriage returns. ----
+    def remove_control_characters(txt: str, excluded: List[str] = ["Cc", "Cf"]) -> str:
+        cleaned = []
+        for ch in txt:
+            # Keep newline and carriage returns
+            if ch in ("\n", "\r"):
+                cleaned.append(ch)
+            # Remove all other control/format characters
+            elif unicodedata.category(ch) not in excluded:
+                cleaned.append(ch)
+        return "".join(cleaned)
+
+    # ---- 2. Actual normalize steps ----
+    if "ctrl" in do:
+        s = remove_control_characters(s)
+
+    if "strip" in do:
+        s = s.strip()
+
+    if "lower" in do:
+        s = s.lower()
+
+    if "html_unescape" in do:
+        s = html.unescape(s)
+
+    if "html_tags" in do:
+        s = strip_html_tags(s)
+
+    # First, ensure line breaks are treated as word separators by adding space.
+    s = re.sub(r"(\S)(\n|\r)(\S)", r"\1 \3", s)
+
+    # Then replace line breaks with spaces
+    s = s.replace("\n", " ").replace("\r", " ")
+
+    if "html_tags" in do:
+        # Ensure space after closing tags
+        s = re.sub(r"(</[^>]+>)(\S)", r"\1 \2", s)
+        # Ensure space before opening tags
+        s = re.sub(r"(\S)(<[^/][^>]*>)", r"\1 \2", s)
+
+    if "punctuation" in do:
+        punctuation = string.punctuation
+        for c in do_not_remove:
+            punctuation = punctuation.replace(c, "")
+        s = re.sub(f"[{re.escape(punctuation)}]", " ", s)
+
+    if "unicode" in do:
+        s = (
+            unicodedata.normalize("NFKD", s)
+            .encode("ascii", "ignore")
+            .decode("utf-8", "ignore")
+        )
+
+    if "special_chars" in do:
+        s = s.replace("+/+", "+/+")
+        s = s.replace("-/-", "-/-")
+
+    # Remove multiple spaces
+    s = re.sub(r"\s+", " ", s).strip()
+
+    return s
+
+
+def normalize_text(
+    text: str,
+    strip_html: bool = True,
+    keep_chars: str = "",
+    config: Optional[dict] = None,
+) -> str:
     """
-    Basic normalization:
-      - optionally removes HTML tags
-      - lowercases all text
-      - removes HTML line breaks
-      - collapses multiple whitespace into a single space
-      - strips leading/trailing whitespace
+    Enhanced text normalization with configurable options:
+      - Removes HTML tags (optional)
+      - Lowercases text
+      - Normalizes whitespace and line breaks
+      - Preserves special character sequences
+      - Supports Unicode normalization
+      - Configurable punctuation handling
+
+    Args:
+        text: Text to normalize
+        strip_html: Whether to remove HTML tags
+        keep_chars: Characters to preserve when removing punctuation
+        config: Additional configuration options
+
+    Returns:
+        str: Normalized text
     """
     if not text:
         return ""
 
-    # (0) optionally strip HTML tags
+    # Set up normalization options based on parameters
+    if config is None:
+        config = {}
+
+    # Build the list of normalization operations
+    operations = ["strip", "lower", "line_breaks", "special_chars"]
+
+    # Add optional operations based on parameters
     if strip_html:
-        text = strip_html_tags(text)
+        operations.append("html_tags")
+        operations.append("html_unescape")
 
-    # (1) lowercase
-    text = text.lower()
+    # Add advanced operations if requested in config
+    if config.get("normalize_unicode", False):
+        operations.append("unicode")
 
-    # (2) remove line breaks or convert them into spaces
-    text = text.replace("\n", " ")
-    text = text.replace("\r", " ")
+    if config.get("remove_punctuation", False):
+        operations.append("punctuation")
 
-    # (3) remove repeated spaces
-    text = re.sub(r"\s+", " ", text)
+    if config.get("remove_control_chars", True):
+        operations.append("ctrl")
 
-    # (4) Special character normalization for sup tags (+/+, -/-)
-    text = text.replace("+/+", "+/+")  # Preserve as is
-    text = text.replace("-/-", "-/-")  # Preserve as is
-
-    # (5) trim
-    text = text.strip()
-
-    return text
+    # Apply the enhanced normalization with our configured options
+    return normalize(text, do_not_remove=keep_chars, do=operations)
 
 
 def exact_match_check(extracted_text: str, source_text: str) -> bool:

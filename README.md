@@ -476,9 +476,14 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
-### 1.0.4 (2025-05-)
-- Reformatting benchmark code into a package for better readibility
+### 1.0.5 (2025-03-19)
+- Added more robust normalization for the detection of possible hallucinated text
 
+### 1.0.4 (2025-03-18)
+- Reformatting benchmark code into a package for better readibility
+- Added panel-caption matching to the benchmark
+- Improved the handling of `.eps` and `.tif` files with `ImageMagick` and `opencv`
+  - For the future, we could use `tifffile` but it requires upgrade to `python3.10`
 
 ### 1.0.3 (2025-03-13)
 - Figures with no or single panel return now a single panel object

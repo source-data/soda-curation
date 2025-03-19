@@ -90,10 +90,10 @@ default: &default
     extract_individual_captions:
       openai:
         # Potentially different parameters here, if desired
-        model: "gpt-4o-mini"
+        model: "gpt-4o"
         temperature: 0.1
         top_p: 1.0
-        max_tokens: 4092
+        max_tokens: 8184
         frequency_penalty: 0.0
         presence_penalty: 0.0
         json_mode: true
@@ -123,6 +123,8 @@ default: &default
               - The panel naming conventions will be consistent within a figure
               - The panel labels must follow a monotically increasing sequence, without missing any element.
                 - Example. If you have panels A, B, E, F --> Then you should response with the panels: A, B, C, D, E, F.
+                - Make sure that you correctly identify the first label and last label and fill the sequence in between
+                - Extract the panel caption for each of the panel lables
 
             3. Create a JSON object where:
               - Keys are "Figure 1", "Figure 2", etc. (up to $expected_figure_count)
