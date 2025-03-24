@@ -149,7 +149,24 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                     # AI extracted values
                     actual_caption = extracted_figure.figure_caption
                     actual_title = extracted_figure.caption_title
-                    actual_panels = [p.panel_label for p in extracted_figure.panels]
+                    actual_caption = extracted_figure.figure_caption
+                    actual_title = extracted_figure.caption_title
+
+                    # Fix: Handle both dictionary and object types for panels
+                    actual_panels = []
+                    for p in extracted_figure.panels:
+                        if isinstance(p, dict):
+                            actual_panels.append(p.get("panel_label", ""))
+                        else:
+                            # Safely access the panel_label attribute
+                            try:
+                                actual_panels.append(p.panel_label)
+                            except AttributeError:
+                                # If it's neither a dict nor has panel_label attribute
+                                logger.warning(
+                                    f"Panel object {p} has no panel_label attribute"
+                                )
+                                actual_panels.append("")
 
                     # Calculate score for panel sequence
                     panel_sequence_score = 1.0

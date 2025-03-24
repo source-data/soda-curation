@@ -61,8 +61,8 @@ class PanelSourceBenchmarkRunner(BaseBenchmarkRunner):
         actual_set = set(actual_files)
         correct_matches = len(expected_set.intersection(actual_set))
 
-        # Score is based on exact matches over expected files
-        return correct_matches / len(expected_files)
+        # Fix: Make sure denominator is never zero
+        return correct_matches / max(1, len(expected_files))
 
     def _run_panel_source_test(
         self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]

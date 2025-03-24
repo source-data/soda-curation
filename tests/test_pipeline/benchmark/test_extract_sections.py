@@ -15,7 +15,6 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser impor
 )
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
 
-from ..metrics import normalize_text
 from .base_runner import BaseBenchmarkRunner
 
 logger = logging.getLogger(__name__)
@@ -39,8 +38,8 @@ class SectionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                 self.fill_results_bag(
                     test_case=test_case,
                     result={"input": cached_result["input"]},
-                    actual_output=normalize_text(cached_result["output"]),
-                    expected_output=normalize_text(cached_result["expected"]),
+                    actual_output=cached_result["output"],
+                    expected_output=cached_result["expected"],
                     task="locate_figure_captions",
                 )
             )
@@ -50,12 +49,8 @@ class SectionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                 self.fill_results_bag(
                     test_case=test_case,
                     result={"input": cached_result["input"]},
-                    actual_output=normalize_text(
-                        cached_result["data_availability_output"], True
-                    ),
-                    expected_output=normalize_text(
-                        cached_result["data_availability_expected"], True
-                    ),
+                    actual_output=cached_result["data_availability_output"],
+                    expected_output=cached_result["data_availability_expected"],
                     task="extract_data_availability",
                 )
             )
@@ -166,8 +161,8 @@ class SectionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
             figure_caption_row = self.fill_results_bag(
                 test_case={**test_case, "duration_ms": duration_ms},
                 result={"input": str(zip_path)},
-                actual_output=normalize_text(figure_legends),
-                expected_output=normalize_text(ground_truth_figures),
+                actual_output=figure_legends,
+                expected_output=ground_truth_figures,
                 task="locate_figure_captions",
             )
             results.append(figure_caption_row)
@@ -176,8 +171,8 @@ class SectionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
             data_availability_row = self.fill_results_bag(
                 test_case={**test_case, "duration_ms": duration_ms},
                 result={"input": str(zip_path)},
-                actual_output=normalize_text(data_availability, True),
-                expected_output=normalize_text(ground_truth_data_availability, True),
+                actual_output=data_availability,
+                expected_output=ground_truth_data_availability,
                 task="extract_data_availability",
             )
             results.append(data_availability_row)

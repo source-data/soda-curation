@@ -21,6 +21,10 @@ class BenchmarkConfig:
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
+        # Initialize cache configuration
+        cache_config = self._config.get("cache", {})
+        self.cache_version = cache_config.get("version", "v1_default")
+
         with open(config_path) as f:
             self._config = yaml.safe_load(f)
 
@@ -79,6 +83,10 @@ class BenchmarkConfig:
         else:
             raise ValueError(f"Invalid manuscripts configuration: {manuscripts}")
 
+    def get_cache_version(self) -> str:
+        """Get the current cache version."""
+        return self.cache_version
+
     def as_dict(self) -> Dict[str, Any]:
         """Return the entire configuration as a dictionary."""
         return {
@@ -86,4 +94,5 @@ class BenchmarkConfig:
             "output_dir": str(self.output_dir),
             "ground_truth_dir": str(self.ground_truth_dir),
             "manuscript_dir": str(self.manuscript_dir),
+            "cache_version": self.cache_version,
         }

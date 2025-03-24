@@ -41,13 +41,29 @@ class PanelAssignmentBenchmarkRunner(BaseBenchmarkRunner):
 
     @staticmethod
     def _calculate_match_score(list1, list2):
-        if len(list1) != len(list2):
-            raise ValueError("Both lists must have the same number of elements.")
+        if not list1:  # If list is empty
+            return 1.0 if not list2 else 0.0
 
         matches = sum(1 for x, y in zip(list1, list2) if x == y)
         total_elements = len(list1)
         score = matches / total_elements
         return score
+
+    def make_serializable(self, result_dict):
+        if isinstance(result_dict, dict):
+            return {k: self.make_serializable(v) for k, v in result_dict.items()}
+        elif isinstance(result_dict, list):
+            return [self.make_serializable(item) for item in result_dict]
+        elif hasattr(result_dict, "__dict__"):
+            # Convert custom objects to dictionaries
+            return self.make_serializable(result_dict.__dict__)
+        else:
+            # Try to convert to string representation if not a basic type
+            try:
+                json.dumps(result_dict)
+                return result_dict
+            except (TypeError, OverflowError):
+                return str(result_dict)
 
     def _run_panel_assignment_test(
         self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
@@ -168,7 +184,7 @@ class PanelAssignmentBenchmarkRunner(BaseBenchmarkRunner):
 
         return {
             "input": str(msid_path),
-            "results": results,
+            "results": self.make_serializable(results),
         }
 
         # except Exception as e:

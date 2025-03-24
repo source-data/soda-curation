@@ -4,6 +4,7 @@ import ast
 import json
 import logging
 import re
+from html import unescape
 from typing import List, Set
 
 from deepeval.metrics import BaseMetric
@@ -13,8 +14,21 @@ from deepeval.test_case import LLMTestCase
 logger = logging.getLogger(__name__)
 
 
-def normalize_text(text: str, is_data_availability: bool = False) -> str:
-    """Normalize text for consistent comparison."""
+def normalize_text(text, strip_whitespace=False, is_data_availability: bool = False):
+    """
+    Normalize text by removing HTML tags and standardizing whitespace.
+
+    Args:
+        text (str): Text to normalize
+        strip_whitespace (bool): Whether to also compress whitespace
+
+    Returns:
+        str: Normalized text
+    """
+    if not text:
+        return ""
+
+    # Convert to string if not already
     if not isinstance(text, str):
         text = str(text)
 
@@ -22,16 +36,18 @@ def normalize_text(text: str, is_data_availability: bool = False) -> str:
     if is_data_availability:
         text = re.sub(r"^data\s+availability\s*[:.]?\s*", "", text, flags=re.IGNORECASE)
 
-    # Convert to lowercase
-    text = text.lower()
+    # Unescape HTML entities
+    text = unescape(text)
 
-    # Remove extra whitespace
-    text = " ".join(text.split())
+    # Remove HTML tags
+    text = re.sub(r"<[^>]+>", "", text)
 
-    # Remove punctuation except periods and hyphens
-    text = re.sub(r"[^\w\s.-]", "", text)
+    if strip_whitespace:
+        # Standardize whitespace (compress multiple spaces, newlines, tabs)
+        text = re.sub(r"\s+", " ", text)
+        text = text.strip()
 
-    return text.strip()
+    return text
 
 
 def calculate_jaccard_similarity(set1: Set, set2: Set) -> float:

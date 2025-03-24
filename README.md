@@ -478,6 +478,8 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ### 1.0.5 (2025-03-19)
 - Added more robust normalization for the detection of possible hallucinated text
+- Test coverage added
+- Current test coverage is 92%
 
 ### 1.0.4 (2025-03-18)
 - Reformatting benchmark code into a package for better readibility

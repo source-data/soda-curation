@@ -13,7 +13,7 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import
     CustomJSONEncoder,
 )
 
-from ..metrics import get_metrics_for_task
+from ..metrics import get_metrics_for_task, normalize_text
 
 logger = logging.getLogger(__name__)
 
@@ -27,12 +27,16 @@ class BaseBenchmarkRunner:
         self.results_dir = results_dir
         self.cache_dir = cache_dir
         self.results_df = None
+        # Get cache version from config or use default
+        self.cache_version = config.get("cache_version", "v1_default")
 
     def get_cache_path(self, test_case: Dict[str, Any]) -> Path:
-        """Get path for cached result."""
+        """Get path for cached result with version info."""
         return (
             self.cache_dir
-            / f"{test_case['test_name']}_{test_case['msid']}_{test_case['provider']}_{test_case['model']}_{test_case['temperature']}_{test_case['top_p']}_{test_case['run']}.json"
+            / f"{test_case['test_name']}_{test_case['msid']}_{test_case['provider']}_"
+            f"{test_case['model']}_{test_case['temperature']}_{test_case['top_p']}_"
+            f"{test_case['run']}_{self.cache_version}.json"
         )
 
     def get_cached_result(self, cache_path: Path) -> Optional[Dict[str, Any]]:
@@ -114,6 +118,25 @@ class BaseBenchmarkRunner:
         score: Optional[float] = None,
     ) -> Dict[str, Any]:
         """Fill the results DataFrame with test metrics and model parameters."""
+
+        tasks_to_normalize = [
+            "locate_figure_captions",
+            "extract_data_availability",
+            "figure_title",
+            "figure_caption",
+        ]
+        if task in tasks_to_normalize:
+            actual_output = normalize_text(
+                actual_output,
+                strip_whitespace=True,
+                is_data_availability="data_availability" in task,
+            )
+            expected_output = normalize_text(
+                expected_output,
+                strip_whitespace=True,
+                is_data_availability="data_availability" in task,
+            )
+
         try:
             base_row = {
                 "status": "completed",
