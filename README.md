@@ -476,6 +476,11 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 1.0.6 (2025-03-24)
+- Modified normalization of tests and solved some error issues on benchmarking
+- Modified two ground truths with the wrong values in extracting all the captions
+
+
 ### 1.0.5 (2025-03-19)
 - Added more robust normalization for the detection of possible hallucinated text
 - Test coverage added
