@@ -6,9 +6,10 @@ default: &default
     ##########################################################
     # 1) Extract  Figure Legends and Data Availability Sections
     ##########################################################
+    # Updated extract_sections prompts for smolagents implementation
     extract_sections:
       openai:
-        # OpenAI-specific parameters for this step only
+        # OpenAI-specific parameters remain the same
         model: "gpt-4o"
         temperature: 0.1
         top_p: 1.0
@@ -24,7 +25,7 @@ default: &default
                 
             The text will be encoded as a `HTML` string and you are required to keep all the information available.
 
-            Please extract the relevant portion(s) verbatim, exactly as they appear in the original text. 
+            Please extract the relevant portion(s) VERBATIM, exactly as they appear in the original text. 
 
             Key Instructions for extracting `Figure Legends` section:
             1. Look for figure captions throughout the entire document - they can appear:
@@ -41,40 +42,36 @@ default: &default
               - Figure legends
               - Figure descriptions
 
-            3. IMPORTANT: Return the COMPLETE TEXT found, preserving:
+            3. CRITICAL: You have access to a verification tool that checks if your extracted text is truly verbatim.
+              USE THIS TOOL to confirm ALL extracted sections before returning them.
+              You MUST ensure each extraction passes verification before finalizing your answer.
+
+            4. IMPORTANT: Return the COMPLETE TEXT found, preserving:
               - All formatting and special characters
               - Statistical information
               - Scale bars and measurements
               - Panel labels and descriptions
               - Source references
 
-            4. DO NOT:
+            5. DO NOT:
               - Modify or rewrite the text
               - Summarize or shorten descriptions
               - Skip any figure-related content
               - Add any explanatory text of your own
 
-            Please extract the relevant portion(s) verbatim, exactly as they appear in the original text.
-
             Key Instructions for extracting `Data availability` section:
             1. Look for the section titled "Data Availability" or similar in the manuscript.
-            2. Extract the content of this section.
-            3. Follow same formating instructions as for the `Figure Legends` section.
+            2. Extract the content of this section VERBATIM.
+            3. Verify the extraction using the verification tool.
+            4. Follow same formatting instructions as for the `Figure Legends` section.
 
-            INPUT: Expected figures: $expected_figure_count
-
-            Expected figure labels: $expected_figure_labels
-
-            Manuscript_text: $manuscript_text
-
-            OUTPUT: 
-
-            ```json
+            Remember: You MUST use the verification tool to ensure your extracted sections are exactly as they appear in the document.
+            
+            Return the extracted sections in the following format:
             {
               "figure_legends": "Complete figure-related text content from the manuscript",
               "data_availability": "Complete data availability section content from the manuscript"
             }
-            ```
           user: |
             Expected figures: $expected_figure_count
 
@@ -82,7 +79,8 @@ default: &default
             
             Manuscript_text: $manuscript_text
 
-            Return ONLY the found figure-related text, exactly as it appears in the document.
+            Extract the figure legends and data availability sections VERBATIM from the manuscript.
+            Use the verification tool to ensure your extractions are exactly as they appear in the document.
 
     ##########################################################
     # 2) Extract Individual Captions Step

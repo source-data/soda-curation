@@ -5,8 +5,8 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (
-    SectionExtractorOpenAI,
+from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (  # SectionExtractorOpenAI,
+    SectionExtractorSmolagents,
 )
 
 from ._main_utils import (
@@ -75,8 +75,25 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             manuscript_content = extractor.extract_docx_content(zip_structure.docx)
             prompt_handler = PromptHandler(config_loader.config["pipeline"])
 
+            ##################################################
+            ##################################################
+            ##################################################
+            ##################################################
+            ##################################################
+            ##################################################
             # Extract relevant sections for the pipeline
-            section_extractor = SectionExtractorOpenAI(
+            # section_extractor = SectionExtractorOpenAI(
+            #     config_loader.config, prompt_handler
+            # )
+            # (
+            #     figure_legends,
+            #     data_availability_text,
+            #     zip_structure,
+            # ) = section_extractor.extract_sections(
+            #     doc_content=manuscript_content, zip_structure=zip_structure
+            # )
+            # Extract relevant sections for the pipeline
+            section_extractor = SectionExtractorSmolagents(
                 config_loader.config, prompt_handler
             )
             (
@@ -86,7 +103,11 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             ) = section_extractor.extract_sections(
                 doc_content=manuscript_content, zip_structure=zip_structure
             )
-
+            ##################################################
+            ##################################################
+            ##################################################
+            ##################################################
+            ##################################################
             # Extract individual captions from figure legends
             caption_extractor = FigureCaptionExtractorOpenAI(
                 config_loader.config, prompt_handler
