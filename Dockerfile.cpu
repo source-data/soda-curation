@@ -1,5 +1,8 @@
+
+
+
 # Use a CPU-only Python image as the base image
-FROM python:3.8-slim-bullseye as base
+FROM python:3.9-slim-bullseye as base
 
 # Set work directory
 WORKDIR /app

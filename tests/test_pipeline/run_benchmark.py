@@ -173,6 +173,47 @@ def test_pipeline(test_case: Dict[str, Any]) -> None:
             shutil.rmtree(temp_extracts_dir)
 
 
+def generate_analysis_notebook(results_dir):
+    """
+    Generate and execute the analysis notebook using papermill.
+
+    Args:
+        results_dir: Path to the directory containing benchmark results
+    """
+    try:
+        import papermill as pm
+
+        logger.info("Generating analysis notebook...")
+
+        # Define input and output notebook paths
+        input_notebook = "results.ipynb"
+        output_notebook = results_dir / "results_output.ipynb"
+
+        # Define parameters to pass to the notebook
+        parameters = {
+            "metrics_csv_path": str(results_dir / "metrics.csv"),
+            "results_dir": str(results_dir),
+        }
+
+        # Execute the notebook with papermill
+        pm.execute_notebook(
+            input_notebook,
+            output_notebook,
+            parameters=parameters,
+            kernel_name="python3",
+        )
+
+        logger.info(f"Analysis notebook generated at {output_notebook}")
+
+    except ImportError:
+        logger.warning("Papermill not installed. Skipping notebook generation.")
+        logger.warning(
+            "To generate the notebook, install papermill: pip install papermill"
+        )
+    except Exception as e:
+        logger.error(f"Error generating analysis notebook: {str(e)}", exc_info=True)
+
+
 def run_benchmarks_directly():
     """
     Run the benchmarks directly without pytest.
@@ -183,6 +224,9 @@ def run_benchmarks_directly():
 
     logger.info("All benchmarks completed.")
     logger.info(f"Results saved to {results_dir}")
+
+    # Generate the analysis notebook using papermill
+    generate_analysis_notebook(results_dir)
 
 
 if __name__ == "__main__":
@@ -196,3 +240,15 @@ def setup_logging():
     """Configure logging for tests."""
     logger.info("Logging configured for tests")
     return None
+
+
+# Add function to run after pytest completes
+def pytest_sessionfinish(session, exitstatus):
+    """Run after all tests have completed in pytest."""
+    if exitstatus == 0:
+        logger.info("All tests completed successfully. Generating analysis notebook...")
+        generate_analysis_notebook(results_dir)
+    else:
+        logger.warning(
+            "Tests did not complete successfully. Skipping notebook generation."
+        )

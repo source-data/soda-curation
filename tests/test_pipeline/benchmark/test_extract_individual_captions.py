@@ -224,8 +224,12 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                             "caption_title": fig.caption_title,
                             "panels": [
                                 {
-                                    "panel_label": panel.panel_label,
-                                    "panel_caption": panel.panel_caption,
+                                    "panel_label": panel.panel_label
+                                    if not isinstance(panel, dict)
+                                    else panel.get("panel_label"),
+                                    "panel_caption": panel.panel_caption
+                                    if not isinstance(panel, dict)
+                                    else panel.get("panel_caption"),
                                 }
                                 for panel in fig.panels
                             ],

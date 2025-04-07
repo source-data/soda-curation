@@ -203,14 +203,15 @@ class PanelSourceAssigner(ABC):
     ) -> List[Panel]:
         """Parse the assigned files list into Panel objects."""
         panels = []
-        for assigned_file in assigned_files_list.assigned_files:
-            panel = Panel(
-                panel_label=assigned_file.panel_label,
-                panel_caption="",  # Assuming caption is not provided in this context
-                sd_files=assigned_file.panel_sd_files
-                or [],  # Ensure empty list if None
-            )
-            panels.append(panel)
+        if assigned_files_list:
+            for assigned_file in assigned_files_list.assigned_files:
+                panel = Panel(
+                    panel_label=assigned_file.panel_label,
+                    panel_caption="",  # Assuming caption is not provided in this context
+                    sd_files=assigned_file.panel_sd_files
+                    or [],  # Ensure empty list if None
+                )
+                panels.append(panel)
         return panels
 
     def _update_figure_with_assignments(

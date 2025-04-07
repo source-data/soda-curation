@@ -21,12 +21,12 @@ class BenchmarkConfig:
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
+        with open(config_path) as f:
+            self._config = yaml.safe_load(f)
+
         # Initialize cache configuration
         cache_config = self._config.get("cache", {})
         self.cache_version = cache_config.get("version", "v1_default")
-
-        with open(config_path) as f:
-            self._config = yaml.safe_load(f)
 
         # Set up directories
         self.output_dir = Path(self._config.get("output_dir", "/app/data/benchmark"))

@@ -13,7 +13,7 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import
     CustomJSONEncoder,
 )
 
-from ..metrics import get_metrics_for_task, normalize_text
+from ..metrics import get_metrics_for_task
 
 logger = logging.getLogger(__name__)
 
@@ -118,24 +118,6 @@ class BaseBenchmarkRunner:
         score: Optional[float] = None,
     ) -> Dict[str, Any]:
         """Fill the results DataFrame with test metrics and model parameters."""
-
-        tasks_to_normalize = [
-            "locate_figure_captions",
-            "extract_data_availability",
-            "figure_title",
-            "figure_caption",
-        ]
-        if task in tasks_to_normalize:
-            actual_output = normalize_text(
-                actual_output,
-                strip_whitespace=True,
-                is_data_availability="data_availability" in task,
-            )
-            expected_output = normalize_text(
-                expected_output,
-                strip_whitespace=True,
-                is_data_availability="data_availability" in task,
-            )
 
         try:
             base_row = {

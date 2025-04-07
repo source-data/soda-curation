@@ -11,26 +11,26 @@ enabled_tests:
   - extract_sections
   - extract_individual_captions
   - assign_panel_source
-  - extract_data_availability
-  - match_caption_panel
+  # - extract_data_availability
+  # - match_caption_panel
 
 # Model configurations to test
 providers:
   openai:
     models:
       - name: "gpt-4o"
-        temperatures: [0.0, 0.1, 1.0]
+        temperatures: [1.0, 0.5]
         top_p: [1.0]
       - name: "gpt-4o-mini"
-        temperatures: [0.0, 0.1, 1.0]
+        temperatures: [1.0, 0.5]
         top_p: [1.0]
 
 # Test run configuration  
 test_runs:
   n_runs: 3  # Number of times to run each configuration
-  manuscripts: "all"  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
+  manuscripts: ["EMBOJ-2023-114195","EMBOJ-2023-115257","EMBOJ-2024-116743","EMBOR-2023-58706-T","EMBOR-2024-59101V1-T","EMM-2023-19044","EMBOJ-2023-114687","EMBOJ-2024-117116","EMBOR-2024-58727V1","EMM-2023-18636","MSB-2023-12087"]  # Can be "all", a number like 5, or specific IDs like ["msid1", "msid2"]
 
 cache:
-  version: "1.0.6"  # Increment this when making significant changes
+  version: "1.0.7"  # Increment this when making significant changes
 
 # Results configuration
