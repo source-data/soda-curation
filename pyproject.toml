@@ -13,14 +13,14 @@ packages = [{include = "soda_curation", from = "src"}]
 repository = "https://github.com/source-data/soda-curation"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.11"
+python = ">=3.10,<3.11"
 openai = "^1.43.0"
 pyyaml = "^6.0.2"
 python-docx = "^0.8.11"
 PyPDF2 = "^3.0.0"
 numpy = "^1.24.0"
 opencv-python = "^4.8.0.74"
-Pillow = "^10.0.0"
+Pillow = "^11.0.0"
 dill = "^0.3.8"
 fuzzywuzzy = "^0.18.0"
 anthropic = "0.40.0"
@@ -37,7 +37,8 @@ gitpython = "^3.1.44"
 openpyxl = "^3.1.5"
 rapidfuzz = "^3.9.7"
 pdf2image = "^1.16.3"
-openai-agents = "^0.0.8"
+smolagents = "^1.13.0"
+duckduckgo-search = "^7.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.0"

@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (  # SectionExtractorOpenAI,
+from src.soda_curation.pipeline.extract_sections.extract_sections_smolagents import (
     SectionExtractorSmolagents,
 )
 
@@ -32,6 +32,11 @@ from .pipeline.match_caption_panel.match_caption_panel_openai import (
     MatchPanelCaptionOpenAI,
 )
 from .pipeline.prompt_handler import PromptHandler
+
+# from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (
+#     SectionExtractorOpenAI,
+# )
+
 
 logger = logging.getLogger(__name__)
 
