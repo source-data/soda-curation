@@ -11,6 +11,7 @@ from src.soda_curation.pipeline.extract_sections.extract_sections_smolagents imp
 
 from ._main_utils import (
     calculate_hallucination_score,
+    clean_original_source_data_files,
     cleanup_extract_dir,
     setup_extract_dir,
     validate_paths,
@@ -75,6 +76,10 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             # Extract manuscript structure (first pipeline step)
             extractor = XMLStructureExtractor(zip_path, str(extract_dir))
             zip_structure = extractor.extract_structure()
+            # Store the original source data files for each figure
+            original_source_data_files = {
+                fig.figure_label: list(fig.sd_files) for fig in zip_structure.figures
+            }
 
             # Extract captions from figures (second pipeline step)
             manuscript_content = extractor.extract_docx_content(zip_structure.docx)
@@ -108,6 +113,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             ) = section_extractor.extract_sections(
                 doc_content=manuscript_content, zip_structure=zip_structure
             )
+            exit()
             ##################################################
             ##################################################
             ##################################################
@@ -174,6 +180,10 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                         panel.hallucination_score = calculate_hallucination_score(
                             panel.panel_caption, manuscript_content
                         )
+
+            zip_structure = clean_original_source_data_files(
+                zip_structure, original_source_data_files
+            )
 
             # Convert to JSON using CustomJSONEncoder
             output_json = json.dumps(

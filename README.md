@@ -137,6 +137,13 @@ poetry run python -m src.soda_curation.main \
   --zip /app/data/archives/your-manuscript.zip \
   --config /app/config.yaml \
   --output /app/data/output/results.json
+
+
+  poetry run python -m src.soda_curation.main \
+  --zip /app/data/archives//app/data/archives/EMBOJ-2024-116743.zip \
+  --config /app/config.yaml \
+  --output /app/data/output/smolagents-test.json
+
 ```
 
 ## Testing

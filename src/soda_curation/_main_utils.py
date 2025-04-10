@@ -9,10 +9,14 @@ import string
 import tempfile
 import unicodedata
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from bs4 import BeautifulSoup
 from rapidfuzz import fuzz
+
+from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    ZipStructure,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -329,3 +333,25 @@ def calculate_hallucination_score(extracted_text: str, source_text: str) -> floa
         return 0.0
 
     return 1.0 - (similarity / 100.0)
+
+
+# Before JSON serialization
+def clean_original_source_data_files(
+    zip_structure: ZipStructure, original_source_data_files: Dict[str, str]
+):
+    """
+    Remove original source data files from figures if they've been assigned to panels.
+    Only removes files that were present at the beginning of the pipeline.
+    """
+    for fig in zip_structure.figures:
+        # Check if there are any panels with assigned source data files
+        has_panel_with_sd_files = any(panel.sd_files for panel in fig.panels)
+
+        if has_panel_with_sd_files and fig.figure_label in original_source_data_files:
+            # Get the list of files that were originally extracted
+            original_files = original_source_data_files[fig.figure_label]
+
+            # Remove only the original files, keeping any that might have been added during processing
+            fig.sd_files = [f for f in fig.sd_files if f not in original_files]
+
+    return zip_structure
