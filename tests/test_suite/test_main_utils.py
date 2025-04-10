@@ -10,6 +10,7 @@ import pytest
 
 from src.soda_curation._main_utils import (
     calculate_hallucination_score,
+    clean_original_source_data_files,
     cleanup_extract_dir,
     exact_match_check,
     fuzzy_match_score,
@@ -19,6 +20,11 @@ from src.soda_curation._main_utils import (
     strip_html_tags,
     validate_paths,
     write_output,
+)
+from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    Figure,
+    Panel,
+    ZipStructure,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
     XMLStructureExtractor,
@@ -622,3 +628,160 @@ class TestNormalizeCompatibility(unittest.TestCase):
         # Calculate similarity score using fuzzy matching
         similarity = fuzzy_match_score(close_extract, source)
         self.assertGreater(similarity, 75)  # Should have good similarity
+
+
+# Add this test class at the end of the file
+class TestCleanOriginalSourceDataFiles(unittest.TestCase):
+    """Test the clean_original_source_data_files function."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        # Create some test panels
+        self.panel1 = Panel(panel_label="A", panel_caption="Panel A caption")
+        self.panel2 = Panel(panel_label="B", panel_caption="Panel B caption")
+        self.panel3 = Panel(
+            panel_label="C",
+            panel_caption="Panel C caption",
+            sd_files=["panel_c_source.zip"],
+        )
+
+        # Create test figures
+        self.fig1 = Figure(
+            figure_label="Figure 1",
+            img_files=["figure1.tif"],
+            sd_files=["figure1_source.zip"],
+            panels=[self.panel1, self.panel2],  # No panels have sd_files
+        )
+
+        self.fig2 = Figure(
+            figure_label="Figure 2",
+            img_files=["figure2.tif"],
+            sd_files=["figure2_source.zip", "figure2_extra.xlsx"],
+            panels=[self.panel3],  # Has panel with sd_files
+        )
+
+        self.fig3 = Figure(
+            figure_label="Figure 3",
+            img_files=["figure3.tif"],
+            sd_files=["figure3_original.zip", "figure3_added_later.zip"],
+            panels=[
+                Panel(
+                    panel_label="A",
+                    panel_caption="Panel A",
+                    sd_files=["panel_a_source.zip"],
+                )
+            ],
+        )
+
+        # Create ZipStructure
+        self.zip_structure = ZipStructure(
+            manuscript_id="TEST-123",
+            xml="test.xml",
+            docx="test.docx",
+            pdf="test.pdf",
+            figures=[self.fig1, self.fig2, self.fig3],
+        )
+
+        # Original source data files dictionary (original files extracted at the beginning)
+        self.original_source_data_files = {
+            "Figure 1": ["figure1_source.zip"],
+            "Figure 2": ["figure2_source.zip"],
+            "Figure 3": ["figure3_original.zip"],
+        }
+
+    def test_basic_functionality(self):
+        """Test that original files are removed when panels have sd_files."""
+        result = clean_original_source_data_files(
+            self.zip_structure, self.original_source_data_files
+        )
+
+        # Figure 1: No panel has sd_files, so original sd_files should remain
+        self.assertEqual(len(result.figures[0].sd_files), 1)
+        self.assertIn("figure1_source.zip", result.figures[0].sd_files)
+
+        # Figure 2: Has panel with sd_files, so original sd_files should be removed
+        self.assertEqual(len(result.figures[1].sd_files), 1)
+        self.assertIn("figure2_extra.xlsx", result.figures[1].sd_files)
+        self.assertNotIn("figure2_source.zip", result.figures[1].sd_files)
+
+        # Figure 3: Has panel with sd_files, but non-original files should remain
+        self.assertEqual(len(result.figures[2].sd_files), 1)
+        self.assertIn("figure3_added_later.zip", result.figures[2].sd_files)
+        self.assertNotIn("figure3_original.zip", result.figures[2].sd_files)
+
+    def test_no_panel_source_data(self):
+        """Test that original files are kept when no panels have sd_files."""
+        # Remove sd_files from all panels
+        for fig in self.zip_structure.figures:
+            for panel in fig.panels:
+                panel.sd_files = []
+
+        result = clean_original_source_data_files(
+            self.zip_structure, self.original_source_data_files
+        )
+
+        # All original files should be preserved
+        self.assertIn("figure1_source.zip", result.figures[0].sd_files)
+        self.assertIn("figure2_source.zip", result.figures[1].sd_files)
+        self.assertIn("figure3_original.zip", result.figures[2].sd_files)
+
+    def test_added_files_preserved(self):
+        """Test that files added during processing are preserved."""
+        # Add a new file to Figure 1 that wasn't in original_source_data_files
+        self.zip_structure.figures[0].sd_files.append("added_during_processing.zip")
+
+        # Give panels source data files
+        for fig in self.zip_structure.figures:
+            for panel in fig.panels:
+                panel.sd_files = ["panel_source.zip"]
+
+        result = clean_original_source_data_files(
+            self.zip_structure, self.original_source_data_files
+        )
+
+        # Original files should be removed, but added files should remain
+        self.assertNotIn("figure1_source.zip", result.figures[0].sd_files)
+        self.assertIn("added_during_processing.zip", result.figures[0].sd_files)
+
+    def test_empty_figures(self):
+        """Test handling of empty figure lists."""
+        # Create empty ZipStructure
+        empty_structure = ZipStructure(
+            manuscript_id="TEST-123",
+            xml="test.xml",
+            docx="test.docx",
+            pdf="test.pdf",
+            figures=[],
+        )
+
+        # This should not raise an exception
+        result = clean_original_source_data_files(
+            empty_structure, self.original_source_data_files
+        )
+        self.assertEqual(len(result.figures), 0)
+
+    def test_missing_figure_label(self):
+        """Test handling of figures not in the original_source_data_files dict."""
+        # Create a new figure with a label not in original_source_data_files
+        new_figure = Figure(
+            figure_label="Figure 4",
+            img_files=["figure4.tif"],
+            sd_files=["figure4_source.zip"],
+            panels=[
+                Panel(
+                    panel_label="A",
+                    panel_caption="Panel A",
+                    sd_files=["panel_a_source.zip"],
+                )
+            ],
+        )
+
+        self.zip_structure.figures.append(new_figure)
+
+        result = clean_original_source_data_files(
+            self.zip_structure, self.original_source_data_files
+        )
+
+        # Figure 4's sd_files should remain since it wasn't in original_source_data_files
+        self.assertEqual(len(result.figures[3].sd_files), 1)
+        self.assertIn("figure4_source.zip", result.figures[3].sd_files)

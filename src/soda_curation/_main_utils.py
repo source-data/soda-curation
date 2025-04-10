@@ -337,7 +337,7 @@ def calculate_hallucination_score(extracted_text: str, source_text: str) -> floa
 
 # Before JSON serialization
 def clean_original_source_data_files(
-    zip_structure: ZipStructure, original_source_data_files: Dict[str, str]
+    zip_structure: ZipStructure, original_source_data_files: Dict[str, List[str]]
 ):
     """
     Remove original source data files from figures if they've been assigned to panels.
