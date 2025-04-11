@@ -261,31 +261,31 @@ class TestVerifyPanelSequence:
         """Test valid uppercase letter sequence."""
         result = verify_panel_sequence(["A", "B", "C", "D"])
         assert result["is_valid"] is True
-        assert result["fixed_sequence"] is ["A", "B", "C", "D"]
+        assert result["fixed_sequence"] == ["A", "B", "C", "D"]
 
     def test_invalid_uppercase_sequence(self):
         """Test invalid uppercase letter sequence with gaps."""
         result = verify_panel_sequence(["A", "B", "D", "E"])
         assert result["is_valid"] is False
-        assert result["fixed_sequence"] is ["A", "B", "C", "D", "E"]
+        assert result["fixed_sequence"] == ["A", "B", "C", "D", "E"]
 
     def test_valid_lowercase_sequence(self):
         """Test valid lowercase letter sequence."""
         result = verify_panel_sequence(["a", "b", "c"])
         assert result["is_valid"] is True
-        assert result["fixed_sequence"] is ["a", "b", "c"]
+        assert result["fixed_sequence"] == ["a", "b", "c"]
 
     def test_invalid_lowercase_sequence(self):
         """Test invalid lowercase letter sequence with gaps."""
         result = verify_panel_sequence(["a", "c", "e"])
         assert result["is_valid"] is False
-        assert result["fixed_sequence"] is ["a", "b", "c", "d", "e"]
+        assert result["fixed_sequence"] == ["a", "b", "c", "d", "e"]
 
     def test_valid_roman_numeral_sequence(self):
         """Test valid Roman numeral sequence."""
         result = verify_panel_sequence(["I", "II", "III", "IV"])
         assert result["is_valid"] is True
-        assert result["fixed_sequence"] is ["I", "II", "III", "IV"]
+        assert result["fixed_sequence"] == ["I", "II", "III", "IV"]
 
     def test_invalid_roman_numeral_sequence(self):
         """Test invalid Roman numeral sequence with gaps."""
