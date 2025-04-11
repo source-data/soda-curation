@@ -298,19 +298,19 @@ class TestVerifyPanelSequence:
         """Test valid numeric sequence."""
         result = verify_panel_sequence(["1", "2", "3", "4"])
         assert result["is_valid"] is True
-        assert result["fixed_sequence"] is ["1", "2", "3", "4"]
+        assert result["fixed_sequence"] == ["1", "2", "3", "4"]
 
     def test_invalid_numeric_sequence(self):
         """Test invalid numeric sequence with gaps."""
         result = verify_panel_sequence(["1", "3", "5"])
         assert result["is_valid"] is False
-        assert result["fixed_sequence"] is ["1", "2", "3", "4", "5"]
+        assert result["fixed_sequence"] == ["1", "2", "3", "4", "5"]
 
     def test_sequence_with_decorators(self):
         """Test sequence with decorators like parentheses."""
         result = verify_panel_sequence(["(A)", "B.", "C)"])
         assert result["is_valid"] is True
-        assert result["fixed_sequence"] is ["A", "B", "C"]
+        assert result["fixed_sequence"] == ["A", "B", "C"]
 
 
 class TestRomanNumerals:
@@ -359,7 +359,7 @@ class TestVerifySpecificSequences:
         # Invalid sequence with gaps
         result = _verify_alphabet_sequence(["A", "C", "E"], string.ascii_uppercase)
         assert result["is_valid"] is False
-        assert result["fixed_sequence"] is ["A", "B", "C", "D", "E"]
+        assert result["fixed_sequence"] == ["A", "B", "C", "D", "E"]
 
         # Invalid sequence with characters not in alphabet
         result = _verify_alphabet_sequence(["A", "B", "1"], string.ascii_uppercase)
@@ -391,7 +391,7 @@ class TestVerifySpecificSequences:
         # Invalid sequence with gaps
         result = _verify_numeric_sequence(["1", "3", "5"])
         assert result["is_valid"] is False
-        assert result["fixed_sequence"] is ["1", "2", "3", "4", "5"]
+        assert result["fixed_sequence"] == ["1", "2", "3", "4", "5"]
 
         # Invalid numeric value
         result = _verify_numeric_sequence(["1", "2", "not_a_number"])
