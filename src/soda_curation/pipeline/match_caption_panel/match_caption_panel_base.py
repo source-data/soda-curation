@@ -202,158 +202,8 @@ class MatchPanelCaption(ABC):
         Returns:
             List of resolved Panel objects without duplicates
         """
-        # Group by panel label
-        label_to_matches = {}
-        for match in panel_matches:
-            panel_label = match["panel_object"].panel_label
-            if panel_label not in label_to_matches:
-                label_to_matches[panel_label] = []
-            label_to_matches[panel_label].append(match)
 
-        # Track panels with conflict resolution
-        processed_panels = []
-        conflicts_found = False
-        used_detection_indices = set()  # Track which detections have been used
-
-        # Initialize tracking for conflicting panels
-        if not hasattr(figure, "conflicting_panels"):
-            figure.conflicting_panels = []
-
-        # Process each unique panel label
-        for panel_label, matches in label_to_matches.items():
-            original_panel = original_panels.get(panel_label)
-
-            if not original_panel and panel_label.strip():
-                # This is potentially a panel detected in the image but not in original text
-                logger.info(
-                    f"New panel label '{panel_label}' identified via image detection for figure {figure.figure_label}"
-                )
-                original_panel = None  # Keep None, but continue processing
-
-            if len(matches) == 1:
-                # No conflict for this panel label
-                match = matches[0]
-                detection = match["detection"]
-                used_detection_indices.add(match["detection_idx"])
-
-                if original_panel:
-                    # Create panel with original caption and new bbox
-                    panel = Panel(
-                        panel_label=panel_label,
-                        # Use the original caption, not the one from match_caption_panel
-                        panel_caption=original_panel.panel_caption,
-                        panel_bbox=detection["bbox"],
-                        confidence=detection["confidence"],
-                        # Preserve all other original data
-                        sd_files=original_panel.sd_files
-                        if hasattr(original_panel, "sd_files")
-                        else [],
-                        ai_response=original_panel.ai_response
-                        if hasattr(original_panel, "ai_response")
-                        else None,
-                    )
-                else:
-                    # Create a new panel from detection without original data
-                    panel = Panel(
-                        panel_label=panel_label,
-                        panel_caption=match["panel_object"].panel_caption,
-                        panel_bbox=detection["bbox"],
-                        confidence=detection["confidence"],
-                        sd_files=[],
-                        ai_response=None,
-                    )
-                processed_panels.append(panel)
-            else:
-                # Conflict: multiple detections assigned the same label
-                conflicts_found = True
-                logger.warning(
-                    f"Found {len(matches)} panels with label {panel_label} in figure {figure.figure_label}"
-                )
-
-                # First attempt: resolve by finding closest match to original position
-                best_match = None
-                if (
-                    original_panel
-                    and hasattr(original_panel, "panel_bbox")
-                    and original_panel.panel_bbox
-                ):
-                    best_match = self._find_best_position_match(
-                        matches, original_panel.panel_bbox
-                    )
-                    if best_match:
-                        logger.info(
-                            f"Resolved conflict for panel {panel_label} using position similarity"
-                        )
-
-                # If no position match was found or original position wasn't available,
-                # fall back to using the detection with highest confidence
-                if not best_match:
-                    best_match = max(
-                        matches, key=lambda m: m["detection"]["confidence"]
-                    )
-                    logger.info(
-                        f"Resolved conflict for panel {panel_label} using confidence score"
-                    )
-
-                # Create panel with the best match
-                detection = best_match["detection"]
-                used_detection_indices.add(best_match["detection_idx"])
-
-                if original_panel:
-                    panel = Panel(
-                        panel_label=panel_label,
-                        # Use the original caption, not the one from match_caption_panel
-                        panel_caption=original_panel.panel_caption,
-                        panel_bbox=detection["bbox"],
-                        confidence=detection["confidence"],
-                        # Preserve all other original data
-                        sd_files=original_panel.sd_files
-                        if hasattr(original_panel, "sd_files")
-                        else [],
-                        ai_response=original_panel.ai_response
-                        if hasattr(original_panel, "ai_response")
-                        else None,
-                    )
-                else:
-                    # Create a new panel from detection without original data
-                    panel = Panel(
-                        panel_label=panel_label,
-                        panel_caption=best_match["panel_object"].panel_caption,
-                        panel_bbox=detection["bbox"],
-                        confidence=detection["confidence"],
-                        sd_files=[],
-                        ai_response=None,
-                    )
-                processed_panels.append(panel)
-
-                # Track the conflicting matches that were not used
-                for conflict_match in matches:
-                    if conflict_match != best_match:  # Skip the one we're using
-                        used_detection_indices.add(conflict_match["detection_idx"])
-                        figure.conflicting_panels.append(
-                            {
-                                "panel_label": panel_label,
-                                "detection_idx": conflict_match["detection_idx"],
-                                "confidence": conflict_match["detection"]["confidence"],
-                                "bbox": conflict_match["detection"]["bbox"],
-                            }
-                        )
-
-        if conflicts_found:
-            logger.info(f"Resolved panel conflicts in figure {figure.figure_label}")
-
-        # Check for original panels that didn't get matched to any detection
-        matched_labels = {panel.panel_label for panel in processed_panels}
-        for label, panel in original_panels.items():
-            if label not in matched_labels:
-                logger.warning(
-                    f"Original panel {label} not matched to any detection in figure {figure.figure_label}"
-                )
-                # Add the original panel without a bbox
-                processed_panels.append(panel)
-                matched_labels.add(label)  # Update matched labels
-
-        # Helper function for sequential labeling
+        # Helper function for sequential labeling - define this at the top
         def get_next_available_label(used_labels):
             """Get the next available panel label in alphabetical sequence."""
             # Standard panel label sequence
@@ -368,6 +218,215 @@ class MatchPanelCaption(ABC):
                     if double_char not in used_labels:
                         return double_char
             return "unknown"  # Fallback
+
+        # Group by panel label
+        label_to_matches = {}
+        for match in panel_matches:
+            panel_label = match["panel_object"].panel_label
+            # Handle empty labels specially by assigning them a unique temporary key
+            if not panel_label.strip():
+                # Give each empty label a unique identifier
+                panel_label = f"__empty_{match['detection_idx']}"
+
+            if panel_label not in label_to_matches:
+                label_to_matches[panel_label] = []
+            label_to_matches[panel_label].append(match)
+
+        # Track panels with conflict resolution
+        processed_panels = []
+        conflicts_found = False
+        used_detection_indices = set()  # Track which detections have been used
+
+        # Initialize tracking for conflicting panels
+        if not hasattr(figure, "conflicting_panels"):
+            figure.conflicting_panels = []
+
+        # Track used labels
+        matched_labels = set()
+
+        # Process each unique panel label
+        for panel_label, matches in label_to_matches.items():
+            # Check if this is a temporarily assigned empty label
+            is_empty_label = panel_label.startswith("__empty_")
+
+            # Get the original label (or use empty string for empty labels)
+            original_label = "" if is_empty_label else panel_label
+
+            # Look up the original panel if it exists
+            original_panel = original_panels.get(original_label)
+
+            if not original_panel and not is_empty_label and original_label.strip():
+                # This is potentially a panel detected in the image but not in original text
+                logger.info(
+                    f"New panel label '{original_label}' identified via image detection for figure {figure.figure_label}"
+                )
+                original_panel = None  # Keep None, but continue processing
+
+            if len(matches) == 1:
+                # No conflict for this panel label
+                match = matches[0]
+                detection = match["detection"]
+                used_detection_indices.add(match["detection_idx"])
+
+                # For empty labels, assign the next available letter
+                if is_empty_label:
+                    original_label = get_next_available_label(matched_labels)
+                    logger.info(
+                        f"Assigning sequential label '{original_label}' to unlabeled panel in figure {figure.figure_label}"
+                    )
+
+                if original_panel:
+                    # Create panel with original caption and new bbox
+                    panel = Panel(
+                        panel_label=original_label,  # Use the original or newly assigned label
+                        # Use the original caption, not the one from match_caption_panel
+                        panel_caption=original_panel.panel_caption,
+                        panel_bbox=detection["bbox"],
+                        confidence=detection["confidence"],
+                        # Preserve all other original data
+                        sd_files=original_panel.sd_files
+                        if hasattr(original_panel, "sd_files")
+                        else [],
+                        ai_response=original_panel.ai_response
+                        if hasattr(original_panel, "ai_response")
+                        else None,
+                    )
+                else:
+                    # Create a new panel from detection without original data
+                    panel = Panel(
+                        panel_label=original_label,  # Use the original or newly assigned label
+                        panel_caption=match["panel_object"].panel_caption,
+                        panel_bbox=detection["bbox"],
+                        confidence=detection["confidence"],
+                        sd_files=[],
+                        ai_response=None,
+                    )
+                processed_panels.append(panel)
+                # Track the used label
+                matched_labels.add(original_label)
+
+            else:
+                # Conflict: multiple detections assigned the same label
+                conflicts_found = True
+                logger.warning(
+                    f"Found {len(matches)} panels with label {original_label} in figure {figure.figure_label}"
+                )
+
+                # First attempt: resolve by finding closest match to original position
+                best_match = None
+                if (
+                    original_panel
+                    and hasattr(original_panel, "panel_bbox")
+                    and original_panel.panel_bbox
+                ):
+                    best_match = self._find_best_position_match(
+                        matches, original_panel.panel_bbox
+                    )
+                    if best_match:
+                        logger.info(
+                            f"Resolved conflict for panel {original_label} using position similarity"
+                        )
+
+                # If no position match was found or original position wasn't available,
+                # fall back to using the detection with highest confidence
+                if not best_match:
+                    best_match = max(
+                        matches, key=lambda m: m["detection"]["confidence"]
+                    )
+                    logger.info(
+                        f"Resolved conflict for panel {original_label} using confidence score"
+                    )
+
+                # Create panel with the best match
+                detection = best_match["detection"]
+                used_detection_indices.add(best_match["detection_idx"])
+
+                # For empty labels, assign the next available letter
+                if is_empty_label:
+                    original_label = get_next_available_label(matched_labels)
+                    logger.info(
+                        f"Assigning sequential label '{original_label}' to conflicting unlabeled panel in figure {figure.figure_label}"
+                    )
+
+                if original_panel:
+                    panel = Panel(
+                        panel_label=original_label,  # Use the original or newly assigned label
+                        # Use the original caption, not the one from match_caption_panel
+                        panel_caption=original_panel.panel_caption,
+                        panel_bbox=detection["bbox"],
+                        confidence=detection["confidence"],
+                        # Preserve all other original data
+                        sd_files=original_panel.sd_files
+                        if hasattr(original_panel, "sd_files")
+                        else [],
+                        ai_response=original_panel.ai_response
+                        if hasattr(original_panel, "ai_response")
+                        else None,
+                    )
+                else:
+                    # Create a new panel from detection without original data
+                    panel = Panel(
+                        panel_label=original_label,  # Use the original or newly assigned label
+                        panel_caption=best_match["panel_object"].panel_caption,
+                        panel_bbox=detection["bbox"],
+                        confidence=detection["confidence"],
+                        sd_files=[],
+                        ai_response=None,
+                    )
+                processed_panels.append(panel)
+                # Track the used label
+                matched_labels.add(original_label)
+
+                # Track the conflicting matches that were not used
+                for conflict_match in matches:
+                    if conflict_match != best_match:  # Skip the one we're using
+                        used_detection_indices.add(conflict_match["detection_idx"])
+
+                        # For conflicts with empty labels, assign sequential labels right away
+                        if is_empty_label:
+                            conflict_label = get_next_available_label(matched_labels)
+                            matched_labels.add(conflict_label)
+
+                            # Create a new panel for this detection with sequential label
+                            conflict_panel = Panel(
+                                panel_label=conflict_label,
+                                panel_caption=conflict_match[
+                                    "panel_object"
+                                ].panel_caption,
+                                panel_bbox=conflict_match["detection"]["bbox"],
+                                confidence=conflict_match["detection"]["confidence"],
+                                sd_files=[],
+                                ai_response=None,
+                            )
+                            processed_panels.append(conflict_panel)
+                            logger.info(
+                                f"Created new panel with label '{conflict_label}' from conflicting detection in figure {figure.figure_label}"
+                            )
+                        else:
+                            # Standard conflict handling for non-empty labels
+                            figure.conflicting_panels.append(
+                                {
+                                    "panel_label": original_label,
+                                    "detection_idx": conflict_match["detection_idx"],
+                                    "confidence": conflict_match["detection"][
+                                        "confidence"
+                                    ],
+                                    "bbox": conflict_match["detection"]["bbox"],
+                                }
+                            )
+
+        if conflicts_found:
+            logger.info(f"Resolved panel conflicts in figure {figure.figure_label}")
+
+        # Check for original panels that didn't get matched to any detection
+        for label, panel in original_panels.items():
+            if label not in matched_labels:
+                logger.warning(
+                    f"Original panel {label} not matched to any detection in figure {figure.figure_label}"
+                )
+                # Add the original panel without a bbox
+                processed_panels.append(panel)
+                matched_labels.add(label)  # Update matched labels
 
         # Add unmatched detections as new panels with sequential labels
         unmatched_detections = [

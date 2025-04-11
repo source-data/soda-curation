@@ -663,3 +663,309 @@ class TestPanelPreservation:
                 "C",
                 "D",
             }
+
+    def test_additional_panel_detection_and_sequential_labeling(
+        self, mock_config, mock_prompt_handler, tmp_path
+    ):
+        """
+        Test handling of cases where object detection finds more panels
+        than were originally extracted from captions.
+
+        This test verifies:
+        1. All originally extracted panels (A, B, C) are preserved
+        2. Additional detected panels get sequential labels (D, E)
+        3. Panel captions are properly assigned
+        """
+        # Create a mock figure with panels A, B, C from caption extraction
+        panels = [
+            Panel(
+                panel_label="A",
+                panel_caption="Original Caption A",
+                sd_files=["data_A.txt"],
+            ),
+            Panel(
+                panel_label="B",
+                panel_caption="Original Caption B",
+                sd_files=["data_B.txt"],
+            ),
+            Panel(
+                panel_label="C",
+                panel_caption="Original Caption C",
+                sd_files=["data_C.txt"],
+            ),
+        ]
+        figure = Figure(
+            figure_label="Figure 1",
+            img_files=["figure1.png"],
+            sd_files=[],
+            panels=panels,
+            figure_caption="Figure 1 with panels A, B, C and potentially more",
+        )
+        zip_structure = ZipStructure(figures=[figure])
+
+        # Create a file for the figure to avoid FileNotFoundError
+        figure_path = tmp_path / "figure1.png"
+        figure_path.touch()
+
+        # Mock the object detection to find 5 panels (more than the original 3)
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+        ) as mock_convert, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
+        ) as mock_extract_image:
+            mock_convert.return_value = (Mock(), "figure1.png")
+            mock_detector = Mock()
+            mock_detector.detect_panels.return_value = [
+                {
+                    "bbox": [0.1, 0.1, 0.2, 0.2],
+                    "confidence": 0.95,
+                },  # Will be matched to A
+                {
+                    "bbox": [0.3, 0.3, 0.4, 0.4],
+                    "confidence": 0.90,
+                },  # Will be matched to B
+                {
+                    "bbox": [0.5, 0.5, 0.6, 0.6],
+                    "confidence": 0.85,
+                },  # Will be matched to C
+                {
+                    "bbox": [0.7, 0.7, 0.8, 0.8],
+                    "confidence": 0.80,
+                },  # Extra panel 1 - should get label D
+                {
+                    "bbox": [0.9, 0.9, 1.0, 1.0],
+                    "confidence": 0.75,
+                },  # Extra panel 2 - should get label E
+            ]
+            mock_create_detector.return_value = mock_detector
+
+            # Mock panel image extraction
+            mock_extract_image.return_value = "encoded_image"
+
+            # Create a test implementation that simulates AI labeling
+            match_count = 0
+
+            class TestMatchPanelCaption(MatchPanelCaption):
+                def _validate_config(self):
+                    pass
+
+                def _match_panel_caption(self, panel_image, figure_caption):
+                    nonlocal match_count
+                    match_count += 1
+
+                    # Match the first 3 panels to A, B, C
+                    if match_count == 1:
+                        return PanelObject(
+                            panel_label="A", panel_caption="AI Caption for A"
+                        )
+                    elif match_count == 2:
+                        return PanelObject(
+                            panel_label="B", panel_caption="AI Caption for B"
+                        )
+                    elif match_count == 3:
+                        return PanelObject(
+                            panel_label="C", panel_caption="AI Caption for C"
+                        )
+                    elif match_count == 4:
+                        # AI identifies a new panel as D
+                        return PanelObject(
+                            panel_label="D", panel_caption="AI Caption for D"
+                        )
+                    else:
+                        # AI cannot determine the label for the last panel (empty label)
+                        return PanelObject(
+                            panel_label="", panel_caption="AI Caption for unknown panel"
+                        )
+
+            # Process the figure
+            matcher = TestMatchPanelCaption(mock_config, mock_prompt_handler, tmp_path)
+            result = matcher.process_figures(zip_structure)
+
+            # Verify results
+            assert len(result.figures[0].panels) == 5, "Should have 5 panels total"
+
+            # Check that original panels A, B, C are preserved with their original captions
+            panel_labels = {p.panel_label for p in result.figures[0].panels}
+            assert panel_labels == {
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+            }, "Should have panels A through E"
+
+            # Verify original data is preserved for original panels
+            for label in ["A", "B", "C"]:
+                panel = next(
+                    p for p in result.figures[0].panels if p.panel_label == label
+                )
+                original_panel = next(p for p in panels if p.panel_label == label)
+                assert (
+                    panel.panel_caption == original_panel.panel_caption
+                ), f"Original caption for panel {label} should be preserved"
+                assert (
+                    panel.sd_files == original_panel.sd_files
+                ), f"SD files for panel {label} should be preserved"
+
+            # Verify sequential labeling for new panels
+            panel_d = next(p for p in result.figures[0].panels if p.panel_label == "D")
+            panel_e = next(p for p in result.figures[0].panels if p.panel_label == "E")
+
+            assert (
+                panel_d.panel_caption == "AI Caption for D"
+            ), "Panel D should have AI-generated caption"
+            assert (
+                panel_e.panel_caption == "AI Caption for unknown panel"
+            ), "Panel E should have AI-generated caption"
+
+            # Verify bounding boxes were correctly assigned
+            assert panel_d.panel_bbox == [0.7, 0.7, 0.8, 0.8]
+            assert panel_e.panel_bbox == [0.9, 0.9, 1.0, 1.0]
+
+    def test_panel_sequential_labeling_with_gaps(
+        self, mock_config, mock_prompt_handler, tmp_path
+    ):
+        """
+        Test sequential labeling when original panels have gaps in their labeling.
+
+        This test verifies:
+        1. If original panels are A, C, E (with gaps), and we detect 2 additional panels,
+        they should be assigned labels B and D to fill the gaps first.
+        """
+        # Create a mock figure with panels A, C, E (with gaps in sequence)
+        panels = [
+            Panel(
+                panel_label="A",
+                panel_caption="Original Caption A",
+                sd_files=["data_A.txt"],
+            ),
+            Panel(
+                panel_label="C",
+                panel_caption="Original Caption C",
+                sd_files=["data_C.txt"],
+            ),
+            Panel(
+                panel_label="E",
+                panel_caption="Original Caption E",
+                sd_files=["data_E.txt"],
+            ),
+        ]
+        figure = Figure(
+            figure_label="Figure 1",
+            img_files=["figure1.png"],
+            sd_files=[],
+            panels=panels,
+            figure_caption="Figure 1 with panels A, C, E (B and D missing)",
+        )
+        zip_structure = ZipStructure(figures=[figure])
+
+        # Create a file for the figure
+        figure_path = tmp_path / "figure1.png"
+        figure_path.touch()
+
+        # Mock the object detection to find 5 panels
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+        ) as mock_convert, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
+        ) as mock_extract_image:
+            mock_convert.return_value = (Mock(), "figure1.png")
+            mock_detector = Mock()
+            mock_detector.detect_panels.return_value = [
+                {
+                    "bbox": [0.1, 0.1, 0.2, 0.2],
+                    "confidence": 0.95,
+                },  # Will be matched to A
+                {
+                    "bbox": [0.3, 0.3, 0.4, 0.4],
+                    "confidence": 0.90,
+                },  # Will be matched to C
+                {
+                    "bbox": [0.5, 0.5, 0.6, 0.6],
+                    "confidence": 0.85,
+                },  # Will be matched to E
+                {
+                    "bbox": [0.7, 0.7, 0.8, 0.8],
+                    "confidence": 0.80,
+                },  # Extra panel 1 - should get label B
+                {
+                    "bbox": [0.9, 0.9, 1.0, 1.0],
+                    "confidence": 0.75,
+                },  # Extra panel 2 - should get label D
+            ]
+            mock_create_detector.return_value = mock_detector
+
+            # Mock panel image extraction
+            mock_extract_image.return_value = "encoded_image"
+
+            # Create a test implementation that returns specific panel labels
+            match_count = 0
+
+            class TestMatchPanelCaption(MatchPanelCaption):
+                def _validate_config(self):
+                    pass
+
+                def _match_panel_caption(self, panel_image, figure_caption):
+                    nonlocal match_count
+                    match_count += 1
+
+                    # Match panels to A, C, E
+                    if match_count == 1:
+                        return PanelObject(
+                            panel_label="A", panel_caption="AI Caption for A"
+                        )
+                    elif match_count == 2:
+                        return PanelObject(
+                            panel_label="C", panel_caption="AI Caption for C"
+                        )
+                    elif match_count == 3:
+                        return PanelObject(
+                            panel_label="E", panel_caption="AI Caption for E"
+                        )
+                    else:
+                        # AI cannot determine the label for extra panels
+                        return PanelObject(
+                            panel_label="", panel_caption="AI Caption for unknown panel"
+                        )
+
+            # Process the figure
+            matcher = TestMatchPanelCaption(mock_config, mock_prompt_handler, tmp_path)
+            result = matcher.process_figures(zip_structure)
+
+            # Verify results
+            assert len(result.figures[0].panels) == 5, "Should have 5 panels total"
+
+            # Check that all panels A through E are present
+            panel_labels = {p.panel_label for p in result.figures[0].panels}
+            assert panel_labels == {
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+            }, "Should have panels A through E"
+
+            # Verify new panels got the B and D labels (filling the gaps)
+            new_panels = [
+                p for p in result.figures[0].panels if p.panel_label in ["B", "D"]
+            ]
+            assert (
+                len(new_panels) == 2
+            ), "Should have two new panels with labels B and D"
+
+            # Make sure original panels are preserved
+            for label in ["A", "C", "E"]:
+                panel = next(
+                    p for p in result.figures[0].panels if p.panel_label == label
+                )
+                original_panel = next(p for p in panels if p.panel_label == label)
+                assert (
+                    panel.panel_caption == original_panel.panel_caption
+                ), f"Original caption for panel {label} should be preserved"
+                assert (
+                    panel.sd_files == original_panel.sd_files
+                ), f"SD files for panel {label} should be preserved"
