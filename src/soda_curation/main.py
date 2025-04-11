@@ -5,12 +5,9 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (
-    SectionExtractorOpenAI,
-)
-
 from ._main_utils import (
     calculate_hallucination_score,
+    clean_original_source_data_files,
     cleanup_extract_dir,
     setup_extract_dir,
     validate_paths,
@@ -26,12 +23,18 @@ from .pipeline.data_availability.data_availability_openai import (
 from .pipeline.extract_captions.extract_captions_openai import (
     FigureCaptionExtractorOpenAI,
 )
+from .pipeline.extract_sections.extract_sections_openai import SectionExtractorOpenAI
 from .pipeline.manuscript_structure.manuscript_structure import CustomJSONEncoder
 from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
 from .pipeline.match_caption_panel.match_caption_panel_openai import (
     MatchPanelCaptionOpenAI,
 )
 from .pipeline.prompt_handler import PromptHandler
+
+# from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (
+#     SectionExtractorOpenAI,
+# )
+
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +73,10 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             # Extract manuscript structure (first pipeline step)
             extractor = XMLStructureExtractor(zip_path, str(extract_dir))
             zip_structure = extractor.extract_structure()
+            # Store the original source data files for each figure
+            original_source_data_files = {
+                fig.figure_label: list(fig.sd_files) for fig in zip_structure.figures
+            }
 
             # Extract captions from figures (second pipeline step)
             manuscript_content = extractor.extract_docx_content(zip_structure.docx)
@@ -86,7 +93,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             ) = section_extractor.extract_sections(
                 doc_content=manuscript_content, zip_structure=zip_structure
             )
-
             # Extract individual captions from figure legends
             caption_extractor = FigureCaptionExtractorOpenAI(
                 config_loader.config, prompt_handler
@@ -138,16 +144,14 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             )
             for fig in zip_structure.figures:
                 if fig.figure_caption:
-                    fig.hallucination_score = calculate_hallucination_score(
-                        fig.figure_caption, manuscript_content
-                    )
-
-                # Check for hallucinations in panel captions
-                for panel in fig.panels:
-                    if panel.panel_caption:
-                        panel.hallucination_score = calculate_hallucination_score(
-                            panel.panel_caption, manuscript_content
+                    if fig.hallucination_score == 1:
+                        fig.hallucination_score = calculate_hallucination_score(
+                            fig.figure_caption, manuscript_content
                         )
+
+            zip_structure = clean_original_source_data_files(
+                zip_structure, original_source_data_files
+            )
 
             # Convert to JSON using CustomJSONEncoder
             output_json = json.dumps(

@@ -6,9 +6,10 @@ default: &default
     ##########################################################
     # 1) Extract  Figure Legends and Data Availability Sections
     ##########################################################
+    # Updated extract_sections prompts for smolagents implementation
     extract_sections:
       openai:
-        # OpenAI-specific parameters for this step only
+        # OpenAI-specific parameters remain the same
         model: "gpt-4o"
         temperature: 0.1
         top_p: 1.0
@@ -24,7 +25,7 @@ default: &default
                 
             The text will be encoded as a `HTML` string and you are required to keep all the information available.
 
-            Please extract the relevant portion(s) verbatim, exactly as they appear in the original text. 
+            Please extract the relevant portion(s) VERBATIM, exactly as they appear in the original text. 
 
             Key Instructions for extracting `Figure Legends` section:
             1. Look for figure captions throughout the entire document - they can appear:
@@ -41,40 +42,36 @@ default: &default
               - Figure legends
               - Figure descriptions
 
-            3. IMPORTANT: Return the COMPLETE TEXT found, preserving:
+            3. CRITICAL: You have access to a verification tool that checks if your extracted text is truly verbatim.
+              USE THIS TOOL to confirm ALL extracted sections before returning them.
+              You MUST ensure each extraction passes verification before finalizing your answer.
+
+            4. IMPORTANT: Return the COMPLETE TEXT found, preserving:
               - All formatting and special characters
               - Statistical information
               - Scale bars and measurements
               - Panel labels and descriptions
               - Source references
 
-            4. DO NOT:
+            5. DO NOT:
               - Modify or rewrite the text
               - Summarize or shorten descriptions
               - Skip any figure-related content
               - Add any explanatory text of your own
 
-            Please extract the relevant portion(s) verbatim, exactly as they appear in the original text.
-
             Key Instructions for extracting `Data availability` section:
             1. Look for the section titled "Data Availability" or similar in the manuscript.
-            2. Extract the content of this section.
-            3. Follow same formating instructions as for the `Figure Legends` section.
+            2. Extract the content of this section VERBATIM.
+            3. Verify the extraction using the verification tool.
+            4. Follow same formatting instructions as for the `Figure Legends` section.
 
-            INPUT: Expected figures: $expected_figure_count
-
-            Expected figure labels: $expected_figure_labels
-
-            Manuscript_text: $manuscript_text
-
-            OUTPUT: 
-
-            ```json
+            Remember: You MUST use the verification tool to ensure your extracted sections are exactly as they appear in the document.
+            
+            Return the extracted sections in the following format:
             {
               "figure_legends": "Complete figure-related text content from the manuscript",
               "data_availability": "Complete data availability section content from the manuscript"
             }
-            ```
           user: |
             Expected figures: $expected_figure_count
 
@@ -82,103 +79,105 @@ default: &default
             
             Manuscript_text: $manuscript_text
 
-            Return ONLY the found figure-related text, exactly as it appears in the document.
+            Extract the figure legends and data availability sections VERBATIM from the manuscript.
+            Use the verification tool to ensure your extractions are exactly as they appear in the document.
 
     ##########################################################
     # 2) Extract Individual Captions Step
     ##########################################################
-    extract_individual_captions:
+    extract_caption_title:
       openai:
-        # Potentially different parameters here, if desired
         model: "gpt-4o"
         temperature: 0.1
         top_p: 1.0
-        max_tokens: 8184
+        max_tokens: 4096
         frequency_penalty: 0.0
         presence_penalty: 0.0
         json_mode: true
         prompts:
           system: |
-            You are an AI assistant specializing in extracting figure captions from scientific manuscripts. 
-            A section containing ALL figure captions has been provided.
+            You are an AI assistant specializing in extracting figure captions from scientific manuscripts.
+            
+            Your task is to extract ONLY the following for a specific figure:
+            1. The figure label (e.g., "Figure 1")
+            2. The caption title (the main descriptive heading of the figure)
+            3. The complete caption text including all panel descriptions
+            
+            Guidelines:
+            - Extract EXACTLY as it appears in the text (VERBATIM)
+            - The caption title is typically the text before the first panel label
+            - Maintain ALL formatting, punctuation, and special characters
+            - Include HTML formatting if present
+            - DO NOT modify or summarize the text
+            
+            CRITICAL: You have access to a verification tool called 'verify_caption_extraction' that checks if your extracted text is truly verbatim.
+            ALWAYS use this tool to verify your extraction before finalizing your answer.
+            If after 5 tries you can not get the full verbatim, return the most similar caption possible.
 
-            Your task is to do a VERBATIM parse of these captions into a structured format. If the input text or
-            captions are in HTML format, extract the data keeping the exact same HTML format.
-
-            1. You MUST extract EXACTLY $expected_figure_count figure captions from the provided text.
-
-            2. For each caption (Figure 1 through Figure $expected_figure_count):
-              - Extract the TITLE of the figure (the main descriptive sentence before any panel descriptions).
-                The title should not contain panel labels in it. If no title would be available, then return
-                an empty string as figure title.
-              - Copy the ENTIRE caption text EXACTLY as it appears
-              - Extract panel information, including:
-                * Panel labels (e.g., A, B, C)
-                * Panel captions
-                * Keep the panel captions EXACTLY as they are in the text
-              - Maintain ALL formatting, punctuation, and special characters
-              - DO NOT modify or summarize the text
-              - The caption show panels ordered in a sequencial and logical order,
-                beginning always by the first element of a sequence, such as A, 1, or i. Most commonly will be A.
-              - The panel naming conventions will be consistent within a figure
-              - The panel labels must follow a monotically increasing sequence, without missing any element.
-                - Example. If you have panels A, B, E, F --> Then you should response with the panels: A, B, C, D, E, F.
-                - Make sure that you correctly identify the first label and last label and fill the sequence in between
-                - Extract the panel caption for each of the panel lables
-
-            3. Create a JSON object where:
-              - Keys are "Figure 1", "Figure 2", etc. (up to $expected_figure_count)
-              - Values are objects containing:
-                * "title": The main descriptive sentence of the figure
-                * "caption": The complete, exact caption text
-                * "panels": A list of panel objects with "panel_label" and "panel_caption". Empty if no panels are defined.
-
-            4. RULES:
-              - Include ONLY main figures (1,2,3...)
-              - Skip EV figures or supplementary figures
-              - Maintain consecutive numbering
-              - Keep all statistical information and references
-              - Do not include the title in the caption text
-
-            The text of the figure captions will be in HTML format. Make sure to do a 
-            verbatim extraction, exactly as they appear in the original text. Include all the HTML formatting in the output.
-
-            The figures typically appear as:
-
-            Figure X: {Caption Title}. {Caption text}
-
-            Example output format:
-            ```json
-            [
-              "Figure 1": {
-                "figure_label": "Figure 1",
-                "caption_title": "<strong>Main descriptive sentence of the figure</strong>",
-                "figure_caption": "Figure caption not including <em>title and label</em>, but including all panel descriptions",
-                "panels": [
-                  {"panel_label": "A", "panel_caption": "Description of panel A"},
-                  {"panel_label": "B", "panel_caption": "Description of panel B"}
-                ]
-              },
-              {
-                "figure_label": "Figure 2"
-                "caption_title": "Analysis of protein expression in response to treatment",
-                "figure_caption": "A) Western blot analysis... B) Quantification of...",
-                "panels": [
-                  {"panel_label": "A", "panel_caption": "Western blot analysis"},
-                  {"panel_label": "B", "panel_caption": "Quantification of..."}
-                ]
-              }
-            ]
-            ```
+            Return your result as:
+            {
+              "figure_label": "Figure X",
+              "caption_title": "The main descriptive title",
+              "figure_caption": "The complete caption text including all panel descriptions",
+              "is_verbatim": true/false
+            }
+          
           user: |
-            Figure captions of the document: $figure_captions
+            Extract the caption title and full text for $figure_label from the following text:
+            
+            $figure_captions
+            
+            Remember to verify your extraction is verbatim using the verification tool.
 
-            Expected figure count: $expected_figure_count
-
-            Expected labels: $expected_figure_labels
-
-    ##########################################################
-    # 3) Extract sources from data availability section
+    extract_panel_sequence:
+      openai:
+        model: "gpt-4o"
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 4096
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            You are an AI assistant specializing in extracting figure panel information from scientific manuscript captions.
+            
+            Your task is to extract ONLY the panel labels and their descriptions from a figure caption:
+            1. Identify all panel labels (A, B, C, etc.)
+            2. Extract the description for each panel
+            
+            Guidelines:
+            - Panel labels typically appear as (A), (B), etc., or A), B), etc. in the caption
+            - Make sure to extract ALL panel labels in the caption
+            - Extract panel descriptions EXACTLY as they appear (VERBATIM)
+            - Panel labels must follow a monotonically increasing sequence:
+              * For letters: A, B, C, D, E... (not A, B, D, E...)
+              * For Roman numerals: I, II, III, IV... (not I, II, IV...)
+              * For numbers: 1, 2, 3, 4... (not 1, 3, 4...)
+            
+            CRITICAL: You have access to a tool called 'verify_panel_sequence' that checks if your panel labels follow a complete sequence without gaps.
+            ALWAYS use this tool to verify your panel labels before finalizing your answer.
+            
+            If the tool indicates that your sequence has gaps:
+            1. Add the missing panel labels to your list
+            2. Use empty strings as captions for the added panels
+            
+            Return your result as:
+            {
+              "figure_label": "Figure X",
+              "panels": [
+                {"panel_label": "A", "panel_caption": "Description of panel A"},
+                {"panel_label": "B", "panel_caption": "Description of panel B"},
+                ...
+              ]
+            }
+          
+          user: |
+            Extract all panel labels and their descriptions from the following caption for $figure_label:
+            
+            $figure_caption
+            
+            Make sure to include ALL panels and verify that your panel sequence is complete without gaps using the verification tool.    # 3) Extract sources from data availability section
     ##########################################################
     extract_data_sources:
       openai:
