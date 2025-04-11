@@ -149,13 +149,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                             fig.figure_caption, manuscript_content
                         )
 
-                # Check for hallucinations in panel captions
-                for panel in fig.panels:
-                    if panel.panel_caption:
-                        panel.hallucination_score = calculate_hallucination_score(
-                            panel.panel_caption, manuscript_content
-                        )
-
             zip_structure = clean_original_source_data_files(
                 zip_structure, original_source_data_files
             )

@@ -483,6 +483,11 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 1.1.0 
+- Verbatim check tool for agentic AI added to ensure verbatim caption extractions
+- Remove hallucination score from panels
+- Remove original source data files from figure level source data
+
 ### 1.0.6 - 1.0.7 (2025-03-24)
 - Modified normalization of tests and solved some error issues on benchmarking
 - Modified two ground truths with the wrong values in extracting all the captions
