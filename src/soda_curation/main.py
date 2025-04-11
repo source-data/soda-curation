@@ -144,9 +144,10 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             )
             for fig in zip_structure.figures:
                 if fig.figure_caption:
-                    fig.hallucination_score = calculate_hallucination_score(
-                        fig.figure_caption, manuscript_content
-                    )
+                    if fig.hallucination_score == 1:
+                        fig.hallucination_score = calculate_hallucination_score(
+                            fig.figure_caption, manuscript_content
+                        )
 
                 # Check for hallucinations in panel captions
                 for panel in fig.panels:
