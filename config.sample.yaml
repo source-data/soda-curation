@@ -1,0 +1,133 @@
+##########################################################
+#  Default Profile
+##########################################################
+default: &default
+  pipeline:
+    ##########################################################
+    # 1) Extract Figure Legends and Data Availability Sections
+    ##########################################################
+    extract_sections:
+      openai:
+        model: "gpt-4o"
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            # System prompt for verbatim section extraction
+            # Includes instructions for using verification tools to ensure verbatim extraction
+          user: |
+            # User prompt template with variables:
+            # $expected_figure_count
+            # $expected_figure_labels
+            # $manuscript_text
+
+    ##########################################################
+    # 2) Extract Individual Captions
+    ##########################################################
+    extract_caption_title:
+      openai:
+        model: "gpt-4o"
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 4096
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            # System prompt for caption extraction
+            # Includes verification tool 'verify_caption_extraction'
+          user: |
+            # User prompt template with variables:
+            # $figure_label
+            # $figure_captions
+
+    extract_panel_sequence:
+      openai:
+        model: "gpt-4o"
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 4096
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            # System prompt for panel sequence extraction
+            # Includes verification tool 'verify_panel_sequence'
+          user: |
+            # User prompt template with variables:
+            # $figure_label
+            # $figure_caption
+
+    ##########################################################
+    # 3) Extract Data Sources
+    ##########################################################
+    extract_data_sources:
+      openai:
+        model: "gpt-4o-mini"
+        temperature: 0.1
+        top_p: 0.5
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            # System prompt for data source extraction
+          user: |
+            # User prompt template with variables:
+            # $data_availability
+
+    ##########################################################
+    # 4) Assign Panel Source
+    ##########################################################
+    assign_panel_source:
+      openai:
+        model: "gpt-4o"
+        temperature: 0.3
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            # System prompt for panel source assignment
+          user: |
+            # User prompt template with variables:
+            # $panel_labels
+            # $file_list
+
+    ##########################################################
+    # 5) Match Caption Panel
+    ##########################################################
+    match_caption_panel:
+      openai:
+        model: "gpt-4o"
+        temperature: 0.3
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            # System prompt for matching panel images to captions
+          user: |
+            # User prompt template with variables:
+            # $figure_caption
+
+    ##########################################################
+    # 6) Object Detection (non-AI)
+    ##########################################################
+    object_detection:
+      model_path: "data/models/panel_detection_model_no_labels.pt"
+      confidence_threshold: 0.25
+      iou_threshold: 0.1
+      image_size: 512
+      max_detections: 30

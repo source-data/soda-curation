@@ -244,66 +244,103 @@ The benchmark system generates several output files:
 
 ## Pipeline Steps
 
-The soda-curation pipeline consists of several steps to process and analyze manuscript data:
+The soda-curation pipeline processes scientific manuscripts through the following detailed steps:
 
-1. **ZIP Structure Analysis**
+### 1. ZIP Structure Analysis
+- **Purpose**: Extract and organize the manuscript's structure and components
+- **Process**:
+  - Parses the ZIP file to identify manuscript components (XML, DOCX/PDF, figures, source data)
+  - Creates a structured representation of the manuscript's files
+  - Establishes relationships between figures and their associated files
+  - Extracts manuscript content from DOCX/PDF for further analysis
+  - Builds the initial `ZipStructure` object that will be enriched throughout the pipeline
 
-   - Analyzes the contents of the input ZIP file
-   - Identifies key components such as XML, DOCX, PDF, and figure files
-   - Creates a structured representation of the manuscript
-   - The needed information is extracted from the `<notes>` tag in the XML file.
+### 2. Section Extraction
+- **Purpose**: Identify and extract critical manuscript sections
+- **Process**:
+  - Uses AI to locate figure legend sections and data availability sections
+  - Extracts these sections verbatim to preserve all formatting and details
+  - Verifies extractions against the original document to prevent hallucinations
+  - Returns structured content for further processing
+  - Preserves HTML formatting from the original document
 
-2. **Figure Caption Extraction**
+### 3. Individual Caption Extraction
+- **Purpose**: Parse figure captions into structured components
+- **Process**:
+  - Divides full figure legends section into individual figure captions
+  - For each figure, extracts:
+    - Figure label (e.g., "Figure 1")
+    - Caption title (main descriptive heading)
+    - Complete caption text with panel descriptions
+  - Identifies panel labels (A, B, C, etc.) within each caption
+  - Ensures panel labels follow a monotonically increasing sequence
+  - Associates each panel with its specific description from the caption
 
-   - Extracts figure captions from the DOCX or PDF file
-   - Uses AI (OpenAI) to process and structure the captions
-   - Matches captions to the corresponding figures identified in step 1
+### 4. Data Availability Analysis
+- **Purpose**: Extract structured data source information
+- **Process**:
+  - Analyzes the data availability section to identify database references
+  - Extracts database names, accession numbers, and URLs/DOIs
+  - Structures this information for linking to the appropriate figures/panels
+  - Creates standardized references to external data sources
 
-3. **Object Detection**
+### 5. Panel Source Assignment
+- **Purpose**: Match source data files to specific figure panels
+- **Process**:
+  - Analyzes file names and patterns in source data files
+  - Maps each source data file to its corresponding panel(s)
+  - Uses panel indicators in filenames, data types, and logical groupings
+  - Identifies files that cannot be confidently assigned to specific panels
+  - Handles cases where files belong to multiple panels
 
-   - Uses a YOLOv10 model to detect panels within figure images
-   - Identifies bounding boxes for individual panels in each figure
+### 6. Object Detection & Panel Matching
+- **Purpose**: Detect individual panels within figures and match with captions
+- **Process**:
+  - **Panel Detection**:
+    - Uses a trained YOLOv10 model to detect panel regions within figure images
+    - Identifies bounding boxes for each panel with confidence scores
+    - Handles complex multi-panel figures with varying layouts
+  
+  - **AI-Powered Caption Matching**:
+    - For each detected panel region, extracts the panel image
+    - Uses AI vision capabilities to analyze panel contents
+    - Matches visual content with appropriate panel descriptions from the caption
+    - Resolves conflicts when multiple detections map to the same panel label
+    - Assigns sequential labels (A, B, C...) to any additional detected panels
+    - Preserves original caption information while adding visual context
 
-4. **Panel Caption Matching**
-
-   - Matches detected panels with their specific captions
-   - Uses AI to analyze the visual content of each panel and match it with the appropriate part of the figure caption
-
-5. **Output Generation**
-   - Compiles all processed information into a structured JSON format
-   - Includes manuscript details, figures, panels, and their associated captions
+### 7. Output Generation & Verification
+- **Purpose**: Compile all processed information and verify quality
+- **Process**:
+  - Assembles the complete manuscript structure with all enriched information
+  - Calculates hallucination scores to verify content authenticity
+  - Cleans up source data file references
+  - Computes token usage and cost metrics for AI operations
+  - Generates structured JSON output according to the defined schema
 
 Throughout these steps, the pipeline leverages AI capabilities to enhance the accuracy of caption extraction and panel matching. The process is configurable through the `config.yaml` file, allowing for adjustments in AI models, detection parameters, and debug options.
 
 In debug mode, the pipeline can be configured to process only the first figure, saving time during development and testing. Debug images and additional logs are saved to help with troubleshooting and refinement of the curation process.
 
-## Hallucination Detection
+## Verbatim Extraction Verification
 
-The pipeline now includes automatic detection of potential hallucinations in AI-generated or extracted text. This feature helps identify when content might have been fabricated rather than extracted from the source document.
+The pipeline now uses an integrated verification approach to ensure text extractions are verbatim rather than hallucinated or modified by the AI.
 
 ### How It Works
 
-The system compares extracted text (figure captions, panel descriptions, etc.) against the original document content using two methods:
+Instead of post-processing comparison with fuzzy matching, the system now:
 
-1. **Exact Matching**: Checks if the normalized text appears verbatim in the source document
-2. **Fuzzy Matching**: For cases where formatting differs but content is correct
+1. **Uses AI Agent Tools**: Specialized verification tools check if extractions are verbatim during the AI processing, not afterward.
+2. **Multi-Attempt Verification**: If verification fails, the AI tries up to 5 times to produce a verbatim extraction.
+3. **Explicit Verbatim Flagging**: Each extraction includes an `is_verbatim` field indicating verification success.
 
-### Implementation Details
+### Implemented Verification Tools
 
-- Text normalization removes HTML tags, standardizes whitespace, and performs other clean-up
-- Plain text extractions are properly matched against HTML source content
-- Special handling for scientific notation and superscript/subscript text
+Three main verification tools have been implemented:
 
-### Hallucination scores
-
-Each analyzed element receives a `possible_hallucination` score between 0 and 1:
-
-- **0.0**: Content verified in source document (not hallucinated)
-- **0.0-0.3**: Minor differences, likely not hallucinated
-- **0.3-0.7**: Moderate differences, possible partial hallucination
-- **0.7-1.0**: Major differences, likely hallucinated
-- **1.0**: No match found in source document
-
+1. **verify_caption_extraction**: Ensures figure captions are extracted verbatim from the manuscript text.
+2. **verify_panel_sequence**: Confirms panel labels follow a complete sequence without gaps (A, B, C... not A, C, D...).
+3. **General verification tool**: For sections like figure legends and data availability.
 
 ## Output Schema
 
@@ -483,10 +520,14 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
-### 1.1.0 
+### 1.1.0 (2025-04-11)
 - Verbatim check tool for agentic AI added to ensure verbatim caption extractions
 - Remove hallucination score from panels
 - Remove original source data files from figure level source data
+- Replaced fuzzy-matching hallucination detection with AI agent verification tools
+- Added tools for verbatim extraction verification of figure captions, sections, and panel sequences
+- Enhanced panel detection to identify all panels in figures regardless of caption mentions
+- Improved panel labeling to ensure sequential labels (A, B, C...) without gaps
 
 ### 1.0.6 - 1.0.7 (2025-03-24)
 - Modified normalization of tests and solved some error issues on benchmarking
