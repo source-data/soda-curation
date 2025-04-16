@@ -59,25 +59,65 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
             # Provider-specific configuration
             provider = test_case["provider"]
 
-            # Create extractor configuration
+            # Create extractor configuration - Updated for new structure with split extraction steps
             extractor_config = {
-                "api_key": None,  # We don't need to pass the API key here
                 "pipeline": {
-                    "extract_individual_captions": {
+                    # Extract caption title configuration
+                    "extract_caption_title": {
                         provider: {
                             "model": test_case["model"],
                             "temperature": test_case["temperature"],
                             "top_p": test_case["top_p"],
+                            "max_tokens": pipeline_config["extract_caption_title"][
+                                provider
+                            ].get("max_tokens", 2048),
+                            "frequency_penalty": pipeline_config[
+                                "extract_caption_title"
+                            ][provider].get("frequency_penalty", 0.0),
+                            "presence_penalty": pipeline_config[
+                                "extract_caption_title"
+                            ][provider].get("presence_penalty", 0.0),
+                            "json_mode": pipeline_config["extract_caption_title"][
+                                provider
+                            ].get("json_mode", True),
                             "prompts": {
-                                "system": pipeline_config[
-                                    "extract_individual_captions"
-                                ][provider]["prompts"]["system"],
-                                "user": pipeline_config["extract_individual_captions"][
+                                "system": pipeline_config["extract_caption_title"][
+                                    provider
+                                ]["prompts"]["system"],
+                                "user": pipeline_config["extract_caption_title"][
                                     provider
                                 ]["prompts"]["user"],
                             },
                         }
-                    }
+                    },
+                    # Extract panel sequence configuration
+                    "extract_panel_sequence": {
+                        provider: {
+                            "model": test_case["model"],
+                            "temperature": test_case["temperature"],
+                            "top_p": test_case["top_p"],
+                            "max_tokens": pipeline_config["extract_panel_sequence"][
+                                provider
+                            ].get("max_tokens", 2048),
+                            "frequency_penalty": pipeline_config[
+                                "extract_panel_sequence"
+                            ][provider].get("frequency_penalty", 0.0),
+                            "presence_penalty": pipeline_config[
+                                "extract_panel_sequence"
+                            ][provider].get("presence_penalty", 0.0),
+                            "json_mode": pipeline_config["extract_panel_sequence"][
+                                provider
+                            ].get("json_mode", True),
+                            "prompts": {
+                                "system": pipeline_config["extract_panel_sequence"][
+                                    provider
+                                ]["prompts"]["system"],
+                                "user": pipeline_config["extract_panel_sequence"][
+                                    provider
+                                ]["prompts"]["user"],
+                            },
+                        }
+                    },
                 },
             }
 
