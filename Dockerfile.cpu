@@ -2,7 +2,7 @@
 
 
 # Use a CPU-only Python image as the base image
-FROM python:3.9-slim-bullseye as base
+FROM python:3.10-slim-bullseye as base
 
 # Set work directory
 WORKDIR /app
@@ -55,21 +55,25 @@ RUN curl -sSL https://install.python-poetry.org | python3 - --version ${POETRY_V
 # Add Poetry to PATH
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-# Copy project files
+# Optimize dependency installation with better caching
 COPY pyproject.toml poetry.lock* ./
-COPY src ./src
-COPY ./data/models/panel_detection_model_no_labels.pt /app/data/models/
 
 
-# Install dependencies and the package
+# Install dependencies only (not the package itself)
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+    && poetry install --no-root --no-interaction --no-ansi
 
 # Install PyTorch for ARM/CPU
 RUN poetry run pip install --no-cache-dir \
     torch==2.0.0 \
     torchvision==0.15.1 \
     --extra-index-url https://download.pytorch.org/whl/cpu
+
+COPY src ./src
+COPY ./data/models/panel_detection_model_no_labels.pt /app/data/models/
+
+# Install the package itself
+RUN poetry install --only-root
 
 # Set environment variables to manage threading and memory
 ENV OMP_NUM_THREADS=1 \
