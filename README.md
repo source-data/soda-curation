@@ -140,9 +140,9 @@ poetry run python -m src.soda_curation.main \
 
 
   poetry run python -m src.soda_curation.main \
-  --zip /app/data/archives//app/data/archives/EMBOJ-2024-116743.zip \
-  --config /app/config.yaml \
-  --output /app/data/output/smolagents-test.json
+  --zip /app/data/archives/EMBOJ-2024-116743.zip \
+  --config /app/config.dev.yaml \
+  --output /app/data/output/test.json
 
 ```
 
@@ -519,6 +519,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 1.1.2 (2025-05-06)
+- Semideterministic individual caption extraction
 
 ### 1.1.0 (2025-04-11)
 - Verbatim check tool for agentic AI added to ensure verbatim caption extractions
