@@ -136,13 +136,19 @@ Inside the container:
 poetry run python -m src.soda_curation.main \
   --zip /app/data/archives/your-manuscript.zip \
   --config /app/config.yaml \
-  --output /app/data/output/results.json
+  --output /app/data/output/results.json 
 
 
   poetry run python -m src.soda_curation.main \
-  --zip /app/data/archives/EMBOJ-2024-116743.zip \
+  --zip /app/data/archives/EMBOR-2025-61163V1.zip \
   --config /app/config.dev.yaml \
-  --output /app/data/output/test.json
+  --output /app/data/output/EMBOR-2025-61163V1.json
+
+  poetry run python -m src.soda_curation.main \
+  --zip data/archives/EMBOR-2025-61163V1.zip \
+  --config config.dev.yaml \
+  --output data/output/EMBOR-2025-61163V1.json
+
 
 ```
 

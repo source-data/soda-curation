@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "soda-curation"
-version = "1.1.4"
+version = "1.1.6"
 description = "A professional Python package for data curation with AI capabilities"
 authors = ["Dr. Jorge Abreu Vicente <jorge.abreu@embo.org>"]
 license = "MIT"
@@ -13,7 +13,7 @@ packages = [{include = "soda_curation", from = "src"}]
 repository = "https://github.com/source-data/soda-curation"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
+python = ">=3.9,<3.11"
 openai = "^1.43.0"
 pyyaml = "^6.0.2"
 python-docx = "^0.8.11"
