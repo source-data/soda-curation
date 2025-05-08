@@ -526,6 +526,9 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 1.1.2 (2025-05-08)
+- Changed logic to modify EPS into thumbnails to have same results as UI
+
 ### 1.1.2 (2025-05-06)
 - Semideterministic individual caption extraction
 
