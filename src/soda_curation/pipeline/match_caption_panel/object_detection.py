@@ -21,6 +21,15 @@ from ultralytics import YOLOv10
 logger = logging.getLogger(__name__)
 
 
+try:
+    from wand.image import Image as WandImage
+except ImportError:
+    logger.warning(
+        "Wand Image library not found. EPS conversion may not work optimally."
+    )
+    WandImage = None
+
+
 def fallback_ghostscript_conversion(
     eps_path: str, output_path: str, dpi: int = 300
 ) -> str:
@@ -176,6 +185,50 @@ def scale_down_large_image(file_path: str, max_pixels: int = 178956970) -> str:
         raise ValueError(f"Failed to scale image: {str(e)}")
 
 
+def _create_jpg_preview_from_eps(
+    eps_path: str, output_path: str, dpi: int = 150
+) -> str:
+    """
+    Create a JPG preview from an EPS file using Wand (ImageMagick bindings).
+    Uses the same method as the UI for consistent scaling.
+
+    Args:
+        eps_path (str): Path to the EPS file
+        output_path (str): Path to save the output image
+        dpi (int): DPI for conversion
+
+    Returns:
+        str: Path to the converted file
+    """
+    if WandImage is None:
+        logger.warning(
+            "Wand Image library not available, falling back to standard conversion"
+        )
+        return convert_eps_to_png(eps_path, output_path, dpi)
+
+    try:
+        # Use same settings as UI conversion
+        output_format = "png"
+        compression_quality = 25  # low quality
+        merge_layers_method = "flatten"  # preserves transparency
+
+        # Open and process the EPS file
+        with open(eps_path, "rb") as f:
+            with WandImage(file=f, resolution=dpi) as img:
+                img.format = output_format
+                img.compression_quality = compression_quality
+                img.merge_layers(merge_layers_method)
+
+                # Save to output path
+                img.save(filename=output_path)
+                return output_path
+
+    except Exception as e:
+        logger.error(f"Wand/ImageMagick EPS conversion failed: {str(e)}")
+        # Fall back to original conversion method
+        return convert_eps_to_png(eps_path, output_path, dpi)
+
+
 def create_standard_thumbnail(
     image_path: str, output_path: str, max_size: int = 2048, dpi: int = 300
 ) -> str:
@@ -195,8 +248,11 @@ def create_standard_thumbnail(
 
     # Route to specialized converters based on format
     try:
-        if file_ext in [".eps", ".ai"]:
+        if file_ext in [".ai"]:
             return convert_eps_to_png(image_path, output_path, dpi)
+
+        elif file_ext in [".eps"]:
+            return _create_jpg_preview_from_eps(image_path, output_path, dpi=dpi)
 
         elif file_ext in [".tif", ".tiff"]:
             try:

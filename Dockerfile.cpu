@@ -41,6 +41,8 @@ RUN apt-get update && apt-get install -y \
     ghostscript \
     poppler-utils \
     libgomp1 \
+    imagemagick \
+    libmagickwand-6.q16-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LIBCLANG_PATH=/usr/lib/llvm-11/lib/
