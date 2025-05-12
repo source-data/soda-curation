@@ -1,11 +1,11 @@
-
-
-
 # Use a CPU-only Python image as the base image
 FROM python:3.9-slim-bullseye as base
 
 # Set work directory
 WORKDIR /app
+
+# Define deployment environment ARG early (before ENV declarations)
+ARG DEPLOYMENT_ENV=dev
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -22,8 +22,8 @@ ENV PYTHONUNBUFFERED=1 \
     VIRTUAL_ENV="/app/.venv" \
     PATH="/app/.venv/bin:$PATH"
 
-# Add environment variable for deployment environment (after existing ENV section)
-ENV DEPLOYMENT_ENV=development \
+# Set deployment environment from the ARG value
+ENV DEPLOYMENT_ENV=${DEPLOYMENT_ENV} \
     CONFIG_DIR=/app/config
 
 # Install system dependencies
@@ -62,7 +62,6 @@ COPY pyproject.toml poetry.lock* ./
 COPY src ./src
 COPY ./data/models/panel_detection_model_no_labels.pt /app/data/models/
 
-
 # Install dependencies and the package
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi --no-root
@@ -87,11 +86,13 @@ RUN poetry run pip install --upgrade pip \
     && poetry run pip install jupyterlab \
     && poetry run pip install PyMuPDF pdf2image \
     && poetry run python -c "from opencv_fixer import AutoFix; AutoFix()"
-    
 
-# Copy the config file
-ARG DEPLOYMENT_ENV=dev  # Default to "dev" if not provided
+# Create config directory 
+RUN mkdir -p /app/config
+
+# Copy the environment-specific config file
 COPY config.${DEPLOYMENT_ENV}.yaml /app/config.yaml
+COPY config/ /app/config/
 
 # Set PYTHONPATH
 ENV PYTHONPATH=/app/src:$PYTHONPATH
@@ -105,15 +106,12 @@ RUN poetry run python -c "import fitz; print(fitz.__file__)"
 RUN poetry run python -c "import pdf2image; print(pdf2image.__file__)"
 RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 
+# Copy environment files (they will be selected at runtime)
+COPY .env.* /app/
 
 # Development stage
 FROM base as development
-
-# Create config directory and copy environment-specific configs
-COPY config/ /app/config/
-
-# Copy environment files (they will be selected at runtime)
-COPY .env.* /app/
+# No need to duplicate configuration here since it's already in base
 
 # Formatting and linting stage
 FROM base as formatting
