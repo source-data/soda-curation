@@ -98,9 +98,12 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             response_data = response.choices[0].message.content
             parsed_data = self._parse_response(response_data)
 
+            # Normalize database names and construct permanent URLs
+            normalized_data = self.normalize_data_sources(parsed_data)
+
             zip_structure.data_availability = {
                 "section_text": section_text,
-                "data_sources": parsed_data,
+                "data_sources": normalized_data,
             }
 
             return zip_structure

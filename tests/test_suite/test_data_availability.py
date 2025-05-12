@@ -145,8 +145,28 @@ class TestDataSourceExtraction:
             MOCK_SOURCES_RESPONSE["sources"]
         )
 
+        # Expected normalized values
+        expected_normalized = [
+            {
+                "database": "Gene Expression Omnibus",
+                "accession_number": "GSE123456",
+                "url": "https://identifiers.org/geo:GSE123456",
+            },
+            {
+                "database": "Proteomics Identification database",
+                "accession_number": "PXD987654",
+                "url": "https://identifiers.org/pride.project:PXD987654",
+            },
+            {
+                "database": "Github",
+                "accession_number": "example/code",
+                "url": "https://github.com/example/code",
+            },
+        ]
+
+        # Compare with normalized values
         for actual, expected in zip(
-            result.data_availability["data_sources"], MOCK_SOURCES_RESPONSE["sources"]
+            result.data_availability["data_sources"], expected_normalized
         ):
             assert actual["database"] == expected["database"]
             assert actual["accession_number"] == expected["accession_number"]
@@ -208,3 +228,204 @@ class TestResponseParsing:
         result = extractor._parse_response("Invalid JSON content")
 
         assert result == []
+
+
+class TestDatabaseNormalization:
+    """
+    Test database name normalization and URL construction functionality.
+
+    These tests verify that:
+    1. Database names are properly normalized to standard forms
+    2. Permanent URLs are constructed correctly using identifiers.org
+    3. The normalization process is integrated with the extraction pipeline
+    """
+
+    def test_database_name_normalization(self, mock_prompt_handler):
+        """Test normalization of database names."""
+        extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+
+        # Test standard normalization cases
+        test_cases = [
+            ("geo", "Gene Expression Omnibus"),
+            ("GEO", "Gene Expression Omnibus"),
+            ("Gene Expression Omnibus", "Gene Expression Omnibus"),
+            ("array express", "ArrayExpress"),
+            ("arrayexpress", "ArrayExpress"),
+            ("bioproject", "BioProject"),
+            ("pride", "Proteomics Identification database"),
+            ("PRIDE", "Proteomics Identification database"),
+            ("github", "Github"),
+            ("GitHUB", "Github"),
+            # Test an unknown database name
+            ("Unknown Database", "Unknown Database"),
+            # Test edge cases
+            ("", ""),
+            ("  geo  ", "Gene Expression Omnibus"),
+        ]
+
+        for input_name, expected in test_cases:
+            result = extractor.normalize_database_name(input_name)
+            assert (
+                result == expected
+            ), f"Failed to normalize {input_name} to {expected}, got {result}"
+
+    def test_permanent_url_construction(self, mock_prompt_handler):
+        """Test construction of permanent URLs."""
+        extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+
+        # Test URL construction cases
+        test_cases = [
+            # Standard identifiers.org databases
+            (
+                "Gene Expression Omnibus",
+                "GSE123456",
+                "",
+                "https://identifiers.org/geo:GSE123456",
+            ),
+            (
+                "Proteomics Identification database",
+                "PXD000440",
+                "",
+                "https://identifiers.org/pride.project:PXD000440",
+            ),
+            ("BioProject", "PRJDB3", "", "https://identifiers.org/bioproject:PRJDB3"),
+            # DOI cases
+            ("Dryad", "10.5061/dryad.3rq87", "", "https://doi.org/10.5061/dryad.3rq87"),
+            (
+                "FigShare",
+                "10.6084/m9.figshare.21780449.v1",
+                "",
+                "https://doi.org/10.6084/m9.figshare.21780449.v1",
+            ),
+            # GitHub repository
+            ("Github", "source-data/sdash", "", "https://github.com/source-data/sdash"),
+            # Test with existing URL
+            (
+                "Unknown Database",
+                "ABC123",
+                "https://example.com/ABC123",
+                "https://example.com/ABC123",
+            ),
+            # Test edge cases
+            ("", "123456", "", ""),
+            ("Database", "", "", ""),
+            ("Database", "", "https://original.url", "https://original.url"),
+        ]
+
+        for db, accession, original_url, expected in test_cases:
+            result = extractor.construct_permanent_url(db, accession, original_url)
+            assert (
+                result == expected
+            ), f"Failed to construct URL for {db}:{accession}, got {result}, expected {expected}"
+
+    def test_data_source_normalization(self, mock_prompt_handler):
+        """Test normalization of entire data sources list."""
+        extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+
+        input_sources = [
+            {"database": "geo", "accession_number": "GSE123456", "url": ""},
+            {"database": "PRIDE", "accession_number": "PXD987654", "url": ""},
+            {
+                "database": "GitHub",
+                "accession_number": "example/code",
+                "url": "https://github.com/example/code",
+            },
+            # Include a source with incomplete data
+            {"database": "incomplete", "url": ""},
+            {"accession_number": "123456", "url": ""},
+            # Source with all fields but unknown database
+            {
+                "database": "Unknown Database",
+                "accession_number": "XYZ789",
+                "url": "https://unknown-db.org/XYZ789",
+            },
+        ]
+
+        result = extractor.normalize_data_sources(input_sources)
+
+        # Check the expected number of sources
+        assert len(result) == len(input_sources)
+
+        # Verify the first source (geo)
+        assert result[0]["database"] == "Gene Expression Omnibus"
+        assert result[0]["accession_number"] == "GSE123456"
+        assert result[0]["url"] == "https://identifiers.org/geo:GSE123456"
+
+        # Verify the second source (PRIDE)
+        assert result[1]["database"] == "Proteomics Identification database"
+        assert result[1]["accession_number"] == "PXD987654"
+        assert result[1]["url"] == "https://identifiers.org/pride.project:PXD987654"
+
+        # Verify the third source (GitHub)
+        assert result[2]["database"] == "Github"
+        assert result[2]["accession_number"] == "example/code"
+        assert result[2]["url"] == "https://github.com/example/code"
+
+        # Verify the incomplete sources were preserved
+        assert "database" in result[3]
+        assert "accession_number" not in result[3]
+
+        assert "database" not in result[4]
+        assert "accession_number" in result[4]
+
+        # Verify the unknown database case
+        assert result[5]["database"] == "Unknown Database"
+        assert result[5]["url"] == "https://unknown-db.org/XYZ789"
+
+    def test_extraction_with_normalization(
+        self, mock_openai_client, mock_prompt_handler, zip_structure
+    ):
+        """Test data source extraction with normalization."""
+        # Create a custom mock response
+        custom_sources = {
+            "sources": [
+                {"database": "geo", "accession_number": "GSE123456", "url": ""},
+                {"database": "PRIDE", "accession_number": "PXD987654", "url": ""},
+            ]
+        }
+
+        mock_openai_client.return_value.beta.chat.completions.parse.return_value = (
+            MagicMock(
+                choices=[
+                    MagicMock(message=MagicMock(content=json.dumps(custom_sources)))
+                ],
+                usage=MagicMock(
+                    prompt_tokens=100,
+                    completion_tokens=50,
+                    total_tokens=150,
+                ),
+            )
+        )
+
+        extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+
+        # Patch the normalize_data_sources method to verify it gets called
+        original_method = extractor.normalize_data_sources
+        try:
+            # Create a mock to track calls
+            normalized_data = [
+                {
+                    "database": "Gene Expression Omnibus",
+                    "accession_number": "GSE123456",
+                    "url": "https://identifiers.org/geo:GSE123456",
+                },
+                {
+                    "database": "Proteomics Identification database",
+                    "accession_number": "PXD987654",
+                    "url": "https://identifiers.org/pride.project:PXD987654",
+                },
+            ]
+            extractor.normalize_data_sources = MagicMock(return_value=normalized_data)
+
+            # Call extract_data_sources which should call normalize_data_sources
+            result = extractor.extract_data_sources("test content", zip_structure)
+
+            # Verify normalize_data_sources was called
+            extractor.normalize_data_sources.assert_called_once()
+
+            # Verify the normalized data was used
+            assert result.data_availability["data_sources"] == normalized_data
+
+        finally:
+            # Restore the original method
+            extractor.normalize_data_sources = original_method
