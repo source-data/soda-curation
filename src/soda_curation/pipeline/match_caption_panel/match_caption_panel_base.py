@@ -4,7 +4,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 from PIL import Image
 from pydantic import BaseModel
@@ -194,6 +194,9 @@ class MatchPanelCaption(ABC):
         Resolve conflicts when multiple detected panels are assigned the same label,
         and ensure all detected panels are preserved with sequential labeling.
 
+        This implementation handles case-insensitive matching of panel labels,
+        so that 'A' and 'a' are treated as the same label.
+
         Args:
             figure: The figure containing panels
             panel_matches: List of dictionaries with panel_object, detection, and detection_idx
@@ -204,22 +207,32 @@ class MatchPanelCaption(ABC):
         """
 
         # Helper function for sequential labeling - define this at the top
-        def get_next_available_label(used_labels):
+        def get_next_available_label(used_labels: Set[str]) -> str:
             """Get the next available panel label in alphabetical sequence."""
             # Standard panel label sequence
             label_sequence = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             for char in label_sequence:
-                if char not in used_labels:
+                if char.upper() not in [label.upper() for label in used_labels]:
                     return char
             # If we use up all letters, start with AA, AB, etc.
             for char1 in label_sequence:
                 for char2 in label_sequence:
                     double_char = char1 + char2
-                    if double_char not in used_labels:
+                    if double_char.upper() not in [
+                        label.upper() for label in used_labels
+                    ]:
                         return double_char
             return "unknown"  # Fallback
 
-        # Group by panel label
+        # Create case-insensitive lookup for original panels
+        original_panels_ci = {}
+        for key, panel in original_panels.items():
+            original_panels_ci[key.upper()] = (
+                key,
+                panel,
+            )  # Store original case with panel
+
+        # Group by panel label (case-insensitive)
         label_to_matches = {}
         for match in panel_matches:
             panel_label = match["panel_object"].panel_label
@@ -227,6 +240,10 @@ class MatchPanelCaption(ABC):
             if not panel_label.strip():
                 # Give each empty label a unique identifier
                 panel_label = f"__empty_{match['detection_idx']}"
+            else:
+                # Use uppercase for matching but preserve original case
+                match["original_case_label"] = panel_label
+                panel_label = panel_label.upper()
 
             if panel_label not in label_to_matches:
                 label_to_matches[panel_label] = []
@@ -241,21 +258,40 @@ class MatchPanelCaption(ABC):
         if not hasattr(figure, "conflicting_panels"):
             figure.conflicting_panels = []
 
-        # Track used labels
+        # Track used labels (case-insensitive)
         matched_labels = set()
 
         # Process each unique panel label
-        for panel_label, matches in label_to_matches.items():
+        for panel_label_upper, matches in label_to_matches.items():
             # Check if this is a temporarily assigned empty label
-            is_empty_label = panel_label.startswith("__empty_")
+            is_empty_label = panel_label_upper.startswith("__empty_")
 
             # Get the original label (or use empty string for empty labels)
-            original_label = "" if is_empty_label else panel_label
+            if is_empty_label:
+                original_label = ""
+                # Use uppercase for the label key
+                panel_label_key = ""
+            else:
+                # Look for a case-insensitive match in original panels
+                panel_label_key = panel_label_upper
+                # If we have an original panel with this label (ignoring case),
+                # use its original casing instead of the detected casing
+                if panel_label_key in original_panels_ci:
+                    original_label = original_panels_ci[panel_label_key][
+                        0
+                    ]  # Use original case
+                else:
+                    # No original panel matching this label, use the original case from detection
+                    original_label = matches[0].get(
+                        "original_case_label", panel_label_upper
+                    )
 
             # Look up the original panel if it exists
-            original_panel = original_panels.get(original_label)
+            original_panel = None
+            if panel_label_key in original_panels_ci:
+                _, original_panel = original_panels_ci[panel_label_key]
 
-            if not original_panel and not is_empty_label and original_label.strip():
+            if not original_panel and not is_empty_label and panel_label_key:
                 # This is potentially a panel detected in the image but not in original text
                 logger.info(
                     f"New panel label '{original_label}' identified via image detection for figure {figure.figure_label}"
@@ -302,8 +338,8 @@ class MatchPanelCaption(ABC):
                         ai_response=None,
                     )
                 processed_panels.append(panel)
-                # Track the used label
-                matched_labels.add(original_label)
+                # Track the used label (case-insensitive)
+                matched_labels.add(original_label.upper())
 
             else:
                 # Conflict: multiple detections assigned the same label
@@ -374,8 +410,8 @@ class MatchPanelCaption(ABC):
                         ai_response=None,
                     )
                 processed_panels.append(panel)
-                # Track the used label
-                matched_labels.add(original_label)
+                # Track the used label (case-insensitive)
+                matched_labels.add(original_label.upper())
 
                 # Track the conflicting matches that were not used
                 for conflict_match in matches:
@@ -385,7 +421,7 @@ class MatchPanelCaption(ABC):
                         # For conflicts with empty labels, assign sequential labels right away
                         if is_empty_label:
                             conflict_label = get_next_available_label(matched_labels)
-                            matched_labels.add(conflict_label)
+                            matched_labels.add(conflict_label.upper())
 
                             # Create a new panel for this detection with sequential label
                             conflict_panel = Panel(
@@ -420,13 +456,13 @@ class MatchPanelCaption(ABC):
 
         # Check for original panels that didn't get matched to any detection
         for label, panel in original_panels.items():
-            if label not in matched_labels:
+            if label.upper() not in [lab.upper() for lab in matched_labels]:
                 logger.warning(
                     f"Original panel {label} not matched to any detection in figure {figure.figure_label}"
                 )
                 # Add the original panel without a bbox
                 processed_panels.append(panel)
-                matched_labels.add(label)  # Update matched labels
+                matched_labels.add(label.upper())  # Update matched labels
 
         # Add unmatched detections as new panels with sequential labels
         unmatched_detections = [
@@ -442,7 +478,9 @@ class MatchPanelCaption(ABC):
 
             # Check if the AI assigned a valid label that isn't already used
             panel_label = panel_object.panel_label.strip()
-            if panel_label and panel_label not in matched_labels:
+            if panel_label and panel_label.upper() not in [
+                lab.upper() for lab in matched_labels
+            ]:
                 # Use the AI-assigned label (like "D")
                 pass
             else:
@@ -462,6 +500,8 @@ class MatchPanelCaption(ABC):
                 ai_response=None,
             )
             processed_panels.append(panel)
-            matched_labels.add(panel_label)  # Update matched labels
+            matched_labels.add(
+                panel_label.upper()
+            )  # Update matched labels (case-insensitive)
 
         return processed_panels

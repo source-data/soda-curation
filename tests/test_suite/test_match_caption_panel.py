@@ -969,3 +969,116 @@ class TestPanelPreservation:
                 assert (
                     panel.sd_files == original_panel.sd_files
                 ), f"SD files for panel {label} should be preserved"
+
+    def test_case_insensitive_panel_matching(
+        self, mock_config, mock_prompt_handler, mock_image, tmp_path
+    ):
+        """
+        Test that panel labels are matched case-insensitively.
+
+        This test verifies:
+        1. If a panel "A" exists in original panels and "a" is detected in the image,
+        they are considered the same panel (not creating duplicates)
+        2. The original case of the panel label is preserved
+        """
+        # Create a mock figure with uppercase panel labels
+        panels = [
+            Panel(
+                panel_label="A",
+                panel_caption="Original Caption A",
+                sd_files=["data_A.txt"],
+                ai_response={"key": "value_A"},
+            ),
+            Panel(
+                panel_label="B",
+                panel_caption="Original Caption B",
+                sd_files=["data_B.txt"],
+                ai_response={"key": "value_B"},
+            ),
+        ]
+        figure = Figure(
+            figure_label="Figure 1",
+            img_files=["figure1.png"],
+            sd_files=[],
+            panels=panels,
+            figure_caption="Figure 1 with panels A and B",
+        )
+        zip_structure = ZipStructure(figures=[figure])
+
+        # Create a file for the figure
+        figure_path = tmp_path / "figure1.png"
+        figure_path.touch()
+
+        # Mock the object detection
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+        ) as mock_convert, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
+        ) as mock_extract_image:
+            mock_convert.return_value = (Mock(), "figure1.png")
+            mock_detector = Mock()
+            mock_detector.detect_panels.return_value = [
+                {
+                    "bbox": [0.1, 0.1, 0.2, 0.2],
+                    "confidence": 0.9,
+                },  # Will be matched to "A"
+                {
+                    "bbox": [0.3, 0.3, 0.4, 0.4],
+                    "confidence": 0.8,
+                },  # Will be matched to "B"
+            ]
+            mock_create_detector.return_value = mock_detector
+
+            # Mock panel image extraction
+            mock_extract_image.return_value = "encoded_image"
+
+            # Create a test implementation that returns lowercase panel labels
+            class TestMatchPanelCaption(MatchPanelCaption):
+                def _validate_config(self):
+                    pass
+
+                def _match_panel_caption(self, panel_image, figure_caption):
+                    # Return lowercase panel labels (different case from original)
+                    if "0.1, 0.1" in str(
+                        panel_image
+                    ):  # Simple way to identify the first panel
+                        return PanelObject(
+                            panel_label="a", panel_caption="AI Caption for a"
+                        )
+                    else:
+                        return PanelObject(
+                            panel_label="b", panel_caption="AI Caption for b"
+                        )
+
+            # Process the figure
+            matcher = TestMatchPanelCaption(mock_config, mock_prompt_handler, tmp_path)
+            result = matcher.process_figures(zip_structure)
+
+            # Verify results
+            assert len(result.figures[0].panels) == 2, "Should still have only 2 panels"
+
+            # Check that panel labels preserve original case
+            panel_labels = sorted([p.panel_label for p in result.figures[0].panels])
+            assert panel_labels == [
+                "A",
+                "B",
+            ], "Should preserve original case of panel labels"
+
+            # Verify original data is preserved
+            for label in ["A", "B"]:
+                panel = next(
+                    p for p in result.figures[0].panels if p.panel_label == label
+                )
+                original_panel = next(p for p in panels if p.panel_label == label)
+
+                assert (
+                    panel.panel_caption == original_panel.panel_caption
+                ), f"Caption for panel {label} should be preserved"
+                assert (
+                    panel.sd_files == original_panel.sd_files
+                ), f"SD files for panel {label} should be preserved"
+                assert (
+                    panel.ai_response == original_panel.ai_response
+                ), f"AI response for panel {label} should be preserved"
