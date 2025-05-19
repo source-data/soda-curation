@@ -83,6 +83,7 @@ class DataAvailabilityExtractor(ABC):
         "metabolomics workbench": "Metabolomics Workbench Study",
         "mw.study": "Metabolomics Workbench Study",
         "mendeley data": "Mendeley Dataset",
+        "proteomxchange": "Gene Expression Omnibus",
     }
 
     # URL pattern mapping
@@ -113,6 +114,7 @@ class DataAvailabilityExtractor(ABC):
         "MassIVE": r"^MSV\d+$",
         "Metabolomics Workbench Study": r"^ST[0-9]{6}$",
         "ENCODE": r"^ENC[A-Za-z]{2}[0-9]{3}[A-Za-z]{3}$",
+        "ProteomeXchange": r"^PXD\d{6}$",
     }
 
     # URL Construction mapping
@@ -124,6 +126,7 @@ class DataAvailabilityExtractor(ABC):
         "European Genome-phenome Archive": "https://identifiers.org/ega.dataset:",
         "European Nucleotide Archive": "https://identifiers.org/ena.embl:",
         "Gene Expression Omnibus": "https://identifiers.org/geo:",
+        "ProteomeXchange": "https://identifiers.org/px:",
         "Image Data Resource": "https://identifiers.org/idr:",
         "Molecular Interaction Database": "https://identifiers.org/intact:",
         "Protein Data Bank": "https://identifiers.org/pdb:",

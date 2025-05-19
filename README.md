@@ -172,7 +172,7 @@ The package includes a comprehensive benchmarking system for evaluating model pe
 
 ```bash
 # Run the benchmark tests
-poetry run pytest tests/test_pipeline/benchmark.py
+poetry run pytest tests/test_pipeline/run_benchmark.py
 ```
 
 #### Benchmark Configuration
@@ -525,6 +525,13 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 1.2.1 (2025-05-14)
+- Case insensitive panel caption matching added
+
+### 1.2.0 (2025-05-12)
+- Normalization of database links
+- Permanent links of identifiers.org added
 
 ### 1.1.2 (2025-05-08)
 - Changed logic to modify EPS into thumbnails to have same results as UI
