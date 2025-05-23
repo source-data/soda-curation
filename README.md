@@ -140,14 +140,9 @@ poetry run python -m src.soda_curation.main \
 
 
   poetry run python -m src.soda_curation.main \
-  --zip /app/data/archives/EMBOR-2025-61163V1.zip \
+  --zip /app/data/archives/EMM-2023-18636.zip \
   --config /app/config.dev.yaml \
-  --output /app/data/output/EMBOR-2025-61163V1.json
-
-  poetry run python -m src.soda_curation.main \
-  --zip data/archives/EMBOR-2025-61163V1.zip \
-  --config config.dev.yaml \
-  --output data/output/EMBOR-2025-61163V1.json
+  --output /app/data/output/EMM-2023-18636.json
 
 
 ```

@@ -1,8 +1,10 @@
 """OpenAI implementation for data source extraction."""
 
+import json
 import logging
 import os
-from typing import Dict
+from pathlib import Path
+from typing import Any, Dict
 
 import openai
 
@@ -26,6 +28,27 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             raise ValueError("OPENAI_API_KEY environment variable is not set")
 
         self.client = openai.OpenAI(api_key=api_key)
+
+        # Load database registry from identifiers.txt
+        self.database_registry = self._load_database_registry()
+
+    def _load_database_registry(self) -> Dict[Any, Any]:
+        """Load database registry from identifiers.txt file."""
+        try:
+            # Path to identifiers.txt file (in the same directory as this module)
+            identifiers_path = Path(__file__).parent / "identifiers.txt"
+
+            with open(identifiers_path, "r") as f:
+                content = f.read()
+
+            # Parse the JSON content directly
+            registry: Dict[Any, Any] = json.loads(content)
+
+            return registry
+
+        except Exception as e:
+            logger.error(f"Error loading database registry: {str(e)}")
+            return {"databases": []}
 
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
@@ -62,6 +85,9 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
     ) -> ZipStructure:
         """Extract data sources from data availability section."""
         try:
+            # Create database registry information for the prompt
+            db_registry_info = self._create_registry_info()
+
             # Get prompts with variables substituted
             prompts = self.prompt_handler.get_prompt(
                 step="extract_data_sources",
@@ -71,8 +97,10 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             )
 
             # Prepare messages
+            system_prompt = prompts["system"] + f"\n{db_registry_info}"
+
             messages = [
-                {"role": "system", "content": prompts["system"]},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompts["user"]},
             ]
 
@@ -98,12 +126,9 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             response_data = response.choices[0].message.content
             parsed_data = self._parse_response(response_data)
 
-            # Normalize database names and construct permanent URLs
-            normalized_data = self.normalize_data_sources(parsed_data)
-
             zip_structure.data_availability = {
                 "section_text": section_text,
-                "data_sources": normalized_data,
+                "data_sources": parsed_data,
             }
 
             return zip_structure
@@ -112,3 +137,25 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             logger.error(f"Error extracting data sources: {str(e)}")
             zip_structure.data_availability = {"section_text": "", "data_sources": []}
             return zip_structure
+
+    def _create_registry_info(self) -> str:
+        """Create a formatted markdown table with database registry information for the prompt."""
+        if not self.database_registry["databases"]:
+            return ""
+
+        # Create markdown table header
+        registry_info = "| Database Name | Identifiers Pattern | URL Pattern | Sample ID | Sample Identifiers URL |\n"
+        registry_info += "|--------------|-------------------|------------|-----------|----------------------|\n"
+
+        # Add each database as a row in the table
+        for db in self.database_registry["databases"]:
+            name = db.get("name", "")
+            identifiers_pattern = db.get("identifiers_pattern", "")
+            url_pattern = db.get("url_pattern", "")
+            sample_id = db.get("sample_id", "")
+            sample_identifiers_url = db.get("sample_identifiers_url", "")
+
+            # Format as table row, escaping pipe characters if they exist in the data
+            registry_info += f"| {name} | {identifiers_pattern} | {url_pattern} | {sample_id} | {sample_identifiers_url} |\n"
+
+        return registry_info

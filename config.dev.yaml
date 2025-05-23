@@ -206,22 +206,28 @@ default: &default
             
             Critical instructions:
             1. Extract EVERY database source mentioned
-            2. Use EXACT database names as written
-            3. Include COMPLETE accession numbers and / or DOIs when present. Include in `accession_number` field.
-            4. Include FULL URLs when present
-            5. Output valid JSON array of objects
-            6. Return empty array [] if no database sources found
-            7. Do not:
-              - Create/guess URLs
+            2. Normalize database names using the provided registry `Database Registry Information` when available
+            3. Use the identifiers.org URL pattern when available, constructed by combining the identifiers.org pattern with the accession number
+            4. Include COMPLETE accession numbers and/or DOIs when present in the `accession_number` field
+            5. For databases in the registry, follow these rules:
+              - Always use the exact normalized "name" from the registry
+              - When possible, construct the URL using the identifiers.org pattern + accession number
+              - If identifiers.org pattern is not available, use the original URL or the URL pattern from the registry
+            6. For databases NOT in the registry, use the name and URL as provided in the text
+            7. Output valid JSON array of objects
+            8. Return empty array [] if no database sources found
+            9. Do not:
+              - Create/guess URLs without sufficient information
               - Add partial information
               - Include file paths or other resources
               - Include explanatory text
 
+            Database Registry Information:
+            
           user: |
             Extract all database sources and their details from this Data Availability section:
 
             $data_availability
-
     ##########################################################
     # 4) Assign Panel Source Step
     ##########################################################
