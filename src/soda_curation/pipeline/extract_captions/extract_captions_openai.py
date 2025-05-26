@@ -1,15 +1,13 @@
 """OpenAI implementation of caption extraction."""
 
-import asyncio
+import json
 import logging
 import os
 from typing import Any, Dict, List, Tuple
 
 import openai
-from agents import Agent, ModelSettings, Runner
 from pydantic import BaseModel
 
-from ...agentic_tools import verify_caption_extraction, verify_panel_sequence
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import (
     Figure,
@@ -17,7 +15,6 @@ from ..manuscript_structure.manuscript_structure import (
     TokenUsage,
     ZipStructure,
 )
-from ..prompt_handler import PromptHandler
 from .extract_captions_base import FigureCaptionExtractor
 
 logger = logging.getLogger(__name__)
@@ -46,20 +43,10 @@ class PanelExtraction(BaseModel):
     panels: List[PanelInfo]
 
 
-class ExtractedCaption(BaseModel):
-    """Combined model for caption and panel extraction."""
-
-    figure_label: str
-    caption_title: str
-    figure_caption: str
-    is_verbatim: bool
-    panels: List[PanelInfo]
-
-
 class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
     """Implementation of caption extraction using OpenAI's GPT models."""
 
-    def __init__(self, config: Dict[str, Any], prompt_handler: PromptHandler):
+    def __init__(self, config: Dict[str, Any], prompt_handler):
         """Initialize with OpenAI configuration."""
         super().__init__(config, prompt_handler)
 
@@ -125,340 +112,188 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             indicator.lower() in figure_label.lower() for indicator in ev_indicators
         )
 
-    def extract_caption_text(self, figure_label: str, all_captions: str) -> str:
-        """Extract the specific caption text for a given figure from all captions.
+    def extract_figure_caption(
+        self, figure_label: str, all_captions: str, zip_structure: ZipStructure
+    ) -> Tuple[CaptionExtraction, TokenUsage]:
+        """Extract caption title and text for a specific figure."""
+        # Special case for testing with minimal content
 
-        Args:
-            figure_label: The label of the figure (e.g., "Figure 1")
-            all_captions: The complete captions text
-
-        Returns:
-            The extracted caption text for the specified figure
-        """
-        # Get just the number part from the figure label if it exists
-        if self.is_ev_figure(figure_label):
-            logger.info(f"Skipping extraction for EV figure: {figure_label}")
-            return ""
-
-        label_parts = figure_label.split()
-        if len(label_parts) > 1 and label_parts[-1].isdigit():
-            label_number = label_parts[-1]
-
-            # Different ways the figure might be labeled in the text
-            possible_labels = [
-                f"Figure {label_number}",
-                f"Fig. {label_number}",
-                f"Fig {label_number}",
-                f"FIGURE {label_number}",
-            ]
-        else:
-            # If we can't extract a number, just use the exact label
-            possible_labels = [figure_label]
-
-        # Find the start position of this figure's caption
-        start_pos = -1
-        matched_label = None
-        for label in possible_labels:
-            pos = all_captions.find(label)
-            if pos != -1 and (start_pos == -1 or pos < start_pos):
-                start_pos = pos
-                matched_label = label
-
-        if start_pos == -1:
-            logger.warning(
-                f"Could not find caption for {figure_label} in the text using simple search"
-            )
-            return ""
-
-        # Find the start of the next figure's caption to determine the end of this one
-        next_figure_pos = len(all_captions)
-
-        # Look for any figure label that might come after this one
-        figure_patterns = [
-            r"Figure\s+\d+",
-            r"Fig\.\s+\d+",
-            r"Fig\s+\d+",
-            r"FIGURE\s+\d+",
-            r"Extended View Figure",
-            r"Extended Data Figure",
-            r"EV Figure",
-            r"EV Fig",
-            r"Supplementary Figure",
-        ]
-
-        import re
-
-        for pattern in figure_patterns:
-            # Find all matches after our starting position
-            for match in re.finditer(
-                pattern, all_captions[start_pos + len(matched_label) :]
-            ):
-                match_pos = start_pos + len(matched_label) + match.start()
-                if match_pos < next_figure_pos:
-                    next_figure_pos = match_pos
-
-        # Also check for end of document or other section markers
-        section_markers = [
-            "Data Availability",
-            "Acknowledgements",
-            "References",
-        ]
-
-        for marker in section_markers:
-            pos = all_captions.find(marker, start_pos + 1)
-            if pos != -1 and pos < next_figure_pos:
-                next_figure_pos = pos
-
-        # Extract the caption text for this figure
-        caption_text = all_captions[start_pos:next_figure_pos].strip()
-
-        # Log what we found
-        logger.info(
-            f"Extracted caption for {figure_label} (length: {len(caption_text)})"
+        # Get prompts with variables substituted
+        prompts = self.prompt_handler.get_prompt(
+            step="extract_caption_title",
+            variables={
+                "figure_label": figure_label,
+                "figure_captions": all_captions,
+            },
         )
 
-        return caption_text
+        # Add JSON instruction to system prompt to satisfy the API requirement
+        system_prompt = prompts["system"]
+        if "json" not in system_prompt.lower():
+            system_prompt += "\n\nProvide your response in JSON format."
 
-    def extract_caption_with_regex_fallback(
-        self, figure_label: str, all_captions: str
-    ) -> str:
-        """Extract caption using regex as a fallback if simple extraction fails.
+        # Prepare messages
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompts["user"]},
+        ]
 
-        Args:
-            figure_label: The label of the figure to extract
-            all_captions: The full captions text
+        config_ = self.caption_config
+        model_ = config_.get("model", "gpt-4o")
 
-        Returns:
-            The extracted caption text
-        """
-        # Special case for unit tests with minimal content
-        if all_captions == "test content" or len(all_captions) < 50:
-            logger.info(f"Using test mode for {figure_label} with minimal content")
-            return all_captions  # Just use the entire content for testing
+        response = self.client.beta.chat.completions.parse(
+            model=model_,
+            messages=messages,
+            response_format=CaptionExtraction,
+            temperature=config_.get("temperature", 0.1),
+            top_p=config_.get("top_p", 1.0),
+            frequency_penalty=config_.get("frequency_penalty", 0),
+            presence_penalty=config_.get("presence_penalty", 0),
+        )
+        # Create token usage object
+        token_usage = TokenUsage()
+        token_usage.prompt_tokens = response.usage.prompt_tokens
+        token_usage.completion_tokens = response.usage.completion_tokens
+        token_usage.total_tokens = response.usage.total_tokens
 
-        # Try simple extraction first
-        caption = self.extract_caption_text(figure_label, all_captions)
+        # Update cost based on model and tokens
+        token_usage = update_token_usage(
+            token_usage,
+            {
+                "usage": {
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                    "total_tokens": response.usage.total_tokens,
+                }
+            },
+            model_,
+        )
 
-        # If that fails, try regex as a fallback
-        if not caption:
-            import re
+        response_content = response.choices[0].message.content
 
-            logger.info(f"Using regex fallback for {figure_label}")
+        caption_extraction = json.loads(response_content)
+        caption_result = CaptionExtraction(**caption_extraction)
 
-            # Extract figure number if available
-            label_parts = figure_label.split()
-            if len(label_parts) > 1 and label_parts[-1].isdigit():
-                fig_num = label_parts[-1]
-                # Pattern to match the figure and its caption until the next figure or end of text
-                pattern = (
-                    r"(?:Figure|Fig\.?|FIGURE)\s*"
-                    + re.escape(fig_num)
-                    + r"[\.:]?(.*?)(?=(?:Figure|Fig\.?|FIGURE|Extended View Figure|EV Fig)\s*\d+|$)"
-                )
-                match = re.search(pattern, all_captions, re.DOTALL | re.IGNORECASE)
-                if match:
-                    caption = match.group(0)
-                    logger.info(f"Found caption for {figure_label} using regex")
+        return caption_result, token_usage
 
-        if not caption:
-            logger.warning(
-                f"Failed to extract caption for {figure_label} using both methods"
-            )
-
-        return caption
-
-    async def extract_figure_panels(
+    def extract_figure_panels(
         self, figure_label: str, caption_text: str
     ) -> Tuple[PanelExtraction, TokenUsage]:
         """Extract panels for a specific figure."""
-        # Get the system and user prompts from the prompt handler
+        # Get prompts with variables substituted
         prompts = self.prompt_handler.get_prompt(
-            "extract_panel_sequence",
-            {
+            step="extract_panel_sequence",
+            variables={
                 "figure_label": figure_label,
                 "figure_caption": caption_text,
             },
         )
 
-        # Create the panel agent with the system prompt
-        panel_agent = Agent(
-            name="panel_extractor",
-            instructions=prompts["system"],
-            output_type=PanelExtraction,
-            tools=[verify_panel_sequence],
-            model=self.panel_config["model"],
-            model_settings=ModelSettings(
-                tool_choice="auto",
-                temperature=self.panel_config["temperature"],
-                top_p=self.panel_config["top_p"],
-                max_tokens=self.panel_config["max_tokens"],
-            ),
+        # Add JSON instruction to system prompt to satisfy the API requirement
+        system_prompt = prompts["system"]
+        if "json" not in system_prompt.lower():
+            system_prompt += "\n\nProvide your response in JSON format."
+
+        # Prepare messages
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompts["user"]},
+        ]
+
+        config_ = self.panel_config
+        model_ = config_.get("model", "gpt-4o")
+
+        # Make direct API call
+        response = self.client.beta.chat.completions.parse(
+            model=model_,
+            messages=messages,
+            temperature=config_.get("temperature", 0.1),
+            top_p=config_.get("top_p", 1.0),
+            frequency_penalty=config_.get("frequency_penalty", 0),
+            presence_penalty=config_.get("presence_penalty", 0),
+            response_format={"type": "json_object"},
         )
 
-        # Run the panel extraction agent with the user prompt
-        result = await Runner.run(panel_agent, prompts["user"], max_turns=10)
-
-        # Calculate token usage
+        # Create token usage object
         token_usage = TokenUsage()
-        for response in result.raw_responses:
-            agent_usage = response.usage
-            token_usage.prompt_tokens += agent_usage.input_tokens
-            token_usage.completion_tokens += agent_usage.output_tokens
-            token_usage.total_tokens += agent_usage.total_tokens
-
-            # Update cost
-            mock_response = {
-                "usage": {
-                    "prompt_tokens": agent_usage.input_tokens,
-                    "completion_tokens": agent_usage.output_tokens,
-                    "total_tokens": agent_usage.total_tokens,
-                }
-            }
-            token_usage = update_token_usage(
-                token_usage, mock_response, self.panel_config["model"]
-            )
-
-        return result.final_output, token_usage
-
-    async def extract_figure_caption(
-        self, figure_label: str, figure_caption_text: str
-    ) -> Tuple[CaptionExtraction, TokenUsage]:
-        """Extract caption title and text for a specific figure."""
-        # Special case for testing with minimal content
-        is_test_mode = (
-            figure_caption_text == "test content" or len(figure_caption_text) < 50
+        update_token_usage(
+            token_usage,
+            response,
+            model_,
         )
 
-        # If we don't have caption text and we're not in test mode, return a placeholder
-        if not figure_caption_text and not is_test_mode:
-            logger.error(f"No caption text available for {figure_label}")
-            return (
-                CaptionExtraction(
-                    figure_label=figure_label,
-                    caption_title="",
-                    figure_caption="",
-                    is_verbatim=False,
-                ),
-                TokenUsage(),
-            )
-
-        # Get the system and user prompts from the prompt handler
-        prompts = self.prompt_handler.get_prompt(
-            "extract_caption_title",
-            {
-                "figure_label": figure_label,
-                "figure_captions": figure_caption_text,  # Send only the specific caption
-            },
+        # Parse the response content into PanelExtraction
+        content_json = json.loads(response.choices[0].message.content)
+        panel_extraction = PanelExtraction(
+            figure_label=content_json.get("figure_label", figure_label),
+            panels=[PanelInfo(**panel) for panel in content_json.get("panels", [])],
         )
 
-        # Create the caption agent with the system prompt
-        caption_agent = Agent(
-            name="caption_extractor",
-            instructions=prompts["system"],
-            output_type=CaptionExtraction,
-            tools=[verify_caption_extraction],
-            model=self.caption_config["model"],
-            model_settings=ModelSettings(
-                tool_choice="auto",
-                temperature=self.caption_config["temperature"],
-                top_p=self.caption_config["top_p"],
-                max_tokens=self.caption_config["max_tokens"],
-            ),
-        )
+        return panel_extraction, token_usage
 
-        # Run the caption extraction agent with the user prompt
-        result = await Runner.run(caption_agent, prompts["user"], max_turns=10)
-
-        # Calculate token usage
-        token_usage = TokenUsage()
-        for response in result.raw_responses:
-            agent_usage = response.usage
-            token_usage.prompt_tokens += agent_usage.input_tokens
-            token_usage.completion_tokens += agent_usage.output_tokens
-            token_usage.total_tokens += agent_usage.total_tokens
-
-            # Update cost using the update_token_usage function
-            mock_response = {
-                "usage": {
-                    "prompt_tokens": agent_usage.input_tokens,
-                    "completion_tokens": agent_usage.output_tokens,
-                    "total_tokens": agent_usage.total_tokens,
-                }
-            }
-            token_usage = update_token_usage(
-                token_usage, mock_response, self.caption_config["model"]
-            )
-
-        return result.final_output, token_usage
-
-    async def process_figure(
-        self, figure: Figure, all_captions: str
+    def process_figure(
+        self, figure: Figure, all_captions: str, zip_structure: ZipStructure
     ) -> Tuple[Figure, TokenUsage]:
         """Process a single figure, extracting caption and panels."""
         total_token_usage = TokenUsage()
 
-        try:
-            # Skip EV figures explicitly
-            if self.is_ev_figure(figure.figure_label):
-                logger.info(f"Skipping processing for EV figure: {figure.figure_label}")
-                return figure, total_token_usage
-            # Step 1: Extract the specific caption text for this figure
-            figure_caption_text = self.extract_caption_with_regex_fallback(
-                figure.figure_label, all_captions
-            )
-
-            if not figure_caption_text:
-                logger.error(
-                    f"Could not extract caption text for {figure.figure_label}"
-                )
-                figure.hallucination_score = 1  # Mark as non-verbatim
-                return figure, total_token_usage
-
-            # Step 2: Extract caption title and text using the specific caption text
-            caption_result, caption_token_usage = await self.extract_figure_caption(
-                figure.figure_label, figure_caption_text
-            )
-
-            # Accumulate token usage
-            total_token_usage.prompt_tokens += caption_token_usage.prompt_tokens
-            total_token_usage.completion_tokens += caption_token_usage.completion_tokens
-            total_token_usage.total_tokens += caption_token_usage.total_tokens
-            total_token_usage.cost += caption_token_usage.cost
-
-            # Step 3: Extract panels for this caption
-            panel_result, panel_token_usage = await self.extract_figure_panels(
-                figure.figure_label, caption_result.figure_caption
-            )
-
-            # Accumulate token usage
-            total_token_usage.prompt_tokens += panel_token_usage.prompt_tokens
-            total_token_usage.completion_tokens += panel_token_usage.completion_tokens
-            total_token_usage.total_tokens += panel_token_usage.total_tokens
-            total_token_usage.cost += panel_token_usage.cost
-
-            # Update figure with extracted information
-            figure.caption_title = caption_result.caption_title
-            figure.figure_caption = caption_result.figure_caption
-
-            # Set verbatim flag for hallucination scoring
-            figure.hallucination_score = 0 if caption_result.is_verbatim else 1
-
-            # Add panels to the figure
-            figure.panels = []
-            for panel_info in panel_result.panels:
-                panel = Panel(
-                    panel_label=panel_info.panel_label,
-                    panel_caption=panel_info.panel_caption,
-                )
-                figure.panels.append(panel)
-
-            logger.info(f"Successfully processed {figure.figure_label}")
-
+        # try:
+        # Skip EV figures explicitly
+        if self.is_ev_figure(figure.figure_label):
+            logger.info(f"Skipping processing for EV figure: {figure.figure_label}")
             return figure, total_token_usage
 
-        except Exception as e:
-            logger.error(f"Error processing {figure.figure_label}: {str(e)}")
+        # Step 1: Extract caption using direct API call
+        caption_result, caption_token_usage = self.extract_figure_caption(
+            figure.figure_label, all_captions, zip_structure
+        )
+
+        # Accumulate token usage
+        total_token_usage.prompt_tokens += caption_token_usage.prompt_tokens
+        total_token_usage.completion_tokens += caption_token_usage.completion_tokens
+        total_token_usage.total_tokens += caption_token_usage.total_tokens
+        total_token_usage.cost += caption_token_usage.cost
+
+        # Skip panel extraction if no caption was found
+        if not caption_result.figure_caption:
+            logger.error(f"No caption extracted for {figure.figure_label}")
+            figure.hallucination_score = 1  # Mark as non-verbatim
             return figure, total_token_usage
+
+        # Step 2: Extract panels using direct API call
+        panel_result, panel_token_usage = self.extract_figure_panels(
+            figure.figure_label, caption_result.figure_caption
+        )
+
+        # Accumulate token usage
+        total_token_usage.prompt_tokens += panel_token_usage.prompt_tokens
+        total_token_usage.completion_tokens += panel_token_usage.completion_tokens
+        total_token_usage.total_tokens += panel_token_usage.total_tokens
+        total_token_usage.cost += panel_token_usage.cost
+
+        # Update figure with extracted information
+        figure.caption_title = caption_result.caption_title
+        figure.figure_caption = caption_result.figure_caption
+
+        # Set verbatim flag for hallucination scoring
+        figure.hallucination_score = 0 if caption_result.is_verbatim else 1
+
+        # Add panels to the figure
+        figure.panels = []
+        for panel_info in panel_result.panels:
+            panel = Panel(
+                panel_label=panel_info.panel_label,
+                panel_caption=panel_info.panel_caption,
+            )
+            figure.panels.append(panel)
+
+        logger.info(f"Successfully processed {figure.figure_label}")
+
+        return figure, total_token_usage
+
+        # except Exception as e:
+        #     logger.error(f"Error processing {figure.figure_label}: {str(e)}")
+        #     return figure, total_token_usage
 
     def extract_individual_captions(
         self, doc_content: str, zip_structure: ZipStructure
@@ -476,10 +311,6 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         # Track token usage across all figures
         total_token_usage = TokenUsage()
 
-        # Create an event loop for running async tasks
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
         try:
             # Process each figure one by one
             for figure in zip_structure.figures:
@@ -490,9 +321,9 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
 
                 logger.info(f"Processing {figure.figure_label}")
 
-                # Run the async processing function
-                updated_figure, figure_token_usage = loop.run_until_complete(
-                    self.process_figure(figure, doc_content)
+                # Process the figure directly (no need for async)
+                updated_figure, figure_token_usage = self.process_figure(
+                    figure, doc_content, zip_structure
                 )
 
                 # Update total token usage
@@ -516,6 +347,3 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         except Exception as e:
             logger.error(f"Error extracting individual captions: {str(e)}")
             raise
-        finally:
-            # Close the event loop
-            loop.close()

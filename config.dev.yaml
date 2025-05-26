@@ -115,13 +115,16 @@ default: &default
             If after 5 tries you can not get the full verbatim, return the most similar caption possible.
 
             Return your result as:
+
+            ```json
             {
               "figure_label": "Figure X",
               "caption_title": "The main descriptive title",
               "figure_caption": "The complete caption text including all panel descriptions",
               "is_verbatim": true/false
             }
-          
+            ```
+            
           user: |
             Extract the caption title and full text for $figure_label from the following text:
             
