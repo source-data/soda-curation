@@ -200,10 +200,15 @@ default: &default
             ```
             [
               {
-                "database": "name of database",
-                "accession_number": "exact accession number",
-                "url": "complete URL (or DOI) if provided"
-              }
+                "database": "BioStudies",
+                "accession_number": "S-BSST1936",
+                "url": "https://identifiers.org/biostudies:S-BSST1936"
+              },
+              {
+                "database": "Gene Expression Omnibus",
+                "accession_number": "GSE292794",
+                "url": "https://identifiers.org/geo:GSE292794"
+              },
             ]
             ```
             
