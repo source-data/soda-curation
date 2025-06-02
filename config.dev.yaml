@@ -200,15 +200,10 @@ default: &default
             ```
             [
               {
-                "database": "BioStudies",
-                "accession_number": "S-BSST1936",
-                "url": "https://identifiers.org/biostudies:S-BSST1936"
-              },
-              {
-                "database": "Gene Expression Omnibus",
-                "accession_number": "GSE292794",
-                "url": "https://identifiers.org/geo:GSE292794"
-              },
+                "database": "Database name",
+                "accession_number": "ID",
+                "url": "https://identifiers.org/db:ID"
+              }
             ]
             ```
             
@@ -249,7 +244,32 @@ default: &default
             ```
 
             Youy MUST return the database links following the fields `sample_identifiers_url` with the correct provided ID.
-            It always be mandatory to return first the `identifiers.org` link
+            It always be mandatory to return first the `identifiers.org` link. Even if links are present, you MUST return the `identifiers.org` link first if available.
+
+
+            As an example, the output for the following input:
+
+            ```
+            The RNAseq data from this publication have been deposited to the GEO database (https://www.ncbi.nlm.nih.gov/geo/) and assigned the accession number GSE292794. Data used in this study have been deposited to the BioStudies database and were assigned the accession number S-BSST1936 in following link: https://www.ebi.ac.uk/biostudies/studies/S-BSST1936.
+            ```
+
+            Should be the following output:
+
+            ```
+            [
+              {
+                "database": "BioStudies",
+                "accession_number": "S-BSST1936",
+                "url": "https://identifiers.org/biostudies:S-BSST1936"
+              },
+              {
+                "database": "Gene Expression Omnibus",
+                "accession_number": "GSE292794",
+                "url": "https://identifiers.org/geo:GSE292794"
+              },
+            ]
+
+
 
             Database Registry Information:
             
