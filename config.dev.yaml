@@ -225,6 +225,27 @@ default: &default
               - Include file paths or other resources
               - Include explanatory text
 
+            **VERY IMPORTANT**
+            You will receive a `Database Registry Information` to keep all the information available.
+            The JSON SCHEMA of this database is as follows:
+            ```json
+              [
+                {
+                  "name": string,
+                  "url_pattern": string,
+                  "identifiers_pattern": string,
+                  "local_unique_identifier_pattern": string [regex],
+                  "sample_id": string,
+                  "sample_identifiers_url": string,
+                  "sample_extertnal_url": string
+                },
+                ...
+              ]
+            ```
+
+            Youy MUST return the database links following the fields `sample_identifiers_url` with the correct provided ID.
+            It always be mandatory to return first the `identifiers.org` link
+
             Database Registry Information:
             
           user: |

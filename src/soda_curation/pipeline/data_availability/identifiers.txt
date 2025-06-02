@@ -310,7 +310,7 @@
     {
       "name": "Sequence Read Archive",
       "url_pattern": "https://ddbj.nig.ac.jp/resource/sra-experiment/{$id}",
-      "identifiers_pattern": "https://identifiers.org/nsdc.s:",
+      "identifiers_pattern": "	https://identifiers.org/insdc.sra:",
       "local_unique_identifier_pattern": "^[SED]R[APRSXZ]\\d+$",
       "sample_id": "SRX000007",
       "sample_identifiers_url": "https://identifiers.org/insdc.sra:SRX000007",
