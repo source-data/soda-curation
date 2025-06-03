@@ -144,18 +144,19 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             return ""
 
         # Create markdown table header
-        registry_info = "| Database Name | Identifiers Pattern | URL Pattern | Sample ID | Sample Identifiers URL |\n"
-        registry_info += "|--------------|-------------------|------------|-----------|----------------------|\n"
+        registry_info = "| Database Name | Identifiers Pattern | Sample ID | Sample Identifiers URL |\n"
+        registry_info += (
+            "|--------------|-------------------|-----------|----------------------|\n"
+        )
 
         # Add each database as a row in the table
         for db in self.database_registry["databases"]:
             name = db.get("name", "")
             identifiers_pattern = db.get("identifiers_pattern", "")
-            url_pattern = db.get("url_pattern", "")
             sample_id = db.get("sample_id", "")
             sample_identifiers_url = db.get("sample_identifiers_url", "")
 
             # Format as table row, escaping pipe characters if they exist in the data
-            registry_info += f"| {name} | {identifiers_pattern} | {url_pattern} | {sample_id} | {sample_identifiers_url} |\n"
+            registry_info += f"| {name} | {identifiers_pattern} | {sample_id} | {sample_identifiers_url} |\n"
 
         return registry_info
