@@ -184,11 +184,11 @@ class TestDatabaseRegistry:
 
         # Check that it's a markdown table
         assert (
-            "| Database Name | Identifiers Pattern | URL Pattern | Sample ID | Sample Identifiers URL |"
+            "| Database Name | Identifiers Pattern | Sample ID | Sample Identifiers URL |"
             in formatted
         )
         assert (
-            "|--------------|-------------------|------------|-----------|----------------------|"
+            "|--------------|-------------------|-----------|----------------------|"
             in formatted
         )
 
