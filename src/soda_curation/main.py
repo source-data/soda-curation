@@ -24,7 +24,10 @@ from .pipeline.extract_captions.extract_captions_openai import (
     FigureCaptionExtractorOpenAI,
 )
 from .pipeline.extract_sections.extract_sections_openai import SectionExtractorOpenAI
-from .pipeline.manuscript_structure.manuscript_structure import CustomJSONEncoder
+from .pipeline.manuscript_structure.manuscript_structure import (
+    CustomJSONEncoder,
+    ZipStructure,
+)
 from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
 from .pipeline.match_caption_panel.match_caption_panel_openai import (
     MatchPanelCaptionOpenAI,
@@ -42,13 +45,28 @@ from .qc.qc_pipeline import QCPipeline
 logger = logging.getLogger(__name__)
 
 
-def run_qc_pipeline_async(config, zip_structure, extract_dir):
+def run_qc_pipeline_async(
+    config, zip_structure: ZipStructure, extract_dir: Path, figure_data=None
+) -> dict:
     """Run QC pipeline in a separate thread."""
     try:
+        logger.info("*** QC PIPELINE TRIGGERED - include_qc=true IS WORKING! ***")
+        logger.info(
+            f"Received {len(figure_data) if figure_data else 0} figures for QC processing"
+        )
+
         qc_pipeline = QCPipeline(config, extract_dir)
-        qc_results = qc_pipeline.run(zip_structure)
+        qc_results = qc_pipeline.run(zip_structure, figure_data)
+
+        # Store QC results in zip_structure if possible
+        if hasattr(zip_structure, "qc_results"):
+            zip_structure.qc_results = qc_results
+
         logger.info("QC pipeline completed successfully")
         return qc_results
+    except ImportError as e:
+        logger.error(f"QC pipeline module not found: {str(e)}")
+        return {"error": f"QC module not available: {str(e)}"}
     except Exception as e:
         logger.error(f"QC pipeline failed: {str(e)}")
         return {"error": str(e)}
@@ -128,6 +146,14 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             )
             _ = panel_matcher.process_figures(zip_structure)
 
+            # Get figure images and captions for QC pipeline
+            figure_data = panel_matcher.get_figure_images_and_captions()
+            # fig_label, bytes, fig_caption
+
+            import pdb
+
+            pdb.set_trace()
+
             # Start QC pipeline asynchronously if enabled
             qc_thread = None
             if config_loader.config.get("include_qc", False):
@@ -138,11 +164,11 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                         config_loader.config.get("qc", {}),
                         zip_structure,
                         extractor.manuscript_extract_dir,
+                        figure_data,  # Pass figure data to QC pipeline
                     ),
                     daemon=True,
                 )
                 qc_thread.start()
-
             # Assign panel source
             panel_source_assigner = PanelSourceAssignerOpenAI(
                 config_loader.config, prompt_handler, extractor.manuscript_extract_dir
