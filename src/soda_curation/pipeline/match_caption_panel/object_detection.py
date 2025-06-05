@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Tuple
 import cv2
 import numpy as np
 import pdf2image
-from PIL import Image
+from PIL import Image, ImageDraw
 from PIL.Image import DecompressionBombError
 from ultralytics import YOLOv10
 
@@ -207,26 +207,79 @@ def _create_jpg_preview_from_eps(
         return convert_eps_to_png(eps_path, output_path, dpi)
 
     try:
-        # Use same settings as UI conversion
-        output_format = "png"
-        compression_quality = 25  # low quality
-        merge_layers_method = "flatten"  # preserves transparency
+        # Try using wand/ImageMagick
+        try:
+            # Use same settings as UI conversion
+            output_format = "png"
+            compression_quality = 25  # low quality
+            merge_layers_method = "flatten"  # preserves transparency
 
-        # Open and process the EPS file
-        with open(eps_path, "rb") as f:
-            with WandImage(file=f, resolution=dpi) as img:
-                img.format = output_format
-                img.compression_quality = compression_quality
-                img.merge_layers(merge_layers_method)
+            # Open and process the EPS file
+            with open(eps_path, "rb") as f:
+                with WandImage(file=f, resolution=dpi) as img:
+                    img.format = output_format
+                    img.compression_quality = compression_quality
+                    img.merge_layers(merge_layers_method)
 
-                # Save to output path
-                img.save(filename=output_path)
+                    # Save to output path
+                    img.save(filename=output_path)
+                    return output_path
+        except Exception as wand_error:
+            logger.warning(f"Wand/ImageMagick EPS conversion failed: {str(wand_error)}")
+            # Continue to next method
+
+        # Try direct convert command with policy fix attempt
+        try:
+            # Try to fix the policy issue on-the-fly if possible
+            policy_file = "/etc/ImageMagick-6/policy.xml"
+            if os.path.exists(policy_file):
+                logger.info("Attempting to check ImageMagick policy...")
+                with open(policy_file, "r") as f:
+                    policy_content = f.read()
+                    if 'rights="none" pattern="EPS"' in policy_content:
+                        logger.warning(
+                            "EPS is disabled in ImageMagick policy. Conversion may fail."
+                        )
+
+            # Standard convert command
+            cmd = [
+                "convert",
+                "-density",
+                str(dpi),
+                "-trim",
+                "+repage",
+                eps_path,
+                "-flatten",
+                output_path,
+            ]
+            subprocess.run(cmd, check=True)
+            if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
                 return output_path
+            else:
+                raise ValueError("Output file is empty or not created")
+        except Exception as convert_error:
+            logger.warning(f"Direct convert command failed: {str(convert_error)}")
+            # Continue to next method
+
+        # Try ghostscript conversion as final fallback
+        return fallback_ghostscript_conversion(eps_path, output_path, dpi)
 
     except Exception as e:
-        logger.error(f"Wand/ImageMagick EPS conversion failed: {str(e)}")
-        # Fall back to original conversion method
-        return convert_eps_to_png(eps_path, output_path, dpi)
+        logger.error(f"All EPS conversion methods failed: {str(e)}")
+        # Create a blank image as last resort
+        try:
+            # Create a small blank image
+            img = Image.new("RGB", (800, 600), color="white")
+            # Draw error text
+            draw = ImageDraw.Draw(img)
+            draw.text((50, 50), f"EPS conversion failed: {str(e)}", fill="black")
+            draw.text((50, 100), f"File: {os.path.basename(eps_path)}", fill="black")
+            img.save(output_path)
+            return output_path
+        except Exception as pil_error:
+            logger.error(f"Even creating blank image failed: {str(pil_error)}")
+            # Return the original file path, let downstream handle it
+            return eps_path
 
 
 def create_standard_thumbnail(

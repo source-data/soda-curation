@@ -47,8 +47,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Update ImageMagick policy to allow PDF conversions
+# Configure ImageMagick policy to allow EPS, PDF, and PostScript
 RUN if [ -f /etc/ImageMagick-6/policy.xml ]; then \
+    sed -i 's/rights="none" pattern="EPS"/rights="read|write" pattern="EPS"/' /etc/ImageMagick-6/policy.xml; \
     sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml; \
+    sed -i 's/rights="none" pattern="PS"/rights="read|write" pattern="PS"/' /etc/ImageMagick-6/policy.xml; \
+    cat /etc/ImageMagick-6/policy.xml | grep -i EPS; \
+    cat /etc/ImageMagick-6/policy.xml | grep -i PDF; \
+    cat /etc/ImageMagick-6/policy.xml | grep -i PS; \
+    echo "ImageMagick policy updated successfully"; \
     fi
 
 ENV LIBCLANG_PATH=/usr/lib/llvm-11/lib/

@@ -125,7 +125,7 @@ docker-compose -f docker-compose.dev.yml build
 docker-compose -f docker-compose.dev.yml run --rm soda /bin/bash
 
 # Development with console access
-docker-compose -f docker-compose.dev.yml run --rm --entrypoint=/bin/bash soda
+docker compose -f docker-compose.dev.yml run --rm --entrypoint=/bin/bash soda
 ```
 
 ### Running the application
