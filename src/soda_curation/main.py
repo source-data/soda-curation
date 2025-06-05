@@ -2,6 +2,7 @@
 
 import json
 import logging
+import threading
 from pathlib import Path
 from typing import Optional
 
@@ -30,12 +31,27 @@ from .pipeline.match_caption_panel.match_caption_panel_openai import (
 )
 from .pipeline.prompt_handler import PromptHandler
 
+# Import QC module (to be implemented)
+from .qc.qc_pipeline import QCPipeline
+
 # from src.soda_curation.pipeline.extract_sections.extract_sections_openai import (
 #     SectionExtractorOpenAI,
 # )
 
 
 logger = logging.getLogger(__name__)
+
+
+def run_qc_pipeline_async(config, zip_structure, extract_dir):
+    """Run QC pipeline in a separate thread."""
+    try:
+        qc_pipeline = QCPipeline(config, extract_dir)
+        qc_results = qc_pipeline.run(zip_structure)
+        logger.info("QC pipeline completed successfully")
+        return qc_results
+    except Exception as e:
+        logger.error(f"QC pipeline failed: {str(e)}")
+        return {"error": str(e)}
 
 
 def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> str:
@@ -104,10 +120,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 section_text=data_availability_text, zip_structure=zip_structure
             )
 
-            # Assign panel source
-            panel_source_assigner = PanelSourceAssignerOpenAI(
-                config_loader.config, prompt_handler, extractor.manuscript_extract_dir
-            )
             # Match panels with captions using object detection
             panel_matcher = MatchPanelCaptionOpenAI(
                 config=config_loader.config,
@@ -116,12 +128,39 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             )
             _ = panel_matcher.process_figures(zip_structure)
 
-            # Pass only
+            # Start QC pipeline asynchronously if enabled
+            qc_thread = None
+            if config_loader.config.get("include_qc", False):
+                logger.info("Starting QC pipeline asynchronously")
+                qc_thread = threading.Thread(
+                    target=run_qc_pipeline_async,
+                    args=(
+                        config_loader.config.get("qc", {}),
+                        zip_structure,
+                        extractor.manuscript_extract_dir,
+                    ),
+                    daemon=True,
+                )
+                qc_thread.start()
+
+            # Assign panel source
+            panel_source_assigner = PanelSourceAssignerOpenAI(
+                config_loader.config, prompt_handler, extractor.manuscript_extract_dir
+            )
             processed_figures = panel_source_assigner.assign_panel_source(
                 zip_structure,  # Pass figures list instead of whole structure
             )
             # Preserve all ZipStructure data while updating figures
             zip_structure.figures = processed_figures
+
+            # Wait for QC pipeline to complete if it was started
+            if qc_thread and qc_thread.is_alive():
+                logger.info("Waiting for QC pipeline to complete")
+                qc_thread.join(timeout=120)  # Wait up to 2 minutes for QC to complete
+                if qc_thread.is_alive():
+                    logger.warning(
+                        "QC pipeline did not complete within timeout, continuing"
+                    )
 
             # Update total costs before returning results
             zip_structure.update_total_cost()
