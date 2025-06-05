@@ -35,8 +35,8 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
     def _load_database_registry(self) -> Dict[Any, Any]:
         """Load database registry from identifiers.txt file."""
         try:
-            # Path to identifiers.txt file (in the same directory as this module)
-            identifiers_path = Path(__file__).parent / "identifiers.txt"
+            # Path to identifiers.json file (in the same directory as this module)
+            identifiers_path = Path(__file__).parent / "identifiers.json"
 
             with open(identifiers_path, "r") as f:
                 content = f.read()
@@ -125,10 +125,6 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             # Update the ZipStructure with data
             response_data = response.choices[0].message.content
             parsed_data = self._parse_response(response_data)
-
-            import pdb
-
-            pdb.set_trace()
 
             zip_structure.data_availability = {
                 "section_text": section_text,
