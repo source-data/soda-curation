@@ -1,8 +1,8 @@
 """Main entry point for SODA curation pipeline."""
 
+import argparse
 import json
 import logging
-import threading
 from pathlib import Path
 from typing import Optional
 
@@ -13,6 +13,7 @@ from ._main_utils import (
     validate_paths,
 )
 from .config import ConfigurationLoader
+from .data_storage import save_figure_data, save_zip_structure
 from .logging_config import setup_logging
 from .pipeline.assign_panel_source.assign_panel_source_openai import (
     PanelSourceAssignerOpenAI,
@@ -150,25 +151,16 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             figure_data = panel_matcher.get_figure_images_and_captions()
             # fig_label, bytes, fig_caption
 
-            import pdb
-
-            pdb.set_trace()
-
-            # Start QC pipeline asynchronously if enabled
-            qc_thread = None
-            if config_loader.config.get("include_qc", False):
-                logger.info("Starting QC pipeline asynchronously")
-                qc_thread = threading.Thread(
-                    target=run_qc_pipeline_async,
-                    args=(
-                        config_loader.config.get("qc", {}),
-                        zip_structure,
-                        extractor.manuscript_extract_dir,
-                        figure_data,  # Pass figure data to QC pipeline
-                    ),
-                    daemon=True,
+            # Save data for QC pipeline development (only in dev mode)
+            if config_loader.config.get("environment") == "dev":
+                data_dir = Path("app/data/development")
+                data_dir.mkdir(parents=True, exist_ok=True)
+                save_figure_data(figure_data, str(data_dir / "figure_data.json"))
+                save_zip_structure(
+                    zip_structure, str(data_dir / "zip_structure.pickle")
                 )
-                qc_thread.start()
+                logger.info("Saved development data for QC pipeline")
+
             # Assign panel source
             panel_source_assigner = PanelSourceAssignerOpenAI(
                 config_loader.config, prompt_handler, extractor.manuscript_extract_dir
@@ -178,15 +170,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             )
             # Preserve all ZipStructure data while updating figures
             zip_structure.figures = processed_figures
-
-            # Wait for QC pipeline to complete if it was started
-            if qc_thread and qc_thread.is_alive():
-                logger.info("Waiting for QC pipeline to complete")
-                qc_thread.join(timeout=120)  # Wait up to 2 minutes for QC to complete
-                if qc_thread.is_alive():
-                    logger.warning(
-                        "QC pipeline did not complete within timeout, continuing"
-                    )
 
             # Update total costs before returning results
             zip_structure.update_total_cost()
@@ -240,8 +223,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
 
 if __name__ == "__main__":
-    import argparse
-
     parser = argparse.ArgumentParser(
         description="Process a ZIP file using SODA curation"
     )

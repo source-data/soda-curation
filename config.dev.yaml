@@ -2,6 +2,7 @@
 #  Default Profile
 ##########################################################
 include_qc: true
+environment: "dev"
 default: &default
   pipeline:
     ##########################################################
@@ -228,20 +229,11 @@ default: &default
 
             **VERY IMPORTANT**
             You will receive a `Database Registry Information` to keep all the information available.
-            The JSON SCHEMA of this database is as follows:
-            ```json
-              [
-                {
-                  "name": string,
-                  "url_pattern": string,
-                  "identifiers_pattern": string,
-                  "local_unique_identifier_pattern": string [regex],
-                  "sample_id": string,
-                  "sample_identifiers_url": string,
-                  "sample_extertnal_url": string
-                },
-                ...
-              ]
+            This data will be encoded as a markdown table with the following columns:
+
+            ```markdown
+            "| Database Name | Identifiers Pattern | Sample ID | Sample Identifiers URL |\n"
+            "|---------------|---------------------|-----------|------------------------|\n"
             ```
 
             Youy MUST return the database links following the fields `sample_identifiers_url` with the correct provided ID.
