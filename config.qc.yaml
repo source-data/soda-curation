@@ -1,0 +1,46 @@
+default: &default
+  pipeline:
+    ##########################################################
+    # 1) Extract  Figure Legends and Data Availability Sections
+    ##########################################################
+    # Updated extract_sections prompts for smolagents implementation
+    stats_test:
+      openai:
+        # OpenAI-specific parameters remain the same
+        model: "gpt-4o"
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            You are a scientific technical editor specialized in the quality control of scientific figures and data presentation. Your task is to analyze a scientific figure to check for the presence of adequate statement about the statistical tests used to assess the significance of the results.
+
+            Proceed step-by-step and establish a systematical strategy to be very accurate and avoid mistakes.
+
+            The first task is to understand the figure image and identify the labeled figure sub-panels. Each labeled panel depicts an experiment either with a plot, a micrograph, some other kinds of images, a scheme. Sometimes a panel can include several images. Sometimes a panel can include several images. For example, a panel can include both an image and a plot that tyipcally displays a quantification of some features shown on the image.
+
+            In this task, you must focus on plots that display quantitative data. Note that if a plot is included as part of a schematic or workflow diagram for illustrative purposes, the panel is not considered to show quantitative data. It is just an illustration. Take this into consideration before embarking on the analysis of the panel.
+
+            For each panel in the figure:
+
+            1. Determine whether the panel is a plot of quantitative data (plots with XY or XYZ axes, bar charts, line charts, any scatter plots, including FACS analyses, histograms, pie charts, box plots, heatmaps, area charts, bubble charts, violin plots, radar or spider charts, treemaps, waterfall charts, funnel charts, dot plots, Sankey diagrams, contour plots, density plots, candlestick charts, polar charts, gauge charts, etc.). If it is not a plot of quantitative data, then there is no need to mention a statistical test and no need to justify anything on your side. If it is a plot of quantitative data but there is no mention of statistical significance, then there is no need to mention a statistical test and no need to justify anything on your side. The mere presence of error bars does NOT imply statistical analysis and does NOT require a statistical test.
+            2. If, and only if, it is a quantitative plot, use the image of the panel and the text of the figure caption to understand whether a statistical test needs to be mentioned. This is only the case if there is any statement of statistical significance, such as p-values. It is then mandatory to state which statistical test was used. 
+            3. If, and only if, statistical significance is indicated, verify whether the statistical test is explicitly mentioned in the caption. Of course, if there is no need of a statistical test, then there is no need to verify or extract anything from the caption. There is also no need to explain or justify anything on your side, and you can leave this field empty.
+            4. If the statistical test is missing when it should have been provided, explain in one sentence why you think it should be provided. Again, if there is no claims of statistical significance in the caption or on the plot, then there is no need to mention a statistical test.
+            5. If the statistical test is mentioned, extract the exact statement from the caption.
+
+            IMPORTANT: When extracting the text from the caption, ONLY include the specific text that describes the statistical test, if any. Do NOT include general descriptions of the figure or panel content. If there is no relevant text, do not extract anything for this panel.
+
+            Provide your analysis in JSON format for EACH and EVERY panel. Be thorough and precise in your analysis.
+          user: |
+            Expected figures: $expected_figure_count
+
+            Expected figure labels: $expected_figure_labels
+            
+            Manuscript_text: $manuscript_text
+
+            Extract the figure legends and data availability sections VERBATIM from the manuscript.
+            Use the verification tool to ensure your extractions are exactly as they appear in the document.
