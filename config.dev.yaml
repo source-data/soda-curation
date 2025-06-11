@@ -237,8 +237,13 @@ default: &default
             ```
 
             Youy MUST return the database links following the fields `sample_identifiers_url` with the correct provided ID.
-            It always be mandatory to return first the `identifiers.org` link. Even if links are present, you MUST return the `identifiers.org` link first if available.
 
+            **IMPORTANT**
+
+            * If the database is present in the `Database Registry Information`
+              - Return always be mandatory to return first the `identifiers.org` link
+            * If the database is *NOT* present in the `Database Registry Information`
+              - Return the links exactly as they appear in the input text
 
             As an example, the output for the following input:
 
@@ -261,8 +266,29 @@ default: &default
                 "url": "https://identifiers.org/geo:GSE292794"
               },
             ]
+            ```
 
 
+            Another example input:
+
+            ```
+              All sequencing data has been deposited in the DNA Data Bank of Japan.
+
+                RNA-seq; DRA004290 (https://ddbj.nig.ac.jp/resource/sra-submission/DRA004290)
+            ```
+
+            Should be the following output. Note that there is no identifiers.org link because the 
+            DNA Data Bank of Japan is not present in the Database registry provided.
+
+            ```
+              [
+                {
+                  "database": "DNA Data Bank of Japan",
+                  "accession_number": "DRA004290",
+                  "url": "https://ddbj.nig.ac.jp/resource/sra-submission/DRA004290"
+                }
+              ]
+            ```
 
             Database Registry Information:
             
