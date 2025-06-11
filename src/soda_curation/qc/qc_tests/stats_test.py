@@ -3,7 +3,9 @@
 import logging
 from typing import Dict, Tuple
 
-from ..data_types import PanelStatsTest, StatsTestResult
+from pydantic import TypeAdapter
+
+from ..data_types import StatsTestResult
 from ..model_api import ModelAPI
 
 logger = logging.getLogger(__name__)
@@ -38,63 +40,30 @@ class StatsTestAnalyzer:
         """
         logger.info(f"Analyzing stats test for figure {figure_label}")
 
-        try:
-            # Get stats test specific config
-            test_config = self.config["pipeline"]["stats_test"]["openai"]
+        # try:
+        # Get stats test specific config
+        test_config = self.config["pipeline"]["stats_test"]["openai"]
 
-            # Call model API to analyze the figure
-            response = self.model_api.generate_response(
-                encoded_image=encoded_image,
-                caption=figure_caption,
-                prompt_config=test_config,
-            )
+        # Call model API to analyze the figure
+        response = self.model_api.generate_response(
+            encoded_image=encoded_image,
+            caption=figure_caption,
+            prompt_config=test_config,
+            response_type=StatsTestResult,
+        )
 
-            # Parse the response - handle None or missing outputs
-            panel_results = []
-            if response and isinstance(response, dict) and "outputs" in response:
-                for panel_data in response["outputs"]:
-                    panel_results.append(
-                        PanelStatsTest(
-                            panel_label=panel_data.get("panel_label", ""),
-                            is_a_plot=panel_data.get("is_a_plot", "no"),
-                            statistical_test_needed=panel_data.get(
-                                "statistical_test_needed", "no"
-                            ),
-                            statistical_test_mentioned=panel_data.get(
-                                "statistical_test_mentioned", "not needed"
-                            ),
-                            justify_why_test_is_missing=panel_data.get(
-                                "justify_why_test_is_missing", ""
-                            ),
-                            from_the_caption=panel_data.get("from_the_caption", ""),
-                        )
-                    )
-            else:
-                logger.warning(
-                    f"Invalid or missing outputs in response for figure {figure_label}"
-                )
-                if response:
-                    logger.debug(f"Response received: {str(response)[:200]}...")
-                else:
-                    logger.debug("Response was None")
+        result: StatsTestResult = TypeAdapter(StatsTestResult).validate_json(response)
 
-            # Create result object
-            result = StatsTestResult(outputs=panel_results)
+        # Determine if the figure passes the test
+        # A figure passes if all panels that need statistical tests have them mentioned
+        needs_stats = [p for p in result.outputs if p.statistical_test_needed == "yes"]
+        missing_stats = [p for p in needs_stats if p.statistical_test_mentioned == "no"]
+        passed = len(missing_stats) == 0
 
-            # Determine if the figure passes the test
-            # A figure passes if all panels that need statistical tests have them mentioned
-            needs_stats = [
-                p for p in panel_results if p.statistical_test_needed == "yes"
-            ]
-            missing_stats = [
-                p for p in needs_stats if p.statistical_test_mentioned == "no"
-            ]
-            passed = len(missing_stats) == 0
+        return passed, result
 
-            return passed, result
-
-        except Exception as e:
-            logger.error(
-                f"Error analyzing stats test for figure {figure_label}: {str(e)}"
-            )
-            return False, StatsTestResult(outputs=[])
+        # except Exception as e:
+        #     logger.error(
+        #         f"Error analyzing stats test for figure {figure_label}: {str(e)}"
+        #     )
+        #     return False, StatsTestResult(outputs=[])

@@ -3,9 +3,11 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
+from pydantic import BaseModel
+
 
 @dataclass
-class PanelStatsTest:
+class PanelStatsTest(BaseModel):
     """Statistics test analysis for a panel."""
 
     panel_label: str
@@ -17,7 +19,7 @@ class PanelStatsTest:
 
 
 @dataclass
-class StatsTestResult:
+class StatsTestResult(BaseModel):
     """Results of statistics test analysis for a figure."""
 
     outputs: List[PanelStatsTest]
