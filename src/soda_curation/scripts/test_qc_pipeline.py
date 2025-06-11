@@ -121,13 +121,13 @@ def main():
 
     # Show some details of the first figure result
     if qc_results.get("figure_results"):
-        # The figure_results are already dictionaries now
-        for i, figure_result in enumerate(
-            qc_results["figure_results"][:3]
-        ):  # Show first 3
-            logger.info(
-                f"Figure {figure_result.get('figure_label')} QC status: {figure_result.get('qc_status')}"
-            )
+        # Access figure_results as list of dictionaries
+        figure_results = qc_results["figure_results"]
+        for i, figure_result in enumerate(figure_results[:3]):  # Show first 3
+            # Access properties directly from dictionary
+            figure_label = figure_result["figure_label"]
+            qc_status = figure_result["qc_status"]
+            logger.info(f"Figure {figure_label} QC status: {qc_status}")
 
             # Check if the stats test was run for this figure
             qc_checks = figure_result.get("qc_checks", {})
@@ -143,10 +143,10 @@ def main():
                     # Show details of first 2 panels (if any)
                     for j, panel in enumerate(outputs[:2] if outputs else []):
                         logger.info(
-                            f"    - Panel {panel.get('panel_label')}: "
-                            f"is_a_plot={panel.get('is_a_plot')}, "
-                            f"test_needed={panel.get('statistical_test_needed')}, "
-                            f"test_mentioned={panel.get('statistical_test_mentioned')}"
+                            f"    - Panel {panel['panel_label']}: "
+                            f"is_a_plot={panel['is_a_plot']}, "
+                            f"test_needed={panel['statistical_test_needed']}, "
+                            f"test_mentioned={panel['statistical_test_mentioned']}"
                         )
 
     logger.info("QC development run completed")

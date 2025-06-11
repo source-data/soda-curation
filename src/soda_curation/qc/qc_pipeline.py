@@ -1,6 +1,7 @@
 """QC Pipeline for SODA curation."""
 
 import logging
+from dataclasses import asdict
 from typing import Dict, List, Optional, Tuple
 
 from ..pipeline.manuscript_structure.manuscript_structure import ZipStructure
@@ -90,7 +91,7 @@ class QCPipeline:
                         )
                         figure_result.qc_checks["stats_test"] = {
                             "passed": passed,
-                            "result": result.__dict__,
+                            "result": asdict(result),  # Convert to dict here
                         }
                         if not passed:
                             all_tests_passed = False
@@ -124,4 +125,5 @@ class QCPipeline:
         )
 
         logger.info("*** QC PIPELINE COMPLETED ***")
-        return qc_results.__dict__
+        # Convert all dataclasses to dictionaries before returning
+        return asdict(qc_results)
