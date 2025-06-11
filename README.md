@@ -492,6 +492,88 @@ docker-compose build format
 docker-compose run --rm format
 ```
 
+# Quality Control
+
+The new QC module performs automated quality assessment of manuscript figures and data presentation:
+
+## QC Module Features
+
+* **Modular Design**: Easily extendable with new quality check modules
+
+* **Configuration-Based**: QC checks are controlled through the same YAML configuration
+
+* **JSON Output**: Structured output format for easy integration with other systems
+
+* **Independent Operation**: Can be run as a separate step after main pipeline processing
+
+## Current QC Tests
+
+* **Statistical Test Analysis**: Verifies proper statistical test reporting in figures
+
+  - Identifies panels showing quantitative data
+  
+  - Checks if statistical significance is indicated (p-values)
+  
+  - Verifies appropriate statistical test methods are mentioned
+  
+  - Flags missing statistical information
+
+## Running QC Pipeline
+
+```bash
+  poetry run python -m src.soda_curation.qc.main \
+    --config config.qc.yaml \
+    --figure-data data/output/results_figure_data.json \
+    --zip-structure data/output/results_zip_structure.pickle \
+    --output data/output/qc_results.json
+```
+
+## Adding New QC Tests
+
+New tests can be added by:
+
+1. Creating a new module in `src/soda_curation/qc/qc_tests/`
+2. Implementing a test analyzer class following the naming convention
+3. Adding configuration for the test in the YAML config file
+
+
+## QC configuration example
+
+Here's an example of a `config.qc.yaml` file for the Quality Control module:
+
+```yaml
+  default: &default
+    pipeline:
+      # Statistical test analysis configuration
+      stats_test:
+        openai:
+          # OpenAI-specific parameters
+          model: "gpt-4o"
+          temperature: 0.1
+          top_p: 1.0
+          max_tokens: 2048
+          frequency_penalty: 0.0
+          presence_penalty: 0.0
+          json_mode: true
+          prompts:
+            system: |
+              You are a scientific technical editor specialized in the quality control of scientific figures and data presentation. 
+              Your task is to analyze a scientific figure to check for the presence of adequate statement about the statistical 
+              tests used to assess the significance of the results.
+
+              Proceed step-by-step and establish a systematical strategy to be very accurate and avoid mistakes.
+            user: |
+              Figure Caption:
+
+              $figure_caption
+
+      # Add other QC test configurations here following the same pattern
+      # data_availability_test:
+      #   openai:
+      #     model: "gpt-4o"
+      #     ...
+```
+
 ## Contributing
 
 Contributions to soda-curation are welcome! Here are some ways you can contribute:
@@ -520,6 +602,14 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 2.0.0 (2025-06-10)
+- Added Quality Control (QC) module for automated manuscript assessment
+- Implemented statistical test reporting analysis for figures
+- Dynamic loading of QC test modules from configuration
+- Automatic generation of QC data during main pipeline execution
+- 90% test coverage achieved across the codebase
+
 
 ### 1.2.1 (2025-05-14)
 - Case insensitive panel caption matching added
