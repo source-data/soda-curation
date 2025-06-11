@@ -1,6 +1,8 @@
 ##########################################################
 #  Default Profile
 ##########################################################
+include_qc: true
+environment: "dev"
 default: &default
   pipeline:
     ##########################################################
@@ -227,12 +229,11 @@ default: &default
 
             **VERY IMPORTANT**
             You will receive a `Database Registry Information` to keep all the information available.
-            This will be inclujded in a markdown table as the following:
+            This data will be encoded as a markdown table with the following columns:
 
             ```markdown
-              "| Database Name | Identifiers Pattern | Sample ID | Sample Identifiers URL |\n"
-              "|--------------|-------------------|-----------|----------------------|\n"
-
+            "| Database Name | Identifiers Pattern | Sample ID | Sample Identifiers URL |\n"
+            "|---------------|---------------------|-----------|------------------------|\n"
             ```
 
             Youy MUST return the database links following the fields `sample_identifiers_url` with the correct provided ID.
