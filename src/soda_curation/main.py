@@ -149,17 +149,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
             # Get figure images and captions for QC pipeline
             figure_data = panel_matcher.get_figure_images_and_captions()
-            # fig_label, bytes, fig_caption
-
-            # Save data for QC pipeline development (only in dev mode)
-            if config_loader.config.get("environment") == "dev":
-                data_dir = Path("app/data/development")
-                data_dir.mkdir(parents=True, exist_ok=True)
-                save_figure_data(figure_data, str(data_dir / "figure_data.json"))
-                save_zip_structure(
-                    zip_structure, str(data_dir / "zip_structure.pickle")
-                )
-                logger.info("Saved development data for QC pipeline")
 
             # Assign panel source
             panel_source_assigner = PanelSourceAssignerOpenAI(
@@ -191,6 +180,39 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                         fig.hallucination_score = calculate_hallucination_score(
                             fig.figure_caption, manuscript_content
                         )
+
+            # Save data for QC pipeline
+            if output_path:
+                # Extract directory and base filename without extension
+                output_path_obj = Path(output_path)
+                output_dir = output_path_obj.parent
+                base_filename = output_path_obj.stem
+
+                # Create filenames for QC data
+                figure_data_path = str(output_dir / f"{base_filename}_figure_data.json")
+                zip_structure_path = str(
+                    output_dir / f"{base_filename}_zip_structure.pickle"
+                )
+
+                # Save the data files for QC pipeline
+                save_figure_data(figure_data, figure_data_path)
+                save_zip_structure(zip_structure, zip_structure_path)
+                logger.info(
+                    f"Saved QC pipeline data: {figure_data_path} and {zip_structure_path}"
+                )
+            else:
+                # Default location if no output path specified
+                data_dir = Path("data/qc_data")
+                data_dir.mkdir(parents=True, exist_ok=True)
+
+                # Save with default filenames
+                figure_data_path = str(data_dir / "figure_data.json")
+                zip_structure_path = str(data_dir / "zip_structure.pickle")
+                save_figure_data(figure_data, figure_data_path)
+                save_zip_structure(zip_structure, zip_structure_path)
+                logger.info(
+                    f"Saved QC pipeline data: {figure_data_path} and {zip_structure_path}"
+                )
 
             # Convert to JSON using CustomJSONEncoder
             output_json = json.dumps(

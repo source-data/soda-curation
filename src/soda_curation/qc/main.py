@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 """
-Test script for the QC pipeline.
-This script loads saved figure data and zip structure, then runs the QC pipeline.
+Main module for running the QC pipeline.
+This module loads configuration and runs the QC tests specified in the config.
 """
 
 import argparse
+import importlib
 import json
 import logging
 import os
-from dataclasses import asdict
 from pathlib import Path
+from typing import Any, Dict
 
 from ..config import ConfigurationLoader
 from ..data_storage import load_figure_data, load_zip_structure
-from ..qc.qc_pipeline import QCPipeline
+from .qc_pipeline import QCPipeline
 
 # Set up logging
 logging.basicConfig(
@@ -23,17 +24,62 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# Custom JSON encoder to handle dataclasses
-class DataclassJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if hasattr(obj, "__dataclass_fields__"):
-            return asdict(obj)
-        return super().default(obj)
+def load_test_modules(config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Dynamically load QC test modules based on configuration.
+
+    Args:
+        config: Configuration dictionary with QC test settings
+
+    Returns:
+        Dictionary of initialized test modules
+    """
+    test_modules = {}
+
+    # Only process if pipeline key exists in config
+    if "pipeline" not in config:
+        logger.warning("No 'pipeline' section found in config")
+        return test_modules
+
+    # Iterate through pipeline items to find test modules
+    for test_name, test_config in config["pipeline"].items():
+        # Try to import the corresponding module from qc_tests
+        try:
+            # Convert snake_case to CamelCase for class name
+            class_name = (
+                "".join(word.capitalize() for word in test_name.split("_")) + "Analyzer"
+            )
+            module_name = f".qc_tests.{test_name}"
+
+            # Check if module exists
+            try:
+                module = importlib.import_module(
+                    module_name, package="soda_curation.qc"
+                )
+
+                # Get the analyzer class
+                if hasattr(module, class_name):
+                    analyzer_class = getattr(module, class_name)
+                    test_modules[test_name] = analyzer_class(config)
+                    logger.info(f"Loaded test module: {test_name}")
+                else:
+                    logger.warning(
+                        f"Module {test_name} found but analyzer class {class_name} not found"
+                    )
+            except ModuleNotFoundError:
+                logger.warning(
+                    f"Test module {test_name} specified in config but not found in qc_tests"
+                )
+
+        except Exception as e:
+            logger.error(f"Error loading test module {test_name}: {str(e)}")
+
+    return test_modules
 
 
 def main():
-    """Run QC pipeline tests with saved data."""
-    parser = argparse.ArgumentParser(description="Test QC pipeline with saved data")
+    """Run QC pipeline with specified configuration."""
+    parser = argparse.ArgumentParser(description="Run QC pipeline")
     parser.add_argument(
         "--config", default="config.qc.yaml", help="Path to QC configuration file"
     )
@@ -52,7 +98,7 @@ def main():
     )
     parser.add_argument(
         "--output",
-        default="data/development/qc_results.json",
+        default="data/output/qc_results.json",
         help="Path to save QC results",
     )
     args = parser.parse_args()
@@ -102,15 +148,15 @@ def main():
     logger.info(f"Loaded {len(figure_data)} figures from saved data")
 
     # Run QC pipeline
-    logger.info("Starting QC pipeline development run")
+    logger.info("Starting QC pipeline")
     qc_pipeline = QCPipeline(config, extract_dir)
 
     logger.info("Running QC pipeline")
     qc_results = qc_pipeline.run(zip_structure, figure_data)
 
-    # Save results - use custom encoder for dataclasses
+    # Save results to JSON file
     with open(output_path, "w") as f:
-        json.dump(qc_results, f, indent=2, cls=DataclassJSONEncoder)
+        json.dump(qc_results, f, indent=2)
     logger.info(f"QC results saved to {output_path}")
 
     # Print summary
@@ -119,37 +165,19 @@ def main():
     )
     logger.info(f"Processed {qc_results.get('figures_processed', 0)} figures")
 
-    # Show some details of the first figure result
+    # Show some details of the first few figure results
     if qc_results.get("figure_results"):
-        # Access figure_results as list of dictionaries
         figure_results = qc_results["figure_results"]
-        for i, figure_result in enumerate(figure_results[:3]):  # Show first 3
-            # Access properties directly from dictionary
+        for i, figure_result in enumerate(figure_results):  # Show first 3
             figure_label = figure_result["figure_label"]
             qc_status = figure_result["qc_status"]
             logger.info(f"Figure {figure_label} QC status: {qc_status}")
 
-            # Check if the stats test was run for this figure
+            # Log summary of each QC check for this figure
             qc_checks = figure_result.get("qc_checks", {})
-            if "stats_test" in qc_checks:
-                stats_test = qc_checks["stats_test"]
-                logger.info(f"  - Stats test passed: {stats_test.get('passed')}")
-
-                # Show details of panels if available
-                if "result" in stats_test and "outputs" in stats_test["result"]:
-                    outputs = stats_test["result"]["outputs"]
-                    logger.info(f"  - Analyzed {len(outputs)} panels")
-
-                    # Show details of first 2 panels (if any)
-                    for j, panel in enumerate(outputs[:2] if outputs else []):
-                        logger.info(
-                            f"    - Panel {panel['panel_label']}: "
-                            f"is_a_plot={panel['is_a_plot']}, "
-                            f"test_needed={panel['statistical_test_needed']}, "
-                            f"test_mentioned={panel['statistical_test_mentioned']}"
-                        )
-
-    logger.info("QC development run completed")
+            for check_name, check_result in qc_checks.items():
+                passed = check_result.get("passed", False)
+                logger.info(f"  - {check_name}: {'Passed' if passed else 'Failed'}")
 
 
 if __name__ == "__main__":

@@ -1,12 +1,12 @@
 """QC Pipeline for SODA curation."""
 
+import importlib
 import logging
 from dataclasses import asdict
 from typing import Dict, List, Optional, Tuple
 
 from ..pipeline.manuscript_structure.manuscript_structure import ZipStructure
 from .data_types import QCPipelineResult, QCResult
-from .qc_tests.stats_test import StatsTestAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -31,12 +31,44 @@ class QCPipeline:
         """Initialize QC test analyzers based on configuration."""
         tests = {}
 
-        # Initialize StatsTestAnalyzer if configured
-        if self.config.get("pipeline", {}).get("stats_test"):
-            tests["stats_test"] = StatsTestAnalyzer(self.config)
-            logger.info("Initialized stats_test analyzer")
+        # Only process if pipeline key exists in config
+        if "pipeline" not in self.config:
+            logger.warning("No 'pipeline' section found in config")
+            return tests
 
-        # Add more test initializers here as they're implemented
+        # Iterate through pipeline items to find test modules
+        for test_name, test_config in self.config["pipeline"].items():
+            # Try to import the corresponding module from qc_tests
+            try:
+                # Convert snake_case to CamelCase for class name
+                class_name = (
+                    "".join(word.capitalize() for word in test_name.split("_"))
+                    + "Analyzer"
+                )
+                module_name = f".qc_tests.{test_name}"
+
+                # Check if module exists
+                try:
+                    module = importlib.import_module(
+                        module_name, package="soda_curation.qc"
+                    )
+
+                    # Get the analyzer class
+                    if hasattr(module, class_name):
+                        analyzer_class = getattr(module, class_name)
+                        tests[test_name] = analyzer_class(self.config)
+                        logger.info(f"Loaded test module: {test_name}")
+                    else:
+                        logger.warning(
+                            f"Module {test_name} found but analyzer class {class_name} not found"
+                        )
+                except ModuleNotFoundError:
+                    logger.warning(
+                        f"Test module {test_name} specified in config but not found in qc_tests"
+                    )
+
+            except Exception as e:
+                logger.error(f"Error loading test module {test_name}: {str(e)}")
 
         return tests
 
@@ -83,29 +115,35 @@ class QCPipeline:
                 # Run configured tests on this figure
                 all_tests_passed = True
 
-                # Stats test
-                if "stats_test" in self.tests:
+                # Run each configured test
+                for test_name, test_analyzer in self.tests.items():
                     try:
-                        passed, result = self.tests["stats_test"].analyze_figure(
-                            figure_label, encoded_image, figure_caption
-                        )
-                        figure_result.qc_checks["stats_test"] = {
-                            "passed": passed,
-                            "result": asdict(result),  # Convert to dict here
-                        }
-                        if not passed:
-                            all_tests_passed = False
+                        # Check if the analyzer has the analyze_figure method
+                        if hasattr(test_analyzer, "analyze_figure"):
+                            passed, result = test_analyzer.analyze_figure(
+                                figure_label, encoded_image, figure_caption
+                            )
+                            figure_result.qc_checks[test_name] = {
+                                "passed": passed,
+                                "result": asdict(result)
+                                if hasattr(result, "__dataclass_fields__")
+                                else result,
+                            }
+                            if not passed:
+                                all_tests_passed = False
+                        else:
+                            logger.warning(
+                                f"Test {test_name} does not have analyze_figure method"
+                            )
                     except Exception as e:
                         logger.error(
-                            f"Error in stats_test for figure {figure_label}: {str(e)}"
+                            f"Error in {test_name} for figure {figure_label}: {str(e)}"
                         )
-                        figure_result.qc_checks["stats_test"] = {
+                        figure_result.qc_checks[test_name] = {
                             "passed": False,
                             "error": str(e),
                         }
                         all_tests_passed = False
-
-                # Add more tests here as they're implemented
 
                 # Set overall figure status
                 figure_result.qc_status = "passed" if all_tests_passed else "failed"
