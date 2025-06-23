@@ -182,12 +182,12 @@ default: &default
             
             $figure_caption
             
-            Make sure to include ALL panels and verify that your panel sequence is complete without gaps using the verification tool.    # 3) Extract sources from data availability section
+            Make sure to include ALL panels and verify that your panel sequence is complete without gaps using the verification tool. 
     ##########################################################
     extract_data_sources:
       openai:
-        model: "gpt-4o-mini"
-        temperature: 0.1
+        model: "gpt-4o"
+        temperature: 0.5
         top_p: 0.5
         max_tokens: 2048
         frequency_penalty: 0.0
@@ -217,7 +217,6 @@ default: &default
             5. For databases in the registry, follow these rules:
               - Always use the exact normalized "name" from the registry
               - When possible, construct the URL using the identifiers.org pattern + accession number
-              - If identifiers.org pattern is not available, use the original URL or the URL pattern from the registry
             6. For databases NOT in the registry, use the name and URL as provided in the text
             7. Output valid JSON array of objects
             8. Return empty array [] if no database sources found
