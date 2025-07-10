@@ -205,6 +205,9 @@ class QCPipeline:
                                         == "yes"
                                     )
                                     comments = get_attr(panel, "from_the_caption") or ""
+                                    test_needed = to_bool(
+                                        get_attr(panel, "statistical_test_needed")
+                                    )
                                     if not test_passed:
                                         comments = (
                                             get_attr(
@@ -212,15 +215,16 @@ class QCPipeline:
                                             )
                                             or comments
                                         )
-                                    test_obj["passed"] = bool(test_passed)
+                                    # Only pass if test is needed and passed
+                                    test_obj["passed"] = (
+                                        bool(test_passed) if test_needed else False
+                                    )
                                     test_obj["comments"] = comments or ""
                                     test_obj["model_output"] = str(panel)
                                     test_obj["is_a_plot"] = to_bool(
                                         get_attr(panel, "is_a_plot")
                                     )
-                                    test_obj["test_needed"] = to_bool(
-                                        get_attr(panel, "statistical_test_needed")
-                                    )
+                                    test_obj["test_needed"] = test_needed
                                 elif test_name == "stats_significance_level":
                                     symbols = (
                                         get_attr(
@@ -243,15 +247,57 @@ class QCPipeline:
                                     comments = get_attr(panel, "from_the_caption")
                                     if isinstance(comments, list):
                                         comments = ", ".join(comments)
-                                    test_obj["passed"] = bool(test_passed)
+                                    test_needed = bool(symbols) if symbols else False
+                                    # Only pass if test is needed and passed
+                                    test_obj["passed"] = (
+                                        bool(test_passed) if test_needed else False
+                                    )
                                     test_obj["comments"] = comments or ""
                                     test_obj["model_output"] = str(panel)
                                     test_obj["is_a_plot"] = to_bool(
                                         get_attr(panel, "is_a_plot")
                                     )
-                                    test_obj["test_needed"] = (
-                                        bool(symbols) if symbols else False
+                                    test_obj["test_needed"] = test_needed
+                                elif test_name == "plot_axis_units":
+                                    # For plot_axis_units, pass if all axes are yes or not needed
+                                    units = get_attr(panel, "units_provided") or []
+                                    justifications = (
+                                        get_attr(panel, "justify_why_units_are_missing")
+                                        or []
                                     )
+                                    # Determine pass/fail
+                                    test_passed = (
+                                        all(
+                                            getattr(u, "answer", None)
+                                            in ("yes", "not needed")
+                                            for u in units
+                                        )
+                                        if units
+                                        else True
+                                    )
+                                    # Comments: join all justifications if any
+                                    comments = (
+                                        "; ".join(
+                                            getattr(j, "justification", "")
+                                            for j in justifications
+                                        )
+                                        if justifications
+                                        else ""
+                                    )
+                                    test_needed = any(
+                                        getattr(u, "answer", None) == "no"
+                                        for u in units
+                                    )
+                                    # Only pass if test is needed and passed
+                                    test_obj["passed"] = (
+                                        bool(test_passed) if test_needed else False
+                                    )
+                                    test_obj["comments"] = comments
+                                    test_obj["model_output"] = str(panel)
+                                    test_obj["is_a_plot"] = to_bool(
+                                        get_attr(panel, "is_a_plot")
+                                    )
+                                    test_obj["test_needed"] = test_needed
                                 # Add more tests here as needed
                                 panel_results[panel_label]["qc_tests"].append(test_obj)
                         else:
@@ -289,11 +335,11 @@ class QCPipeline:
                     unified_figures.append(figure_dict)
 
         if unified_output:
-            return {"qc_version": "0.2.0", "figures": unified_figures}
+            return {"qc_version": "0.3.0", "figures": unified_figures}
 
         # Legacy output
         qc_results = QCPipelineResult(
-            qc_version="0.2.0",
+            qc_version="0.3.0",
             qc_status="passed"
             if all(r.qc_status == "passed" for r in figure_qc_results)
             else "failed",

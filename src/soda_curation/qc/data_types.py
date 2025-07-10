@@ -1,13 +1,8 @@
-"""Data types for QC pipeline."""
-
-
-from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 from pydantic import BaseModel
 
 
-# --- New dataclasses for stats-significance-level test ---
 class PanelStatsSignificanceLevel(BaseModel):
     """Significance level analysis for a panel."""
 
@@ -24,7 +19,6 @@ class StatsSignificanceLevelResult(BaseModel):
     outputs: List[PanelStatsSignificanceLevel]
 
 
-@dataclass
 class PanelStatsTest(BaseModel):
     """Statistics test analysis for a panel."""
 
@@ -36,27 +30,56 @@ class PanelStatsTest(BaseModel):
     from_the_caption: str = ""
 
 
-@dataclass
 class StatsTestResult(BaseModel):
     """Results of statistics test analysis for a figure."""
 
     outputs: List[PanelStatsTest]
 
 
-@dataclass
-class QCResult:
+class QCResult(BaseModel):
     """Quality control result for a figure."""
 
     figure_label: str
-    qc_checks: Dict[str, Any] = field(default_factory=dict)
+    qc_checks: Dict[str, Any] = {}
     qc_status: str = "passed"
 
 
-@dataclass
-class QCPipelineResult:
+class QCPipelineResult(BaseModel):
     """Overall results from the QC pipeline."""
 
     qc_version: str = "0.1.0"
     qc_status: str = "passed"
     figures_processed: int = 0
-    figure_results: List[QCResult] = field(default_factory=list)
+    figure_results: List[QCResult] = []
+
+
+# --- Refactored models for plot_axis_units ---
+class AxisUnit(BaseModel):
+    axis: str  # e.g., "x" or "y"
+    answer: str  # "yes" or "no"
+
+
+class AxisJustification(BaseModel):
+    axis: str
+    justification: str
+
+
+class AxisDefinition(BaseModel):
+    axis: str
+    definition: str
+
+
+class PanelPlotAxisUnits(BaseModel):
+    """Plot axis units analysis for a panel."""
+
+    panel_label: str
+    is_a_plot: str  # "yes" or "no"
+    units_provided: List[AxisUnit]
+    justify_why_units_are_missing: List[AxisJustification]
+    unit_definition_as_provided: List[AxisDefinition]
+
+
+class PlotAxisUnitsResult(BaseModel):
+    """Results of plot axis units analysis for a figure."""
+
+    outputs: List[PanelPlotAxisUnits]

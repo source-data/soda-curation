@@ -108,7 +108,7 @@ def test_qc_pipeline_run(
 
     mock_import_module.side_effect = side_effect
 
-    # Use a dictionary instead of trying to create a PanelStatsTest instance directly
+    # Use a dictionary with string values, but expect bools in output
     stats_result = {
         "outputs": [
             {
@@ -132,12 +132,19 @@ def test_qc_pipeline_run(
     # Assert that the analyzer was called correctly
     assert mock_analyzer_instance.analyze_figure.call_count == 2
 
-    # Verify results structure
-    assert "qc_status" in results
-    assert "figures_processed" in results
-    assert results["figures_processed"] == 2
-    assert "figure_results" in results
-    assert len(results["figure_results"]) == 2
+    # Verify unified output structure
+    assert "qc_version" in results
+    assert "figures" in results
+    assert isinstance(results["figures"], list)
+    assert len(results["figures"]) == 2
+
+    # Check that output fields are boolean in unified output
+    for fig in results["figures"]:
+        for panel in fig["panels"]:
+            for test in panel["qc_tests"]:
+                assert isinstance(test["is_a_plot"], bool)
+                assert isinstance(test["test_needed"], bool)
+                assert isinstance(test["passed"], bool)
 
 
 def test_save_and_load_results(extract_dir):
@@ -152,8 +159,8 @@ def test_save_and_load_results(extract_dir):
                     "outputs": [
                         {
                             "panel_label": "A",
-                            "is_a_plot": "yes",
-                            "statistical_test_needed": "yes",
+                            "is_a_plot": True,
+                            "statistical_test_needed": True,
                             "statistical_test_mentioned": "yes",
                             "justify_why_test_is_missing": "",
                             "from_the_caption": "Test was performed.",
@@ -185,11 +192,17 @@ def test_save_and_load_results(extract_dir):
     with open(output_file, "r") as f:
         loaded_results = json.load(f)
 
-    # Verify data was preserved
+    # Verify data was preserved and booleans are present
     assert loaded_results["qc_status"] == "passed"
     assert loaded_results["figures_processed"] == 1
     assert len(loaded_results["figure_results"]) == 1
     assert loaded_results["figure_results"][0]["figure_label"] == "Figure 1"
+    outputs = loaded_results["figure_results"][0]["qc_checks"]["stats_test"]["result"][
+        "outputs"
+    ]
+    for panel in outputs:
+        assert isinstance(panel["is_a_plot"], bool)
+        assert isinstance(panel["statistical_test_needed"], bool)
 
 
 @patch("importlib.import_module")

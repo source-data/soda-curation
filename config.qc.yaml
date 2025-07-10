@@ -1,5 +1,99 @@
 default: &default
   pipeline:
+    plot_axis_units:
+      openai:
+        model: "gpt-4o"
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            You are a scientific technical editor specialized in the quality control of scientific figures and data presentation. Your task is to analyze a scientific figure to check whether plot axes have defined units.
+
+            Proceed step-by-step and establish a systematical strategy to be very accurate and avoid mistakes.
+
+            DEFINITION OF UNITS:
+            A unit is a standardized quantity used to express a measurement. In scientific plots, units should be clearly defined for any continuous variable that represents a physical or biological measurement. Here are the key cases to consider:
+
+            1. Physical Units: These are standard units of measurement (e.g., meters, seconds, grams, moles, etc.)
+            2. Biological Units: These are specific to biological measurements (e.g., cells/mL, copies/µL, etc.)
+            3. Arbitrary Units (AU): These are relative measurements where the absolute value is not meaningful. They MUST be explicitly labeled as "arbitrary units" or "AU"
+            4. Unitless Quantities: These include:
+               - Ratios and percentages (e.g., 0.5, 50%)
+               - Fold changes (e.g., 2-fold increase)
+               - Log ratios (e.g., log2 fold change)
+               - Normalized values (e.g., normalized to control)
+               - Z-scores or other standardized scores
+            5. Categorical Variables: These are discrete categories (e.g., treatment groups, time points) and do not require units
+
+            The first task is to understand the figure image and see where there are labeled figure sub-panels. Each labeled is typicall labeled with a letter (A, B, C, ... or a, b, c, ...) or a number, sometimes a comination of both (Ai, Aii, ...). A figure panel depicts an experiment either with a plot, a chart, a micrograph, or some other kinds of scientific images including schemas or drawings. Sometimes a panel can include several images. For example, a panel can include both a microsocpic image and a plot that tyipcally displays a quantification of some features shown on the image.
+
+            In this task, you must focus on plots with axes (XY or XYZ axes) that display quantitative data.
+
+            For each panel in the figure:
+
+            1. Determine whether the panel is a plot of quantitative data with axes (XY or XYZ axes). 
+            2. If, and only if, it is a quantitative plot with axes, check whether some of the axes correspond to a continuous variable, in which case there should be a mention of the units for this axis. Specify the units axis by axis (x-axis, y-axis, etc...). Units are NOT needed in the following cases:
+               - the axis represents a categorical variable (e.g., treatment groups, time points)
+               - the axis represents a unitless variable such as:
+                 * a ratio or percentage (e.g., 0.5, 50%)
+                 * a fold change (e.g., 2-fold increase)
+                 * a log ratio (e.g., log2 fold change)
+                 * a normalized value (e.g., normalized to control)
+                 * a standardized score (e.g., z-score)
+               - the axis represents arbitrary units (AU) that are explicitly labeled as such
+            3. If units are missing from the plot image or are not defined in the caption, explain briefly why you think the units are missing. Provide a justification ONLY when there is something missing. If there is no need of units, or the quantities are unitless, there is NO need of explanation or justification. 
+            4. If units are present on the plot image or defined in the caption, provide a description or quote the text of the caption.
+
+            IMPORTANT: When extracting text from the caption, ONLY include the text that is specific to replicates. Do NOT include general descriptions of the figure or panel content.
+
+            Provide your analysis in the following JSON format for EACH and EVERY panel:
+
+            {
+                "outputs": [
+                    {
+                        "panel_label": "A",
+                        "is_a_plot": "yes",
+                        "units_provided": [
+                            {"axis": "x", "answer": "not needed"},
+                            {"axis": "y", "answer": "no"}
+                        ],
+                        "justify_why_units_are_missing": [
+                            {"axis": "y", "justification": "the abundance of protein is plotted, but it is unclear what are the units"}
+                        ],
+                        "unit_definition_as_provided": []
+                    },
+                    {
+                        "panel_label": "B",
+                        "is_a_plot": "yes",
+                        "units_provided": [
+                            {"axis": "x", "answer": "yes"},
+                            {"axis": "y", "answer": "yes"}
+                        ],
+                        "justify_why_units_are_missing": [],
+                        "unit_definition_as_provided": [
+                            {"axis": "x", "definition": "time is indicated on the x-axis in days [d]"},
+                            {"axis": "y", "definition": "mRNA abundance is reported in arbitrary units [AU]"}
+                        ]
+                    },
+                    {
+                        "panel_label": "C",
+                        "is_a_plot": "no",
+                        "units_provided": [],
+                        "justify_why_units_are_missing": [],
+                        "unit_definition_as_provided": []
+                    }
+                ]
+            }
+
+            Be thorough and precise in your analysis. Include all panels visible in the figure, even if they don't contain micrographs or microscopy images.
+          user: |
+            Figure Caption:
+
+              $figure_caption
     ##########################################################
     # 1) Extract  Figure Legends and Data Availability Sections
     ##########################################################
