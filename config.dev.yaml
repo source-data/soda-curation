@@ -211,12 +211,13 @@ default: &default
             
             Critical instructions:
             1. Extract EVERY database source mentioned
-            2. Normalize database names using the provided registry `Database Registry Information` when available
-            3. Use the identifiers.org URL pattern when available, constructed by combining the identifiers.org pattern with the accession number
+            2. Normalize database names using the provided registry `Database Registry Information` (provided as a JSON object) when available
+            3. Use the identifiers.org URL pattern from the registry JSON when available, constructed by combining the identifiers.org pattern with the accession number
             4. Include COMPLETE accession numbers and/or DOIs when present in the `accession_number` field
             5. For databases in the registry, follow these rules:
               - Always use the exact normalized "name" from the registry
-              - When possible, construct the URL using the identifiers.org pattern + accession number
+              - When possible, construct the URL using the identifiers.org pattern + accession number from the registry JSON
+              - If both a URL from the input and an identifiers.org URL are available, ALWAYS prioritize and return the identifiers.org URL from the registry JSON
             6. For databases NOT in the registry, use the name and URL as provided in the text
             7. Output valid JSON array of objects
             8. Return empty array [] if no database sources found
@@ -227,21 +228,18 @@ default: &default
               - Include explanatory text
 
             **VERY IMPORTANT**
-            You will receive a `Database Registry Information` to keep all the information available.
-            This data will be encoded as a markdown table with the following columns:
+            You will receive a `Database Registry Information` as a JSON object.
+            This data will be provided in the prompt as:
+            Database Registry Information (as JSON):
+            { ...JSON... }
 
-            ```markdown
-            "| Database Name | Identifiers Pattern | Sample ID | Sample Identifiers URL |\n"
-            "|---------------|---------------------|-----------|------------------------|\n"
-            ```
-
-            Youy MUST return the database links following the fields `sample_identifiers_url` with the correct provided ID.
+            You MUST always use the identifiers.org URL from the registry JSON if the database is present there, even if another URL is present in the input text.
 
             **IMPORTANT**
 
-            * If the database is present in the `Database Registry Information`
-              - Return always be mandatory to return first the `identifiers.org` link
-            * If the database is *NOT* present in the `Database Registry Information`
+            * If the database is present in the `Database Registry Information` JSON
+              - It is mandatory to return first the identifiers.org link
+            * If the database is *NOT* present in the `Database Registry Information` JSON
               - Return the links exactly as they appear in the input text
 
             As an example, the output for the following input:
@@ -267,7 +265,6 @@ default: &default
             ]
             ```
 
-
             Another example input:
 
             ```
@@ -289,8 +286,8 @@ default: &default
               ]
             ```
 
-            Database Registry Information:
-            
+            Database Registry Information (as JSON):
+
           user: |
             Extract all database sources and their details from this Data Availability section:
 

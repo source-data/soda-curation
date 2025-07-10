@@ -523,8 +523,8 @@ The new QC module performs automated quality assessment of manuscript figures an
 ```bash
   poetry run python -m src.soda_curation.qc.main \
     --config config.qc.yaml \
-    --figure-data data/output/results_figure_data.json \
-    --zip-structure data/output/results_zip_structure.pickle \
+    --figure-data data/output/EMM-2023-18636_figure_data.json \
+    --zip-structure data/output/EMM-2023-18636_zip_structure.pickle \
     --output data/output/qc_results.json
 ```
 

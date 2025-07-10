@@ -38,32 +38,60 @@ class StatsTestAnalyzer:
         Returns:
             Tuple of (passed, result) where passed is True if the figure passes the test
         """
-        logger.info(f"Analyzing stats test for figure {figure_label}")
-
-        # try:
-        # Get stats test specific config
-        test_config = self.config["pipeline"]["stats_test"]["openai"]
-
-        # Call model API to analyze the figure
-        response = self.model_api.generate_response(
-            encoded_image=encoded_image,
-            caption=figure_caption,
-            prompt_config=test_config,
-            response_type=StatsTestResult,
+        logger.info("Analyzing stats test for figure %s", figure_label)
+        logger.debug("StatsTestAnalyzer config: %r", self.config)
+        logger.debug(
+            "StatsTestAnalyzer config['pipeline']: %r", self.config.get("pipeline")
+        )
+        logger.debug(
+            "StatsTestAnalyzer config['pipeline']['stats_test']: %r",
+            self.config.get("pipeline", {}).get("stats_test"),
+        )
+        logger.debug(
+            "Input params: figure_label=%r, encoded_image_present=%r, figure_caption=%r",
+            figure_label,
+            bool(encoded_image),
+            figure_caption,
         )
 
-        result: StatsTestResult = TypeAdapter(StatsTestResult).validate_json(response)
+        # Defensive config extraction with error logging
+        try:
+            test_config = self.config["pipeline"]["stats_test"]["openai"]
+        except KeyError as e:
+            logger.error("Missing config key: %s. Full config: %r", e, self.config)
+            return False, StatsTestResult(outputs=[])
 
-        # Determine if the figure passes the test
-        # A figure passes if all panels that need statistical tests have them mentioned
-        needs_stats = [p for p in result.outputs if p.statistical_test_needed == "yes"]
-        missing_stats = [p for p in needs_stats if p.statistical_test_mentioned == "no"]
-        passed = len(missing_stats) == 0
+        try:
+            response = self.model_api.generate_response(
+                encoded_image=encoded_image,
+                caption=figure_caption,
+                prompt_config=test_config,
+                response_type=StatsTestResult,
+            )
 
-        return passed, result
-
-        # except Exception as e:
-        #     logger.error(
-        #         f"Error analyzing stats test for figure {figure_label}: {str(e)}"
-        #     )
-        #     return False, StatsTestResult(outputs=[])
+            if response is None:
+                logger.warning("Model API returned None for figure %s", figure_label)
+                return False, StatsTestResult(outputs=[])
+            result: StatsTestResult = TypeAdapter(StatsTestResult).validate_json(
+                response
+            )
+            if not hasattr(result, "outputs") or result.outputs is None:
+                logger.warning("No outputs in result for figure %s", figure_label)
+                return False, StatsTestResult(outputs=[])
+            needs_stats = [
+                p
+                for p in result.outputs
+                if getattr(p, "statistical_test_needed", None) == "yes"
+            ]
+            missing_stats = [
+                p
+                for p in needs_stats
+                if getattr(p, "statistical_test_mentioned", None) == "no"
+            ]
+            passed = len(missing_stats) == 0
+            return passed, result
+        except Exception as e:
+            logger.error(
+                "Error analyzing stats test for figure %s: %s", figure_label, str(e)
+            )
+            return False, StatsTestResult(outputs=[])

@@ -18,7 +18,7 @@ from .qc_pipeline import QCPipeline
 
 # Set up logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.INFO,  # Set to DEBUG to see debug logs
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
@@ -152,7 +152,7 @@ def main():
     qc_pipeline = QCPipeline(config, extract_dir)
 
     logger.info("Running QC pipeline")
-    qc_results = qc_pipeline.run(zip_structure, figure_data)
+    qc_results = qc_pipeline.run(zip_structure, figure_data, unified_output=True)
 
     # Save results to JSON file
     with open(output_path, "w") as f:

@@ -76,6 +76,7 @@ class QCPipeline:
         self,
         zip_structure: ZipStructure,
         figure_data: Optional[List[Tuple[str, str, str]]] = None,
+        unified_output: bool = True,
     ) -> dict:
         """
         Run QC pipeline on the given zip structure.
@@ -104,6 +105,7 @@ class QCPipeline:
 
         # Process each figure if figure_data is provided
         figure_qc_results = []
+        unified_figures = []
         if figure_data:
             for figure_label, encoded_image, figure_caption in figure_data:
                 # Create a result object for this figure
@@ -112,17 +114,19 @@ class QCPipeline:
                     qc_checks={},
                 )
 
-                # Run configured tests on this figure
+                # For unified output, collect per-panel results from all tests
+                panel_results = {}  # panel_label -> {panel info}
+
                 all_tests_passed = True
 
-                # Run each configured test
                 for test_name, test_analyzer in self.tests.items():
                     try:
-                        # Check if the analyzer has the analyze_figure method
                         if hasattr(test_analyzer, "analyze_figure"):
+                            # Always pass the full config to analyzers
                             passed, result = test_analyzer.analyze_figure(
                                 figure_label, encoded_image, figure_caption
                             )
+                            # Save raw result for legacy output
                             figure_result.qc_checks[test_name] = {
                                 "passed": passed,
                                 "result": asdict(result)
@@ -131,13 +135,135 @@ class QCPipeline:
                             }
                             if not passed:
                                 all_tests_passed = False
+
+                            # --- Unified output: parse per-panel results ---
+                            outputs = None
+                            if hasattr(result, "outputs"):
+                                outputs = result.outputs
+                            elif isinstance(result, dict):
+                                outputs = result.get("outputs", [])
+                            logger.debug(
+                                f"[QC PIPELINE] {test_name} outputs for figure {figure_label}: {outputs}"
+                            )
+                            if outputs is None:
+                                logger.warning(
+                                    "No outputs found for test %s on figure %s",
+                                    test_name,
+                                    figure_label,
+                                )
+                                continue
+                            for panel in outputs:
+                                logger.debug(f"[QC PIPELINE] Panel object: {panel}")
+                                panel_label = None
+                                if hasattr(panel, "panel_label"):
+                                    panel_label = getattr(panel, "panel_label", None)
+                                    get_attr = lambda obj, key: getattr(obj, key, None)
+                                elif isinstance(panel, dict):
+                                    panel_label = panel.get("panel_label")
+                                    get_attr = lambda obj, key: obj.get(key)
+                                else:
+                                    logger.warning(
+                                        f"Panel is not a recognized type: {type(panel)}"
+                                    )
+                                    continue
+                                if not panel_label:
+                                    logger.warning(
+                                        f"Panel missing label in test {test_name} for figure {figure_label}: {panel}"
+                                    )
+                                    continue
+                                if panel_label not in panel_results:
+                                    panel_results[panel_label] = {
+                                        "panel_label": panel_label,
+                                        "qc_tests": [],
+                                    }
+                                # Map test output to unified test result
+                                test_obj = {
+                                    "test_name": test_name,
+                                    "passed": None,
+                                    "comments": None,
+                                    "model_output": None,
+                                    "is_a_plot": None,
+                                    "test_needed": None,
+                                }
+
+                                def to_bool(val):
+                                    if isinstance(val, bool):
+                                        return val
+                                    if isinstance(val, str):
+                                        return val.strip().lower() in [
+                                            "yes",
+                                            "true",
+                                            "1",
+                                        ]
+                                    if isinstance(val, (int, float)):
+                                        return bool(val)
+                                    return False
+
+                                if test_name == "stats_test":
+                                    test_passed = (
+                                        get_attr(panel, "statistical_test_mentioned")
+                                        == "yes"
+                                    )
+                                    comments = get_attr(panel, "from_the_caption") or ""
+                                    if not test_passed:
+                                        comments = (
+                                            get_attr(
+                                                panel, "justify_why_test_is_missing"
+                                            )
+                                            or comments
+                                        )
+                                    test_obj["passed"] = bool(test_passed)
+                                    test_obj["comments"] = comments or ""
+                                    test_obj["model_output"] = str(panel)
+                                    test_obj["is_a_plot"] = to_bool(
+                                        get_attr(panel, "is_a_plot")
+                                    )
+                                    test_obj["test_needed"] = to_bool(
+                                        get_attr(panel, "statistical_test_needed")
+                                    )
+                                elif test_name == "stats_significance_level":
+                                    symbols = (
+                                        get_attr(
+                                            panel, "significance_level_symbols_on_image"
+                                        )
+                                        or []
+                                    )
+                                    defined = (
+                                        get_attr(
+                                            panel,
+                                            "significance_level_symbols_defined_in_caption",
+                                        )
+                                        or []
+                                    )
+                                    test_passed = (
+                                        all(s == "yes" for s in defined)
+                                        if symbols
+                                        else True
+                                    )
+                                    comments = get_attr(panel, "from_the_caption")
+                                    if isinstance(comments, list):
+                                        comments = ", ".join(comments)
+                                    test_obj["passed"] = bool(test_passed)
+                                    test_obj["comments"] = comments or ""
+                                    test_obj["model_output"] = str(panel)
+                                    test_obj["is_a_plot"] = to_bool(
+                                        get_attr(panel, "is_a_plot")
+                                    )
+                                    test_obj["test_needed"] = (
+                                        bool(symbols) if symbols else False
+                                    )
+                                # Add more tests here as needed
+                                panel_results[panel_label]["qc_tests"].append(test_obj)
                         else:
                             logger.warning(
-                                f"Test {test_name} does not have analyze_figure method"
+                                "Test %s does not have analyze_figure method", test_name
                             )
                     except Exception as e:
                         logger.error(
-                            f"Error in {test_name} for figure {figure_label}: {str(e)}"
+                            "Error in %s for figure %s: %s",
+                            test_name,
+                            figure_label,
+                            str(e),
                         )
                         figure_result.qc_checks[test_name] = {
                             "passed": False,
@@ -152,16 +278,27 @@ class QCPipeline:
                     f"Completed QC for figure {figure_label}: {figure_result.qc_status}"
                 )
 
-        # Create overall QC results
+                # --- Unified output: build figure dict ---
+                if unified_output:
+                    # Try to get figure_caption from input
+                    figure_dict = {
+                        "figure_label": figure_label,
+                        "figure_caption": figure_caption,
+                        "panels": list(panel_results.values()),
+                    }
+                    unified_figures.append(figure_dict)
+
+        if unified_output:
+            return {"qc_version": "0.2.0", "figures": unified_figures}
+
+        # Legacy output
         qc_results = QCPipelineResult(
-            qc_version="0.1.0",
+            qc_version="0.2.0",
             qc_status="passed"
             if all(r.qc_status == "passed" for r in figure_qc_results)
             else "failed",
             figures_processed=figure_data_count,
             figure_results=figure_qc_results,
         )
-
         logger.info("*** QC PIPELINE COMPLETED ***")
-        # Convert all dataclasses to dictionaries before returning
         return asdict(qc_results)

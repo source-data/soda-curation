@@ -1,9 +1,27 @@
 """Data types for QC pipeline."""
 
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 from pydantic import BaseModel
+
+
+# --- New dataclasses for stats-significance-level test ---
+class PanelStatsSignificanceLevel(BaseModel):
+    """Significance level analysis for a panel."""
+
+    panel_label: str
+    is_a_plot: str  # "yes" or "no"
+    significance_level_symbols_on_image: List[str]
+    significance_level_symbols_defined_in_caption: List[str]
+    from_the_caption: str
+
+
+class StatsSignificanceLevelResult(BaseModel):
+    """Results of significance level analysis for a figure."""
+
+    outputs: List[PanelStatsSignificanceLevel]
 
 
 @dataclass
