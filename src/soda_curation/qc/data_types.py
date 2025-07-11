@@ -83,3 +83,15 @@ class PlotAxisUnitsResult(BaseModel):
     """Results of plot axis units analysis for a figure."""
 
     outputs: List[PanelPlotAxisUnits]
+
+
+# ReplicatesDefined QC Test
+class ReplicatesDefinedPanelResult(BaseModel):
+    panel_label: str
+    involves_replicates: str  # "yes" or "no"
+    number_of_replicates: List[str]
+    type_of_replicates: List[str]
+
+
+class ReplicatesDefinedResult(BaseModel):
+    outputs: List[ReplicatesDefinedPanelResult]

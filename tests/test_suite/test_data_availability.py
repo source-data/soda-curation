@@ -182,22 +182,19 @@ class TestDatabaseRegistry:
         extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
         formatted = extractor._create_registry_info()
 
-        # Check that it's a markdown table
-        assert (
-            "| Database Name | Identifiers Pattern | Sample ID | Sample Identifiers URL |"
-            in formatted
-        )
-        assert (
-            "|--------------|-------------------|-----------|----------------------|"
-            in formatted
-        )
+        # Check that it's a JSON string with the expected keys
+        import json
 
-        # Check that all databases are included
-        assert "Gene Expression Omnibus" in formatted
-        assert "Proteomics Identification database" in formatted
-        assert "Github" in formatted
-
-        # Check that the table contains the expected patterns
+        registry = json.loads(formatted)
+        assert "databases" in registry
+        assert any(
+            db["name"] == "Gene Expression Omnibus" for db in registry["databases"]
+        )
+        assert any(
+            db["name"] == "Proteomics Identification database"
+            for db in registry["databases"]
+        )
+        assert any(db["name"] == "Github" for db in registry["databases"])
         assert "https://identifiers.org/geo:" in formatted
         assert "https://identifiers.org/pride.project:" in formatted
 

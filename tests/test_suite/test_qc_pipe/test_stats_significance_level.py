@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.soda_curation.qc.qc_tests.stats_significance_level import (
+from soda_curation.qc.qc_tests.stats_significance_level import (
     StatsSignificanceLevelAnalyzer,
 )
 
@@ -36,14 +36,14 @@ def sample_figure():
     )
 
 
-@patch("src.soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
+@patch("soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
 def test_stats_significance_level_analyzer_init(mock_model_api_class, config):
     analyzer = StatsSignificanceLevelAnalyzer(config)
     assert analyzer.config == config
     mock_model_api_class.assert_called_once()
 
 
-@patch("src.soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
+@patch("soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
 def test_analyze_figure_all_symbols_defined(
     mock_model_api_class, config, sample_figure
 ):
@@ -69,7 +69,7 @@ def test_analyze_figure_all_symbols_defined(
     ]
 
 
-@patch("src.soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
+@patch("soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
 def test_analyze_figure_some_symbols_missing(
     mock_model_api_class, config, sample_figure
 ):
@@ -92,7 +92,7 @@ def test_analyze_figure_some_symbols_missing(
     ]
 
 
-@patch("src.soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
+@patch("soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
 def test_analyze_figure_no_plot(mock_model_api_class, config, sample_figure):
     mock_instance = Mock()
     mock_model_api_class.return_value = mock_instance
@@ -111,7 +111,7 @@ def test_analyze_figure_no_plot(mock_model_api_class, config, sample_figure):
     assert result.outputs[0].significance_level_symbols_on_image == []
 
 
-@patch("src.soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
+@patch("soda_curation.qc.qc_tests.stats_significance_level.ModelAPI")
 def test_stats_significance_level_analyzer_error_handling(
     mock_model_api_class, config, sample_figure
 ):

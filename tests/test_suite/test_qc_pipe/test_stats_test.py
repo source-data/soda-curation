@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.soda_curation.qc.qc_tests.stats_test import StatsTestAnalyzer
+from soda_curation.qc.qc_tests.stats_test import StatsTestAnalyzer
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ def sample_figure():
 
 
 # Patch at the class level where it's used
-@patch("src.soda_curation.qc.qc_tests.stats_test.ModelAPI")
+@patch("soda_curation.qc.qc_tests.stats_test.ModelAPI")
 def test_stats_test_analyzer_init(mock_model_api_class, config):
     """Test initialization of StatsTestAnalyzer."""
     # Create analyzer, this should call ModelAPI
@@ -49,7 +49,7 @@ def test_stats_test_analyzer_init(mock_model_api_class, config):
     mock_model_api_class.assert_called_once()
 
 
-@patch("src.soda_curation.qc.qc_tests.stats_test.StatsTestAnalyzer.analyze_figure")
+@patch("soda_curation.qc.qc_tests.stats_test.StatsTestAnalyzer.analyze_figure")
 def test_stats_test_analyzer_analyze_figure(mock_analyze_figure, config, sample_figure):
     """Test analyze_figure method with a passing result."""
     # Create a mock result that would pass
@@ -83,7 +83,7 @@ def test_stats_test_analyzer_analyze_figure(mock_analyze_figure, config, sample_
     assert result.outputs[0].statistical_test_mentioned == "yes"
 
 
-@patch("src.soda_curation.qc.qc_tests.stats_test.StatsTestAnalyzer.analyze_figure")
+@patch("soda_curation.qc.qc_tests.stats_test.StatsTestAnalyzer.analyze_figure")
 def test_stats_test_analyzer_with_missing_test(
     mock_analyze_figure, config, sample_figure
 ):
@@ -119,7 +119,7 @@ def test_stats_test_analyzer_with_missing_test(
     assert result.outputs[0].justify_why_test_is_missing != ""
 
 
-@patch("src.soda_curation.qc.qc_tests.stats_test.StatsTestAnalyzer.analyze_figure")
+@patch("soda_curation.qc.qc_tests.stats_test.StatsTestAnalyzer.analyze_figure")
 def test_stats_test_analyzer_no_test_needed(mock_analyze_figure, config, sample_figure):
     """Test analyze_figure method when no statistical test is needed."""
     # Create a mock result where no test is needed
@@ -153,7 +153,7 @@ def test_stats_test_analyzer_no_test_needed(mock_analyze_figure, config, sample_
     assert result.outputs[0].statistical_test_needed == "no"
 
 
-@patch("src.soda_curation.qc.qc_tests.stats_test.ModelAPI")
+@patch("soda_curation.qc.qc_tests.stats_test.ModelAPI")
 def test_stats_test_analyzer_error_handling(
     mock_model_api_class, config, sample_figure
 ):
@@ -167,10 +167,10 @@ def test_stats_test_analyzer_error_handling(
     analyzer = StatsTestAnalyzer(config)
     figure_label, encoded_image, figure_caption = sample_figure
 
-    # The analyzer should not raise, but should return (False, StatsTestResult(outputs=[]))
     passed, result = analyzer.analyze_figure(
         figure_label, encoded_image, figure_caption
     )
+    # The analyzer should not raise, but should return (False, empty result)
     assert passed is False
     assert hasattr(result, "outputs")
     assert result.outputs == []

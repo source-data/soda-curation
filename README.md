@@ -13,8 +13,9 @@ soda-curation is a professional Python package for automated data curation of sc
 7. [Output Schema](#output-schema)
 8. [Testing](#testing)
 9. [Docker](#docker)
-10. [Contributing](#contributing)
-11. [License](#license)
+10. [Quality Control (QC) Pipeline](#quality-control-qc-pipeline)
+11. [Contributing](#contributing)
+12. [License](#license)
 
 ## Features
 
@@ -25,6 +26,7 @@ soda-curation is a professional Python package for automated data curation of sc
 - Support for OpenAI's GPT models
 - Flexible configuration options for fine-tuning the curation process
 - Debug mode for development and troubleshooting
+- **Integrated Quality Control (QC) pipeline for automated figure and data assessment**
 
 ## Installation
 
@@ -60,49 +62,31 @@ soda-curation is a professional Python package for automated data curation of sc
 
 The configuration system uses a flexible, hierarchical approach supporting different environments (dev, test, prod) with environment-specific settings. Configuration is managed through:
 
-1. YAML files for general settings
+1. YAML files for general settings (e.g., `config.dev.yaml`, `config.qc.yaml`)
 2. Environment variables for sensitive information
 3. Command-line arguments for runtime options
 
 ### Configuration Files Structure
-The configuration files follow this structure:
+
+- **Main pipeline config**: Controls manuscript processing, AI model selection, and pipeline steps.
+- **QC config (`config.qc.yaml`)**: Controls all quality control tests, test metadata, and versioning. Example:
 
 ```yaml
-default: &default
-  # Pipeline step configurations
+qc_version: "0.3.1"
+qc_test_metadata:
+  plot_axis_units:
+    name: "Plot Axis Units"
+    description: "Checks whether plot axes have defined units for quantitative data."
+    permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../plot-axis-units/prompts/prompt.3.txt"
+  # ... more tests ...
+default:
   pipeline:
-    assign_panel_source:
+    plot_axis_units:
+      level: panel
       openai:
-        # OpenAI-specific parameters for this step only
-        model: gpt-4o
-        temperature: 0.1
-        top_p: 1.0
-        max_tokens: 2048
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
-        json_mode: true
-        prompts:
-          system: |
-            Your prompt goes here
-            In a multi line fassion
-          user: | 
-            The user prompt goes here
-
-    extract_sections:
-      # Options as in `assign_panel_source`
-    extract_individual_captions:
-      # Options for the agent
-    extract_data_sources:
-      # Options for this step
-    match_caption_panel:
-      # Options as above
-    object_detection:
-      model_path: "data/models/panel_detection_model_no_labels.pt"
-      confidence_threshold: 0.25
-      iou_threshold: 0.1
-      image_size: 512
-      max_detections: 30
-
+        model: "gpt-4o"
+        # ...
+    # ...
 ```
 
 ## Docker
@@ -492,87 +476,100 @@ docker-compose build format
 docker-compose run --rm format
 ```
 
-# Quality Control
+## Quality Control (QC) Pipeline
 
-The new QC module performs automated quality assessment of manuscript figures and data presentation:
+The QC pipeline provides automated, configurable, and extensible quality assessment of scientific figures and data presentation. It can be run independently or as part of the main curation workflow.
 
-## QC Module Features
+### Key Features
+- **Config-driven test metadata and versioning**: All test names, descriptions, and permalinks are defined in `config.qc.yaml`.
+- **Unified and legacy output**: Both output formats include `qc_test_metadata` and `qc_version` fields.
+- **Accurate test status**: The `passed` field is `null` when a test is not needed.
+- **Easy extensibility**: Add new tests by updating the config and adding a new analyzer module.
+- **Permalinks for each test**: Output includes direct links to test documentation/prompts.
 
-* **Modular Design**: Easily extendable with new quality check modules
-
-* **Configuration-Based**: QC checks are controlled through the same YAML configuration
-
-* **JSON Output**: Structured output format for easy integration with other systems
-
-* **Independent Operation**: Can be run as a separate step after main pipeline processing
-
-## Current QC Tests
-
-* **Statistical Test Analysis**: Verifies proper statistical test reporting in figures
-
-  - Identifies panels showing quantitative data
-  
-  - Checks if statistical significance is indicated (p-values)
-  
-  - Verifies appropriate statistical test methods are mentioned
-  
-  - Flags missing statistical information
-
-## Running QC Pipeline
+### Running the QC Pipeline
 
 ```bash
-  poetry run python -m src.soda_curation.qc.main \
-    --config config.qc.yaml \
-    --figure-data data/output/EMM-2023-18636_figure_data.json \
-    --zip-structure data/output/EMM-2023-18636_zip_structure.pickle \
-    --output data/output/qc_results.json
+poetry run python -m src.soda_curation.qc.main \
+  --config config.qc.yaml \
+  --figure-data data/output/your_figure_data.json \
+  --zip-structure data/output/your_zip_structure.pickle \
+  --output data/output/qc_results.json
 ```
 
-## Adding New QC Tests
+### Output Example (Top Level)
 
-New tests can be added by:
+```json
+{
+  "qc_version": "0.3.1",
+  "qc_test_metadata": {
+    "plot_axis_units": {"name": "Plot Axis Units", ...},
+    "stats_test": {"name": "Statistical Test Mentioned", ...}
+  },
+  "figures": [ ... ]
+}
+```
 
-1. Creating a new module in `src/soda_curation/qc/qc_tests/`
-2. Implementing a test analyzer class following the naming convention
-3. Adding configuration for the test in the YAML config file
+### How to Add or Update QC Tests
 
+### Step-by-Step: Adding a New QC Test
 
-## QC configuration example
+To add a new test to the QC pipeline, follow these steps:
 
-Here's an example of a `config.qc.yaml` file for the Quality Control module:
+1. **Define test metadata in the config:**
+   - Open `config.qc.yaml`.
+   - Under `qc_test_metadata`, add a new entry for your test. Include at least `name`, `description`, and `permalink` fields. Example:
+
+     ```yaml
+     qc_test_metadata:
+       my_new_test:
+         name: "My New Test"
+         description: "Checks for a new quality control criterion."
+         permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../my-new-test/prompts/prompt.txt"
+     ```
+
+2. **Configure the test in the pipeline section:**
+   - Still in `config.qc.yaml`, add your test to the appropriate section under `default.pipeline` (or the relevant environment). Specify any parameters or model settings needed. Example:
+
+     ```yaml
+     default:
+       pipeline:
+         my_new_test:
+           level: figure  # or panel
+           openai:
+             model: "gpt-4o"
+             # ...other settings...
+     ```
+
+3. **Implement the analyzer (if needed):**
+   - If your test requires new logic, create a new Python module in `src/soda_curation/qc/qc_tests/` (e.g., `my_new_test.py`).
+   - Implement the required interface (see other modules in that folder for examples).
+   - If your test is similar to an existing one, you may only need to update the config.
+
+4. **(Optional) Add test documentation:**
+   - Ensure the `permalink` in your metadata points to documentation or a prompt for your test.
+
+5. **Run the QC pipeline:**
+   - Execute the pipeline as usual. Your new test and its results will appear in the output, and its metadata will be included automatically.
+
+6. **(Optional) Add tests:**
+   - Add or update unit tests in `tests/` to cover your new QC test logic.
+
+**Tip:** The pipeline is designed to automatically discover and include new tests as long as they are defined in the config and (if needed) implemented in the `qc_tests` folder.
+
+### Example QC Config Section
 
 ```yaml
-  default: &default
-    pipeline:
-      # Statistical test analysis configuration
-      stats_test:
-        openai:
-          # OpenAI-specific parameters
-          model: "gpt-4o"
-          temperature: 0.1
-          top_p: 1.0
-          max_tokens: 2048
-          frequency_penalty: 0.0
-          presence_penalty: 0.0
-          json_mode: true
-          prompts:
-            system: |
-              You are a scientific technical editor specialized in the quality control of scientific figures and data presentation. 
-              Your task is to analyze a scientific figure to check for the presence of adequate statement about the statistical 
-              tests used to assess the significance of the results.
-
-              Proceed step-by-step and establish a systematical strategy to be very accurate and avoid mistakes.
-            user: |
-              Figure Caption:
-
-              $figure_caption
-
-      # Add other QC test configurations here following the same pattern
-      # data_availability_test:
-      #   openai:
-      #     model: "gpt-4o"
-      #     ...
+qc_version: "0.3.1"
+qc_test_metadata:
+  plot_axis_units:
+    name: "Plot Axis Units"
+    description: "Checks whether plot axes have defined units for quantitative data."
+    permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../plot-axis-units/prompts/prompt.3.txt"
+  # ... more tests ...
 ```
+
+---
 
 ## Contributing
 
@@ -602,6 +599,13 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 2.0.4 (2025-07-11)
+- QC pipeline now sources test metadata and version from config file
+- Output includes `qc_test_metadata` and `qc_version` fields for all runs
+- Permalinks for each QC test are included in the config and output
+- Improved handling of test status (`passed: null` when not needed)
+- Patch-level version bump for both soda-curation and QC pipeline
 
 ### 2.0.0 (2025-06-10)
 - Added Quality Control (QC) module for automated manuscript assessment

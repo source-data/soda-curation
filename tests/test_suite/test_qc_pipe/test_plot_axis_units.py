@@ -1,13 +1,13 @@
 import pytest
 
-from src.soda_curation.qc.data_types import (
+from soda_curation.qc.data_types import (
     AxisDefinition,
     AxisJustification,
     AxisUnit,
     PanelPlotAxisUnits,
     PlotAxisUnitsResult,
 )
-from src.soda_curation.qc.qc_tests.plot_axis_units import PlotAxisUnitsAnalyzer
+from soda_curation.qc.qc_tests.plot_axis_units import PlotAxisUnitsAnalyzer
 
 
 class DummyModelAPI:
