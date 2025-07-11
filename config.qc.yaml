@@ -1,6 +1,25 @@
+qc_version: "0.3.1"
+qc_test_metadata:
+  plot_axis_units:
+    name: "Plot Axis Units"
+    description: "Checks whether plot axes have defined units for quantitative data."
+    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/plot-axis-units/prompts/prompt.3.txt"
+  stats_test:
+    name: "Statistical Test Mentioned"
+    description: "Checks if a statistical test is mentioned when statistical significance is claimed."
+    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/stat-test/prompts/prompt.4.txt"
+  stats_significance_level:
+    name: "Statistical Significance Level Defined"
+    description: "Checks if statistical significance levels (e.g., p-value thresholds, asterisks) are defined in the caption."
+    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/stat-significance-level/prompts/prompt.2.txt"
+  replicates_defined:
+    name: "Replicates Defined"
+    description: "Checks whether the number and type of replicates are explicitly defined in the figure caption."
+    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/replicates-defined/prompts/prompt.3.txt"
 default: &default
   pipeline:
     plot_axis_units:
+      level: panel
       openai:
         model: "gpt-4o"
         temperature: 0.1
@@ -99,6 +118,7 @@ default: &default
     ##########################################################
     # Updated extract_sections prompts for smolagents implementation
     stats_test:
+      level: panel
       openai:
         # OpenAI-specific parameters remain the same
         model: "gpt-4o"
@@ -185,6 +205,7 @@ default: &default
 
               $figure_caption
     stats_significance_level:
+      level: panel
       openai:
         model: "gpt-4o"
         temperature: 0.1
@@ -233,6 +254,90 @@ default: &default
             }
 
             Include all panels in your analysis, even those without plots.
+          user: |
+            Figure Caption:
+
+              $figure_caption
+    replicates_defined:
+      level: figure
+      openai:
+        model: "gpt-4o"
+        temperature: 0.1
+        top_p: 1.0
+        max_tokens: 2048
+        frequency_penalty: 0.0
+        presence_penalty: 0.0
+        json_mode: true
+        prompts:
+          system: |
+            You are a scientific technical editor specialized in the quality control of scientific figures and data presentation. Your task is to analyze a scientific figure to check whether the number and type of replicates is explicitly defined in the caption. 
+
+            Proceed step-by-step and establish a systematical strategy to be very accurate and avoid mistakes.
+
+            The first task is to understand the figure image and see where there are labeled figure sub-panels. Each labeled is typicall labeled with a letter (A, B, C, ... or a, b, c, ...) or a number, sometimes a comination of both (Ai, Aii, ...). A figure panel depicts an experiment either with a plot, a chart, a micrograph, or some other kinds of scientific images including schemas or drawings. Sometimes a panel can include several images. For example, a panel can include both a microsocpic image and a plot that tyipcally displays a quantification of some features shown on the image.
+
+            The task here is to check whether the number and nature of replicates are clearly stated in the figure caption.
+
+            Generally speaking, replicates are used to estimate the source of variability in experimental results. This can be obtained by analyzing independent samples, running independent experiments, analyzing individual samples multiple times, etc... The number of replicates should be specified explicitely in the caption. In addition, the caption should make clear what is the nature of the replicates: number of independent samples, number of patient, animals, cells, number of independent experiments, number of technical replicates, etc... There are many possibilities but the nature of the replicate should be stated, and not only their number.
+
+            For each panel in the figure:
+
+            1. Determine whether the panel shows results from an experiment involving multiple replicates. To do that you must look at the figure panel but also read the corresponding figure caption to understand whether the experiment involves replicates. 
+            2. If the experiment involves replicates, provide separately: a) the number of replicates; and b) the type of replicates. Try to stick to the wording provided in the figure caption to describe the type of replicates, but if absolutely necessary, it is also acceptable to interpret slightly the wording provided in the caption. If this information cannot be found in the caption, state that the number of replicates is unknown.
+
+            IMPORTANT: When extracting text from the caption, ONLY include the text that is specific to replicates. Do NOT include general descriptions of the figure or panel content.
+
+            Provide your analysis in the following JSON format for EACH and EVERY panel:
+
+            {
+                "outputs": [
+                    {
+                        "panel_label": "A",
+                        "involves_replicates": "yes",
+                        "number_of_replicates": [
+                            "3-4",
+                            "2",
+                        ]
+                        },
+                        "type_of_replicates": [
+                            "independent experiments",
+                            "technical replicates",
+                        ] 
+                    },
+                    {
+                        "panel_label": "B",
+                        "involves_replicates": "yes",
+                        "number_of_replicates": [
+                            "11",
+                            "5",
+                        ]
+                        "type_of_replicates": [
+                            "Creb1-/- mice",
+                            "WT mice",
+                        ]
+                    },
+                    {
+                        "panel_label": "C",
+                        "involves_replicates": "yes",
+                        "number_of_replicates": [
+                            "unknown"
+                        ],
+                        "type_of_replicates": [
+                            "unknown"
+                        ]
+                    },
+                    {
+                        "panel_label": "D",
+                        "involves_replicates": "no",
+                        "number_of_replicates": [],
+                        "type_of_replicates": []
+                    }
+                ]
+            }
+
+            If the caption defines replicates for multiple panels, include the same definition for each relevant panel.
+
+            Be thorough and precise in your analysis.
           user: |
             Figure Caption:
 

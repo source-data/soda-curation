@@ -55,11 +55,18 @@ class ConfigurationLoader:
             )
 
     def _load_yaml_config(self) -> Dict[str, Any]:
-        """Load and parse YAML configuration."""
+        """Load and parse YAML configuration, merging top-level keys into the environment/default config."""
         try:
             with open(self.config_path, "r") as f:
                 config = yaml.safe_load(f)
-            return config.get(self.environment, config.get("default", {}))
+            # Get the environment or default config section
+            env_config = config.get(self.environment, config.get("default", {}))
+            # Merge in top-level keys (excluding known environment keys)
+            merged_config = dict(env_config)  # shallow copy
+            for key, value in config.items():
+                if key not in (self.environment, "default"):
+                    merged_config[key] = value
+            return merged_config
         except Exception as e:
             raise ConfigurationError(f"Error loading configuration: {str(e)}")
 
