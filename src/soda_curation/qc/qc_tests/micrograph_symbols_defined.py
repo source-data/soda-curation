@@ -5,22 +5,10 @@ from typing import Dict, Tuple
 
 from pydantic import TypeAdapter
 
-from ..data_types import BaseModel
+from ..data_types import MicrographSymbolsDefinedResult
 from ..model_api import ModelAPI
 
 logger = logging.getLogger(__name__)
-
-
-class PanelMicrographSymbolsDefined(BaseModel):
-    panel_label: str
-    micrograph: str  # "yes" or "no"
-    symbols: list
-    symbols_defined_in_caption: list
-    from_the_caption: list
-
-
-class MicrographSymbolsDefinedResult(BaseModel):
-    outputs: list
 
 
 class MicrographSymbolsDefinedAnalyzer:
@@ -44,12 +32,13 @@ class MicrographSymbolsDefinedAnalyzer:
         result: MicrographSymbolsDefinedResult = TypeAdapter(
             MicrographSymbolsDefinedResult
         ).validate_json(response)
-        # A panel passes if all symbols present are defined in the caption
+        # A panel passes if micrograph == "no" or (symbols is not empty and all are defined in caption)
         passed = True
         for panel in result.outputs:
             if panel.micrograph == "yes":
-                if panel.symbols:
-                    if not all(s == "yes" for s in panel.symbols_defined_in_caption):
-                        passed = False
-                        break
+                if panel.symbols and (
+                    not panel.symbols_defined_in_caption
+                    or any(ans != "yes" for ans in panel.symbols_defined_in_caption)
+                ):
+                    passed = False
         return passed, result

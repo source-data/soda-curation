@@ -95,3 +95,81 @@ class ReplicatesDefinedPanelResult(BaseModel):
 
 class ReplicatesDefinedResult(BaseModel):
     outputs: List[ReplicatesDefinedPanelResult]
+
+
+# --- Plot Gap Labeling QC Test ---
+class AxisGapLabeling(BaseModel):
+    axis: str
+    answer: str  # "yes", "no", or "not needed"
+
+
+class AxisGapDescription(BaseModel):
+    axis: str
+    definition: str
+
+
+class AxisGapJustification(BaseModel):
+    axis: str
+    justification: str
+
+
+class PanelPlotGapLabeling(BaseModel):
+    panel_label: str
+    is_a_plot: str  # "yes" or "no"
+    gaps_defined: List[AxisGapLabeling]
+    gap_description: List[AxisGapDescription]
+    justify_why_gaps_are_missing: List[AxisGapJustification]
+
+
+class PlotGapLabelingResult(BaseModel):
+    outputs: List[PanelPlotGapLabeling]
+
+
+# --- Error Bars Defined QC Test ---
+class ErrorBarsDefinedPanelResult(BaseModel):
+    panel_label: str
+    error_bar_on_figure: str  # "yes" or "no"
+    error_bar_defined_in_caption: str  # "yes", "no", or "not needed"
+    error_bar_definition: str
+
+
+class ErrorBarsDefinedResult(BaseModel):
+    outputs: List[ErrorBarsDefinedPanelResult]
+
+
+# --- Individual Data Points QC Test ---
+class IndividualDataPointsPanelResult(BaseModel):
+    panel_label: str
+    plot: str  # "yes" or "no"
+    average_values: str  # "yes" or "no"
+    individual_values: str  # "yes", "no", or "not needed"
+
+
+class IndividualDataPointsResult(BaseModel):
+    outputs: List[IndividualDataPointsPanelResult]
+
+
+# --- Micrograph Scale Bar QC Test ---
+class MicrographScaleBarPanelResult(BaseModel):
+    panel_label: str
+    micrograph: str  # "yes" or "no"
+    scale_bar_on_image: str  # "yes" or "no"
+    scale_bar_defined_in_caption: str  # "yes" or "no"
+    from_the_caption: str
+
+
+class MicrographScaleBarResult(BaseModel):
+    outputs: List[MicrographScaleBarPanelResult]
+
+
+# --- Micrograph Symbols Defined QC Test ---
+class MicrographSymbolsDefinedPanelResult(BaseModel):
+    panel_label: str
+    micrograph: str  # "yes" or "no"
+    symbols: List[str]
+    symbols_defined_in_caption: List[str]
+    from_the_caption: List[str]
+
+
+class MicrographSymbolsDefinedResult(BaseModel):
+    outputs: List[MicrographSymbolsDefinedPanelResult]

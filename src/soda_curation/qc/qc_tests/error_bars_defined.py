@@ -5,21 +5,10 @@ from typing import Dict, Tuple
 
 from pydantic import TypeAdapter
 
-from ..data_types import BaseModel
+from ..data_types import ErrorBarsDefinedResult
 from ..model_api import ModelAPI
 
 logger = logging.getLogger(__name__)
-
-
-class PanelErrorBarsDefined(BaseModel):
-    panel_label: str
-    error_bars_present: str  # "yes" or "no"
-    error_bars_defined_in_caption: str  # "yes" or "no"
-    from_the_caption: str
-
-
-class ErrorBarsDefinedResult(BaseModel):
-    outputs: list
 
 
 class ErrorBarsDefinedAnalyzer:
@@ -43,11 +32,12 @@ class ErrorBarsDefinedAnalyzer:
         result: ErrorBarsDefinedResult = TypeAdapter(
             ErrorBarsDefinedResult
         ).validate_json(response)
-        # A panel passes if error bars are present and defined when needed
+        # A panel passes if error_bar_on_figure == "no" or error_bar_defined_in_caption == "yes" or "not needed"
         passed = True
         for panel in result.outputs:
-            if panel.error_bars_present == "yes":
-                if panel.error_bars_defined_in_caption != "yes":
-                    passed = False
-                    break
+            if (
+                panel.error_bar_on_figure == "yes"
+                and panel.error_bar_defined_in_caption not in ("yes", "not needed")
+            ):
+                passed = False
         return passed, result

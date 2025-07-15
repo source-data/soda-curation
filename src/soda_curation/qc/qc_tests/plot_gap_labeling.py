@@ -5,22 +5,10 @@ from typing import Dict, Tuple
 
 from pydantic import TypeAdapter
 
-from ..data_types import BaseModel
+from ..data_types import PlotGapLabelingResult
 from ..model_api import ModelAPI
 
 logger = logging.getLogger(__name__)
-
-
-class PanelPlotGapLabeling(BaseModel):
-    panel_label: str
-    is_a_plot: str  # "yes" or "no"
-    gaps_defined: list
-    gap_description: list
-    justify_why_gaps_are_missing: list
-
-
-class PlotGapLabelingResult(BaseModel):
-    outputs: list
 
 
 class PlotGapLabelingAnalyzer:
@@ -49,7 +37,6 @@ class PlotGapLabelingAnalyzer:
         for panel in result.outputs:
             if panel.is_a_plot == "yes":
                 for axis in panel.gaps_defined:
-                    if axis["answer"] not in ("yes", "not needed"):
+                    if axis.answer not in ("yes", "not needed"):
                         passed = False
-                        break
         return passed, result

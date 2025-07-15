@@ -5,22 +5,10 @@ from typing import Dict, Tuple
 
 from pydantic import TypeAdapter
 
-from ..data_types import BaseModel
+from ..data_types import MicrographScaleBarResult
 from ..model_api import ModelAPI
 
 logger = logging.getLogger(__name__)
-
-
-class PanelMicrographScaleBar(BaseModel):
-    panel_label: str
-    micrograph: str  # "yes" or "no"
-    scale_bar_on_image: str  # "yes" or "no"
-    scale_bar_defined_in_caption: str  # "yes" or "no"
-    from_the_caption: str
-
-
-class MicrographScaleBarResult(BaseModel):
-    outputs: list
 
 
 class MicrographScaleBarAnalyzer:
@@ -44,12 +32,13 @@ class MicrographScaleBarAnalyzer:
         result: MicrographScaleBarResult = TypeAdapter(
             MicrographScaleBarResult
         ).validate_json(response)
-        # A panel passes if a scale bar is present and defined when needed
+        # A panel passes if micrograph == "no" or (scale_bar_on_image == "yes" and scale_bar_defined_in_caption == "yes")
         passed = True
         for panel in result.outputs:
             if panel.micrograph == "yes":
-                if panel.scale_bar_on_image == "yes":
-                    if panel.scale_bar_defined_in_caption != "yes":
-                        passed = False
-                        break
+                if (
+                    panel.scale_bar_on_image != "yes"
+                    or panel.scale_bar_defined_in_caption != "yes"
+                ):
+                    passed = False
         return passed, result

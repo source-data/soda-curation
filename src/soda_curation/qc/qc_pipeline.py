@@ -186,8 +186,8 @@ class QCPipeline:
                                         "passed": None,
                                         "comments": None,
                                         "model_output": None,
-                                        "is_a_plot": None,
-                                        "test_needed": None,
+                                        "is_a_plot": False,
+                                        "test_needed": False,
                                     }
                                     if test_name == "replicates_defined":
                                         involves_replicates = get_attr(
@@ -215,12 +215,12 @@ class QCPipeline:
                                             )
                                         )
                                         test_obj["passed"] = (
-                                            bool(test_passed) if test_needed else None
+                                            bool(test_passed) if test_needed else False
                                         )
                                         test_obj["comments"] = ""
                                         test_obj["model_output"] = str(output)
-                                        test_obj["is_a_plot"] = None
-                                        test_obj["test_needed"] = test_needed
+                                        test_obj["is_a_plot"] = False
+                                        test_obj["test_needed"] = bool(test_needed)
                                     # Add more figure-level test logic here as needed
                                     figure_level_tests.append(test_obj)
                             else:
@@ -259,8 +259,8 @@ class QCPipeline:
                                         "passed": None,
                                         "comments": None,
                                         "model_output": None,
-                                        "is_a_plot": None,
-                                        "test_needed": None,
+                                        "is_a_plot": False,
+                                        "test_needed": False,
                                     }
 
                                     if test_name == "stats_test":
@@ -285,14 +285,14 @@ class QCPipeline:
                                             )
                                         # Only pass if test is needed and passed
                                         test_obj["passed"] = (
-                                            bool(test_passed) if test_needed else None
+                                            bool(test_passed) if test_needed else False
                                         )
                                         test_obj["comments"] = comments or ""
                                         test_obj["model_output"] = str(panel)
                                         test_obj["is_a_plot"] = to_bool(
                                             get_attr(panel, "is_a_plot")
                                         )
-                                        test_obj["test_needed"] = test_needed
+                                        test_obj["test_needed"] = bool(test_needed)
                                     elif test_name == "stats_significance_level":
                                         symbols = (
                                             get_attr(
@@ -321,14 +321,14 @@ class QCPipeline:
                                         )
                                         # Only pass if test is needed and passed
                                         test_obj["passed"] = (
-                                            bool(test_passed) if test_needed else None
+                                            bool(test_passed) if test_needed else False
                                         )
                                         test_obj["comments"] = comments or ""
                                         test_obj["model_output"] = str(panel)
                                         test_obj["is_a_plot"] = to_bool(
                                             get_attr(panel, "is_a_plot")
                                         )
-                                        test_obj["test_needed"] = test_needed
+                                        test_obj["test_needed"] = bool(test_needed)
                                     elif test_name == "plot_axis_units":
                                         # For plot_axis_units, pass if all axes are yes or not needed
                                         units = get_attr(panel, "units_provided") or []
@@ -370,7 +370,7 @@ class QCPipeline:
                                         test_obj["is_a_plot"] = to_bool(
                                             get_attr(panel, "is_a_plot")
                                         )
-                                        test_obj["test_needed"] = test_needed
+                                        test_obj["test_needed"] = bool(test_needed)
                                     elif test_name == "replicates_defined":
                                         involves_replicates = get_attr(
                                             panel, "involves_replicates"
@@ -399,12 +399,12 @@ class QCPipeline:
                                             )
                                         )
                                         test_obj["passed"] = (
-                                            bool(test_passed) if test_needed else None
+                                            bool(test_passed) if test_needed else False
                                         )
                                         test_obj["comments"] = ""
                                         test_obj["model_output"] = str(panel)
-                                        test_obj["is_a_plot"] = None
-                                        test_obj["test_needed"] = test_needed
+                                        test_obj["is_a_plot"] = False
+                                        test_obj["test_needed"] = bool(test_needed)
                                     # Add more tests here as needed
                                     panel_results[panel_label]["qc_tests"].append(
                                         test_obj

@@ -5,19 +5,10 @@ from typing import Dict, Tuple
 
 from pydantic import TypeAdapter
 
-from ..data_types import BaseModel
+from ..data_types import IndividualDataPointsResult
 from ..model_api import ModelAPI
 
 logger = logging.getLogger(__name__)
-
-
-class PanelIndividualDataPoints(BaseModel):
-    panel_label: str
-    individual_values: str  # "yes", "no", or "not needed"
-
-
-class IndividualDataPointsResult(BaseModel):
-    outputs: list
 
 
 class IndividualDataPointsAnalyzer:
@@ -41,10 +32,13 @@ class IndividualDataPointsAnalyzer:
         result: IndividualDataPointsResult = TypeAdapter(
             IndividualDataPointsResult
         ).validate_json(response)
-        # A panel passes if individual values are shown or not needed
+        # A panel passes if plot == "no" or average_values == "no" or individual_values == "yes" or "not needed"
         passed = True
         for panel in result.outputs:
-            if panel.individual_values not in ("yes", "not needed"):
+            if (
+                panel.plot == "yes"
+                and panel.average_values == "yes"
+                and panel.individual_values not in ("yes", "not needed")
+            ):
                 passed = False
-                break
         return passed, result
