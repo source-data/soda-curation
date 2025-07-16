@@ -1,11 +1,10 @@
 """Micrograph symbols defined analysis for figures."""
 
 import logging
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
-from pydantic import TypeAdapter
+from pydantic import BaseModel
 
-from ..data_types import MicrographSymbolsDefinedResult
 from ..model_api import ModelAPI
 from ..prompt_registry import registry
 
@@ -20,6 +19,8 @@ class MicrographSymbolsDefinedAnalyzer:
         self.model_api = ModelAPI(config)
         # Get metadata from registry for traceability
         self.metadata = registry.get_prompt_metadata("micrograph_symbols_defined")
+        # Get the dynamically generated model
+        self.result_model = registry.get_pydantic_model("micrograph_symbols_defined")
 
     def get_system_prompt(self) -> str:
         """Get the system prompt from the registry."""
@@ -31,7 +32,7 @@ class MicrographSymbolsDefinedAnalyzer:
 
     def analyze_figure(
         self, figure_label: str, encoded_image: str, figure_caption: str
-    ) -> Tuple[bool, MicrographSymbolsDefinedResult]:
+    ) -> Tuple[bool, BaseModel]:
         logger.info("Analyzing micrograph symbols defined for figure %s", figure_label)
 
         # Get API config from main config
@@ -44,29 +45,34 @@ class MicrographSymbolsDefinedAnalyzer:
             encoded_image=encoded_image,
             caption=figure_caption,
             prompt_config=test_config,
-            response_type=MicrographSymbolsDefinedResult,
+            response_type=None,  # No longer needed as we validate manually
         )
 
-        result: MicrographSymbolsDefinedResult = TypeAdapter(
-            MicrographSymbolsDefinedResult
-        ).validate_json(response)
+        # Use the dynamically generated model for validation
+        result = self.result_model.model_validate_json(response)
 
         # Add metadata to result for traceability
-        result.metadata = {
-            "name": self.metadata.name,
-            "description": self.metadata.description,
-            "permalink": self.metadata.permalink,
-            "version": self.metadata.version,
-            "prompt_number": self.metadata.prompt_number,
-        }
+        setattr(
+            result,
+            "metadata",
+            {
+                "name": self.metadata.name,
+                "description": self.metadata.description,
+                "permalink": self.metadata.permalink,
+                "version": self.metadata.version,
+                "prompt_number": self.metadata.prompt_number,
+            },
+        )
 
         # A panel passes if micrograph == "no" or (symbols is not empty and all are defined in caption)
         passed = True
         for panel in result.outputs:
-            if panel.micrograph == "yes":
-                if panel.symbols and (
-                    not panel.symbols_defined_in_caption
-                    or any(ans != "yes" for ans in panel.symbols_defined_in_caption)
-                ):
-                    passed = False
+            if getattr(panel, "micrograph") == "yes":
+                symbols = getattr(panel, "symbols", [])
+                if symbols:
+                    symbols_defined = getattr(panel, "symbols_defined_in_caption", [])
+                    if not symbols_defined or any(
+                        ans != "yes" for ans in symbols_defined
+                    ):
+                        passed = False
         return passed, result

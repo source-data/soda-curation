@@ -1,11 +1,10 @@
 """Individual data points analysis for figures."""
 
 import logging
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple, cast
 
-from pydantic import TypeAdapter
+from pydantic import BaseModel, TypeAdapter
 
-from ..data_types import IndividualDataPointsResult
 from ..model_api import ModelAPI
 from ..prompt_registry import registry
 
@@ -20,6 +19,8 @@ class IndividualDataPointsAnalyzer:
         self.model_api = ModelAPI(config)
         # Get metadata from registry for traceability
         self.metadata = registry.get_prompt_metadata("individual_data_points")
+        # Get the dynamically generated model
+        self.result_model = registry.get_pydantic_model("individual_data_points")
 
     def get_system_prompt(self) -> str:
         """Get the system prompt from the registry."""
@@ -31,7 +32,7 @@ class IndividualDataPointsAnalyzer:
 
     def analyze_figure(
         self, figure_label: str, encoded_image: str, figure_caption: str
-    ) -> Tuple[bool, IndividualDataPointsResult]:
+    ) -> Tuple[bool, BaseModel]:
         logger.info("Analyzing individual data points for figure %s", figure_label)
 
         # Get API config from main config
@@ -44,29 +45,34 @@ class IndividualDataPointsAnalyzer:
             encoded_image=encoded_image,
             caption=figure_caption,
             prompt_config=test_config,
-            response_type=IndividualDataPointsResult,
+            response_type=None,  # No longer needed as we validate manually
         )
 
-        result: IndividualDataPointsResult = TypeAdapter(
-            IndividualDataPointsResult
-        ).validate_json(response)
+        # Use the dynamically generated model for validation
+        result = self.result_model.model_validate_json(response)
 
         # Add metadata to result for traceability
-        result.metadata = {
-            "name": self.metadata.name,
-            "description": self.metadata.description,
-            "permalink": self.metadata.permalink,
-            "version": self.metadata.version,
-            "prompt_number": self.metadata.prompt_number,
-        }
+        # Use setattr since this is a dynamically generated model
+        setattr(
+            result,
+            "metadata",
+            {
+                "name": self.metadata.name,
+                "description": self.metadata.description,
+                "permalink": self.metadata.permalink,
+                "version": self.metadata.version,
+                "prompt_number": self.metadata.prompt_number,
+            },
+        )
 
         # A panel passes if plot == "no" or average_values == "no" or individual_values == "yes" or "not needed"
         passed = True
         for panel in result.outputs:
+            # Access attributes using getattr since this is a dynamically generated model
             if (
-                panel.plot == "yes"
-                and panel.average_values == "yes"
-                and panel.individual_values not in ("yes", "not needed")
+                getattr(panel, "plot") == "yes"
+                and getattr(panel, "average_values") == "yes"
+                and getattr(panel, "individual_values") not in ("yes", "not needed")
             ):
                 passed = False
         return passed, result

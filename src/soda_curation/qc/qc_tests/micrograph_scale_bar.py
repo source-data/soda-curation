@@ -1,11 +1,10 @@
 """Micrograph scale bar analysis for figures."""
 
 import logging
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
-from pydantic import TypeAdapter
+from pydantic import BaseModel
 
-from ..data_types import MicrographScaleBarResult
 from ..model_api import ModelAPI
 from ..prompt_registry import registry
 
@@ -20,6 +19,8 @@ class MicrographScaleBarAnalyzer:
         self.model_api = ModelAPI(config)
         # Get metadata from registry for traceability
         self.metadata = registry.get_prompt_metadata("micrograph_scale_bar")
+        # Get the dynamically generated model
+        self.result_model = registry.get_pydantic_model("micrograph_scale_bar")
 
     def get_system_prompt(self) -> str:
         """Get the system prompt from the registry."""
@@ -31,7 +32,7 @@ class MicrographScaleBarAnalyzer:
 
     def analyze_figure(
         self, figure_label: str, encoded_image: str, figure_caption: str
-    ) -> Tuple[bool, MicrographScaleBarResult]:
+    ) -> Tuple[bool, BaseModel]:
         logger.info("Analyzing micrograph scale bar for figure %s", figure_label)
 
         # Get API config from main config
@@ -44,29 +45,32 @@ class MicrographScaleBarAnalyzer:
             encoded_image=encoded_image,
             caption=figure_caption,
             prompt_config=test_config,
-            response_type=MicrographScaleBarResult,
+            response_type=None,  # No longer needed as we validate manually
         )
 
-        result: MicrographScaleBarResult = TypeAdapter(
-            MicrographScaleBarResult
-        ).validate_json(response)
+        # Use the dynamically generated model for validation
+        result = self.result_model.model_validate_json(response)
 
         # Add metadata to result for traceability
-        result.metadata = {
-            "name": self.metadata.name,
-            "description": self.metadata.description,
-            "permalink": self.metadata.permalink,
-            "version": self.metadata.version,
-            "prompt_number": self.metadata.prompt_number,
-        }
+        setattr(
+            result,
+            "metadata",
+            {
+                "name": self.metadata.name,
+                "description": self.metadata.description,
+                "permalink": self.metadata.permalink,
+                "version": self.metadata.version,
+                "prompt_number": self.metadata.prompt_number,
+            },
+        )
 
         # A panel passes if micrograph == "no" or (scale_bar_on_image == "yes" and scale_bar_defined_in_caption == "yes")
         passed = True
         for panel in result.outputs:
-            if panel.micrograph == "yes":
+            if getattr(panel, "micrograph") == "yes":
                 if (
-                    panel.scale_bar_on_image != "yes"
-                    or panel.scale_bar_defined_in_caption != "yes"
+                    getattr(panel, "scale_bar_on_image") != "yes"
+                    or getattr(panel, "scale_bar_defined_in_caption") != "yes"
                 ):
                     passed = False
         return passed, result

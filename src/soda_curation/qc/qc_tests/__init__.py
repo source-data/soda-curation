@@ -5,5 +5,5 @@ from .micrograph_symbols_defined import MicrographSymbolsDefinedAnalyzer
 from .plot_axis_units import PlotAxisUnitsAnalyzer
 from .plot_gap_labeling import PlotGapLabelingAnalyzer
 from .replicates_defined import ReplicatesDefinedAnalyzer
-from .stats_significance_level import StatsSignificanceLevelAnalyzer
-from .stats_test import StatsTestAnalyzer
+from .stat_significance_level import StatsSignificanceLevelAnalyzer
+from .stat_test import StatsTestAnalyzer

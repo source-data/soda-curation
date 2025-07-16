@@ -5,12 +5,12 @@ qc_test_metadata:
     description: "Checks whether plot axes have defined units for quantitative data."
     prompt_version: 3
     checklist_type: "fig-checklist"
-  stats_test:
+  stat_test:
     name: "Statistical Test Mentioned"
     description: "Checks if a statistical test is mentioned when statistical significance is claimed."
     prompt_version: 4
     checklist_type: "fig-checklist"
-  stats_significance_level:
+  stat_significance_level:
     name: "Statistical Significance Level Defined"
     description: "Checks if statistical significance levels (e.g., p-value thresholds, asterisks) are defined in the caption."
     prompt_version: 2

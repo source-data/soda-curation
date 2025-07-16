@@ -1,11 +1,10 @@
 """Plot axis units analysis for figures."""
 
 import logging
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
-from pydantic import TypeAdapter
+from pydantic import BaseModel
 
-from ..data_types import PlotAxisUnitsResult
 from ..model_api import ModelAPI
 from ..prompt_registry import registry
 
@@ -20,6 +19,8 @@ class PlotAxisUnitsAnalyzer:
         self.model_api = ModelAPI(config)
         # Get metadata from registry for traceability
         self.metadata = registry.get_prompt_metadata("plot_axis_units")
+        # Get the dynamically generated model
+        self.result_model = registry.get_pydantic_model("plot_axis_units")
 
     def get_system_prompt(self) -> str:
         """Get the system prompt from the registry."""
@@ -31,7 +32,7 @@ class PlotAxisUnitsAnalyzer:
 
     def analyze_figure(
         self, figure_label: str, encoded_image: str, figure_caption: str
-    ) -> Tuple[bool, PlotAxisUnitsResult]:
+    ) -> Tuple[bool, BaseModel]:
         logger.info("Analyzing plot axis units for figure %s", figure_label)
 
         # Get API config from main config
@@ -44,28 +45,31 @@ class PlotAxisUnitsAnalyzer:
             encoded_image=encoded_image,
             caption=figure_caption,
             prompt_config=test_config,
-            response_type=PlotAxisUnitsResult,
+            response_type=None,  # No longer needed as we validate manually
         )
 
-        result: PlotAxisUnitsResult = TypeAdapter(PlotAxisUnitsResult).validate_json(
-            response
-        )
+        # Use the dynamically generated model for validation
+        result = self.result_model.model_validate_json(response)
 
         # Add metadata to result for traceability
-        result.metadata = {
-            "name": self.metadata.name,
-            "description": self.metadata.description,
-            "permalink": self.metadata.permalink,
-            "version": self.metadata.version,
-            "prompt_number": self.metadata.prompt_number,
-        }
+        setattr(
+            result,
+            "metadata",
+            {
+                "name": self.metadata.name,
+                "description": self.metadata.description,
+                "permalink": self.metadata.permalink,
+                "version": self.metadata.version,
+                "prompt_number": self.metadata.prompt_number,
+            },
+        )
 
         # A panel passes if all axes that need units have answer == "yes" or "not needed"
         passed = True
         for panel in result.outputs:
-            if panel.is_a_plot == "yes":
-                for axis in panel.units_provided:
-                    if axis.answer not in ("yes", "not needed"):
+            if getattr(panel, "is_a_plot") == "yes":
+                for axis in getattr(panel, "units_provided", []):
+                    if getattr(axis, "answer", "") not in ("yes", "not needed"):
                         passed = False
                         break
         return passed, result
