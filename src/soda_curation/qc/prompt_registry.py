@@ -1,9 +1,14 @@
 # src/soda_curation/qc/prompt_registry.py
+import importlib.util
+import io
 import json
 import os
+import subprocess
+import sys
+import tempfile
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, NamedTuple, Optional, Type, Union
+from typing import Any, Dict, List, NamedTuple, Optional, Type, Union, cast
 
 import git
 from pydantic import BaseModel, create_model
@@ -41,6 +46,7 @@ class PromptRegistry:
         self.base_data_path = self.mmqc_path / "soda_mmqc" / "data" / "checklist"
         self._model_cache: Dict[str, Type[BaseModel]] = {}
         self.config = config or {}
+        self._module_cache = {}
 
         # Initialize git repo if it's a git repository
         try:
@@ -188,33 +194,96 @@ class PromptRegistry:
             prompt_number=prompt_version,
         )
 
+    def generate_pydantic_model_from_schema(
+        self, schema: Dict[str, Any], model_name: str
+    ) -> Type[BaseModel]:
+        """Generate a Pydantic model from a JSON schema using datamodel-code-generator."""
+        try:
+            from datamodel_code_generator import InputFileType, generate
+            from datamodel_code_generator.model.pydantic import (
+                BaseModel as CodegenBaseModel,
+            )
+        except ImportError:
+            raise ImportError(
+                "datamodel-code-generator is required for schema to model conversion. "
+                "Install it with: poetry add datamodel-code-generator"
+            )
+
+        # Clean up schema format if needed
+        if "format" in schema and "schema" in schema["format"]:
+            schema = schema["format"]["schema"]
+
+        # Convert test_name to a valid Python class name
+        clean_name = model_name.replace("-", "_").title().replace("_", "")
+
+        # Create temporary files for output
+        with tempfile.NamedTemporaryFile(
+            mode="w+", suffix=".py", delete=False
+        ) as output_file:
+            try:
+                # Generate Python code from schema string
+                schema_str = json.dumps(schema)
+                output_path = Path(output_file.name)
+
+                # Generate Python code
+                generate(
+                    schema_str,
+                    input_file_type=InputFileType.JsonSchema,
+                    output=output_path,
+                    class_name=clean_name,
+                    field_include_all_keys=False,
+                    use_standard_collections=True,
+                    use_field_description=True,
+                )
+
+                # Read generated code
+                with open(output_path, "r") as f:
+                    code = f.read()
+
+                # Create a module from the generated code
+                module_name = f"soda_curation_generated_{model_name.replace('-', '_')}"
+                spec = importlib.util.spec_from_loader(module_name, loader=None)
+                if spec is None:
+                    raise ImportError(f"Failed to create module spec for {module_name}")
+
+                module = importlib.util.module_from_spec(spec)
+                sys.modules[module_name] = module
+                exec(code, module.__dict__)
+
+                # Extract the main model class
+                if hasattr(module, clean_name):
+                    model_class = getattr(module, clean_name)
+                    return cast(Type[BaseModel], model_class)
+                else:
+                    # If the main class wasn't found, look for other classes
+                    for name, obj in module.__dict__.items():
+                        if (
+                            isinstance(obj, type)
+                            and issubclass(obj, BaseModel)
+                            and obj != BaseModel
+                        ):
+                            return cast(Type[BaseModel], obj)
+
+                raise ValueError(
+                    f"Could not find Pydantic model in generated code for {model_name}"
+                )
+
+            finally:
+                # Clean up temporary file
+                try:
+                    os.unlink(output_file.name)
+                except Exception:
+                    pass
+
     def get_pydantic_model(self, test_name: str) -> Type[BaseModel]:
         """Get or create a Pydantic model from the JSON schema."""
         if test_name not in self._model_cache:
             schema = self.get_schema(test_name)
-            self._model_cache[test_name] = self._create_model_from_schema(
+            self._model_cache[test_name] = self.generate_pydantic_model_from_schema(
                 schema, test_name
             )
 
         return self._model_cache[test_name]
-
-    def _create_model_from_schema(
-        self, schema: Dict[str, Any], model_name: str
-    ) -> Type[BaseModel]:
-        """Create a Pydantic model from a JSON schema."""
-        # Extract the schema from the format wrapper if needed
-        if "format" in schema and "schema" in schema["format"]:
-            schema = schema["format"]["schema"]
-
-        # Create a model name in PascalCase
-        clean_name = model_name.replace("-", "_").title().replace("_", "")
-
-        # For now, we'll just create a simple wrapper model
-        return create_model(
-            clean_name,
-            __base__=BaseModel,
-            outputs=(List[Dict[str, Any]], ...),
-        )
 
 
 # Function to create the registry with the current config
