@@ -7,6 +7,7 @@ from pydantic import TypeAdapter
 
 from ..data_types import StatsTestResult
 from ..model_api import ModelAPI
+from ..prompt_registry import registry
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,26 @@ class StatsTestAnalyzer:
         """
         self.config = config
         self.model_api = ModelAPI(config)
+        # Get metadata from registry for traceability
+        self.metadata = registry.get_prompt_metadata("stats_test")
+
+    def get_system_prompt(self) -> str:
+        """
+        Get the system prompt from the registry.
+
+        Returns:
+            The system prompt string
+        """
+        return registry.get_prompt("stats_test")
+
+    def get_schema(self) -> Dict:
+        """
+        Get the JSON schema from the registry.
+
+        Returns:
+            The JSON schema as a dictionary
+        """
+        return registry.get_schema("stats_test")
 
     def analyze_figure(
         self, figure_label: str, encoded_image: str, figure_caption: str
@@ -57,6 +78,9 @@ class StatsTestAnalyzer:
         # Defensive config extraction with error logging
         try:
             test_config = self.config["pipeline"]["stats_test"]["openai"]
+
+            # Override system prompt with one from registry
+            test_config["prompts"]["system"] = self.get_system_prompt()
         except KeyError as e:
             logger.error("Missing config key: %s. Full config: %r", e, self.config)
             return False, StatsTestResult(outputs=[])
@@ -72,12 +96,24 @@ class StatsTestAnalyzer:
             if response is None:
                 logger.warning("Model API returned None for figure %s", figure_label)
                 return False, StatsTestResult(outputs=[])
+
             result: StatsTestResult = TypeAdapter(StatsTestResult).validate_json(
                 response
             )
+
+            # Add metadata to result for traceability
+            result.metadata = {
+                "name": self.metadata.name,
+                "description": self.metadata.description,
+                "permalink": self.metadata.permalink,
+                "version": self.metadata.version,
+                "prompt_number": self.metadata.prompt_number,
+            }
+
             if not hasattr(result, "outputs") or result.outputs is None:
                 logger.warning("No outputs in result for figure %s", figure_label)
                 return False, StatsTestResult(outputs=[])
+
             needs_stats = [
                 p
                 for p in result.outputs

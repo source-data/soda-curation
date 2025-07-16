@@ -3,39 +3,48 @@ qc_test_metadata:
   plot_axis_units:
     name: "Plot Axis Units"
     description: "Checks whether plot axes have defined units for quantitative data."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/plot-axis-units/prompts/prompt.3.txt"
+    prompt_version: 3
+    checklist_type: "fig-checklist"
   stats_test:
     name: "Statistical Test Mentioned"
     description: "Checks if a statistical test is mentioned when statistical significance is claimed."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/stat-test/prompts/prompt.4.txt"
+    prompt_version: 4
+    checklist_type: "fig-checklist"
   stats_significance_level:
     name: "Statistical Significance Level Defined"
     description: "Checks if statistical significance levels (e.g., p-value thresholds, asterisks) are defined in the caption."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/stat-significance-level/prompts/prompt.2.txt"
+    prompt_version: 2
+    checklist_type: "fig-checklist"
   replicates_defined:
     name: "Replicates Defined"
     description: "Checks whether the number and type of replicates are explicitly defined in the figure caption."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/replicates-defined/prompts/prompt.3.txt"
+    prompt_version: 3
+    checklist_type: "fig-checklist"
   error_bars_defined:
     name: "Error Bars Defined"
     description: "Checks whether error bars are defined in the figure caption."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/error-bars-defined/prompts/prompt.2.txt"
+    prompt_version: 2
+    checklist_type: "fig-checklist"
   individual_data_points:
     name: "Individual Data Points Displayed"
     description: "Verifies if individual data points are displayed."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/individual-data-points/prompts/prompt.2.txt"
+    prompt_version: 2
+    checklist_type: "fig-checklist"
   micrograph_scale_bar:
     name: "Micrograph Scale Bar Defined"
     description: "Checks if a scale bar is included in micrographs."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/micrograph-scale-bar/prompts/prompt.2.txt"
+    prompt_version: 2
+    checklist_type: "fig-checklist"
   micrograph_symbols_defined:
     name: "Micrograph Symbols Defined"
     description: "Checks if symbols (e.g., arrows, circles, stars) are included in micrographs."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/micrograph-symbols-defined/prompts/prompt.3.txt"
+    prompt_version: 3
+    checklist_type: "fig-checklist"
   plot_gap_labeling:
     name: "Plot Gap Labeling"
     description: "Checks whether any axis breaks or discontinuities or gaps are clearly indicated with appropriate visual markers on plots."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/e002d4c9a56a951a7a821aa5e7e94c2171a10ead/soda_mmqc/data/checklist/fig-checklist/plot-gap-labeling/prompts/prompt.4.txt"
+    prompt_version: 4
+    checklist_type: "fig-checklist"
 default: &default
   pipeline:
     plot_gap_labeling:
