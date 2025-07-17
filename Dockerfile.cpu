@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Define deployment environment ARG early (before ENV declarations)
 ARG DEPLOYMENT_ENV=dev
-ARG GITHUB_TOKEN
+ARG GIT_ACCESS_TOKEN
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -48,8 +48,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # NOW configure git with token (after git is installed)
-RUN if [ -n "$GITHUB_TOKEN" ]; then \
-      git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"; \
+RUN if [ -n "$GIT_ACCESS_TOKEN" ]; then \
+      git config --global url."https://${GIT_ACCESS_TOKEN}@github.com/".insteadOf "https://github.com/"; \
       git config --list | grep url; \
     fi
 
