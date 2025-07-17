@@ -6,7 +6,7 @@ from dataclasses import asdict
 from typing import Dict, List, Optional, Tuple
 
 from ..pipeline.manuscript_structure.manuscript_structure import ZipStructure
-from .data_types import QCPipelineResult, QCResult
+from .data_models import QCPipelineResult, QCResult
 
 logger = logging.getLogger(__name__)
 

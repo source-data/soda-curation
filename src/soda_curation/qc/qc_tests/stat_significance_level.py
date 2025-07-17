@@ -63,7 +63,7 @@ class StatsSignificanceLevelAnalyzer:
         logger.info("Analyzing stats significance level for figure %s", figure_label)
 
         # Get API config from main config
-        test_config = self.config["pipeline"]["stats_significance_level"]["openai"]
+        test_config = self.config["pipeline"]["stat_significance_level"]["openai"]
 
         # Override system prompt with one from registry
         test_config["prompts"]["system"] = self.get_system_prompt()

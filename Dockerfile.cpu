@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Define deployment environment ARG early (before ENV declarations)
 ARG DEPLOYMENT_ENV=dev
+ARG GITHUB_TOKEN
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -45,6 +46,12 @@ RUN apt-get update && apt-get install -y \
     && convert --version \
     && which convert \
     && rm -rf /var/lib/apt/lists/*
+
+# NOW configure git with token (after git is installed)
+RUN if [ -n "$GITHUB_TOKEN" ]; then \
+      git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"; \
+      git config --list | grep url; \
+    fi
 
 # Update ImageMagick policy to allow PDF conversions
 # Configure ImageMagick policy to allow EPS, PDF, and PostScript
@@ -152,3 +159,6 @@ RUN poetry install --with dev
 
 # Run tests
 CMD ["poetry", "run", "pytest", "-v", "--cov=soda_curation", "--cov-report=term-missing"]
+
+# Add this at the end to clean up credentials for security
+RUN git config --global --unset url."https://${GITHUB_TOKEN}:@github.com/".insteadOf || true

@@ -66,8 +66,8 @@ class StatsTestAnalyzer:
             "StatsTestAnalyzer config['pipeline']: %r", self.config.get("pipeline")
         )
         logger.debug(
-            "StatsTestAnalyzer config['pipeline']['stats_test']: %r",
-            self.config.get("pipeline", {}).get("stats_test"),
+            "StatsTestAnalyzer config['pipeline']['stat_test']: %r",
+            self.config.get("pipeline", {}).get("stat_test"),
         )
         logger.debug(
             "Input params: figure_label=%r, encoded_image_present=%r, figure_caption=%r",
@@ -78,7 +78,7 @@ class StatsTestAnalyzer:
 
         # Defensive config extraction with error logging
         try:
-            test_config = self.config["pipeline"]["stats_test"]["openai"]
+            test_config = self.config["pipeline"]["stat_test"]["openai"]
 
             # Override system prompt with one from registry
             test_config["prompts"]["system"] = self.get_system_prompt()

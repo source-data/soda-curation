@@ -163,6 +163,10 @@ class PromptRegistry:
 
     def get_prompt_metadata(self, test_name: str) -> PromptMetadata:
         """Get metadata for a test's prompt, including permalink."""
+        # Check if test exists in config
+        if test_name not in self.config.get("qc_test_metadata", {}):
+            raise ValueError(f"Test '{test_name}' not found in configuration")
+
         config = self.get_test_config(test_name)
         checklist_type = self.get_checklist_type(test_name)
         mmqc_test_name = self.get_mmqc_test_name(test_name)
