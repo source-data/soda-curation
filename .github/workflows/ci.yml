@@ -32,7 +32,7 @@ jobs:
           echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> .env.dev
           echo "ENVIRONMENT=dev" >> .env.dev
           echo "MODEL_PROVIDER=openai" >> .env.dev
-
+          echo "GITHUB_TOKEN=${{ secrets.GH_TOKEN }}" >> .env.dev
       - name: Download Model from Hugging Face
         run: |
           mkdir -p data/models
@@ -41,8 +41,9 @@ jobs:
 
       - name: Build and Start Development Container
         run: |
-          docker-compose -f docker-compose.dev.yml --env-file .env.dev up --build -d
-
+          docker-compose -f docker-compose.dev.yml --env-file .env.dev build --build-arg GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
+          docker-compose -f docker-compose.dev.yml --env-file .env.dev up -d
+          
       - name: Wait for Container to Start
         run: |
           sleep 5  # Give the container time to initialize
