@@ -33,7 +33,7 @@ jobs:
           echo "ENVIRONMENT=dev" >> .env.dev
           echo "MODEL_PROVIDER=openai" >> .env.dev
           echo "GIT_ACCESS_TOKEN=${{ secrets.GH_TOKEN }}" >> .env.dev
-            - name: Download Model from Hugging Face
+            
       - name: Download panel detection models
         run: |
           mkdir -p data/models
