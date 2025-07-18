@@ -74,18 +74,26 @@ The configuration system uses a flexible, hierarchical approach supporting diffe
 ```yaml
 qc_version: "0.3.1"
 qc_test_metadata:
-  plot_axis_units:
-    name: "Plot Axis Units"
-    description: "Checks whether plot axes have defined units for quantitative data."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../plot-axis-units/prompts/prompt.3.txt"
-  # ... more tests ...
-default:
-  pipeline:
+  panel:
     plot_axis_units:
-      level: panel
-      openai:
-        model: "gpt-4o"
-        # ...
+      name: "Plot Axis Units"
+      description: "Checks whether plot axes have defined units for quantitative data."
+      permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../plot-axis-units/prompts/prompt.3.txt"
+    error_bars_defined:
+      name: "Error Bars Defined"
+      description: "Checks whether error bars are defined in the figure caption."
+      prompt_version: 2
+      checklist_type: "fig-checklist"
+    # ... more tests ...
+  figure:
+    # Figure-level tests...
+  document:
+    # Document-level tests...
+  
+default:
+  openai:
+    model: "gpt-4o"
+    temperature: 0.1
     # ...
 ```
 
@@ -486,6 +494,8 @@ The QC pipeline provides automated, configurable, and extensible quality assessm
 - **Accurate test status**: The `passed` field is `null` when a test is not needed.
 - **Easy extensibility**: Add new tests by updating the config and adding a new analyzer module.
 - **Permalinks for each test**: Output includes direct links to test documentation/prompts.
+- **Hierarchical test organization**: Tests can be defined at panel, figure, or document level.
+- **Generic test implementation**: New tests can be added without writing custom code.
 
 ### Running the QC Pipeline
 
@@ -508,10 +518,10 @@ poetry run python -m src.soda_curation.qc.main \
 
 ```json
 {
-  "qc_version": "0.3.1",
+  "qc_version": "2.1.0",
   "qc_test_metadata": {
     "plot_axis_units": {"name": "Plot Axis Units", ...},
-    "stats_test": {"name": "Statistical Test Mentioned", ...}
+    "error_bars_defined": {"name": "Error Bars Defined", ...}
   },
   "figures": [ ... ]
 }
@@ -525,54 +535,55 @@ To add a new test to the QC pipeline, follow these steps:
 
 1. **Define test metadata in the config:**
    - Open `config.qc.yaml`.
-   - Under `qc_test_metadata`, add a new entry for your test. Include at least `name`, `description`, and `permalink` fields. Example:
+   - Under `qc_test_metadata` in the appropriate level (panel, figure, document), add a new entry for your test. Include at least `name`, `description`, and `permalink` fields. Example:
 
      ```yaml
      qc_test_metadata:
-       my_new_test:
-         name: "My New Test"
-         description: "Checks for a new quality control criterion."
-         permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../my-new-test/prompts/prompt.txt"
+       panel:
+         my_new_test:
+           name: "My New Test"
+           description: "Checks for a new quality control criterion."
+           permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../my-new-test/prompts/prompt.txt"
      ```
 
 2. **Configure the test in the pipeline section:**
-   - Still in `config.qc.yaml`, add your test to the appropriate section under `default.pipeline` (or the relevant environment). Specify any parameters or model settings needed. Example:
+   - Still in `config.qc.yaml`, add any specific settings under `default` if needed:
 
      ```yaml
      default:
-       pipeline:
-         my_new_test:
-           level: figure  # or panel
-           openai:
-             model: "gpt-4o"
-             # ...other settings...
+       openai:
+         model: "gpt-4o"
+         temperature: 0.1
+         # ...other settings...
      ```
 
-3. **Implement the analyzer (if needed):**
-   - If your test requires new logic, create a new Python module in `src/soda_curation/qc/qc_tests/` (e.g., `my_new_test.py`).
-   - Implement the required interface (see other modules in that folder for examples).
-   - If your test is similar to an existing one, you may only need to update the config.
+3. **Run the QC pipeline:**
+   - Execute the pipeline as usual. Your new test will be automatically detected and run.
+   - The system will generate appropriate test models and integrate results into the output.
 
 4. **(Optional) Add test documentation:**
    - Ensure the `permalink` in your metadata points to documentation or a prompt for your test.
 
-5. **Run the QC pipeline:**
-   - Execute the pipeline as usual. Your new test and its results will appear in the output, and its metadata will be included automatically.
+5. **(Optional) Add custom analyzer:**
+   - If your test requires specific logic beyond what the generic analyzers provide, create a custom analyzer class that extends the appropriate base class.
 
-6. **(Optional) Add tests:**
-   - Add or update unit tests in `tests/` to cover your new QC test logic.
-
-**Tip:** The pipeline is designed to automatically discover and include new tests as long as they are defined in the config and (if needed) implemented in the `qc_tests` folder.
+**Tip:** No custom code is required for most tests - the system will automatically generate test implementations based on the configuration.
 
 ### Example QC Config Section
 
 ```yaml
-qc_version: "0.3.1"
+qc_version: "2.1.0"
 qc_test_metadata:
-  plot_axis_units:
-    name: "Plot Axis Units"
-    description: "Checks whether plot axes have defined units for quantitative data."
-    permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../plot-axis-units/prompts/prompt.3.txt"
+  panel:
+    plot_axis_units:
+      name: "Plot Axis Units"
+      description: "Checks whether plot axes have defined units for quantitative data."
+      permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../plot-axis-units/prompts/prompt.3.txt"
+    error_bars_defined:
+      name: "Error Bars Defined"
+      description: "Checks whether error bars are defined in the figure caption."
+      prompt_version: 2
+      checklist_type: "fig-checklist"
   # ... more tests ...
 ```
 
@@ -606,6 +617,16 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 2.1.0 (2025-07-18)
+- Complete refactoring of the QC pipeline with abstract base classes and factory pattern
+- Added support for hierarchical test organization (panel, figure, document levels)
+- Implemented generic test analyzers for different test levels
+- Removed individual test modules in favor of dynamic test generation
+- Enhanced error handling and robustness for test execution
+- Improved metadata handling with hierarchical config structure
+- Simplified output format by removing redundant fields
+- Added fallback mechanisms for missing schemas and prompts
 
 ### 2.0.4 (2025-07-11)
 - QC pipeline now sources test metadata and version from config file

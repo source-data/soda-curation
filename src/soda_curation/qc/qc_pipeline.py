@@ -204,7 +204,9 @@ class QCPipeline:
         # Build the output structure
         if unified_output:
             output = {
-                "qc_version": "2.0.0",  # Version of the QC pipeline
+                "qc_version": self.config.get(
+                    "qc_version", "1.0.0"
+                ),  # Version of the QC pipeline
                 "figures": self.qc_results["figures"],
                 "qc_test_metadata": {},
                 "status": pipeline_status,
