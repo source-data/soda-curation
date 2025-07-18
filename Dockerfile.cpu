@@ -161,4 +161,4 @@ RUN poetry install --with dev
 CMD ["poetry", "run", "pytest", "-v", "--cov=soda_curation", "--cov-report=term-missing"]
 
 # Add this at the end to clean up credentials for security
-RUN git config --global --unset url."https://${GITHUB_TOKEN}:@github.com/".insteadOf || true
+RUN git config --global --unset url."https://${GIT_ACCESS_TOKEN}:@github.com/".insteadOf || true
