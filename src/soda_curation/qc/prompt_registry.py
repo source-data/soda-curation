@@ -62,13 +62,21 @@ class PromptRegistry:
 
         # Build test_name to checklist_type mapping
         self._test_mapping = {}
-        for test_name, metadata in self.config.get("qc_test_metadata", {}).items():
-            if "checklist_type" in metadata:
-                self._test_mapping[test_name] = metadata["checklist_type"]
+        if "qc_test_metadata" in self.config:
+            for level, level_tests in self.config["qc_test_metadata"].items():
+                if isinstance(level_tests, dict):
+                    for test_name, metadata in level_tests.items():
+                        if isinstance(metadata, dict) and "checklist_type" in metadata:
+                            self._test_mapping[test_name] = metadata["checklist_type"]
 
     def get_test_config(self, test_name: str) -> Dict[str, Any]:
         """Get configuration for a specific test."""
-        return self.config.get("qc_test_metadata", {}).get(test_name, {})
+        if "qc_test_metadata" in self.config:
+            # Search in each level (panel, figure, document)
+            for level, level_tests in self.config["qc_test_metadata"].items():
+                if isinstance(level_tests, dict) and test_name in level_tests:
+                    return level_tests[test_name]
+        return {}
 
     def get_prompt_version(self, test_name: str) -> int:
         """Get the prompt version for a test from config."""
@@ -164,10 +172,17 @@ class PromptRegistry:
     def get_prompt_metadata(self, test_name: str) -> PromptMetadata:
         """Get metadata for a test's prompt, including permalink."""
         # Check if test exists in config
-        if test_name not in self.config.get("qc_test_metadata", {}):
-            raise ValueError(f"Test '{test_name}' not found in configuration")
+        test_config = self.get_test_config(test_name)
+        if not test_config:
+            # If not found in config, create minimal metadata
+            return PromptMetadata(
+                name=test_name.replace("_", " ").title(),
+                description="",
+                permalink="",
+                version="latest",
+                prompt_number=1,
+            )
 
-        config = self.get_test_config(test_name)
         checklist_type = self.get_checklist_type(test_name)
         mmqc_test_name = self.get_mmqc_test_name(test_name)
         prompt_version = self.get_prompt_version(test_name)
@@ -179,7 +194,7 @@ class PromptRegistry:
 
         # Get version from git if available
         version = "latest"
-        if self.has_git:
+        if self.has_git and prompt_path.exists():
             try:
                 relative_path = prompt_path.relative_to(self.mmqc_path)
                 commits = list(
@@ -191,9 +206,9 @@ class PromptRegistry:
                 pass
 
         return PromptMetadata(
-            name=config.get("name", test_name.replace("_", " ").title()),
-            description=config.get("description", ""),
-            permalink=self.get_permalink(prompt_path),
+            name=test_config.get("name", test_name.replace("_", " ").title()),
+            description=test_config.get("description", ""),
+            permalink=self.get_permalink(prompt_path) if prompt_path.exists() else "",
             version=version,
             prompt_number=prompt_version,
         )
@@ -282,10 +297,17 @@ class PromptRegistry:
     def get_pydantic_model(self, test_name: str) -> Type[BaseModel]:
         """Get or create a Pydantic model from the JSON schema."""
         if test_name not in self._model_cache:
-            schema = self.get_schema(test_name)
-            self._model_cache[test_name] = self.generate_pydantic_model_from_schema(
-                schema, test_name
-            )
+            try:
+                schema = self.get_schema(test_name)
+                self._model_cache[test_name] = self.generate_pydantic_model_from_schema(
+                    schema, test_name
+                )
+            except FileNotFoundError:
+                # If schema not found, create a simple default model
+                self._model_cache[test_name] = create_model(
+                    f"{test_name.title().replace('_', '')}Model",
+                    outputs=(List[Dict[str, Any]], ...),
+                )
 
         return self._model_cache[test_name]
 

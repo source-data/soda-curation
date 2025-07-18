@@ -5,6 +5,7 @@ This module loads configuration and runs the QC tests specified in the config.
 """
 
 import argparse
+import enum
 import importlib
 import json
 import logging
@@ -14,6 +15,7 @@ from typing import Any, Dict
 
 from ..config import ConfigurationLoader
 from ..data_storage import load_figure_data, load_zip_structure
+from .prompt_registry import registry
 from .qc_pipeline import QCPipeline
 
 # Set up logging
@@ -21,163 +23,134 @@ logging.basicConfig(
     level=logging.INFO,  # Set to DEBUG to see debug logs
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
+
 logger = logging.getLogger(__name__)
 
 
-def load_test_modules(config: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Dynamically load QC test modules based on configuration.
+class EnumAwareJSONEncoder(json.JSONEncoder):
+    """JSON Encoder that can handle enum values."""
 
-    Args:
-        config: Configuration dictionary with QC test settings
-
-    Returns:
-        Dictionary of initialized test modules
-    """
-    test_modules = {}
-
-    # Only process if pipeline key exists in config
-    if "pipeline" not in config:
-        logger.warning("No 'pipeline' section found in config")
-        return test_modules
-
-    # Iterate through pipeline items to find test modules
-    for test_name, test_config in config["pipeline"].items():
-        # Try to import the corresponding module from qc_tests
-        try:
-            # Convert snake_case to CamelCase for class name
-            class_name = (
-                "".join(word.capitalize() for word in test_name.split("_")) + "Analyzer"
-            )
-            module_name = f".qc_tests.{test_name}"
-
-            # Check if module exists
-            try:
-                module = importlib.import_module(
-                    module_name, package="soda_curation.qc"
-                )
-
-                # Get the analyzer class
-                if hasattr(module, class_name):
-                    analyzer_class = getattr(module, class_name)
-                    test_modules[test_name] = analyzer_class(config)
-                    logger.info(f"Loaded test module: {test_name}")
-                else:
-                    logger.warning(
-                        f"Module {test_name} found but analyzer class {class_name} not found"
-                    )
-            except ModuleNotFoundError:
-                logger.warning(
-                    f"Test module {test_name} specified in config but not found in qc_tests"
-                )
-
-        except Exception as e:
-            logger.error(f"Error loading test module {test_name}: {str(e)}")
-
-    return test_modules
+    def default(self, obj):
+        if isinstance(obj, enum.Enum):
+            return obj.value
+        return super().default(obj)
 
 
 def main():
-    """Run QC pipeline with specified configuration."""
-    parser = argparse.ArgumentParser(description="Run QC pipeline")
+    """Run the main function for the QC pipeline."""
+    parser = argparse.ArgumentParser(description="Run the QC pipeline")
     parser.add_argument(
-        "--config", default="config.qc.yaml", help="Path to QC configuration file"
+        "--config",
+        type=str,
+        default="config.qc.yaml",
+        help="Path to config file (default: config.qc.yaml)",
     )
     parser.add_argument(
-        "--figure-data",
-        default="data/development/figure_data.json",
-        help="Path to saved figure data",
-    )
-    parser.add_argument(
-        "--zip-structure",
-        default="data/development/zip_structure.pickle",
-        help="Path to saved zip structure",
-    )
-    parser.add_argument(
-        "--extract-dir", default="data/extract", help="Path to extraction directory"
+        "--extract-dir",
+        type=str,
+        default="data/extract",
+        help="Path to extract directory (default: data/extract)",
     )
     parser.add_argument(
         "--output",
+        type=str,
         default="data/output/qc_results.json",
-        help="Path to save QC results",
+        help="Path to output file (default: data/output/qc_results.json)",
+    )
+    parser.add_argument(
+        "--figure-data",
+        type=str,
+        help="Path to figure data JSON file (optional, will be generated if not provided)",
+    )
+    parser.add_argument(
+        "--zip-structure",
+        type=str,
+        help="Path to zip structure pickle file (optional, will be generated if not provided)",
     )
     args = parser.parse_args()
 
-    # Get absolute paths
-    cwd = Path.cwd()
-    figure_data_path = Path(args.figure_data)
-    zip_structure_path = Path(args.zip_structure)
-    extract_dir = Path(args.extract_dir)
-    config_path = Path(args.config)
-    output_path = Path(args.output)
-
-    # Make absolute if not already
-    if not figure_data_path.is_absolute():
-        figure_data_path = cwd / figure_data_path
-    if not zip_structure_path.is_absolute():
-        zip_structure_path = cwd / zip_structure_path
-    if not extract_dir.is_absolute():
-        extract_dir = cwd / extract_dir
-    if not config_path.is_absolute():
-        config_path = cwd / config_path
-    if not output_path.is_absolute():
-        output_path = cwd / output_path
-
-    logger.info(f"Using figure data from: {figure_data_path}")
-    logger.info(f"Using zip structure from: {zip_structure_path}")
-    logger.info(f"Using config from: {config_path}")
-
-    # Make sure output directory exists
-    os.makedirs(output_path.parent, exist_ok=True)
+    # Log the paths
+    logger.info("Using figure data from: %s", args.figure_data)
+    logger.info("Using zip structure from: %s", args.zip_structure)
+    logger.info("Using config from: %s", args.config)
 
     # Load configuration
-    config_loader = ConfigurationLoader(str(config_path))
-    config = config_loader.config
+    try:
+        # Try loading with ConfigurationLoader if it has the right method
+        config = ConfigurationLoader.load_from_file(args.config)
+    except (AttributeError, ImportError):
+        # Fall back to direct YAML loading
+        import yaml
 
-    # Load saved data
-    figure_data = load_figure_data(str(figure_data_path))
-    zip_structure = load_zip_structure(str(zip_structure_path))
+        with open(args.config, "r") as config_file:
+            config = yaml.safe_load(config_file)
 
-    if not figure_data:
-        logger.error(f"Failed to load figure data from {figure_data_path}")
+    # Load figure data and zip structure
+    figure_data = None
+    zip_structure = None
+
+    if args.figure_data:
+        figure_data = load_figure_data(args.figure_data)
+
+    if args.zip_structure:
+        zip_structure = load_zip_structure(args.zip_structure)
+
+    # Check if both figure_data and zip_structure are loaded
+    if not figure_data or not zip_structure:
+        logger.error("Both figure_data and zip_structure are required")
         return
-    if not zip_structure:
-        logger.error(f"Failed to load zip structure from {zip_structure_path}")
-        return
 
-    logger.info(f"Loaded {len(figure_data)} figures from saved data")
+    # Log the number of figures
+    logger.info("Loaded %d figures from saved data", len(figure_data))
 
-    # Run QC pipeline
+    # Create output directory if it doesn't exist
+    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Run the QC pipeline
     logger.info("Starting QC pipeline")
-    qc_pipeline = QCPipeline(config, extract_dir)
+    qc_pipeline = QCPipeline(config, args.extract_dir)
 
     logger.info("Running QC pipeline")
-    qc_results = qc_pipeline.run(zip_structure, figure_data, unified_output=True)
+    qc_results = qc_pipeline.run(zip_structure, figure_data)
 
-    # Save results to JSON file
-    with open(output_path, "w") as f:
-        json.dump(qc_results, f, indent=2)
-    logger.info(f"QC results saved to {output_path}")
+    # Log the results structure
+    logger.info("QC results structure: %s", qc_results.keys())
 
-    # Print summary
-    logger.info(
-        f"QC pipeline completed with status: {qc_results.get('qc_status', 'unknown')}"
-    )
-    logger.info(f"Processed {qc_results.get('figures_processed', 0)} figures")
+    # Add permalinks from the prompt registry to the output
+    if "qc_test_metadata" in qc_results:
+        for test_name, metadata in qc_results["qc_test_metadata"].items():
+            try:
+                registry_metadata = registry.get_prompt_metadata(test_name)
+                if registry_metadata and hasattr(registry_metadata, "permalink"):
+                    metadata["permalink"] = registry_metadata.permalink
+            except Exception as e:
+                logger.warning(f"Failed to get metadata for {test_name}: {e}")
 
-    # Show some details of the first few figure results
-    if qc_results.get("figure_results"):
-        figure_results = qc_results["figure_results"]
-        for i, figure_result in enumerate(figure_results):  # Show first 3
-            figure_label = figure_result["figure_label"]
-            qc_status = figure_result["qc_status"]
-            logger.info(f"Figure {figure_label} QC status: {qc_status}")
+    # Log the number of figures and panels
+    if "figures" in qc_results:
+        logger.info("Number of figures: %d", len(qc_results["figures"]))
+        for figure_id, figure in qc_results["figures"].items():
+            logger.info(
+                "Figure %s has %d panels", figure_id, len(figure.get("panels", []))
+            )
 
-            # Log summary of each QC check for this figure
-            qc_checks = figure_result.get("qc_checks", {})
-            for check_name, check_result in qc_checks.items():
-                passed = check_result.get("passed", False)
-                logger.info(f"  - {check_name}: {'Passed' if passed else 'Failed'}")
+    # Save the results to a JSON file
+    with open(args.output, "w") as f:
+        json.dump(qc_results, f, indent=2, cls=EnumAwareJSONEncoder)
+
+    logger.info("QC results saved to %s", args.output)
+
+    # Report final status
+    if "status" in qc_results:
+        logger.info("QC pipeline completed with status: %s", qc_results["status"])
+    else:
+        logger.info("QC pipeline completed with status: unknown")
+
+    if "figures" in qc_results:
+        logger.info("Processed %d figures", len(qc_results["figures"]))
+    else:
+        logger.info("Processed 0 figures")
 
 
 if __name__ == "__main__":

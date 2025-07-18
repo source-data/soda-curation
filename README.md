@@ -495,6 +495,13 @@ poetry run python -m src.soda_curation.qc.main \
   --figure-data data/output/your_figure_data.json \
   --zip-structure data/output/your_zip_structure.pickle \
   --output data/output/qc_results.json
+
+poetry run python -m src.soda_curation.qc.main \
+  --config config.qc.yaml \
+  --figure-data data/development/figure_data.json \
+  --zip-structure data/development/zip_structure.pickle \
+  --output data/output/qc_results.json
+
 ```
 
 ### Output Example (Top Level)
