@@ -13,7 +13,8 @@ packages = [{include = "soda_curation", from = "src"}]
 repository = "https://github.com/source-data/soda-curation"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.9.7 || >3.9.7,<3.11"  # Exclude Python 3.9.7openai = "^1.43.0"
+python = ">=3.9,<3.9.7 || >3.9.7,<3.11"  # Exclude Python 3.9.7
+openai = "^1.43.0"
 pyyaml = "^6.0.2"
 python-docx = "^0.8.11"
 PyPDF2 = "^3.0.0"

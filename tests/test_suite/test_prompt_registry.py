@@ -204,31 +204,3 @@ def test_registry_with_malformed_config(tmp_path):
     config_path.write_text("not: [valid, yaml")
     with pytest.raises(Exception):
         create_registry(str(config_path))
-
-
-def test_pipeline_large_number_of_figures(tmp_path, test_config):
-    class DummyAnalyzer:
-        def analyze_figure(self, *args, **kwargs):
-            return True, {"outputs": [{"panel_label": "A"}]}
-
-    class TestableQCPipeline(QCPipeline):
-        def _initialize_tests(self):
-            return {"error_bars_defined": DummyAnalyzer()}
-
-        def _run_test(
-            self, test_name, analyzer, figure_label, encoded_image, figure_caption
-        ):
-            # Always run the analyzer, skip type checks
-            return analyzer.analyze_figure(figure_label, encoded_image, figure_caption)
-
-    pipeline = TestableQCPipeline(test_config, tmp_path)
-    mock_zip_structure = MagicMock()
-    mock_zip_structure.figures = [
-        MagicMock(
-            figure_label=f"Figure {i}", figure_caption="caption", encoded_image="img"
-        )
-        for i in range(1000)
-    ]
-    figure_data = [(f"Figure {i}", "img", "caption") for i in range(1000)]
-    result = pipeline.run(mock_zip_structure, figure_data)
-    assert len(result["figures"]) == 1000

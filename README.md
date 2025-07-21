@@ -508,11 +508,54 @@ poetry run python -m src.soda_curation.qc.main \
 
 poetry run python -m src.soda_curation.qc.main \
   --config config.qc.yaml \
-  --figure-data data/development/figure_data.json \
-  --zip-structure data/development/zip_structure.pickle \
+  --figure-data data/output/EMM-2023-18636_figure_data.json \
+  --zip-structure data/output/EMM-2023-18636_zip_structure.pickle \
   --output data/output/qc_results.json
 
 ```
+
+### Debugging QC Results
+
+The debug visualizer helps you inspect what the AI is analyzing by extracting figure images and captions for visual inspection.
+
+#### Extract Figure Images
+
+```bash
+# Extract all figures from a dataset
+poetry run python -m src.soda_curation.debug_visualizer \
+  data/output/EMM-2023-18636_figure_data.json \
+  --output-dir data/debug_images \
+  --prefix EMM-2023-18636
+
+# Just analyze image properties without extracting
+poetry run python -m src.soda_curation.debug_visualizer \
+  data/output/EMM-2023-18636_figure_data.json \
+  --analyze
+```
+
+#### Analyze QC Results Quality
+
+Compare QC results against actual figure content to identify potential issues:
+
+```bash
+# Run QC analysis to identify issues
+poetry run python -m src.soda_curation.qc_analysis \
+  data/output/qc_results.json \
+  data/output/EMM-2023-18636_figure_data.json \
+  --report data/debug_images/qc_analysis_report.html
+```
+
+**Debug outputs include:**
+- **Individual PNG files** - Exact images the AI analyzes
+- **Caption text files** - Complete captions for each figure  
+- **HTML summary** - Browser-viewable overview of all figures
+- **QC analysis report** - Detailed comparison of QC results vs actual content
+
+This helps identify issues like:
+- Missing statistical notation detection (`mean ± SD`)
+- Incorrect sample size parsing (`n=3`)
+- Caption parsing failures
+- Panel identification problems
 
 ### Output Example (Top Level)
 
