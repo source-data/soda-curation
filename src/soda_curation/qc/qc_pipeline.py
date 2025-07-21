@@ -277,6 +277,22 @@ class QCPipeline:
             else:
                 outputs = result.get("outputs", [])
 
+        # Handle empty outputs
+        if not outputs:
+            self.qc_results["figures"][figure_id]["panels"].append(
+                {
+                    "panel_label": "unknown",
+                    "qc_tests": [
+                        {
+                            "test_name": test_name,
+                            "passed": passed,
+                            "model_output": "No outputs",
+                        }
+                    ],
+                }
+            )
+            return
+
         # Process each panel in the outputs
         for panel in outputs:
             # Find or create panel entry
@@ -309,23 +325,18 @@ class QCPipeline:
 
             # Add model output - convert to dict if needed
             if hasattr(panel, "model_dump"):
-                # For Pydantic v2+
                 panel_dict = panel.model_dump()
-                # Convert enum values to strings
                 for key, value in panel_dict.items():
-                    if hasattr(value, "value"):  # Check if it's an enum
+                    if hasattr(value, "value"):
                         panel_dict[key] = value.value
                 test_obj["model_output"] = panel_dict
             elif hasattr(panel, "dict"):
-                # For Pydantic v1
                 panel_dict = panel.dict()
-                # Convert enum values to strings
                 for key, value in panel_dict.items():
-                    if hasattr(value, "value"):  # Check if it's an enum
+                    if hasattr(value, "value"):
                         panel_dict[key] = value.value
                 test_obj["model_output"] = panel_dict
             elif isinstance(panel, dict):
-                # Already a dict
                 test_obj["model_output"] = panel
 
             # Add test to panel

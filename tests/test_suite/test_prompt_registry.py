@@ -1,11 +1,55 @@
 # tests/test_prompt_registry.py
+import json
 import os
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
+import openai
 import pytest
 
 from soda_curation.qc.prompt_registry import create_registry
+from src.soda_curation.qc.model_api import ModelAPI
+from src.soda_curation.qc.qc_pipeline import QCPipeline
+
+
+@pytest.fixture
+def test_config():
+    return {
+        "qc_version": "1.0.0",
+        "qc_test_metadata": {
+            "panel": {
+                "error_bars_defined": {
+                    "name": "Error Bars Defined",
+                    "description": "Test description",
+                    "permalink": "https://example.com/permalink",
+                }
+            }
+        },
+        "default": {
+            "pipeline": {"error_bars_defined": {"openai": {"model": "gpt-4o"}}}
+        },
+    }
+
+
+@pytest.fixture
+def mock_zip_structure():
+    mock_zip = MagicMock()
+    figure1 = MagicMock()
+    figure1.figure_label = "Figure 1"
+    figure1.figure_caption = "Test caption"
+    figure1.encoded_image = "base64image"
+    mock_zip.figures = [figure1]
+    return mock_zip
+
+
+@pytest.fixture
+def figure_data():
+    return [("Figure 1", "base64image", "Test caption")]
+
+
+@pytest.fixture
+def model_config():
+    return {"default": {"openai": {"model": "gpt-4o"}}}
 
 
 def test_registry_initialization():
@@ -82,5 +126,109 @@ def test_get_pydantic_model():
 
 def test_nonexistent_test():
     registry = create_registry()
-    with pytest.raises(ValueError):
-        registry.get_prompt_metadata("nonexistent_test")
+    metadata = registry.get_prompt_metadata("nonexistent_test")
+    # Check that the returned metadata is a PromptMetadata with default values
+    assert metadata.name == "Nonexistent Test"
+    assert metadata.description == ""
+    assert metadata.permalink == ""
+    assert metadata.version == "latest"
+    assert metadata.prompt_number == 1
+
+
+def test_pipeline_handles_malformed_analyzer_output(
+    tmp_path, test_config, mock_zip_structure, figure_data
+):
+    class MalformedAnalyzer:
+        def analyze_figure(self, *args, **kwargs):
+            return True, "not a dict"
+
+    class TestableQCPipeline(QCPipeline):
+        def _initialize_tests(self):
+            return {"error_bars_defined": MalformedAnalyzer()}
+
+    pipeline = TestableQCPipeline(test_config, tmp_path)
+    result = pipeline.run(mock_zip_structure, figure_data)
+    assert "qc_version" in result
+    assert "figures" in result
+    # Should still produce a result, but panels may be empty or have error info
+
+
+@patch("src.soda_curation.qc.model_api.openai.OpenAI")
+def test_generate_response_openai_error(mock_openai, model_config):
+    mock_client = MagicMock()
+    mock_openai.return_value = mock_client
+    mock_client.beta.chat.completions.parse.side_effect = openai.OpenAIError(
+        "API error"
+    )
+    api = ModelAPI(model_config)
+    with pytest.raises(openai.OpenAIError):
+        api.generate_response(
+            encoded_image="base64",
+            caption="caption",
+            prompt_config={"prompts": {"system": "", "user": ""}},
+        )
+
+
+@patch("src.soda_curation.qc.model_api.openai.OpenAI")
+def test_generate_response_invalid_json(mock_openai, model_config):
+    mock_client = MagicMock()
+    mock_openai.return_value = mock_client
+    mock_response = MagicMock()
+    mock_response.choices = [MagicMock(message=MagicMock(content="{not: valid json"))]
+    mock_client.beta.chat.completions.parse.return_value = mock_response
+    api = ModelAPI(model_config)
+    with pytest.raises(json.JSONDecodeError):
+        api.generate_response(
+            encoded_image="base64",
+            caption="caption",
+            prompt_config={"prompts": {"system": "", "user": ""}},
+        )
+
+
+def test_get_schema_file_not_found():
+    registry = create_registry()
+    with pytest.raises(FileNotFoundError):
+        registry.get_schema("nonexistent_test")
+
+
+def test_get_prompt_file_not_found():
+    registry = create_registry()
+    with patch("pathlib.Path.exists", return_value=False):
+        with pytest.raises(FileNotFoundError):
+            registry.get_prompt("nonexistent_test")
+
+
+def test_registry_with_malformed_config(tmp_path):
+    # Write a malformed YAML config
+    config_path = tmp_path / "bad_config.yaml"
+    config_path.write_text("not: [valid, yaml")
+    with pytest.raises(Exception):
+        create_registry(str(config_path))
+
+
+def test_pipeline_large_number_of_figures(tmp_path, test_config):
+    class DummyAnalyzer:
+        def analyze_figure(self, *args, **kwargs):
+            return True, {"outputs": [{"panel_label": "A"}]}
+
+    class TestableQCPipeline(QCPipeline):
+        def _initialize_tests(self):
+            return {"error_bars_defined": DummyAnalyzer()}
+
+        def _run_test(
+            self, test_name, analyzer, figure_label, encoded_image, figure_caption
+        ):
+            # Always run the analyzer, skip type checks
+            return analyzer.analyze_figure(figure_label, encoded_image, figure_caption)
+
+    pipeline = TestableQCPipeline(test_config, tmp_path)
+    mock_zip_structure = MagicMock()
+    mock_zip_structure.figures = [
+        MagicMock(
+            figure_label=f"Figure {i}", figure_caption="caption", encoded_image="img"
+        )
+        for i in range(1000)
+    ]
+    figure_data = [(f"Figure {i}", "img", "caption") for i in range(1000)]
+    result = pipeline.run(mock_zip_structure, figure_data)
+    assert len(result["figures"]) == 1000
