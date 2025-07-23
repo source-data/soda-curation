@@ -66,7 +66,7 @@ def test_get_prompt_metadata():
     assert metadata.description is not None
     assert metadata.permalink is not None
     assert metadata.version is not None  # Changed from prompt_version to version
-    assert metadata.prompt_number is not None  # Add check for prompt_number
+    assert metadata.prompt_file is not None  # Check for prompt_file instead
 
 
 def test_get_prompt():
@@ -132,7 +132,7 @@ def test_nonexistent_test():
     assert metadata.description == ""
     assert metadata.permalink == ""
     assert metadata.version == "latest"
-    assert metadata.prompt_number == 1
+    assert metadata.prompt_file == "prompt.1.txt"  # Default prompt file
 
 
 def test_pipeline_handles_malformed_analyzer_output(
