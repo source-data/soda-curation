@@ -1,4 +1,4 @@
-qc_version: "2.3.0"
+qc_version: "2.3.1"
 qc_check_metadata:
   panel:
     plot_axis_units:

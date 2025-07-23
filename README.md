@@ -551,7 +551,7 @@ poetry run python -m src.soda_curation.qc.main \
 
 4. **Enhanced metadata integration**: Automatic enrichment from `benchmark.json` files in mmQC repository
 
-5. **Version bump**: Updated `qc_version` to "2.3.0" to reflect major improvements
+5. **Version bump**: Updated `qc_version` to "2.3.1" to reflect major improvements and bug fixes
 
 **Migration Guide**: If upgrading from v2.2.x or earlier, simply remove all `example_class` fields from your `config.qc.yaml`. The system will automatically detect the correct analyzer types using the new schema-based detection.
 
@@ -602,7 +602,7 @@ This helps identify issues like:
 
 ```json
 {
-  "qc_version": "2.3.0",
+  "qc_version": "2.3.1",
   "qc_test_metadata": {
     "plot_axis_units": {"name": "Plot Axis Units", ...},
     "error_bars_defined": {"name": "Error Bars Defined", ...}
@@ -701,6 +701,13 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 2.3.1 (2025-07-23)
+- **Bug Fix**: Fixed CI test failures in `test_prompt_registry.py` due to incorrect attribute references
+- **Test Fix**: Updated tests to use `prompt_file` instead of non-existent `prompt_number` attribute in PromptMetadata
+- **Docker Fix**: Ensured Docker environment properly builds with ultralytics/YOLOv10 dependencies
+- **Quality Assurance**: All 245 tests now passing in Docker environment
+- **CI/CD**: Resolved build failures that were blocking continuous integration
 
 ### 2.3.0 (2025-07-23)
 - **Major QC Pipeline Enhancement**: Implemented schema-based analyzer detection
