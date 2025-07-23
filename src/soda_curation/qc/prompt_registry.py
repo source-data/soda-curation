@@ -21,7 +21,15 @@ class PromptMetadata(NamedTuple):
     description: str
     permalink: str
     version: str
-    prompt_number: int
+    prompt_file: str  # Added to store the actual prompt filename
+
+
+class BenchmarkMetadata(NamedTuple):
+    """Metadata from benchmark.json file."""
+
+    name: str
+    description: str
+    examples: List[str]
 
 
 class ChecklistType(str, Enum):
@@ -45,6 +53,9 @@ class PromptRegistry:
         )
         self.base_data_path = self.mmqc_path / "soda_mmqc" / "data" / "checklist"
         self._model_cache: Dict[str, Type[BaseModel]] = {}
+        self._benchmark_cache: Dict[
+            str, BenchmarkMetadata
+        ] = {}  # Cache for benchmark data
         self.config = config or {}
         self._module_cache = {}
 
@@ -62,8 +73,8 @@ class PromptRegistry:
 
         # Build test_name to checklist_type mapping
         self._test_mapping = {}
-        if "qc_test_metadata" in self.config:
-            for level, level_tests in self.config["qc_test_metadata"].items():
+        if "qc_check_metadata" in self.config:
+            for level, level_tests in self.config["qc_check_metadata"].items():
                 if isinstance(level_tests, dict):
                     for test_name, metadata in level_tests.items():
                         if isinstance(metadata, dict) and "checklist_type" in metadata:
@@ -71,9 +82,9 @@ class PromptRegistry:
 
     def get_test_config(self, test_name: str) -> Dict[str, Any]:
         """Get configuration for a specific test."""
-        if "qc_test_metadata" in self.config:
+        if "qc_check_metadata" in self.config:
             # Search in each level (panel, figure, document)
-            for level, level_tests in self.config["qc_test_metadata"].items():
+            for level, level_tests in self.config["qc_check_metadata"].items():
                 if isinstance(level_tests, dict) and test_name in level_tests:
                     return level_tests[test_name]
         return {}
@@ -81,6 +92,18 @@ class PromptRegistry:
     def get_prompt_version(self, test_name: str) -> int:
         """Get the prompt version for a test from config."""
         return self.get_test_config(test_name).get("prompt_version", 1)
+
+    def get_prompt_file(self, test_name: str) -> str:
+        """Get the prompt filename for a test from config. Falls back to prompt.{version}.txt if not specified."""
+        test_config = self.get_test_config(test_name)
+
+        # First check if a specific prompt_file is specified
+        if "prompt_file" in test_config:
+            return test_config["prompt_file"]
+
+        # Fall back to the old version-based naming
+        version = test_config.get("prompt_version", 1)
+        return f"prompt.{version}.txt"
 
     def get_checklist_type(self, test_name: str) -> str:
         """Get the checklist type for a test."""
@@ -101,20 +124,46 @@ class PromptRegistry:
         """Convert snake_case to kebab-case for soda-mmQC directory names."""
         return test_name.replace("_", "-")
 
+    def get_benchmark_metadata(self, test_name: str) -> Optional[BenchmarkMetadata]:
+        """Get benchmark metadata for a test from benchmark.json file."""
+        if test_name in self._benchmark_cache:
+            return self._benchmark_cache[test_name]
+
+        checklist_type = self.get_checklist_type(test_name)
+        mmqc_test_name = self.get_mmqc_test_name(test_name)
+
+        checklist_path = self.get_checklist_path(checklist_type)
+        benchmark_path = checklist_path / mmqc_test_name / "benchmark.json"
+
+        if not benchmark_path.exists():
+            self._benchmark_cache[test_name] = None
+            return None
+
+        try:
+            benchmark_data = json.loads(benchmark_path.read_text(encoding="utf-8"))
+            metadata = BenchmarkMetadata(
+                name=benchmark_data.get("name", test_name),
+                description=benchmark_data.get("description", ""),
+                examples=benchmark_data.get("examples", []),
+            )
+            self._benchmark_cache[test_name] = metadata
+            return metadata
+        except (json.JSONDecodeError, KeyError):
+            self._benchmark_cache[test_name] = None
+            return None
+
     def get_prompt(self, test_name: str) -> str:
         """Get the prompt for a test based on config settings."""
         checklist_type = self.get_checklist_type(test_name)
         mmqc_test_name = self.get_mmqc_test_name(test_name)
-        prompt_version = self.get_prompt_version(test_name)
+        prompt_file = self.get_prompt_file(test_name)
 
         checklist_path = self.get_checklist_path(checklist_type)
-        prompt_path = (
-            checklist_path / mmqc_test_name / "prompts" / f"prompt.{prompt_version}.txt"
-        )
+        prompt_path = checklist_path / mmqc_test_name / "prompts" / prompt_file
 
         if not prompt_path.exists():
             raise FileNotFoundError(
-                f"Prompt {prompt_version} not found for test {test_name}"
+                f"Prompt file '{prompt_file}' not found for test {test_name} at {prompt_path}"
             )
 
         return prompt_path.read_text(encoding="utf-8")
@@ -180,17 +229,15 @@ class PromptRegistry:
                 description="",
                 permalink="",
                 version="latest",
-                prompt_number=1,
+                prompt_file="prompt.1.txt",  # Default to version 1
             )
 
         checklist_type = self.get_checklist_type(test_name)
         mmqc_test_name = self.get_mmqc_test_name(test_name)
-        prompt_version = self.get_prompt_version(test_name)
+        prompt_file = self.get_prompt_file(test_name)
 
         checklist_path = self.get_checklist_path(checklist_type)
-        prompt_path = (
-            checklist_path / mmqc_test_name / "prompts" / f"prompt.{prompt_version}.txt"
-        )
+        prompt_path = checklist_path / mmqc_test_name / "prompts" / prompt_file
 
         # Get version from git if available
         version = "latest"
@@ -205,13 +252,98 @@ class PromptRegistry:
             except Exception:
                 pass
 
+        # Try to get benchmark metadata for more complete information
+        benchmark_metadata = self.get_benchmark_metadata(test_name)
+
+        # Use benchmark description if available, otherwise fall back to config
+        description = test_config.get("description", "")
+        if benchmark_metadata and benchmark_metadata.description:
+            description = benchmark_metadata.description
+
+        # Note: example_class logic removed - now using schema-based type determination
+
         return PromptMetadata(
             name=test_config.get("name", test_name.replace("_", " ").title()),
-            description=test_config.get("description", ""),
+            description=description,
             permalink=self.get_permalink(prompt_path) if prompt_path.exists() else "",
             version=version,
-            prompt_number=prompt_version,
+            prompt_file=prompt_file,
         )
+
+    def determine_test_type_from_model(self, model_class) -> Optional[str]:
+        """Determine test type by inspecting the Pydantic model structure.
+
+        Args:
+            model_class: The generated Pydantic model class
+
+        Returns:
+            'panel' for panel-level tests (list of panels)
+            'figure' for figure-level tests (single result)
+            'document' for document/manuscript tests
+            None if type cannot be determined
+        """
+        try:
+            # Get the model fields
+            if hasattr(model_class, "__fields__"):
+                fields = model_class.__fields__
+            elif hasattr(model_class, "model_fields"):
+                fields = model_class.model_fields
+            else:
+                return None
+
+            # Check if there's an 'outputs' field
+            if "outputs" in fields:
+                outputs_field = fields["outputs"]
+
+                # Get the type information
+                if hasattr(outputs_field, "type_"):
+                    field_type = outputs_field.type_
+                elif hasattr(outputs_field, "annotation"):
+                    field_type = outputs_field.annotation
+                else:
+                    return None
+
+                # Check if it's a List type (indicates panel-level)
+                if hasattr(field_type, "__origin__") and field_type.__origin__ is list:
+                    # Further inspect the list items to distinguish panel vs document
+                    if hasattr(field_type, "__args__") and field_type.__args__:
+                        item_type = field_type.__args__[0]
+
+                        # Check if the list items have 'panel_label' field (panel-level)
+                        if hasattr(item_type, "__fields__"):
+                            item_fields = item_type.__fields__
+                        elif hasattr(item_type, "model_fields"):
+                            item_fields = item_type.model_fields
+                        else:
+                            item_fields = {}
+
+                        if "panel_label" in item_fields:
+                            return "panel"
+                        elif any(
+                            keyword in str(item_fields).lower()
+                            for keyword in ["section", "manuscript", "document"]
+                        ):
+                            return "document"
+                        else:
+                            return "panel"  # Default for list types
+
+                # Single object output (figure-level)
+                else:
+                    return "figure"
+
+            # Check for document-specific indicators in field names
+            field_names = list(fields.keys())
+            if any(
+                keyword in " ".join(field_names).lower()
+                for keyword in ["section", "manuscript", "document"]
+            ):
+                return "document"
+
+            return None
+
+        except Exception:
+            # Error in determining test type from model, falling back to other methods
+            return None
 
     def generate_pydantic_model_from_schema(
         self, schema: Dict[str, Any], model_name: str

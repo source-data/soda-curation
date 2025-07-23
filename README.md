@@ -489,13 +489,15 @@ docker-compose run --rm format
 The QC pipeline provides automated, configurable, and extensible quality assessment of scientific figures and data presentation. It can be run independently or as part of the main curation workflow.
 
 ### Key Features
+- **Schema-based analyzer detection**: Automatically determines test types (panel/figure/document) by analyzing Pydantic model structures from schemas
+- **Intelligent fallback logic**: Uses schema analysis first, then config-based detection, then naming conventions
 - **Config-driven test metadata and versioning**: All test names, descriptions, and permalinks are defined in `config.qc.yaml`.
-- **Unified and legacy output**: Both output formats include `qc_test_metadata` and `qc_version` fields.
-- **Accurate test status**: The `passed` field is `null` when a test is not needed.
-- **Easy extensibility**: Add new tests by updating the config and adding a new analyzer module.
-- **Permalinks for each test**: Output includes direct links to test documentation/prompts.
-- **Hierarchical test organization**: Tests can be defined at panel, figure, or document level.
-- **Generic test implementation**: New tests can be added without writing custom code.
+- **Flexible prompt file naming**: Supports arbitrary prompt filenames (e.g., `prompt.3.txt`, `custom_prompt.txt`) instead of fixed naming
+- **Benchmark.json metadata integration**: Enriches test metadata with descriptions and examples from mmQC repository
+- **Word document processing**: ManuscriptQCAnalyzer can process actual Word documents for document-level analysis
+- **Unified output format**: Uses `qc_checks` and `check_name` structure with enhanced metadata
+- **Hierarchical test organization**: Tests can be defined at panel, figure, or document level
+- **Generic test implementation**: New tests can be added without writing custom code
 
 ### Running the QC Pipeline
 
@@ -513,6 +515,45 @@ poetry run python -m src.soda_curation.qc.main \
   --output data/output/qc_results.json
 
 ```
+
+### Configuration Changes (v2.3.0)
+
+**Major configuration improvements** in `config.qc.yaml`:
+
+1. **Removed `example_class` dependency**: The system now automatically detects analyzer types using schema analysis
+   ```yaml
+   # OLD (no longer needed):
+   qc_check_metadata:
+     panel:
+       plot_axis_units:
+         example_class: "panel"  # ← REMOVED
+   
+   # NEW (automatic detection):
+   qc_check_metadata:
+     panel:
+       plot_axis_units:
+         name: "Plot Axis Units"  # ← Clean, simple
+   ```
+
+2. **Schema-based type detection**: Analyzer types are automatically determined by analyzing Pydantic models:
+   - **Panel-level**: Schemas with lists containing `panel_label` fields
+   - **Figure-level**: Schemas with object structures (no lists)
+   - **Document-level**: Schemas with document-related fields (`sections`, `abstract`, etc.)
+
+3. **Flexible prompt naming**: Support for arbitrary prompt filenames:
+   ```yaml
+   # Supports any naming pattern:
+   # - prompt.1.txt
+   # - prompt.3.txt  
+   # - custom_prompt.txt
+   # - my_analysis_prompt.txt
+   ```
+
+4. **Enhanced metadata integration**: Automatic enrichment from `benchmark.json` files in mmQC repository
+
+5. **Version bump**: Updated `qc_version` to "2.3.0" to reflect major improvements
+
+**Migration Guide**: If upgrading from v2.2.x or earlier, simply remove all `example_class` fields from your `config.qc.yaml`. The system will automatically detect the correct analyzer types using the new schema-based detection.
 
 ### Debugging QC Results
 
@@ -561,7 +602,7 @@ This helps identify issues like:
 
 ```json
 {
-  "qc_version": "2.1.0",
+  "qc_version": "2.3.0",
   "qc_test_metadata": {
     "plot_axis_units": {"name": "Plot Axis Units", ...},
     "error_bars_defined": {"name": "Error Bars Defined", ...}
@@ -660,6 +701,18 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 2.3.0 (2025-07-23)
+- **Major QC Pipeline Enhancement**: Implemented schema-based analyzer detection
+- **Schema-Based Type Detection**: Automatically determines panel/figure/document test types by analyzing Pydantic model structures
+- **Intelligent Analyzer Selection**: List schemas with `panel_label` → panel-level, object schemas → figure-level, document fields → document-level
+- **Flexible Prompt File Naming**: Support for arbitrary prompt filenames instead of fixed `prompt.1.txt` pattern
+- **Enhanced Benchmark Integration**: Rich metadata from `benchmark.json` files with automatic description enrichment
+- **Word Document Processing**: ManuscriptQCAnalyzer now processes actual Word documents (.docx) for manuscript analysis
+- **Output Format Modernization**: Updated to `qc_checks`/`check_name` structure removing deprecated `qc_tests`/`test_name`
+- **Robust Fallback Logic**: Schema detection → config-based detection → naming convention fallbacks
+- **Complete Test Coverage**: 26/26 QC tests passing with comprehensive validation
+- **Removed example_class Dependency**: No longer requires manual `example_class` configuration
 
 ### 2.1.0 (2025-07-18)
 - Complete refactoring of the QC pipeline with abstract base classes and factory pattern

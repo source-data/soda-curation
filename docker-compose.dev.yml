@@ -13,6 +13,7 @@ services:
       - DEPLOYMENT_ENV=dev
       - ENVIRONMENT=dev
       - GIT_ACCESS_TOKEN=${GIT_ACCESS_TOKEN}  # Also pass at runtime if needed
+      - SODA_MMQC_PATH=/app/.venv/src/soda-mmQC
     env_file:
       - .env.dev
     volumes:

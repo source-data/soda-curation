@@ -16,7 +16,7 @@ from src.soda_curation.qc.qc_pipeline import QCPipeline
 def test_config():
     return {
         "qc_version": "1.0.0",
-        "qc_test_metadata": {
+        "qc_check_metadata": {
             "panel": {
                 "error_bars_defined": {
                     "name": "Error Bars Defined",

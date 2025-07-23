@@ -58,6 +58,11 @@ def main():
         help="Path to output file (default: data/output/qc_results.json)",
     )
     parser.add_argument(
+        "--word-document",
+        type=str,
+        help="Path to Word document for manuscript analysis",
+    )
+    parser.add_argument(
         "--figure-data",
         type=str,
         help="Path to figure data JSON file (optional, will be generated if not provided)",
@@ -107,6 +112,17 @@ def main():
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Ensure Word document path is set for manuscript analysis
+    word_file_path = (
+        args.word_document
+        or "data/output/240429 EMM  DUSP6 targeting abrogates HER3 R2.docx"
+    )
+    if zip_structure and Path(word_file_path).exists():
+        zip_structure._full_docx = word_file_path
+        logger.info("Word document path set to: %s", word_file_path)
+    elif word_file_path:
+        logger.warning("Word document not found at: %s", word_file_path)
+
     # Run the QC pipeline
     logger.info("Starting QC pipeline")
     qc_pipeline = QCPipeline(config, args.extract_dir)
@@ -118,8 +134,8 @@ def main():
     logger.info("QC results structure: %s", qc_results.keys())
 
     # Add permalinks from the prompt registry to the output
-    if "qc_test_metadata" in qc_results:
-        for test_name, metadata in qc_results["qc_test_metadata"].items():
+    if "qc_check_metadata" in qc_results:
+        for test_name, metadata in qc_results["qc_check_metadata"].items():
             try:
                 registry_metadata = registry.get_prompt_metadata(test_name)
                 if registry_metadata and hasattr(registry_metadata, "permalink"):

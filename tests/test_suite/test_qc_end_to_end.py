@@ -11,32 +11,37 @@ import yaml
 from src.soda_curation.qc.qc_pipeline import QCPipeline
 
 
-class TestQCEndToEnd:
-    """End-to-end tests for the QC pipeline."""
-
-    @pytest.fixture
-    def test_config(self):
-        """Create a test configuration."""
-        return {
-            "qc_version": "1.0.0",
-            "qc_test_metadata": {
-                "panel": {
-                    "error_bars_defined": {
-                        "name": "Error Bars Defined",
-                        "description": "Test description",
-                        "permalink": "https://example.com/permalink",
-                    }
+@pytest.fixture
+def mock_config():
+    """Mock configuration for testing."""
+    return {
+        "qc_version": "1.0.0",
+        "qc_check_metadata": {
+            "panel": {
+                "error_bars_defined": {
+                    "name": "Error Bars Defined",
+                    "description": "Check if error bars are defined.",
+                    "prompt_version": 2,
+                    "checklist_type": "fig-checklist",
                 }
             },
-            "default": {
-                "pipeline": {"error_bars_defined": {"openai": {"model": "gpt-4o"}}}
-            },
-        }
+            "figure": {},
+            "document": {},
+        },
+        "default": {
+            "openai": {"model": "gpt-4o", "temperature": 0.1, "json_mode": True},
+            "pipeline": {"error_bars_defined": {"openai": {"model": "gpt-4o"}}},
+        },
+    }
+
+
+class TestQCEndToEnd:
+    """End-to-end tests for the QC pipeline."""
 
     @patch("src.soda_curation.qc.analyzer_factory.AnalyzerFactory._determine_test_type")
     @patch("src.soda_curation.qc.analyzer_factory.AnalyzerFactory.create_analyzer")
     def test_pipeline_with_mocked_factory(
-        self, mock_create_analyzer, mock_determine_type, test_config, tmp_path
+        self, mock_create_analyzer, mock_determine_type, mock_config, tmp_path
     ):
         """Test QCPipeline with mocked factory."""
         # Set up analyzer factory mocks
@@ -61,20 +66,20 @@ class TestQCEndToEnd:
         figure_data = [("Figure 1", "base64image", "Test caption")]
 
         # Create and run the pipeline
-        pipeline = QCPipeline(test_config, tmp_path)
+        pipeline = QCPipeline(mock_config, tmp_path)
 
         # Create a predetermined output result for direct verification
         expected_result = {
             "qc_version": "1.0.0",
+            "qc_checks": [],
             "figures": {
                 "figure_1": {
                     "panels": [
                         {
                             "panel_label": "A",
-                            "qc_tests": [
+                            "qc_checks": [
                                 {
-                                    "test_name": "error_bars_defined",
-                                    "passed": True,
+                                    "check_name": "error_bars_defined",
                                     "model_output": {"error_bar_on_figure": "yes"},
                                 }
                             ],
@@ -82,11 +87,11 @@ class TestQCEndToEnd:
                     ]
                 }
             },
-            "qc_test_metadata": {
+            "qc_check_metadata": {
                 "error_bars_defined": {
                     "name": "Error Bars Defined",
-                    "description": "Test description",
-                    "permalink": "https://example.com/permalink",
+                    "description": "Check if error bars are defined.",
+                    "permalink": "https://example.com/error_bars_defined",
                 }
             },
             "status": "success",
@@ -105,7 +110,6 @@ class TestQCEndToEnd:
 
             # Verify panels have test results
             panel = result["figures"]["figure_1"]["panels"][0]
-            assert "qc_tests" in panel
-            assert len(panel["qc_tests"]) > 0
-            assert panel["qc_tests"][0]["test_name"] == "error_bars_defined"
-            assert panel["qc_tests"][0]["passed"] is True
+            assert "qc_checks" in panel
+            assert len(panel["qc_checks"]) > 0
+            assert panel["qc_checks"][0]["check_name"] == "error_bars_defined"

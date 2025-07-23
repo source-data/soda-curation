@@ -38,46 +38,63 @@ class ModelAPI:
     )
     def generate_response(
         self,
-        encoded_image: str,
-        caption: str,
         prompt_config: Dict[str, Any],
         response_type: Optional[Type[T]] = None,
+        encoded_image: Optional[str] = None,
+        caption: Optional[str] = None,
+        manuscript_text: Optional[str] = None,
+        word_file_content: Optional[str] = None,
     ) -> Union[Dict[str, Any], T]:
         """
         Generate response from OpenAI using beta.chat.completions.parse.
 
         Args:
-            encoded_image: Base64 encoded image
-            caption: Figure caption
             prompt_config: Prompt configuration with system and user prompts
             response_type: Optional Pydantic model type for parsing response
+            encoded_image: Base64 encoded image (for figure analysis)
+            caption: Figure caption (for figure analysis)
+            manuscript_text: Manuscript text (for document analysis)
+            word_file_content: Word file content (for document analysis)
 
         Returns:
             Response from OpenAI, either as parsed Pydantic model or raw dict
         """
-        # try:
         # Get prompts
         system_prompt = prompt_config.get("prompts", {}).get("system", "")
-        user_prompt = (
-            prompt_config.get("prompts", {})
-            .get("user", "")
-            .replace("$figure_caption", caption)
-        )
+        user_prompt = prompt_config.get("prompts", {}).get("user", "")
 
-        # Create messages
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": user_prompt},
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/png;base64,{encoded_image}"},
-                    },
-                ],
-            },
-        ]
+        # Determine the type of analysis and create appropriate messages
+        if encoded_image is not None and caption is not None:
+            # Figure analysis with image and caption
+            user_prompt = user_prompt.replace("$figure_caption", caption)
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": user_prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{encoded_image}"
+                            },
+                        },
+                    ],
+                },
+            ]
+        elif manuscript_text is not None or word_file_content is not None:
+            # Document/manuscript analysis with text
+            text_content = word_file_content or manuscript_text or ""
+            user_prompt = user_prompt.replace("$manuscript_text", text_content)
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ]
+        else:
+            raise ValueError(
+                "Must provide either (encoded_image + caption) for figure analysis or "
+                "(manuscript_text or word_file_content) for document analysis"
+            )
 
         # Get model parameters
         model_params = {
@@ -110,13 +127,3 @@ class ModelAPI:
             if isinstance(content, str):
                 return json.loads(content)
             return content
-
-        # except openai.OpenAIError as e:
-        #     logger.error(f"OpenAI API error: {str(e)}")
-        #     raise
-        # except json.JSONDecodeError as e:
-        #     logger.error(f"Failed to parse JSON response: {str(e)}")
-        #     raise
-        # except Exception as e:
-        #     logger.error(f"Unexpected error in generate_response: {str(e)}")
-        #     raise

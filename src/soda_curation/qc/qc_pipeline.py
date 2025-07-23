@@ -59,10 +59,10 @@ class QCPipeline:
                 except Exception as e:
                     logger.error(f"Error loading test module {test_name}: {str(e)}")
 
-        # Also look for tests in qc_test_metadata structure
-        if "qc_test_metadata" in self.config:
+        # Also look for tests in qc_check_metadata structure
+        if "qc_check_metadata" in self.config:
             # Check panel-level tests
-            panel_tests = self.config["qc_test_metadata"].get("panel", {})
+            panel_tests = self.config["qc_check_metadata"].get("panel", {})
             if isinstance(panel_tests, dict):
                 for test_name in panel_tests:
                     if test_name not in tests:  # Only if not already loaded
@@ -78,7 +78,7 @@ class QCPipeline:
                             )
 
             # Check figure-level tests
-            figure_tests = self.config["qc_test_metadata"].get("figure", {})
+            figure_tests = self.config["qc_check_metadata"].get("figure", {})
             if isinstance(figure_tests, dict):
                 for test_name in figure_tests:
                     if test_name not in tests:  # Only if not already loaded
@@ -94,7 +94,7 @@ class QCPipeline:
                             )
 
             # Check document-level tests
-            doc_tests = self.config["qc_test_metadata"].get("document", {})
+            doc_tests = self.config["qc_check_metadata"].get("document", {})
             if isinstance(doc_tests, dict):
                 for test_name in doc_tests:
                     if test_name not in tests:  # Only if not already loaded
@@ -184,7 +184,6 @@ class QCPipeline:
                             if "manuscript" not in self.qc_results:
                                 self.qc_results["manuscript"] = {}
                             self.qc_results["manuscript"][test_name] = {
-                                "passed": passed,
                                 "result": result,
                             }
                     else:
@@ -207,8 +206,9 @@ class QCPipeline:
                 "qc_version": self.config.get(
                     "qc_version", "1.0.0"
                 ),  # Version of the QC pipeline
+                "qc_checks": [],
                 "figures": self.qc_results["figures"],
-                "qc_test_metadata": {},
+                "qc_check_metadata": {},
                 "status": pipeline_status,
             }
 
@@ -218,7 +218,7 @@ class QCPipeline:
 
             # Add metadata for each test
             for test_name, test_analyzer in self.tests.items():
-                output["qc_test_metadata"][test_name] = {
+                output["qc_check_metadata"][test_name] = {
                     "name": test_name,
                     "description": "",
                     "permalink": "",
@@ -230,25 +230,30 @@ class QCPipeline:
                     if isinstance(test_analyzer.metadata, dict):
                         # Flatten and add specific fields
                         for key, value in test_analyzer.metadata.items():
-                            output["qc_test_metadata"][test_name][key] = value
+                            output["qc_check_metadata"][test_name][key] = value
                     else:
                         # Add specific fields if they exist
                         if hasattr(test_analyzer.metadata, "name"):
-                            output["qc_test_metadata"][test_name][
+                            output["qc_check_metadata"][test_name][
                                 "name"
                             ] = test_analyzer.metadata.name
                         if hasattr(test_analyzer.metadata, "description"):
-                            output["qc_test_metadata"][test_name][
+                            output["qc_check_metadata"][test_name][
                                 "description"
                             ] = test_analyzer.metadata.description
                         if hasattr(test_analyzer.metadata, "permalink"):
-                            output["qc_test_metadata"][test_name][
+                            output["qc_check_metadata"][test_name][
                                 "permalink"
                             ] = test_analyzer.metadata.permalink
                         if hasattr(test_analyzer.metadata, "version"):
-                            output["qc_test_metadata"][test_name][
+                            output["qc_check_metadata"][test_name][
                                 "version"
                             ] = test_analyzer.metadata.version
+                        if hasattr(test_analyzer.metadata, "prompt_file"):
+                            output["qc_check_metadata"][test_name][
+                                "prompt_file"
+                            ] = test_analyzer.metadata.prompt_file
+                        # Note: example_class removed - now using schema-based type determination
         else:
             output = self.qc_results
             output["status"] = pipeline_status
@@ -282,10 +287,9 @@ class QCPipeline:
             self.qc_results["figures"][figure_id]["panels"].append(
                 {
                     "panel_label": "unknown",
-                    "qc_tests": [
+                    "qc_checks": [
                         {
-                            "test_name": test_name,
-                            "passed": passed,
+                            "check_name": test_name,
                             "model_output": "No outputs",
                         }
                     ],
@@ -314,13 +318,12 @@ class QCPipeline:
 
             # Create new panel if not found
             if not panel_entry:
-                panel_entry = {"panel_label": panel_label, "qc_tests": []}
+                panel_entry = {"panel_label": panel_label, "qc_checks": []}
                 self.qc_results["figures"][figure_id]["panels"].append(panel_entry)
 
             # Create test entry with only essential fields
             test_obj = {
-                "test_name": test_name,
-                "passed": passed,
+                "check_name": test_name,
             }
 
             # Add model output - convert to dict if needed
@@ -340,4 +343,4 @@ class QCPipeline:
                 test_obj["model_output"] = panel
 
             # Add test to panel
-            panel_entry["qc_tests"].append(test_obj)
+            panel_entry["qc_checks"].append(test_obj)

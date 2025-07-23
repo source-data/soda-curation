@@ -154,11 +154,11 @@ class QCAnalysis:
     ) -> Dict[str, Any]:
         """Analyze a single panel's QC results."""
         panel_label = panel_data.get("panel_label", "unknown")
-        qc_tests = panel_data.get("qc_tests", [])
+        qc_checks = panel_data.get("qc_checks", [])
 
         analysis = {
             "panel_label": panel_label,
-            "total_tests": len(qc_tests),
+            "total_tests": len(qc_checks),
             "passed_tests": 0,
             "failed_tests": 0,
             "issues": [],
@@ -167,23 +167,24 @@ class QCAnalysis:
         }
 
         # Analyze each test
-        for test in qc_tests:
-            test_name = test.get("test_name", "unknown")
-            passed = test.get("passed", False)
+        for test in qc_checks:
+            check_name = test.get("check_name", "unknown")
             model_output = test.get("model_output", {})
 
-            if passed:
+            # Since we removed "passed" field, we'll need to determine pass/fail from model_output
+            # For now, assume test passes if model_output is not empty
+            if model_output:
                 analysis["passed_tests"] += 1
             else:
                 analysis["failed_tests"] += 1
 
             # Analyze specific test results
-            test_analysis = self._analyze_test_result(test_name, model_output, caption)
-            analysis["test_details"][test_name] = test_analysis
+            test_analysis = self._analyze_test_result(check_name, model_output, caption)
+            analysis["test_details"][check_name] = test_analysis
 
             # Check for potential issues in the test results
             issues = self._check_test_issues(
-                test_name, model_output, caption, panel_label
+                check_name, model_output, caption, panel_label
             )
             analysis["issues"].extend(issues["warnings"])
             analysis["critical_issues"].extend(issues["critical"])

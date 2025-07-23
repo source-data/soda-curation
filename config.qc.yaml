@@ -1,53 +1,50 @@
-qc_version: "1.1.0"
-qc_test_metadata:
+qc_version: "2.3.0"
+qc_check_metadata:
   panel:
     plot_axis_units:
       name: "Plot Axis Units"
-      description: "Checks whether plot axes have defined units for quantitative data."
-      prompt_version: 3
+      prompt_file: "prompt.3.txt"  # Still supported for backward compatibility
       checklist_type: "fig-checklist"
     stat_test:
       name: "Statistical Test Mentioned"
-      description: "Checks if a statistical test is mentioned when statistical significance is claimed."
-      prompt_version: 4
+      prompt_file: "prompt.4.txt"  # New flexible file naming
       checklist_type: "fig-checklist"
     stat_significance_level:
       name: "Statistical Significance Level Defined"
-      description: "Checks if statistical significance levels (e.g., p-value thresholds, asterisks) are defined in the caption."
-      prompt_version: 2
+      prompt_file: "prompt.2.txt"  # Example of custom filename
       checklist_type: "fig-checklist"
     replicates_defined:
       name: "Replicates Defined"
-      description: "Checks whether the number and type of replicates are explicitly defined in the figure caption."
-      prompt_version: 3
+      prompt_file: "prompt.3.txt" 
       checklist_type: "fig-checklist"
     error_bars_defined:
       name: "Error Bars Defined"
-      description: "Checks whether error bars are defined in the figure caption."
-      prompt_version: 2
+      prompt_file: "prompt.2.txt" 
       checklist_type: "fig-checklist"
     individual_data_points:
       name: "Individual Data Points Displayed"
-      description: "Verifies if individual data points are displayed."
-      prompt_version: 2
+      prompt_file: "prompt.2.txt" 
       checklist_type: "fig-checklist"
     micrograph_scale_bar:
       name: "Micrograph Scale Bar Defined"
-      description: "Checks if a scale bar is included in micrographs."
-      prompt_version: 2
+      prompt_file: "prompt.2.txt" 
       checklist_type: "fig-checklist"
     micrograph_symbols_defined:
       name: "Micrograph Symbols Defined"
-      description: "Checks if symbols (e.g., arrows, circles, stars) are included in micrographs."
-      prompt_version: 3
+      prompt_file: "prompt.3.txt" 
       checklist_type: "fig-checklist"
     plot_gap_labeling:
       name: "Plot Gap Labeling"
-      description: "Checks whether any axis breaks or discontinuities or gaps are clearly indicated with appropriate visual markers on plots."
-      prompt_version: 4
+      prompt_file: "prompt.4.txt" 
       checklist_type: "fig-checklist"
   figure:
+    # Example figure-level tests would go here
   document:
+    # Example document-level test
+    section_order:
+      name: "Manuscript Structure Check"
+      prompt_file: "prompt.2.txt"
+      checklist_type: "doc-checklist"
 
 default: &default
   openai:

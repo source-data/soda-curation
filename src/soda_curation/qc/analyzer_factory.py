@@ -1,9 +1,8 @@
 """Factory for creating QC analyzers."""
 
 import importlib
-import inspect
 import logging
-from typing import Any, Dict, Type
+from typing import Dict, Optional
 
 from .base_analyzers import (
     BaseQCAnalyzer,
@@ -18,75 +17,116 @@ logger = logging.getLogger(__name__)
 
 
 class AnalyzerFactory:
-    """Factory for creating QC analyzers."""
+    """Factory for creating QC analyzers based on test type."""
 
     @classmethod
     def create_analyzer(cls, test_name: str, config: Dict) -> BaseQCAnalyzer:
-        """Create an analyzer based on the test name."""
-        # Try to import a custom module for this test
+        """Create an analyzer for the given test name."""
         try:
+            # Try to load a custom module for this test
             module_name = f"..qc_tests.{test_name}"
-            module = importlib.import_module(module_name, package="soda_curation.qc")
+            analyzer_class = None
 
-            # Convert snake_case to CamelCase for class name
+            # Look for a class named like TestNameAnalyzer
             class_name = (
                 "".join(word.capitalize() for word in test_name.split("_")) + "Analyzer"
             )
 
-            # Get the analyzer class
-            if hasattr(module, class_name):
-                analyzer_class = getattr(module, class_name)
-                return analyzer_class(config)
+            try:
+                # Try to import the module and get the analyzer class
+                module = importlib.import_module(
+                    module_name, package="soda_curation.qc"
+                )
+                analyzer_class = getattr(module, class_name, None)
 
-        except (ModuleNotFoundError, AttributeError) as e:
-            logger.debug(f"No custom module found for {test_name}: {str(e)}")
+                if analyzer_class:
+                    return analyzer_class(config)
 
-        # If no custom module, try to create a generic analyzer based on test type
-        return cls.create_generic_analyzer(test_name, config)
+            except (ImportError, AttributeError) as e:
+                logger.debug(f"No custom module found for {test_name}: {str(e)}")
+
+            # If no custom analyzer found, create a generic one
+            return cls.create_generic_analyzer(test_name, config)
+
+        except Exception as e:
+            logger.error(f"Error creating analyzer for {test_name}: {str(e)}")
+            return cls.create_generic_analyzer(test_name, config)
 
     @classmethod
     def create_generic_analyzer(cls, test_name: str, config: Dict) -> BaseQCAnalyzer:
-        """Create a generic analyzer based on the test configuration."""
-        # Determine the test type from configuration
+        """Create a generic analyzer based on the test type."""
         test_type = cls._determine_test_type(test_name, config)
 
-        # Create the appropriate analyzer
         if test_type == "panel":
             return GenericPanelQCAnalyzer(test_name, config)
         elif test_type == "figure":
             return GenericFigureQCAnalyzer(test_name, config)
-        elif test_type == "document" or test_type == "manuscript":
+        elif test_type in ["document", "manuscript"]:
             return GenericManuscriptQCAnalyzer(test_name, config)
         else:
-            # Default to panel-level if we can't determine
             logger.warning(
                 f"Couldn't determine test type for {test_name}, defaulting to panel-level"
             )
             return GenericPanelQCAnalyzer(test_name, config)
 
     @classmethod
+    def _determine_type_from_schema(cls, test_name: str) -> Optional[str]:
+        """Determine test type by inspecting the generated Pydantic model structure.
+
+        This is much more reliable than parsing raw JSON schemas because we can
+        inspect the actual Python types after model generation.
+        """
+        try:
+            # First check if a real schema exists
+            try:
+                registry.get_schema(test_name)
+                # Schema exists, proceed with model-based detection
+                model_class = registry.get_pydantic_model(test_name)
+                if not model_class:
+                    return None
+
+                # Use the registry's model inspection method
+                return registry.determine_test_type_from_model(model_class)
+            except FileNotFoundError:
+                # No schema found, return None to fall back to config-based detection
+                return None
+
+        except Exception as e:
+            logger.debug(f"Error determining type from model for {test_name}: {str(e)}")
+            return None
+
+    @classmethod
     def _determine_test_type(cls, test_name: str, config: Dict) -> str:
-        """Determine the test type based on config structure and test name."""
-        # First check if the test is in the qc_test_metadata structure
-        if "qc_test_metadata" in config:
+        """Determine the test type based on schema structure, config structure, and test name."""
+
+        # First, try to determine test type from schema structure
+        try:
+            schema_type = cls._determine_type_from_schema(test_name)
+            if schema_type:
+                logger.debug(
+                    f"Determined {test_name} as {schema_type} from schema structure"
+                )
+                return schema_type
+        except Exception as e:
+            logger.debug(
+                f"Could not determine type from schema for {test_name}: {str(e)}"
+            )
+
+        # Second, check if the test is in the qc_check_metadata structure
+        if "qc_check_metadata" in config:
             # Check each level
-            if (
-                "panel" in config["qc_test_metadata"]
-                and test_name in config["qc_test_metadata"]["panel"]
-            ):
+            panel_tests = config["qc_check_metadata"].get("panel", {})
+            if panel_tests and test_name in panel_tests:
                 return "panel"
-            if (
-                "figure" in config["qc_test_metadata"]
-                and test_name in config["qc_test_metadata"]["figure"]
-            ):
+            figure_tests = config["qc_check_metadata"].get("figure", {})
+            if figure_tests and test_name in figure_tests:
                 return "figure"
-            if (
-                "document" in config["qc_test_metadata"]
-                and test_name in config["qc_test_metadata"]["document"]
-            ):
+
+            document_tests = config["qc_check_metadata"].get("document", {})
+            if document_tests and test_name in document_tests:
                 return "document"
 
-        # If not in metadata structure, check if there's an explicit test_type in the test config
+        # Third, check if there's an explicit test_type in the test config
         test_config = config.get("default", {}).get("pipeline", {}).get(test_name, {})
         if "test_type" in test_config:
             return test_config["test_type"]
@@ -178,9 +218,12 @@ class GenericManuscriptQCAnalyzer(ManuscriptQCAnalyzer):
     def analyze(self, *args, **kwargs) -> tuple:
         """Implement the abstract analyze method."""
         if len(args) >= 1:
-            return self.analyze_manuscript(args[0])
+            # Get optional word_file_path from args or kwargs
+            word_file_path = args[1] if len(args) >= 2 else kwargs.get("word_file_path")
+            return self.analyze_manuscript(args[0], word_file_path)
         elif "zip_structure" in kwargs:
-            return self.analyze_manuscript(kwargs["zip_structure"])
+            word_file_path = kwargs.get("word_file_path")
+            return self.analyze_manuscript(kwargs["zip_structure"], word_file_path)
         else:
             logger.error(f"Incorrect arguments for analyze method: {args}, {kwargs}")
             return False, self.create_empty_result()

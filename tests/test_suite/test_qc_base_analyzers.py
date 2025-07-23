@@ -403,15 +403,18 @@ class TestAnalyzerFactory:
     def test_determine_test_type(self):
         """Test determining the test type from config and name."""
         # Test panel level from config
-        config = {"qc_test_metadata": {"panel": {"test1": {}}}}
+        config = {"qc_check_metadata": {"panel": {"test1": {}}}}
         assert AnalyzerFactory._determine_test_type("test1", config) == "panel"
 
         # Test figure level from config
-        config = {"qc_test_metadata": {"figure": {"test2": {}}}}
+        config = {"qc_check_metadata": {"figure": {"test2": {}}}}
+        # Config-based detection should correctly identify figure-level tests
         assert AnalyzerFactory._determine_test_type("test2", config) == "figure"
 
         # Test document level from config
-        config = {"qc_test_metadata": {"document": {"test3": {}}}}
+        config = {"qc_check_metadata": {"document": {"test3": {}}}}
+        # Note: Without schema-based detection, this also falls back to panel (default)
+        # The new schema-based approach will override this when schemas are available
         assert AnalyzerFactory._determine_test_type("test3", config) == "document"
 
         # Test fallback to naming convention
@@ -505,13 +508,15 @@ class TestAnalyzerFactory:
         with patch.object(analyzer, "analyze_manuscript") as mock_analyze:
             mock_analyze.return_value = (True, {})
             result = analyzer.analyze("zip_structure")
-            mock_analyze.assert_called_with("zip_structure")
+            # Note: analyze_manuscript now expects (zip_structure, word_file_path=None)
+            mock_analyze.assert_called_with("zip_structure", None)
 
         # Test analyze method with kwargs
         with patch.object(analyzer, "analyze_manuscript") as mock_analyze:
             mock_analyze.return_value = (True, {})
             result = analyzer.analyze(zip_structure="zip_structure")
-            mock_analyze.assert_called_with("zip_structure")
+            # Note: analyze_manuscript now expects (zip_structure, word_file_path=None)
+            mock_analyze.assert_called_with("zip_structure", None)
 
         # Test analyze method with invalid args
         result = analyzer.analyze()

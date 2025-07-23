@@ -200,8 +200,23 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
 
     def process_response(self, response: Any) -> Any:
         """Process the response from the model API."""
-        # Similar to PanelQCAnalyzer but for figure-level analysis
-        return self.create_empty_result() if not response else response
+        if not response:
+            return self.create_empty_result()
+
+        # If response is a JSON string, parse it
+        if isinstance(response, str):
+            try:
+                import json
+
+                parsed_response = json.loads(response)
+                return parsed_response
+            except json.JSONDecodeError:
+                logger.error(
+                    f"Failed to parse JSON response for {self.test_name}: {response}"
+                )
+                return self.create_empty_result()
+
+        return response
 
     def check_test_passed(self, result: Any) -> bool:
         """Check if the test passed based on the result."""
@@ -212,7 +227,9 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
 class ManuscriptQCAnalyzer(BaseQCAnalyzer):
     """Base class for manuscript-level QC tests."""
 
-    def analyze_manuscript(self, zip_structure: Any) -> Tuple[bool, Any]:
+    def analyze_manuscript(
+        self, zip_structure: Any, word_file_path: str = None
+    ) -> Tuple[bool, Any]:
         """Analyze an entire manuscript and return results."""
         try:
             # Get API config from main config or use defaults
@@ -240,14 +257,16 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
                 self.test_name
             )
 
-            # Extract relevant information from zip_structure
-            manuscript_text = self.extract_manuscript_text(zip_structure)
+            # Extract word file content from zip_structure or provided path
+            word_file_content = self.extract_word_file_content(
+                zip_structure, word_file_path
+            )
 
             # Call the model with the correct parameters
             response = self.model_api.generate_response(
-                manuscript_text=manuscript_text,
                 prompt_config=test_config["openai"],
                 response_type=self.result_model,
+                word_file_content=word_file_content,
             )
 
             # Process and validate the response
@@ -262,16 +281,103 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
             logger.error(f"Error analyzing manuscript with {self.test_name}: {str(e)}")
             return False, self.create_empty_result()
 
+    def extract_word_file_content(
+        self, zip_structure: Any, word_file_path: str = None
+    ) -> str:
+        """Extract text content from word file in the manuscript structure."""
+        try:
+            # Import python-docx for reading Word documents
+            from docx import Document
+
+            # Determine the word file path to use
+            docx_path = None
+
+            if word_file_path:
+                # Use provided word file path
+                docx_path = word_file_path
+            elif (
+                zip_structure
+                and hasattr(zip_structure, "_full_docx")
+                and zip_structure._full_docx
+            ):
+                # Use full path from zip structure
+                docx_path = zip_structure._full_docx
+            elif (
+                zip_structure and hasattr(zip_structure, "docx") and zip_structure.docx
+            ):
+                # Fallback to relative path (might need to be joined with extract directory)
+                docx_path = zip_structure.docx
+
+            if not docx_path:
+                logger.warning("No word file path found in zip structure")
+                return "No word file available for analysis"
+
+            # Check if file exists
+            import os
+
+            if not os.path.exists(docx_path):
+                logger.warning(f"Word file not found at path: {docx_path}")
+                return f"Word file not found at path: {docx_path}"
+
+            # Extract text from the Word document
+            doc = Document(docx_path)
+
+            # Extract all text from paragraphs
+            text_content = []
+            for paragraph in doc.paragraphs:
+                if paragraph.text.strip():  # Only include non-empty paragraphs
+                    text_content.append(paragraph.text.strip())
+
+            # Extract text from tables if any
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        if cell.text.strip():
+                            text_content.append(cell.text.strip())
+
+            # Join all text with newlines
+            full_text = "\n".join(text_content)
+
+            if not full_text.strip():
+                logger.warning("No text content found in word file")
+                return "No text content found in word file"
+
+            logger.info(
+                f"Successfully extracted {len(full_text)} characters from word file"
+            )
+            return full_text
+
+        except ImportError:
+            logger.error("python-docx library not available for reading Word documents")
+            return "Error: python-docx library not available"
+        except Exception as e:
+            logger.error(f"Error extracting word file content: {str(e)}")
+            return f"Error extracting word file content: {str(e)}"
+
     def extract_manuscript_text(self, zip_structure: Any) -> str:
-        """Extract relevant text from the manuscript structure."""
-        # Implementation would extract necessary text from zip_structure
-        # For now, return a placeholder
-        return "Manuscript text would be extracted here"
+        """Extract relevant text from the manuscript structure. (Legacy method - kept for compatibility)"""
+        # Delegate to the new word file extraction method
+        return self.extract_word_file_content(zip_structure)
 
     def process_response(self, response: Any) -> Any:
         """Process the response from the model API."""
-        # Manuscript-level implementation
-        return self.create_empty_result() if not response else response
+        if not response:
+            return self.create_empty_result()
+
+        # If response is a JSON string, parse it
+        if isinstance(response, str):
+            try:
+                import json
+
+                parsed_response = json.loads(response)
+                return parsed_response
+            except json.JSONDecodeError:
+                logger.error(
+                    f"Failed to parse JSON response for {self.test_name}: {response}"
+                )
+                return self.create_empty_result()
+
+        return response
 
     def check_test_passed(self, result: Any) -> bool:
         """Check if the test passed based on the result."""

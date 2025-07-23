@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "soda-curation"
-version = "2.2.0"
+version = "2.3.0"
 description = "A professional Python package for data curation with AI capabilities"
 authors = ["Dr. Jorge Abreu Vicente <jorge.abreu@embo.org>"]
 license = "MIT"
@@ -39,7 +39,7 @@ rapidfuzz = "^3.9.7"
 pdf2image = "^1.16.3"
 openai-agents = "0.0.9"
 Wand = "0.6.13"
-soda-mmqc = {git = "https://github.com/source-data/soda-mmQC.git", rev = "master"}
+soda-mmqc = {git = "https://github.com/source-data/soda-mmQC.git", rev = "dev"}
 datamodel-code-generator = "^0.31.2"
 
 [tool.poetry.group.dev.dependencies]

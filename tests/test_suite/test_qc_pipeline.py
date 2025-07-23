@@ -33,22 +33,24 @@ def mock_zip_structure():
 
 @pytest.fixture
 def test_config():
-    """Create a test configuration with the new hierarchical structure."""
+    """Configuration for testing."""
     return {
         "qc_version": "1.0.0",
-        "qc_test_metadata": {
+        "qc_check_metadata": {
             "panel": {
                 "error_bars_defined": {
                     "name": "Error Bars Defined",
-                    "description": "Checks whether error bars are defined in the figure caption.",
+                    "description": "Check if error bars are defined.",
                     "permalink": "https://example.com/error_bars_defined",
                 },
                 "plot_axis_units": {
                     "name": "Plot Axis Units",
-                    "description": "Checks whether plot axes have units.",
+                    "description": "Check if plot axes have units.",
                     "permalink": "https://example.com/plot_axis_units",
                 },
-            }
+            },
+            "figure": {},
+            "document": {},
         },
         "default": {
             "pipeline": {
@@ -101,18 +103,16 @@ class TestQCPipeline:
                     "panels": [
                         {
                             "panel_label": "A",
-                            "qc_tests": [
+                            "qc_checks": [
                                 {
-                                    "test_name": "error_bars_defined",
-                                    "passed": True,
+                                    "check_name": "error_bars_defined",
                                     "model_output": {
                                         "error_bar_on_figure": "yes",
                                         "error_bar_defined_in_caption": "yes",
                                     },
                                 },
                                 {
-                                    "test_name": "plot_axis_units",
-                                    "passed": True,
+                                    "check_name": "plot_axis_units",
                                     "model_output": {
                                         "units_on_x_axis": "yes",
                                         "units_on_y_axis": "yes",
@@ -126,10 +126,9 @@ class TestQCPipeline:
                     "panels": [
                         {
                             "panel_label": "A",
-                            "qc_tests": [
+                            "qc_checks": [
                                 {
-                                    "test_name": "error_bars_defined",
-                                    "passed": True,
+                                    "check_name": "error_bars_defined",
                                     "model_output": {
                                         "error_bar_on_figure": "yes",
                                         "error_bar_defined_in_caption": "yes",
@@ -140,7 +139,7 @@ class TestQCPipeline:
                     ]
                 },
             },
-            "qc_test_metadata": {
+            "qc_check_metadata": {
                 "error_bars_defined": {
                     "name": "Error Bars Defined",
                     "description": "Checks whether error bars are defined in the figure caption.",
@@ -170,10 +169,10 @@ class TestQCPipeline:
 
             # Verify test details
             panel = result["figures"]["figure_1"]["panels"][0]
-            assert "qc_tests" in panel
-            test_names = [test["test_name"] for test in panel["qc_tests"]]
-            assert "error_bars_defined" in test_names
-            assert "plot_axis_units" in test_names
+            assert "qc_checks" in panel
+            check_names = [check["check_name"] for check in panel["qc_checks"]]
+            assert "error_bars_defined" in check_names
+            assert "plot_axis_units" in check_names
 
     def test_error_handling(
         self, test_config, mock_zip_structure, figure_data, tmp_path
@@ -186,7 +185,7 @@ class TestQCPipeline:
         expected_output = {
             "qc_version": "1.0.0",
             "figures": {"figure_1": {"panels": []}, "figure_2": {"panels": []}},
-            "qc_test_metadata": {
+            "qc_check_metadata": {
                 "error_bars_defined": {
                     "name": "Error Bars Defined",
                     "description": "Checks whether error bars are defined in the figure caption.",
@@ -239,7 +238,7 @@ def test_pipeline_handles_malformed_analyzer_output(
     for figure_id, figure in result["figures"].items():
         assert "panels" in figure
         for panel in figure["panels"]:
-            assert "qc_tests" in panel
+            assert "qc_checks" in panel
 
 
 def test_pipeline_handles_empty_analyzer_output(
@@ -272,4 +271,4 @@ def test_pipeline_handles_empty_analyzer_output(
     for figure_id, figure in result["figures"].items():
         assert "panels" in figure
         for panel in figure["panels"]:
-            assert "qc_tests" in panel
+            assert "qc_checks" in panel
