@@ -516,7 +516,7 @@ poetry run python -m src.soda_curation.qc.main \
 
 ```
 
-### Configuration Changes (v2.3.0)
+### Configuration Changes (v2.3.1)
 
 **Major configuration improvements** in `config.qc.yaml`:
 
@@ -526,13 +526,18 @@ poetry run python -m src.soda_curation.qc.main \
    qc_check_metadata:
      panel:
        plot_axis_units:
+         name: "Plot Axis Units"
+         prompt_file: "prompt.3.txt"
+         checklist_type: "fig-checklist"
          example_class: "panel"  # ← REMOVED
    
    # NEW (automatic detection):
    qc_check_metadata:
      panel:
        plot_axis_units:
-         name: "Plot Axis Units"  # ← Clean, simple
+         name: "Plot Axis Units"
+         prompt_file: "prompt.3.txt"  # ← Clean, flexible naming
+         checklist_type: "fig-checklist"
    ```
 
 2. **Schema-based type detection**: Analyzer types are automatically determined by analyzing Pydantic models:
@@ -542,11 +547,22 @@ poetry run python -m src.soda_curation.qc.main \
 
 3. **Flexible prompt naming**: Support for arbitrary prompt filenames:
    ```yaml
-   # Supports any naming pattern:
-   # - prompt.1.txt
-   # - prompt.3.txt  
-   # - custom_prompt.txt
-   # - my_analysis_prompt.txt
+   qc_check_metadata:
+     panel:
+       stat_test:
+         name: "Statistical Test Mentioned"
+         prompt_file: "prompt.4.txt"  # New flexible file naming
+       plot_axis_units:
+         name: "Plot Axis Units"
+         prompt_file: "prompt.3.txt"  # Still supported for backward compatibility
+       stat_significance_level:
+         name: "Statistical Significance Level Defined"
+         prompt_file: "prompt.2.txt"  # Example of custom filename
+     document:
+       section_order:
+         name: "Manuscript Structure Check"
+         prompt_file: "prompt.2.txt"
+         checklist_type: "doc-checklist"
    ```
 
 4. **Enhanced metadata integration**: Automatic enrichment from `benchmark.json` files in mmQC repository
@@ -554,6 +570,47 @@ poetry run python -m src.soda_curation.qc.main \
 5. **Version bump**: Updated `qc_version` to "2.3.1" to reflect major improvements and bug fixes
 
 **Migration Guide**: If upgrading from v2.2.x or earlier, simply remove all `example_class` fields from your `config.qc.yaml`. The system will automatically detect the correct analyzer types using the new schema-based detection.
+
+### Complete Configuration Structure
+
+Here's the full structure of a modern `config.qc.yaml`:
+
+```yaml
+qc_version: "2.3.1"
+qc_check_metadata:
+  panel:
+    plot_axis_units:
+      name: "Plot Axis Units"
+      prompt_file: "prompt.3.txt"
+      checklist_type: "fig-checklist"
+    stat_test:
+      name: "Statistical Test Mentioned"
+      prompt_file: "prompt.4.txt"
+      checklist_type: "fig-checklist"
+    individual_data_points:
+      name: "Individual Data Points Displayed"
+      prompt_file: "prompt.2.txt"
+      checklist_type: "fig-checklist"
+  figure:
+    # Figure-level tests would go here
+    # (automatically detected from schema structure)
+  document:
+    section_order:
+      name: "Manuscript Structure Check"
+      prompt_file: "prompt.2.txt"
+      checklist_type: "doc-checklist"
+
+# OpenAI configuration
+default: &default
+  openai:
+    model: "gpt-4o"
+    temperature: 0.1
+    top_p: 1.0
+    max_tokens: 2048
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    json_mode: true
+```
 
 ### Debugging QC Results
 
@@ -603,11 +660,40 @@ This helps identify issues like:
 ```json
 {
   "qc_version": "2.3.1",
-  "qc_test_metadata": {
-    "plot_axis_units": {"name": "Plot Axis Units", ...},
-    "error_bars_defined": {"name": "Error Bars Defined", ...}
+  "qc_check_metadata": {
+    "plot_axis_units": {
+      "name": "Plot Axis Units",
+      "prompt_file": "prompt.3.txt",
+      "checklist_type": "fig-checklist",
+      "description": "Automatically extracted from benchmark.json",
+      "examples": ["Sample analysis examples..."],
+      "permalink": "https://github.com/source-data/soda-mmQC/tree/dev/prompt.3.txt"
+    },
+    "stat_test": {
+      "name": "Statistical Test Mentioned",
+      "prompt_file": "prompt.4.txt",
+      "checklist_type": "fig-checklist",
+      "description": "Checks if statistical tests are mentioned",
+      "permalink": "https://github.com/source-data/soda-mmQC/tree/dev/prompt.4.txt"
+    }
   },
-  "figures": [ ... ]
+  "figures": [
+    {
+      "figure_label": "Figure 1",
+      "panels": [
+        {
+          "panel_label": "A",
+          "qc_checks": [
+            {
+              "check_name": "plot_axis_units",
+              "passed": true,
+              "details": "Units clearly defined on both axes"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
 ```
 
