@@ -465,7 +465,7 @@
       "identifiers_pattern": "https://identifiers.org/massive:",
       "local_unique_identifier_pattern": "^MSV\\d+$",
       "sample_id": "MSV000082131",
-      "sample_identifiers_url": "sample_identifiers_url": "https://identifiers.org/massive:MSV000082131",
+      "sample_identifiers_url": "https://identifiers.org/massive:MSV000082131",
       "sample_extertnal_url": "https://massive.ucsd.edu/ProteoSAFe/QueryMSV?id=MSV000082131"
     },
     {
