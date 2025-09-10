@@ -228,7 +228,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             return output_json
 
         except Exception as e:
-            logger.error(f"Pipeline failed: {str(e)}")
+            logger.error(f"Pipeline failed: {str(e)}", exc_info=True)
             error_json = json.dumps({"error": str(e)})
             if output_path:
                 output_dir = Path(output_path).parent
@@ -237,7 +237,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                     f.write(error_json)
             return error_json
     except Exception as e:
-        logger.exception(f"Pipeline failed: {str(e)}")
+        logger.exception(f"Pipeline failed: {str(e)}", exc_info=True)
         return json.dumps({"error": str(e)})
 
     finally:
