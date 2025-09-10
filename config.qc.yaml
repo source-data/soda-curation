@@ -1,4 +1,4 @@
-qc_version: "2.3.1"
+qc_version: "2.3.2"
 qc_check_metadata:
   panel:
     plot_axis_units:
@@ -7,19 +7,19 @@ qc_check_metadata:
       checklist_type: "fig-checklist"
     stat_test:
       name: "Statistical Test Mentioned"
-      prompt_file: "prompt.4.txt"  # New flexible file naming
+      prompt_file: "prompt.3.txt"  # New flexible file naming
       checklist_type: "fig-checklist"
     stat_significance_level:
       name: "Statistical Significance Level Defined"
-      prompt_file: "prompt.2.txt"  # Example of custom filename
+      prompt_file: "prompt.1.txt"  # Example of custom filename
       checklist_type: "fig-checklist"
     replicates_defined:
       name: "Replicates Defined"
-      prompt_file: "prompt.3.txt" 
+      prompt_file: "prompt.1.txt" 
       checklist_type: "fig-checklist"
     error_bars_defined:
       name: "Error Bars Defined"
-      prompt_file: "prompt.2.txt" 
+      prompt_file: "prompt.1.txt" 
       checklist_type: "fig-checklist"
     individual_data_points:
       name: "Individual Data Points Displayed"
@@ -27,7 +27,7 @@ qc_check_metadata:
       checklist_type: "fig-checklist"
     micrograph_scale_bar:
       name: "Micrograph Scale Bar Defined"
-      prompt_file: "prompt.2.txt" 
+      prompt_file: "prompt.1.txt" 
       checklist_type: "fig-checklist"
     micrograph_symbols_defined:
       name: "Micrograph Symbols Defined"
@@ -35,7 +35,7 @@ qc_check_metadata:
       checklist_type: "fig-checklist"
     plot_gap_labeling:
       name: "Plot Gap Labeling"
-      prompt_file: "prompt.4.txt" 
+      prompt_file: "prompt.1.txt" 
       checklist_type: "fig-checklist"
   figure:
     # Example figure-level tests would go here
@@ -43,7 +43,7 @@ qc_check_metadata:
     # Example document-level test
     section_order:
       name: "Manuscript Structure Check"
-      prompt_file: "prompt.2.txt"
+      prompt_file: "prompt.1.txt"
       checklist_type: "doc-checklist"
 
 default: &default
