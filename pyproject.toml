@@ -38,6 +38,7 @@ openpyxl = "^3.1.5"
 rapidfuzz = "^3.9.7"
 pdf2image = "^1.16.3"
 openai-agents = "0.0.9"
+ultralytics = {git = "https://github.com/ultralytics/ultralytics.git", rev = "main"}
 Wand = "0.6.13"
 soda-mmqc = {git = "https://github.com/source-data/soda-mmQC.git", rev = "dev"}
 datamodel-code-generator = "^0.31.2"

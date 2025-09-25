@@ -12,7 +12,7 @@ from tenacity import (
     wait_exponential,
 )
 
-from .openai_utils import call_openai_with_fallback, validate_model_config
+from ..pipeline.openai_utils import call_openai_with_fallback, validate_model_config
 
 logger = logging.getLogger(__name__)
 

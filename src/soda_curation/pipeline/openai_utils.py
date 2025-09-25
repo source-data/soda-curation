@@ -37,6 +37,8 @@ def is_context_length_error(error: Exception) -> bool:
         "context window",
         "maximum tokens",
         "input too long",
+        "length limit",
+        "length was reached",
     ]
     return any(indicator in error_message for indicator in context_indicators)
 
