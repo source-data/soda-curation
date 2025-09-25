@@ -137,51 +137,46 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             logger.error("Encoded image is empty, skipping API call")
             return PanelObject(panel_label="", panel_caption="")
 
-        try:
-            prompts = self.prompt_handler.get_prompt(
-                "match_caption_panel", {"figure_caption": figure_caption}
-            )
+        prompts = self.prompt_handler.get_prompt(
+            "match_caption_panel", {"figure_caption": figure_caption}
+        )
 
-            response = call_openai_with_fallback(
-                client=self.client,
-                model=self.openai_config.get("model", "gpt-4o"),
-                messages=[
-                    {"role": "system", "content": prompts["system"]},
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": prompts["user"]},
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": f"data:image/png;base64,{encoded_image}"
-                                },
+        response = call_openai_with_fallback(
+            client=self.client,
+            model=self.openai_config.get("model", "gpt-4o"),
+            messages=[
+                {"role": "system", "content": prompts["system"]},
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompts["user"]},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{encoded_image}"
                             },
-                        ],
-                    },
-                ],
-                response_format=PanelObject,
-                temperature=self.openai_config.get("temperature", 0.1),
-                top_p=self.openai_config.get("top_p", 1.0),
-                frequency_penalty=self.openai_config.get("frequency_penalty", 0),
-                presence_penalty=self.openai_config.get("presence_penalty", 0),
-                max_tokens=self.openai_config.get("max_tokens", 512),
+                        },
+                    ],
+                },
+            ],
+            response_format=PanelObject,
+            temperature=self.openai_config.get("temperature", 0.1),
+            top_p=self.openai_config.get("top_p", 1.0),
+            frequency_penalty=self.openai_config.get("frequency_penalty", 0),
+            presence_penalty=self.openai_config.get("presence_penalty", 0),
+            max_tokens=self.openai_config.get("max_tokens", 512),
+        )
+        # Track token usage
+        if hasattr(self, "zip_structure"):
+            update_token_usage(
+                self.zip_structure.cost.match_caption_panel,
+                response,
+                self.openai_config["model"],
             )
-            # Track token usage
-            if hasattr(self, "zip_structure"):
-                update_token_usage(
-                    self.zip_structure.cost.match_caption_panel,
-                    response,
-                    self.openai_config["model"],
-                )
 
-            # When using structured responses, the parsed content is in .parsed
-            if hasattr(response.choices[0].message, "parsed"):
-                return response.choices[0].message.parsed
-            else:
-                # Fallback for non-structured responses
-                return response.choices[0].message.content
-
-        except Exception as e:
-            logger.error(f"Error in panel caption matching: {str(e)}")
-            return PanelObject(panel_label="", panel_caption="")
+        # When using structured responses, the parsed content is in .parsed
+        if hasattr(response.choices[0].message, "parsed"):
+            return response.choices[0].message.parsed
+        else:
+            # Fallback for non-structured responses
+            return response.choices[0].message.content

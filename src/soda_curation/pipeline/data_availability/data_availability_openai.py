@@ -67,69 +67,61 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
         self, section_text: str, zip_structure: ZipStructure
     ) -> ZipStructure:
         """Extract data sources from data availability section."""
-        try:
-            # Provide database registry as JSON string for the prompt
-            db_registry_json = self._create_registry_info()
+        # Provide database registry as JSON string for the prompt
+        db_registry_json = self._create_registry_info()
 
-            # Get prompts with variables substituted
-            prompts = self.prompt_handler.get_prompt(
-                step="extract_data_sources",
-                variables={
-                    "data_availability": section_text,
-                },
-            )
+        # Get prompts with variables substituted
+        prompts = self.prompt_handler.get_prompt(
+            step="extract_data_sources",
+            variables={
+                "data_availability": section_text,
+            },
+        )
 
-            # Add explicit note to the system prompt
-            system_prompt = (
-                prompts["system"]
-                + "\nDatabase Registry Information (as JSON):\n"
-                + db_registry_json
-            )
+        # Add explicit note to the system prompt
+        system_prompt = (
+            prompts["system"]
+            + "\nDatabase Registry Information (as JSON):\n"
+            + db_registry_json
+        )
 
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompts["user"]},
-            ]
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompts["user"]},
+        ]
 
-            config_ = self.config["pipeline"]["extract_data_sources"]["openai"]
-            model_ = config_.get("model", "gpt-4o")
+        config_ = self.config["pipeline"]["extract_data_sources"]["openai"]
+        model_ = config_.get("model", "gpt-4o")
 
-            response = call_openai_with_fallback(
-                client=self.client,
-                model=model_,
-                messages=messages,
-                response_format=ExtractDataSources,
-                temperature=config_.get("temperature", 0.1),
-                top_p=config_.get("top_p", 1.0),
-                frequency_penalty=config_.get("frequency_penalty", 0),
-                presence_penalty=config_.get("presence_penalty", 0),
-            )
+        response = call_openai_with_fallback(
+            client=self.client,
+            model=model_,
+            messages=messages,
+            response_format=ExtractDataSources,
+            temperature=config_.get("temperature", 0.1),
+            top_p=config_.get("top_p", 1.0),
+            frequency_penalty=config_.get("frequency_penalty", 0),
+            presence_penalty=config_.get("presence_penalty", 0),
+        )
 
-            # Update token usage
-            update_token_usage(
-                zip_structure.cost.extract_data_sources, response, model_
-            )
+        # Update token usage
+        update_token_usage(zip_structure.cost.extract_data_sources, response, model_)
 
-            # Update the ZipStructure with data
-            # When using structured responses, the parsed content is in .parsed
-            if hasattr(response.choices[0].message, "parsed"):
-                parsed_data = response.choices[0].message.parsed
-            else:
-                # Fallback for non-structured responses
-                response_data = response.choices[0].message.content
-                parsed_data = self._parse_response(response_data)
+        # Update the ZipStructure with data
+        # When using structured responses, the parsed content is in .parsed
+        if hasattr(response.choices[0].message, "parsed"):
+            parsed_data = response.choices[0].message.parsed
+        else:
+            # Fallback for non-structured responses
+            response_data = response.choices[0].message.content
+            parsed_data = self._parse_response(response_data)
 
-            zip_structure.data_availability = {
-                "section_text": section_text,
-                "data_sources": parsed_data,
-            }
+        zip_structure.data_availability = {
+            "section_text": section_text,
+            "data_sources": parsed_data,
+        }
 
-            return zip_structure
-
-        except Exception as e:
-            logger.error(f"Error extracting data sources: {str(e)}")
-            zip_structure.data_availability = {"section_text": "", "data_sources": []}
-            return zip_structure
+        return zip_structure
 
     def _create_registry_info(self) -> str:
         """Return the database registry as a JSON string for the prompt."""

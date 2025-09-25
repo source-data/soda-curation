@@ -45,66 +45,58 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
 
     def call_ai_service(self, prompt: str, allowed_files: List) -> AsignedFilesList:
         """Call OpenAI service with the given prompt."""
-        try:
-            # Get both system and user prompts
-            prompts = self.prompt_handler.get_prompt("assign_panel_source", {})
+        # Get both system and user prompts
+        prompts = self.prompt_handler.get_prompt("assign_panel_source", {})
 
-            # Prepare messages
-            messages = [
-                {"role": "system", "content": prompts["system"]},
-                {"role": "user", "content": prompt},
-            ]
+        # Prepare messages
+        messages = [
+            {"role": "system", "content": prompts["system"]},
+            {"role": "user", "content": prompt},
+        ]
 
-            config_ = self.config["pipeline"]["assign_panel_source"]["openai"]
-            model_ = config_.get("model", "gpt-4o")
+        config_ = self.config["pipeline"]["assign_panel_source"]["openai"]
+        model_ = config_.get("model", "gpt-4o")
 
-            response = call_openai_with_fallback(
-                client=self.client,
-                model=model_,
-                messages=messages,
-                response_format=AsignedFilesList,  # Ensure the response is in JSON format
-                temperature=config_.get("temperature", 0.3),
-                top_p=config_.get("top_p", 1.0),
-                frequency_penalty=config_.get("frequency_penalty", 0),
-                presence_penalty=config_.get("presence_penalty", 0),
-            )
+        response = call_openai_with_fallback(
+            client=self.client,
+            model=model_,
+            messages=messages,
+            response_format=AsignedFilesList,  # Ensure the response is in JSON format
+            temperature=config_.get("temperature", 0.3),
+            top_p=config_.get("top_p", 1.0),
+            frequency_penalty=config_.get("frequency_penalty", 0),
+            presence_penalty=config_.get("presence_penalty", 0),
+        )
 
-            # Update token usage
-            update_token_usage(
-                self.zip_structure.cost.assign_panel_source,
-                response,
-                model_,
-            )
+        # Update token usage
+        update_token_usage(
+            self.zip_structure.cost.assign_panel_source,
+            response,
+            model_,
+        )
 
-            # Parse response
-            # When using structured responses, the parsed content is in .parsed
-            if hasattr(response.choices[0].message, "parsed"):
-                response_data = response.choices[0].message.parsed
-            else:
-                # Fallback for non-structured responses
-                response_data = json.loads(response.choices[0].message.content)
+        # Parse response
+        # When using structured responses, the parsed content is in .parsed
+        if hasattr(response.choices[0].message, "parsed"):
+            response_data = response.choices[0].message.parsed
+        else:
+            # Fallback for non-structured responses
+            response_data = json.loads(response.choices[0].message.content)
 
-            # Filter out invalid files
-            filtered_assigned, filtered_not_assigned = self.filter_files(
-                assigned_files=[
-                    AsignedFiles(**af) for af in response_data["assigned_files"]
-                ],
-                not_assigned_files=response_data["not_assigned_files"],
-                allowed_files=allowed_files,
-            )
+        # Filter out invalid files
+        filtered_assigned, filtered_not_assigned = self.filter_files(
+            assigned_files=[
+                AsignedFiles(**af) for af in response_data["assigned_files"]
+            ],
+            not_assigned_files=response_data["not_assigned_files"],
+            allowed_files=allowed_files,
+        )
 
-            # Create the filtered AsignedFilesList
-            return AsignedFilesList(
-                assigned_files=filtered_assigned,
-                not_assigned_files=filtered_not_assigned,
-            )
-
-        except ValidationError as ve:
-            logger.error(f"Validation error when creating AsignedFilesList: {ve}")
-            return AsignedFilesList(assigned_files=[], not_assigned_files=[])
-
-        except Exception as e:
-            logger.error(f"Error calling OpenAI API: {str(e)}")
+        # Create the filtered AsignedFilesList
+        return AsignedFilesList(
+            assigned_files=filtered_assigned,
+            not_assigned_files=filtered_not_assigned,
+        )
 
     @staticmethod
     def filter_files(

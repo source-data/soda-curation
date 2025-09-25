@@ -302,39 +302,32 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         # Track token usage across all figures
         total_token_usage = TokenUsage()
 
-        try:
-            # Process each figure one by one
-            for figure in zip_structure.figures:
-                # Skip EV figures
-                if self.is_ev_figure(figure.figure_label):
-                    logger.info(f"Skipping EV figure: {figure.figure_label}")
-                    continue
+        # Process each figure one by one
+        for figure in zip_structure.figures:
+            # Skip EV figures
+            if self.is_ev_figure(figure.figure_label):
+                logger.info(f"Skipping EV figure: {figure.figure_label}")
+                continue
 
-                logger.info(f"Processing {figure.figure_label}")
+            logger.info(f"Processing {figure.figure_label}")
 
-                # Process the figure directly (no need for async)
-                updated_figure, figure_token_usage = self.process_figure(
-                    figure, doc_content, zip_structure
-                )
-
-                # Update total token usage
-                total_token_usage.prompt_tokens += figure_token_usage.prompt_tokens
-                total_token_usage.completion_tokens += (
-                    figure_token_usage.completion_tokens
-                )
-                total_token_usage.total_tokens += figure_token_usage.total_tokens
-                total_token_usage.cost += figure_token_usage.cost
-
-            # Store token usage in zip structure
-            zip_structure.cost.extract_individual_captions = total_token_usage
-            zip_structure.update_total_cost()
-
-            logger.info(
-                f"Finished extracting individual captions. Total tokens: {total_token_usage.total_tokens}"
+            # Process the figure directly (no need for async)
+            updated_figure, figure_token_usage = self.process_figure(
+                figure, doc_content, zip_structure
             )
 
-            return zip_structure
+            # Update total token usage
+            total_token_usage.prompt_tokens += figure_token_usage.prompt_tokens
+            total_token_usage.completion_tokens += figure_token_usage.completion_tokens
+            total_token_usage.total_tokens += figure_token_usage.total_tokens
+            total_token_usage.cost += figure_token_usage.cost
 
-        except Exception as e:
-            logger.error(f"Error extracting individual captions: {str(e)}")
-            raise
+        # Store token usage in zip structure
+        zip_structure.cost.extract_individual_captions = total_token_usage
+        zip_structure.update_total_cost()
+
+        logger.info(
+            f"Finished extracting individual captions. Total tokens: {total_token_usage.total_tokens}"
+        )
+
+        return zip_structure

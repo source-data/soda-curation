@@ -12,7 +12,7 @@ default: &default
     extract_sections:
       openai:
         # OpenAI-specific parameters remain the same
-        model: "gpt-5"  # Can be "gpt-4o", "gpt-4o-mini", or "gpt-5"
+        model: "gpt-4o"  # Can be "gpt-4o", "gpt-4o-mini", or "gpt-5"
         temperature: 0.1
         top_p: 1.0
         max_tokens: 2048
@@ -89,7 +89,7 @@ default: &default
     ##########################################################
     extract_caption_title:
       openai:
-        model: "gpt-5"
+        model: "gpt-4o"
         temperature: 0.1
         top_p: 1.0
         max_tokens: 4096
@@ -136,7 +136,7 @@ default: &default
 
     extract_panel_sequence:
       openai:
-        model: "gpt-5"
+        model: "gpt-4o"
         temperature: 0.1
         top_p: 1.0
         max_tokens: 4096
@@ -186,7 +186,7 @@ default: &default
     ##########################################################
     extract_data_sources:
       openai:
-        model: "gpt-5"
+        model: "gpt-4o"
         temperature: 0.5
         top_p: 0.5
         max_tokens: 2048
@@ -297,7 +297,7 @@ default: &default
     ##########################################################
     assign_panel_source:
       openai:
-        model: "gpt-5"
+        model: "gpt-4o"
         temperature: 0.3
         top_p: 1.0
         max_tokens: 2048
@@ -369,7 +369,7 @@ default: &default
     ##########################################################
     match_caption_panel:
       openai:
-        model: "gpt-5"
+        model: "gpt-4o"
         temperature: 0.3
         top_p: 1.0
         max_tokens: 2048
