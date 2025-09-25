@@ -79,16 +79,21 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
         # When using structured responses, the parsed content is in .parsed
         if hasattr(response.choices[0].message, "parsed"):
             response_data = response.choices[0].message.parsed
+            # response_data is already an AsignedFilesList object
+            assigned_files = response_data.assigned_files
+            not_assigned_files = response_data.not_assigned_files
         else:
             # Fallback for non-structured responses
             response_data = json.loads(response.choices[0].message.content)
+            assigned_files = [
+                AsignedFiles(**af) for af in response_data["assigned_files"]
+            ]
+            not_assigned_files = response_data["not_assigned_files"]
 
         # Filter out invalid files
         filtered_assigned, filtered_not_assigned = self.filter_files(
-            assigned_files=[
-                AsignedFiles(**af) for af in response_data["assigned_files"]
-            ],
-            not_assigned_files=response_data["not_assigned_files"],
+            assigned_files=assigned_files,
+            not_assigned_files=not_assigned_files,
             allowed_files=allowed_files,
         )
 

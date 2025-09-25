@@ -153,11 +153,13 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         # When using structured responses, the parsed content is in .parsed
         if hasattr(response.choices[0].message, "parsed"):
             caption_extraction = response.choices[0].message.parsed
+            # caption_extraction is already a CaptionExtraction object
+            caption_result = caption_extraction
         else:
             # Fallback for non-structured responses
             response_content = response.choices[0].message.content
             caption_extraction = json.loads(response_content)
-        caption_result = CaptionExtraction(**caption_extraction)
+            caption_result = CaptionExtraction(**caption_extraction)
 
         return caption_result, token_usage
 

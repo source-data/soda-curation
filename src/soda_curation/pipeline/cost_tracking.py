@@ -7,6 +7,10 @@ from ..pipeline.manuscript_structure.manuscript_structure import TokenUsage
 pricing = {
     "gpt-4o": {"input_tokens": 5.00, "output_tokens": 10.00},
     "gpt-4o-mini": {"input_tokens": 0.15, "output_tokens": 0.60},
+    "gpt-5": {
+        "input_tokens": 5.00,
+        "output_tokens": 15.00,
+    },  # Placeholder pricing for GPT-5
 }
 
 
