@@ -198,6 +198,92 @@ class TestDatabaseRegistry:
         assert "https://identifiers.org/geo:" in formatted
         assert "https://identifiers.org/pride.project:" in formatted
 
+    def test_real_identifiers_file_loading(self, mock_prompt_handler):
+        """Test that the real identifiers.json file can be loaded successfully."""
+        # This test uses the actual identifiers.json file without mocking
+        extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+
+        # Verify the registry was loaded
+        assert "databases" in extractor.database_registry
+        assert len(extractor.database_registry["databases"]) > 0
+
+        # Check that some expected databases are present
+        database_names = [db["name"] for db in extractor.database_registry["databases"]]
+        assert "Uniprot" in database_names
+        assert "ChEBI" in database_names
+        assert "NCBI gene" in database_names
+
+        # Verify the structure of a sample database entry
+        uniprot_db = next(
+            db
+            for db in extractor.database_registry["databases"]
+            if db["name"] == "Uniprot"
+        )
+        assert "url_pattern" in uniprot_db
+        assert "identifiers_pattern" in uniprot_db
+        assert "type" in uniprot_db
+        assert "sample_id" in uniprot_db
+
+    def test_extract_data_sources_with_real_registry(
+        self, mock_prompt_handler, mock_openai_client, zip_structure
+    ):
+        """Test that extract_data_sources method successfully loads and uses the real database registry."""
+        # Set up environment variable for OpenAI API key
+        with patch.dict("os.environ", {"OPENAI_API_KEY": "test-key"}):
+            extractor = DataAvailabilityExtractorOpenAI(
+                VALID_CONFIG, mock_prompt_handler
+            )
+
+            # Verify registry was loaded
+            assert "databases" in extractor.database_registry
+            assert len(extractor.database_registry["databases"]) > 0
+
+            # Test the extract_data_sources method
+            section_text = "Data availability: All data is available in GEO under accession GSE123456."
+            result = extractor.extract_data_sources(section_text, zip_structure)
+
+            # Verify the method completed successfully
+            assert result is not None
+            assert hasattr(result, "data_availability")
+            assert "data_sources" in result.data_availability
+
+            # Verify that the registry information was included in the system prompt
+            mock_openai_client.return_value.beta.chat.completions.parse.assert_called_once()
+            call_args = (
+                mock_openai_client.return_value.beta.chat.completions.parse.call_args
+            )
+
+            # Check that the system prompt contains database registry information
+            messages = call_args[1]["messages"]
+            system_message = messages[0]["content"]
+            assert "Database Registry Information" in system_message
+            assert "databases" in system_message
+
+            # Verify that some known database information is present in the prompt
+            assert "Uniprot" in system_message or "ChEBI" in system_message
+
+    def test_registry_loading_error_handling(self, mock_prompt_handler):
+        """Test error handling when identifiers.json file cannot be loaded."""
+        # Mock file operations to raise an exception
+        with patch("builtins.open", side_effect=FileNotFoundError("File not found")):
+            extractor = DataAvailabilityExtractorOpenAI(
+                VALID_CONFIG, mock_prompt_handler
+            )
+
+            # Should fall back to empty registry
+            assert extractor.database_registry == {"databases": []}
+
+    def test_registry_loading_malformed_json(self, mock_prompt_handler):
+        """Test error handling when identifiers.json contains malformed JSON."""
+        # Mock file operations to return malformed JSON
+        with patch("builtins.open", mock_open(read_data="invalid json content")):
+            extractor = DataAvailabilityExtractorOpenAI(
+                VALID_CONFIG, mock_prompt_handler
+            )
+
+            # Should fall back to empty registry
+            assert extractor.database_registry == {"databases": []}
+
     @patch("builtins.open", side_effect=Exception("File not found"))
     def test_registry_loading_error(self, mock_file, mock_prompt_handler):
         """Test error handling when loading the registry fails."""
