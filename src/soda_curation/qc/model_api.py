@@ -12,6 +12,8 @@ from tenacity import (
     wait_exponential,
 )
 
+from .openai_utils import call_openai_with_fallback, validate_model_config
+
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
@@ -96,26 +98,24 @@ class ModelAPI:
                 "(manuscript_text or word_file_content) for document analysis"
             )
 
-        # Get model parameters
-        model_params = {
-            "model": prompt_config.get("model", "gpt-4o"),
-            "messages": messages,
-            "temperature": prompt_config.get("temperature", 0.1),
-            "top_p": prompt_config.get("top_p", 1.0),
-            "frequency_penalty": prompt_config.get("frequency_penalty", 0.0),
-            "presence_penalty": prompt_config.get("presence_penalty", 0.0),
-            "max_tokens": prompt_config.get("max_tokens", 2048),
-        }
+        # Get model configuration
+        model = prompt_config.get("model", "gpt-4o")
 
-        # Add response format
-        if response_type:
-            model_params["response_format"] = response_type
-        elif prompt_config.get("json_mode", True):
-            model_params["response_format"] = {"type": "json_object"}
+        # Validate model configuration
+        validate_model_config(model, prompt_config)
 
-        # Make API call
-        response = self.client.beta.chat.completions.parse(
-            **model_params,
+        # Make API call with fallback support
+        response = call_openai_with_fallback(
+            client=self.client,
+            model=model,
+            messages=messages,
+            response_format=response_type,
+            temperature=prompt_config.get("temperature", 0.1),
+            top_p=prompt_config.get("top_p", 1.0),
+            frequency_penalty=prompt_config.get("frequency_penalty", 0.0),
+            presence_penalty=prompt_config.get("presence_penalty", 0.0),
+            max_tokens=prompt_config.get("max_tokens", 2048),
+            json_mode=prompt_config.get("json_mode", True),
         )
 
         # Return appropriate type

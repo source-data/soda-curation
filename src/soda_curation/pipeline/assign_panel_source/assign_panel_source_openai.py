@@ -7,6 +7,7 @@ import openai
 from pydantic import ValidationError
 
 from ..cost_tracking import update_token_usage
+from ..openai_utils import call_openai_with_fallback, validate_model_config
 from ..prompt_handler import PromptHandler
 from .assign_panel_source_base import (
     AsignedFiles,
@@ -32,32 +33,15 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
             "gpt-4o-mini",
             "gpt-4o-2024-08-06",
             "gpt-4o-mini-2024-07-18",
+            "gpt-5",
         ]
         config_ = self.config["pipeline"]["assign_panel_source"]["openai"]
         model = config_.get("model", "gpt-4o")
         if model not in valid_models:
             raise ValueError(f"Invalid model: {model}. Must be one of {valid_models}")
 
-        # Validate numerical parameters
-        if not 0 <= config_.get("temperature", 0.3) <= 2:
-            raise ValueError(
-                f"Temperature must be between 0 and 2, value: `{config_.get('temperature', 0.3)}`"
-            )
-        if not 0 <= config_.get("top_p", 1.0) <= 1:
-            raise ValueError(
-                f"Top_p must be between 0 and 1, value: `{config_.get('top_p', 1.0)}`"
-            )
-        if (
-            "frequency_penalty" in config_
-            and not -2 <= config_["frequency_penalty"] <= 2
-        ):
-            raise ValueError(
-                f"Frequency penalty must be between -2 and 2, value: `{config_.get('frequency_penalty', 0)}`"
-            )
-        if "presence_penalty" in config_ and not -2 <= config_["presence_penalty"] <= 2:
-            raise ValueError(
-                f"Presence penalty must be between -2 and 2, value: `{config_.get('presence_penalty', 0)}`"
-            )
+        # Use the utility function for validation
+        validate_model_config(model, config_)
 
     def call_ai_service(self, prompt: str, allowed_files: List) -> AsignedFilesList:
         """Call OpenAI service with the given prompt."""
@@ -74,7 +58,8 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
             config_ = self.config["pipeline"]["assign_panel_source"]["openai"]
             model_ = config_.get("model", "gpt-4o")
 
-            response = self.client.beta.chat.completions.parse(
+            response = call_openai_with_fallback(
+                client=self.client,
                 model=model_,
                 messages=messages,
                 response_format=AsignedFilesList,  # Ensure the response is in JSON format

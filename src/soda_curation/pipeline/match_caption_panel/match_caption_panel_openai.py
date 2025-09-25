@@ -16,6 +16,7 @@ import openai
 
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
+from ..openai_utils import call_openai_with_fallback, validate_model_config
 from .match_caption_panel_base import MatchPanelCaption, PanelObject
 from .object_detection import convert_to_pil_image  # Import the function directly
 
@@ -58,32 +59,15 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             "gpt-4o-mini",
             "gpt-4o-2024-08-06",
             "gpt-4o-mini-2024-07-18",
+            "gpt-5",
         ]
         config_ = self.config["pipeline"]["match_caption_panel"]["openai"]
         model = config_.get("model", "gpt-4o")
         if model not in valid_models:
             raise ValueError(f"Invalid model: {model}. Must be one of {valid_models}")
 
-        # Validate numerical parameters
-        if not 0 <= config_.get("temperature", 0.3) <= 2:
-            raise ValueError(
-                f"Temperature must be between 0 and 2, value: `{config_.get('temperature', 0.3)}`"
-            )
-        if not 0 <= config_.get("top_p", 1.0) <= 1:
-            raise ValueError(
-                f"Top_p must be between 0 and 1, value: `{config_.get('top_p', 1.0)}`"
-            )
-        if (
-            "frequency_penalty" in config_
-            and not -2 <= config_["frequency_penalty"] <= 2
-        ):
-            raise ValueError(
-                f"Frequency penalty must be between -2 and 2, value: `{config_.get('frequency_penalty', 0)}`"
-            )
-        if "presence_penalty" in config_ and not -2 <= config_["presence_penalty"] <= 2:
-            raise ValueError(
-                f"Presence penalty must be between -2 and 2, value: `{config_.get('presence_penalty', 0)}`"
-            )
+        # Use the utility function for validation
+        validate_model_config(model, config_)
 
     def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
         """Override parent method to cache figure images"""
@@ -158,7 +142,8 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
                 "match_caption_panel", {"figure_caption": figure_caption}
             )
 
-            response = self.client.beta.chat.completions.parse(
+            response = call_openai_with_fallback(
+                client=self.client,
                 model=self.openai_config.get("model", "gpt-4o"),
                 messages=[
                     {"role": "system", "content": prompts["system"]},
