@@ -111,6 +111,9 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
         # When using structured responses, the parsed content is in .parsed
         if hasattr(response.choices[0].message, "parsed"):
             parsed_data = response.choices[0].message.parsed
+            # Convert Pydantic model to dictionary for JSON serialization
+            if hasattr(parsed_data, "model_dump"):
+                parsed_data = parsed_data.model_dump()
         else:
             # Fallback for non-structured responses
             response_data = response.choices[0].message.content
