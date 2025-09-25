@@ -193,11 +193,11 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             client=self.client,
             model=model_,
             messages=messages,
+            response_format=PanelExtraction,
             temperature=config_.get("temperature", 0.1),
             top_p=config_.get("top_p", 1.0),
             frequency_penalty=config_.get("frequency_penalty", 0),
             presence_penalty=config_.get("presence_penalty", 0),
-            response_format={"type": "json_object"},
         )
 
         # Create token usage object
@@ -211,14 +211,14 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         # Parse the response content into PanelExtraction
         # When using structured responses, the parsed content is in .parsed
         if hasattr(response.choices[0].message, "parsed"):
-            content_json = response.choices[0].message.parsed
+            panel_extraction = response.choices[0].message.parsed
         else:
             # Fallback for non-structured responses
             content_json = json.loads(response.choices[0].message.content)
-        panel_extraction = PanelExtraction(
-            figure_label=content_json.get("figure_label", figure_label),
-            panels=[PanelInfo(**panel) for panel in content_json.get("panels", [])],
-        )
+            panel_extraction = PanelExtraction(
+                figure_label=content_json.get("figure_label", figure_label),
+                panels=[PanelInfo(**panel) for panel in content_json.get("panels", [])],
+            )
 
         return panel_extraction, token_usage
 
