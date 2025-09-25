@@ -98,147 +98,131 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
     setup_logging(config_loader.config)
     logger.info("Starting SODA curation pipeline")
 
+    # Setup extraction directory
+    extract_dir = setup_extract_dir()
+    config_loader.config["extraction_dir"] = str(extract_dir)
+
     try:
-        # Setup extraction directory
-        extract_dir = setup_extract_dir()
-        config_loader.config["extraction_dir"] = str(extract_dir)
+        # Extract manuscript structure (first pipeline step)
+        extractor = XMLStructureExtractor(zip_path, str(extract_dir))
+        zip_structure = extractor.extract_structure()
 
-        try:
-            # Extract manuscript structure (first pipeline step)
-            extractor = XMLStructureExtractor(zip_path, str(extract_dir))
-            zip_structure = extractor.extract_structure()
+        # Extract captions from figures (second pipeline step)
+        manuscript_content = extractor.extract_docx_content(zip_structure.docx)
+        prompt_handler = PromptHandler(config_loader.config["pipeline"])
 
-            # Extract captions from figures (second pipeline step)
-            manuscript_content = extractor.extract_docx_content(zip_structure.docx)
-            prompt_handler = PromptHandler(config_loader.config["pipeline"])
+        # Extract relevant sections for the pipeline
+        section_extractor = SectionExtractorOpenAI(config_loader.config, prompt_handler)
+        (
+            figure_legends,
+            data_availability_text,
+            zip_structure,
+        ) = section_extractor.extract_sections(
+            doc_content=manuscript_content, zip_structure=zip_structure
+        )
+        # Extract individual captions from figure legends
+        caption_extractor = FigureCaptionExtractorOpenAI(
+            config_loader.config, prompt_handler
+        )
+        zip_structure = caption_extractor.extract_individual_captions(
+            doc_content=figure_legends, zip_structure=zip_structure
+        )
 
-            # Extract relevant sections for the pipeline
-            section_extractor = SectionExtractorOpenAI(
-                config_loader.config, prompt_handler
+        # Extract data sources from data availability section
+        data_availability_extractor = DataAvailabilityExtractorOpenAI(
+            config_loader.config, prompt_handler
+        )
+        zip_structure = data_availability_extractor.extract_data_sources(
+            section_text=data_availability_text, zip_structure=zip_structure
+        )
+
+        # Match panels with captions using object detection
+        panel_matcher = MatchPanelCaptionOpenAI(
+            config=config_loader.config,
+            prompt_handler=prompt_handler,
+            extract_dir=extractor.manuscript_extract_dir,  # Pass the manuscript-specific directory
+        )
+        _ = panel_matcher.process_figures(zip_structure)
+
+        # Get figure images and captions for QC pipeline
+        figure_data = panel_matcher.get_figure_images_and_captions()
+
+        # Assign panel source
+        panel_source_assigner = PanelSourceAssignerOpenAI(
+            config_loader.config, prompt_handler, extractor.manuscript_extract_dir
+        )
+        processed_figures = panel_source_assigner.assign_panel_source(
+            zip_structure,  # Pass figures list instead of whole structure
+        )
+        # Preserve all ZipStructure data while updating figures
+        zip_structure.figures = processed_figures
+
+        # Update total costs before returning results
+        zip_structure.update_total_cost()
+
+        # Check for possible hallucinations
+        zip_structure.locate_captions_hallucination_score = (
+            calculate_hallucination_score(
+                zip_structure.ai_response_locate_captions, manuscript_content
             )
-            (
-                figure_legends,
-                data_availability_text,
-                zip_structure,
-            ) = section_extractor.extract_sections(
-                doc_content=manuscript_content, zip_structure=zip_structure
+        )
+        zip_structure.locate_data_section_hallucination_score = (
+            calculate_hallucination_score(
+                zip_structure.data_availability["section_text"], manuscript_content
             )
-            # Extract individual captions from figure legends
-            caption_extractor = FigureCaptionExtractorOpenAI(
-                config_loader.config, prompt_handler
-            )
-            zip_structure = caption_extractor.extract_individual_captions(
-                doc_content=figure_legends, zip_structure=zip_structure
-            )
+        )
+        for fig in zip_structure.figures:
+            if fig.figure_caption:
+                if fig.hallucination_score == 1:
+                    fig.hallucination_score = calculate_hallucination_score(
+                        fig.figure_caption, manuscript_content
+                    )
 
-            # Extract data sources from data availability section
-            data_availability_extractor = DataAvailabilityExtractorOpenAI(
-                config_loader.config, prompt_handler
-            )
-            zip_structure = data_availability_extractor.extract_data_sources(
-                section_text=data_availability_text, zip_structure=zip_structure
-            )
+        # Save data for QC pipeline
+        if output_path:
+            # Extract directory and base filename without extension
+            output_path_obj = Path(output_path)
+            output_dir = output_path_obj.parent
+            base_filename = output_path_obj.stem
 
-            # Match panels with captions using object detection
-            panel_matcher = MatchPanelCaptionOpenAI(
-                config=config_loader.config,
-                prompt_handler=prompt_handler,
-                extract_dir=extractor.manuscript_extract_dir,  # Pass the manuscript-specific directory
-            )
-            _ = panel_matcher.process_figures(zip_structure)
-
-            # Get figure images and captions for QC pipeline
-            figure_data = panel_matcher.get_figure_images_and_captions()
-
-            # Assign panel source
-            panel_source_assigner = PanelSourceAssignerOpenAI(
-                config_loader.config, prompt_handler, extractor.manuscript_extract_dir
-            )
-            processed_figures = panel_source_assigner.assign_panel_source(
-                zip_structure,  # Pass figures list instead of whole structure
-            )
-            # Preserve all ZipStructure data while updating figures
-            zip_structure.figures = processed_figures
-
-            # Update total costs before returning results
-            zip_structure.update_total_cost()
-
-            # Check for possible hallucinations
-            zip_structure.locate_captions_hallucination_score = (
-                calculate_hallucination_score(
-                    zip_structure.ai_response_locate_captions, manuscript_content
-                )
-            )
-            zip_structure.locate_data_section_hallucination_score = (
-                calculate_hallucination_score(
-                    zip_structure.data_availability["section_text"], manuscript_content
-                )
-            )
-            for fig in zip_structure.figures:
-                if fig.figure_caption:
-                    if fig.hallucination_score == 1:
-                        fig.hallucination_score = calculate_hallucination_score(
-                            fig.figure_caption, manuscript_content
-                        )
-
-            # Save data for QC pipeline
-            if output_path:
-                # Extract directory and base filename without extension
-                output_path_obj = Path(output_path)
-                output_dir = output_path_obj.parent
-                base_filename = output_path_obj.stem
-
-                # Create filenames for QC data
-                figure_data_path = str(output_dir / f"{base_filename}_figure_data.json")
-                zip_structure_path = str(
-                    output_dir / f"{base_filename}_zip_structure.pickle"
-                )
-
-                # Save the data files for QC pipeline
-                save_figure_data(figure_data, figure_data_path)
-                save_zip_structure(zip_structure, zip_structure_path)
-                logger.info(
-                    f"Saved QC pipeline data: {figure_data_path} and {zip_structure_path}"
-                )
-            else:
-                # Default location if no output path specified
-                data_dir = Path("data/qc_data")
-                data_dir.mkdir(parents=True, exist_ok=True)
-
-                # Save with default filenames
-                figure_data_path = str(data_dir / "figure_data.json")
-                zip_structure_path = str(data_dir / "zip_structure.pickle")
-                save_figure_data(figure_data, figure_data_path)
-                save_zip_structure(zip_structure, zip_structure_path)
-                logger.info(
-                    f"Saved QC pipeline data: {figure_data_path} and {zip_structure_path}"
-                )
-
-            # Convert to JSON using CustomJSONEncoder
-            output_json = json.dumps(
-                zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2
+            # Create filenames for QC data
+            figure_data_path = str(output_dir / f"{base_filename}_figure_data.json")
+            zip_structure_path = str(
+                output_dir / f"{base_filename}_zip_structure.pickle"
             )
 
-            if output_path:
-                output_dir = Path(output_path).parent
-                output_dir.mkdir(parents=True, exist_ok=True)
-                with open(output_path, "w", encoding="utf-8") as f:
-                    f.write(output_json)
+            # Save the data files for QC pipeline
+            save_figure_data(figure_data, figure_data_path)
+            save_zip_structure(zip_structure, zip_structure_path)
+            logger.info(
+                f"Saved QC pipeline data: {figure_data_path} and {zip_structure_path}"
+            )
+        else:
+            # Default location if no output path specified
+            data_dir = Path("data/qc_data")
+            data_dir.mkdir(parents=True, exist_ok=True)
 
-            return output_json
+            # Save with default filenames
+            figure_data_path = str(data_dir / "figure_data.json")
+            zip_structure_path = str(data_dir / "zip_structure.pickle")
+            save_figure_data(figure_data, figure_data_path)
+            save_zip_structure(zip_structure, zip_structure_path)
+            logger.info(
+                f"Saved QC pipeline data: {figure_data_path} and {zip_structure_path}"
+            )
 
-        except Exception as e:
-            logger.error(f"Pipeline failed: {str(e)}")
-            error_json = json.dumps({"error": str(e)})
-            if output_path:
-                output_dir = Path(output_path).parent
-                output_dir.mkdir(parents=True, exist_ok=True)
-                with open(output_path, "w", encoding="utf-8") as f:
-                    f.write(error_json)
-            return error_json
-    except Exception as e:
-        logger.exception(f"Pipeline failed: {str(e)}")
-        return json.dumps({"error": str(e)})
+        # Convert to JSON using CustomJSONEncoder
+        output_json = json.dumps(
+            zip_structure, cls=CustomJSONEncoder, ensure_ascii=False, indent=2
+        )
+
+        if output_path:
+            output_dir = Path(output_path).parent
+            output_dir.mkdir(parents=True, exist_ok=True)
+            with open(output_path, "w", encoding="utf-8") as f:
+                f.write(output_json)
+
+        return output_json
 
     finally:
         cleanup_extract_dir(extract_dir)

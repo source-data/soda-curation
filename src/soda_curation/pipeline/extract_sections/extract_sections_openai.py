@@ -80,30 +80,33 @@ class SectionExtractorOpenAI(SectionExtractor):
             presence_penalty=config_.get("presence_penalty", 0),
         )
 
-        # Update token usage - we'll split the cost between the two tasks
-        usage_cost = response.usage.total_tokens  # Split cost evenly
+        # Update token usage
         update_token_usage(
             zip_structure.cost.extract_sections,
-            {
-                "usage": {
-                    "prompt_tokens": response.usage.prompt_tokens,
-                    "completion_tokens": response.usage.completion_tokens,
-                    "total_tokens": usage_cost,
-                }
-            },
+            response,
             model_,
         )
 
         # Store response in both relevant places for backward compatibility
         # When using structured responses, the parsed content is in .parsed
+        logger.info(f"Response type: {type(response)}")
+        logger.info(f"Response choices type: {type(response.choices)}")
+        logger.info(f"Response choices length: {len(response.choices)}")
+        logger.info(f"Response message type: {type(response.choices[0].message)}")
+        logger.info(
+            f"Response message has parsed: {hasattr(response.choices[0].message, 'parsed')}"
+        )
+
         if hasattr(response.choices[0].message, "parsed"):
             result = response.choices[0].message.parsed
+            logger.info(f"Parsed result type: {type(result)}")
             # result is a Pydantic model object, access attributes directly
             figure_legends = result.figure_legends
             data_availability = result.data_availability
         else:
             # Fallback for non-structured responses
             response_content = response.choices[0].message.content
+            logger.info(f"Response content type: {type(response_content)}")
             result = json.loads(response_content)
             # result is a dictionary, access with keys
             figure_legends = result["figure_legends"]

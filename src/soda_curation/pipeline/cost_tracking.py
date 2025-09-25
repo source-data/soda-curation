@@ -31,10 +31,22 @@ def update_token_usage(
     token_usage: TokenUsage, response: Any, model: str
 ) -> TokenUsage:
     """Update TokenUsage object with data from API response."""
-    if not isinstance(response, dict):
-        response = response.model_dump()
-    if "usage" in response:
+    # Handle response object with usage attribute
+    if hasattr(response, "usage"):
         # Accumulate token counts
+        token_usage.prompt_tokens += response.usage.prompt_tokens
+        token_usage.completion_tokens += response.usage.completion_tokens
+        token_usage.total_tokens += response.usage.total_tokens
+
+        # Calculate and accumulate cost for this call
+        call_cost = calculate_cost(
+            model,
+            response.usage.prompt_tokens,
+            response.usage.completion_tokens,
+        )
+        token_usage.cost += call_cost
+    elif isinstance(response, dict) and "usage" in response:
+        # Handle dictionary response format
         token_usage.prompt_tokens += response["usage"]["prompt_tokens"]
         token_usage.completion_tokens += response["usage"]["completion_tokens"]
         token_usage.total_tokens += response["usage"]["total_tokens"]
@@ -46,4 +58,26 @@ def update_token_usage(
             response["usage"]["completion_tokens"],
         )
         token_usage.cost += call_cost
+    else:
+        # Try to convert to dict if it's a Pydantic model
+        try:
+            if hasattr(response, "model_dump"):
+                response_dict = response.model_dump()
+                if "usage" in response_dict:
+                    token_usage.prompt_tokens += response_dict["usage"]["prompt_tokens"]
+                    token_usage.completion_tokens += response_dict["usage"][
+                        "completion_tokens"
+                    ]
+                    token_usage.total_tokens += response_dict["usage"]["total_tokens"]
+
+                    # Calculate and accumulate cost for this call
+                    call_cost = calculate_cost(
+                        model,
+                        response_dict["usage"]["prompt_tokens"],
+                        response_dict["usage"]["completion_tokens"],
+                    )
+                    token_usage.cost += call_cost
+        except Exception:
+            # If all else fails, skip token tracking
+            pass
     return token_usage
