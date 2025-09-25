@@ -150,9 +150,13 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             model_,
         )
 
-        response_content = response.choices[0].message.content
-
-        caption_extraction = json.loads(response_content)
+        # When using structured responses, the parsed content is in .parsed
+        if hasattr(response.choices[0].message, "parsed"):
+            caption_extraction = response.choices[0].message.parsed
+        else:
+            # Fallback for non-structured responses
+            response_content = response.choices[0].message.content
+            caption_extraction = json.loads(response_content)
         caption_result = CaptionExtraction(**caption_extraction)
 
         return caption_result, token_usage
@@ -205,7 +209,12 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         )
 
         # Parse the response content into PanelExtraction
-        content_json = json.loads(response.choices[0].message.content)
+        # When using structured responses, the parsed content is in .parsed
+        if hasattr(response.choices[0].message, "parsed"):
+            content_json = response.choices[0].message.parsed
+        else:
+            # Fallback for non-structured responses
+            content_json = json.loads(response.choices[0].message.content)
         panel_extraction = PanelExtraction(
             figure_label=content_json.get("figure_label", figure_label),
             panels=[PanelInfo(**panel) for panel in content_json.get("panels", [])],

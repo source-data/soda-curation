@@ -95,14 +95,24 @@ class SectionExtractorOpenAI(SectionExtractor):
         )
 
         # Store response in both relevant places for backward compatibility
-        response_content = response.choices[0].message.content
+        # When using structured responses, the parsed content is in .parsed
+        if hasattr(response.choices[0].message, "parsed"):
+            result = response.choices[0].message.parsed
+            # result is a Pydantic model object, access attributes directly
+            figure_legends = result.figure_legends
+            data_availability = result.data_availability
+        else:
+            # Fallback for non-structured responses
+            response_content = response.choices[0].message.content
+            result = json.loads(response_content)
+            # result is a dictionary, access with keys
+            figure_legends = result["figure_legends"]
+            data_availability = result["data_availability"]
 
-        # Parse and return the sections
-        result = json.loads(response_content)
-        zip_structure.ai_response_locate_captions = result["figure_legends"]
+        zip_structure.ai_response_locate_captions = figure_legends
         return (
-            result["figure_legends"],
-            result["data_availability"],
+            figure_legends,
+            data_availability,
             zip_structure,
         )
 

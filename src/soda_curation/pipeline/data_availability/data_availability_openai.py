@@ -111,8 +111,13 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             )
 
             # Update the ZipStructure with data
-            response_data = response.choices[0].message.content
-            parsed_data = self._parse_response(response_data)
+            # When using structured responses, the parsed content is in .parsed
+            if hasattr(response.choices[0].message, "parsed"):
+                parsed_data = response.choices[0].message.parsed
+            else:
+                # Fallback for non-structured responses
+                response_data = response.choices[0].message.content
+                parsed_data = self._parse_response(response_data)
 
             zip_structure.data_availability = {
                 "section_text": section_text,

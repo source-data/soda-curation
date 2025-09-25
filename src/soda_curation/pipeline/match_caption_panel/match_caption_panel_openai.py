@@ -175,7 +175,12 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
                     self.openai_config["model"],
                 )
 
-            return response.choices[0].message.content
+            # When using structured responses, the parsed content is in .parsed
+            if hasattr(response.choices[0].message, "parsed"):
+                return response.choices[0].message.parsed
+            else:
+                # Fallback for non-structured responses
+                return response.choices[0].message.content
 
         except Exception as e:
             logger.error(f"Error in panel caption matching: {str(e)}")
