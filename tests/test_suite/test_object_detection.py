@@ -34,10 +34,10 @@ def mock_image():
 
 
 @pytest.fixture
-def mock_yolov10():
-    """Fixture to mock the YOLOv10 class."""
+def mock_yolo():
+    """Fixture to mock the YOLO class."""
     with patch(
-        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLOv10"
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLO"
     ) as mock:
         mock.return_value = Mock()  # Add a return value for the model
         yield mock
@@ -156,12 +156,12 @@ def test_convert_and_resize_image():
     assert result == mock_image
 
 
-def test_object_detection_initialization(mock_yolov10):
+def test_object_detection_initialization(mock_yolo):
     """
     Test the initialization of the ObjectDetection class.
 
     This test checks if the ObjectDetection class is correctly initialized
-    with the given model path and if it creates a YOLOv10 model instance.
+    with the given model path and if it creates a YOLO model instance.
     """
     with patch(
         "src.soda_curation.pipeline.match_caption_panel.object_detection.Path.exists",
@@ -169,14 +169,14 @@ def test_object_detection_initialization(mock_yolov10):
     ):
         od = ObjectDetection("test_model.pt")
     assert od.model_path == "test_model.pt"
-    mock_yolov10.assert_called_once_with("test_model.pt")
+    mock_yolo.assert_called_once_with("test_model.pt")
 
 
-def test_detect_panels(mock_yolov10):
+def test_detect_panels(mock_yolo):
     """
     Test the panel detection functionality of the ObjectDetection class.
 
-    This test simulates the detection of panels in an image using a mocked YOLOv10 model,
+    This test simulates the detection of panels in an image using a mocked YOLO model,
     and verifies that the detect_panels method correctly processes the model's output.
     """
     od = ObjectDetection("test_model.pt")
@@ -211,7 +211,7 @@ def test_create_object_detection():
         "src.soda_curation.pipeline.match_caption_panel.object_detection.Path.exists",
         return_value=True,
     ), patch(
-        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLOv10"
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLO"
     ) as mock_yolo:
         od = create_object_detection(config)
     assert isinstance(od, ObjectDetection)
@@ -231,7 +231,7 @@ def test_create_object_detection_default_path():
         "src.soda_curation.pipeline.match_caption_panel.object_detection.Path.exists",
         return_value=True,
     ), patch(
-        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLOv10"
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLO"
     ) as mock_yolo:
         od = create_object_detection(config)
     assert isinstance(od, ObjectDetection)
@@ -338,7 +338,7 @@ def test_detect_panels_from_ai(mock_subprocess, mock_image, mock_os, monkeypatch
     monkeypatch.setattr("pathlib.Path.exists", lambda x: True)
 
     with patch(
-        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLOv10"
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLO"
     ) as mock_yolo:
         # Setup mock YOLO results
         mock_results = Mock()
@@ -363,7 +363,7 @@ def test_detect_panels_from_ai(mock_subprocess, mock_image, mock_os, monkeypatch
         assert panels[0]["confidence"] == 0.95
 
 
-def test_detect_panels_with_no_detections(mock_yolov10):
+def test_detect_panels_with_no_detections(mock_yolo):
     """Test behavior when no panels are detected in an image."""
     od = ObjectDetection("test_model.pt")
 
@@ -386,7 +386,7 @@ def test_detect_panels_with_no_detections(mock_yolov10):
     assert len(result) == 0
 
 
-def test_detect_panels_with_low_confidence(mock_yolov10):
+def test_detect_panels_with_low_confidence(mock_yolo):
     """Test filtering of low confidence detections."""
     od = ObjectDetection("test_model.pt")
 
@@ -407,7 +407,7 @@ def test_detect_panels_with_low_confidence(mock_yolov10):
     assert result[0]["confidence"] == 0.2
 
 
-def test_detect_panels_multiple_panels(mock_yolov10):
+def test_detect_panels_multiple_panels(mock_yolo):
     """Test detection of multiple panels with different confidences."""
     od = ObjectDetection("test_model.pt")
 
@@ -443,7 +443,7 @@ def test_image_resize_maintains_aspect_ratio():
     assert test_image.mode == "RGB"
 
 
-def test_detect_panels_overlapping_boxes(mock_yolov10):
+def test_detect_panels_overlapping_boxes(mock_yolo):
     """Test handling of overlapping panel detections."""
     od = ObjectDetection("test_model.pt")
 
@@ -483,7 +483,7 @@ def test_image_color_mode_handling():
 def test_detect_panels_input_validation():
     """Test input validation for detect_panels method."""
     with patch("pathlib.Path.exists", return_value=True), patch(
-        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLOv10"
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLO"
     ):
         od = ObjectDetection("test_model.pt")
 
@@ -494,7 +494,7 @@ def test_detect_panels_input_validation():
             od.detect_panels(None)
 
 
-def test_detect_panels_with_custom_parameters(mock_yolov10):
+def test_detect_panels_with_custom_parameters(mock_yolo):
     """Test detection with custom confidence and IoU thresholds."""
     with patch("pathlib.Path.exists", return_value=True):
         od = ObjectDetection("test_model.pt")
@@ -530,7 +530,7 @@ def test_large_image_handling():
     large_image.thumbnail.assert_called_once()
 
 
-def test_detect_panels_with_corrupted_image(mock_yolov10):
+def test_detect_panels_with_corrupted_image(mock_yolo):
     """Test handling of corrupted or invalid image data."""
     od = ObjectDetection("test_model.pt")
     corrupted_image = Mock(spec=Image.Image)

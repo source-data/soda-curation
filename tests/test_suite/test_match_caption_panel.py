@@ -597,11 +597,10 @@ class TestMatchPanelCaptionOpenAI:
             matcher = MatchPanelCaptionOpenAI(
                 mock_config, mock_prompt_handler, extract_dir=manuscript_dir
             )
-            result = matcher._match_panel_caption("invalid_image", "Test caption")
 
-            assert isinstance(result, PanelObject)
-            assert result.panel_label == ""
-            assert result.panel_caption == ""
+            # Since we removed try-except blocks, the exception should be raised
+            with pytest.raises(Exception, match="API Error"):
+                matcher._match_panel_caption("invalid_image", "Test caption")
 
 
 class TestPanelPreservation:

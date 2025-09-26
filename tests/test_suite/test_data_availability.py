@@ -113,10 +113,12 @@ def mock_openai_client():
     """Create a mock OpenAI client."""
     with patch("openai.OpenAI") as mock_client:
         instance = mock_client.return_value
+        # Mock the structured response with parsed content
+        mock_parsed = MagicMock()
+        mock_parsed.model_dump.return_value = MOCK_SOURCES_RESPONSE["sources"]
+
         instance.beta.chat.completions.parse.return_value = MagicMock(
-            choices=[
-                MagicMock(message=MagicMock(content=json.dumps(MOCK_SOURCES_RESPONSE)))
-            ],
+            choices=[MagicMock(message=MagicMock(parsed=mock_parsed))],
             usage=MagicMock(
                 prompt_tokens=100,
                 completion_tokens=50,
@@ -326,10 +328,13 @@ class TestDataSourceExtraction:
         self, mock_openai_client, mock_prompt_handler, zip_structure
     ):
         """Test handling when no data sources are found."""
-        mock_empty_response = json.dumps({"sources": []})
+        # Mock the structured response with empty parsed content
+        mock_parsed = MagicMock()
+        mock_parsed.model_dump.return_value = []
+
         mock_openai_client.return_value.beta.chat.completions.parse.return_value = (
             MagicMock(
-                choices=[MagicMock(message=MagicMock(content=mock_empty_response))],
+                choices=[MagicMock(message=MagicMock(parsed=mock_parsed))],
                 usage=MagicMock(
                     prompt_tokens=50,
                     completion_tokens=10,
@@ -354,10 +359,10 @@ class TestDataSourceExtraction:
         )
 
         extractor = DataAvailabilityExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
-        result = extractor.extract_data_sources("test content", zip_structure)
 
-        assert isinstance(result, ZipStructure)
-        assert result.data_availability["data_sources"] == []
+        # Since we removed try-except blocks, the exception should be raised
+        with pytest.raises(Exception, match="API Error"):
+            extractor.extract_data_sources("test content", zip_structure)
 
     @patch("builtins.open", mock_open(read_data=MOCK_REGISTRY_CONTENT))
     def test_system_prompt_with_registry(self, mock_prompt_handler):

@@ -71,19 +71,15 @@ def mock_openai_client():
     """Create a mock OpenAI client with properly structured responses."""
     with patch("openai.OpenAI") as mock_client:
         # Create a mock response that matches the expected structure
-
         instance = mock_client.return_value
-        # Set up the response with proper JSON string
+
+        # Mock the structured response with parsed content
+        mock_parsed = MagicMock()
+        mock_parsed.figure_legends = MOCK_SECTIONS_RESPONSE["figure_legends"]
+        mock_parsed.data_availability = MOCK_SECTIONS_RESPONSE["data_availability"]
+
         instance.beta.chat.completions.parse.return_value = MagicMock(
-            choices=[
-                MagicMock(
-                    message=MagicMock(
-                        content=json.dumps(
-                            MOCK_SECTIONS_RESPONSE
-                        )  # Convert dict to JSON string
-                    )
-                )
-            ],
+            choices=[MagicMock(message=MagicMock(parsed=mock_parsed))],
             usage=MagicMock(
                 prompt_tokens=100,
                 completion_tokens=50,
