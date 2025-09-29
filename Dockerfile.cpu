@@ -112,6 +112,7 @@ RUN mkdir -p /app/config
 
 # Copy the environment-specific config file
 COPY config.${DEPLOYMENT_ENV}.yaml /app/config.yaml
+COPY config.qc.yaml /app/config.qc.yaml
 COPY config/ /app/config/
 
 # Set PYTHONPATH
