@@ -186,7 +186,7 @@ default: &default
     ##########################################################
     extract_data_sources:
       openai:
-        model: "gpt-5"
+        model: "gpt-4o"
         temperature: 0.5
         top_p: 0.5
         max_tokens: 2048

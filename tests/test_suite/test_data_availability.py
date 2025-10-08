@@ -115,7 +115,7 @@ def mock_openai_client():
         instance = mock_client.return_value
         # Mock the structured response with parsed content
         mock_parsed = MagicMock()
-        mock_parsed.model_dump.return_value = MOCK_SOURCES_RESPONSE["sources"]
+        mock_parsed.model_dump.return_value = MOCK_SOURCES_RESPONSE
 
         instance.beta.chat.completions.parse.return_value = MagicMock(
             choices=[MagicMock(message=MagicMock(parsed=mock_parsed))],
@@ -330,7 +330,7 @@ class TestDataSourceExtraction:
         """Test handling when no data sources are found."""
         # Mock the structured response with empty parsed content
         mock_parsed = MagicMock()
-        mock_parsed.model_dump.return_value = []
+        mock_parsed.model_dump.return_value = {"sources": []}
 
         mock_openai_client.return_value.beta.chat.completions.parse.return_value = (
             MagicMock(
