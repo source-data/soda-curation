@@ -55,6 +55,11 @@ class MatchPanelCaption(ABC):
                     raise FileNotFoundError(f"File not found: {full_path}")
                 image, _ = convert_to_pil_image(str(full_path))
 
+                # Debug: Check what we got from convert_to_pil_image
+                logger.debug(
+                    f"convert_to_pil_image returned: image type={type(image)}, image={image}"
+                )
+
                 # Get only bounding boxes from detection
                 detected_regions = self.object_detector.detect_panels(image)
 
