@@ -35,6 +35,7 @@ def validate_paths(
     Raises:
         ValueError: If required paths are not provided
         FileNotFoundError: If input files don't exist
+        zipfile.BadZipFile: If ZIP file is corrupted or invalid
     """
     if not zip_path:
         raise ValueError("ZIP path must be provided")
@@ -45,6 +46,20 @@ def validate_paths(
         raise FileNotFoundError(f"ZIP file {zip_path} does not exist")
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Config file {config_path} does not exist")
+
+    # Validate that the ZIP file is actually a valid ZIP file
+    try:
+        import zipfile
+
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
+            # Try to read the file list to validate it's a proper ZIP
+            file_list = zip_ref.namelist()
+            if not file_list:
+                raise zipfile.BadZipFile(f"ZIP file {zip_path} is empty")
+    except zipfile.BadZipFile as e:
+        raise zipfile.BadZipFile(f"Invalid ZIP file {zip_path}: {e}")
+    except Exception as e:
+        raise zipfile.BadZipFile(f"Cannot read ZIP file {zip_path}: {e}")
 
     if output_path:
         # Create output directory if it doesn't exist
