@@ -14,14 +14,184 @@ class TestPipelineStructureValidationFast:
     """Test that the pipeline output structure matches the expected format."""
 
     @pytest.fixture
-    def known_good_output_path(self):
-        """Path to a known good pipeline output file."""
-        return "data/output/testing-last-outputs.json"
+    def known_good_output_path(self, tmp_path):
+        """Create a mock known good pipeline output file."""
+        mock_output = {
+            "figures": [
+                {
+                    "figure_label": "Figure 1",
+                    "img_files": ["test.png"],
+                    "sd_files": ["test.zip"],
+                    "panels": [
+                        {
+                            "panel_label": "A",
+                            "panel_caption": "Test panel A",
+                            "panel_bbox": [0.1, 0.1, 0.4, 0.4],
+                            "confidence": 0.9,
+                            "sd_files": [],
+                            "hallucination_score": 0.0,
+                        }
+                    ],
+                    "hallucination_score": 0.0,
+                    "figure_caption": "Test figure",
+                    "caption_title": "Test Figure",
+                }
+            ],
+            "data_availability": {
+                "section_text": "Test data availability",
+                "data_sources": [
+                    {
+                        "database": "Test DB",
+                        "accession_number": "TEST-001",
+                        "url": "https://test.com/TEST-001",
+                    }
+                ],
+            },
+            "cost": {
+                "extract_sections": {
+                    "prompt_tokens": 100,
+                    "completion_tokens": 50,
+                    "total_tokens": 150,
+                    "cost": 0.01,
+                },
+                "extract_individual_captions": {
+                    "prompt_tokens": 200,
+                    "completion_tokens": 100,
+                    "total_tokens": 300,
+                    "cost": 0.02,
+                },
+                "assign_panel_source": {
+                    "prompt_tokens": 150,
+                    "completion_tokens": 75,
+                    "total_tokens": 225,
+                    "cost": 0.015,
+                },
+                "match_caption_panel": {
+                    "prompt_tokens": 300,
+                    "completion_tokens": 150,
+                    "total_tokens": 450,
+                    "cost": 0.03,
+                },
+                "extract_data_sources": {
+                    "prompt_tokens": 100,
+                    "completion_tokens": 50,
+                    "total_tokens": 150,
+                    "cost": 0.01,
+                },
+                "total": {
+                    "prompt_tokens": 850,
+                    "completion_tokens": 425,
+                    "total_tokens": 1275,
+                    "cost": 0.085,
+                },
+            },
+            "ai_provider": "openai",
+            "manuscript_id": "TEST-001",
+            "locate_captions_hallucination_score": 0.0,
+            "locate_data_section_hallucination_score": 0.0,
+            "xml": "test.xml",
+            "docx": "test.docx",
+            "pdf": "test.pdf",
+            "ai_response_locate_captions": "Test response",
+            "ai_response_extract_individual_captions": "Test response",
+        }
+
+        output_file = tmp_path / "mock_output.json"
+        import json
+
+        with open(output_file, "w") as f:
+            json.dump(mock_output, f)
+        return str(output_file)
 
     @pytest.fixture
-    def ground_truth_path(self):
-        """Path to the ground truth JSON file."""
-        return "tests/test_suite/test_data/EMBOJ-2024-119382.zip.json"
+    def ground_truth_path(self, tmp_path):
+        """Create a mock ground truth JSON file."""
+        mock_ground_truth = {
+            "figures": [
+                {
+                    "figure_label": "Figure 1",
+                    "img_files": ["test.png"],
+                    "sd_files": ["test.zip"],
+                    "panels": [
+                        {
+                            "panel_label": "A",
+                            "panel_caption": "Test panel A",
+                            "panel_bbox": [0.1, 0.1, 0.4, 0.4],
+                            "confidence": 0.9,
+                            "sd_files": [],
+                            "hallucination_score": 0.0,
+                        }
+                    ],
+                    "hallucination_score": 0.0,
+                    "figure_caption": "Test figure",
+                    "caption_title": "Test Figure",
+                }
+            ],
+            "data_availability": {
+                "section_text": "Test data availability",
+                "data_sources": [
+                    {
+                        "database": "Test DB",
+                        "accession_number": "TEST-001",
+                        "url": "https://test.com/TEST-001",
+                    }
+                ],
+            },
+            "cost": {
+                "extract_sections": {
+                    "prompt_tokens": 100,
+                    "completion_tokens": 50,
+                    "total_tokens": 150,
+                    "cost": 0.01,
+                },
+                "extract_individual_captions": {
+                    "prompt_tokens": 200,
+                    "completion_tokens": 100,
+                    "total_tokens": 300,
+                    "cost": 0.02,
+                },
+                "assign_panel_source": {
+                    "prompt_tokens": 150,
+                    "completion_tokens": 75,
+                    "total_tokens": 225,
+                    "cost": 0.015,
+                },
+                "match_caption_panel": {
+                    "prompt_tokens": 300,
+                    "completion_tokens": 150,
+                    "total_tokens": 450,
+                    "cost": 0.03,
+                },
+                "extract_data_sources": {
+                    "prompt_tokens": 100,
+                    "completion_tokens": 50,
+                    "total_tokens": 150,
+                    "cost": 0.01,
+                },
+                "total": {
+                    "prompt_tokens": 850,
+                    "completion_tokens": 425,
+                    "total_tokens": 1275,
+                    "cost": 0.085,
+                },
+            },
+            "ai_provider": "openai",
+            "manuscript_id": "TEST-001",
+            "locate_captions_hallucination_score": 0.0,
+            "locate_data_section_hallucination_score": 0.0,
+            "xml": "test.xml",
+            "docx": "test.docx",
+            "pdf": "test.pdf",
+            "ai_response_locate_captions": "Test response",
+            "ai_response_extract_individual_captions": "Test response",
+        }
+
+        ground_truth_file = tmp_path / "mock_ground_truth.json"
+        import json
+
+        with open(ground_truth_file, "w") as f:
+            json.dump(mock_ground_truth, f)
+        return str(ground_truth_file)
 
     def test_pipeline_output_structure_validation(
         self, known_good_output_path, ground_truth_path

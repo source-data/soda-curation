@@ -80,18 +80,22 @@ def test_validate_paths_nonexistent_config(mock_paths):
     with pytest.raises(FileNotFoundError, match="Config file .* does not exist"):
         validate_paths(mock_paths["zip_path"], mock_paths["config_path"])
 
+    def test_validate_paths_creates_output_dir(mock_paths, tmp_path):
+        """Test validation creates output directory if needed."""
+        # Create a proper ZIP file instead of just touching
+        import zipfile
 
-def test_validate_paths_creates_output_dir(mock_paths, tmp_path):
-    """Test validation creates output directory if needed."""
-    Path(mock_paths["zip_path"]).touch()
-    Path(mock_paths["config_path"]).touch()
+        with zipfile.ZipFile(mock_paths["zip_path"], "w") as zf:
+            zf.writestr("test.xml", "<?xml version='1.0'?><root></root>")
 
-    nested_output = tmp_path / "nested" / "path" / "output.json"
-    validate_paths(
-        mock_paths["zip_path"], mock_paths["config_path"], str(nested_output)
-    )
+        Path(mock_paths["config_path"]).touch()
 
-    assert nested_output.parent.exists()
+        nested_output = tmp_path / "nested" / "path" / "output.json"
+        validate_paths(
+            mock_paths["zip_path"], mock_paths["config_path"], str(nested_output)
+        )
+
+        assert nested_output.parent.exists()
 
 
 def test_setup_extract_dir():
