@@ -46,6 +46,7 @@ class ModelAPI:
         caption: Optional[str] = None,
         manuscript_text: Optional[str] = None,
         word_file_content: Optional[str] = None,
+        expected_panels: Optional[list] = None,
     ) -> Union[Dict[str, Any], T]:
         """
         Generate response from OpenAI using beta.chat.completions.parse.
@@ -57,6 +58,7 @@ class ModelAPI:
             caption: Figure caption (for figure analysis)
             manuscript_text: Manuscript text (for document analysis)
             word_file_content: Word file content (for document analysis)
+            expected_panels: List of valid panel labels for this figure
 
         Returns:
             Response from OpenAI, either as parsed Pydantic model or raw dict
@@ -64,6 +66,18 @@ class ModelAPI:
         # Get prompts
         system_prompt = prompt_config.get("prompts", {}).get("system", "")
         user_prompt = prompt_config.get("prompts", {}).get("user", "")
+
+        # Add expected panels instruction if provided
+        if expected_panels:
+            panels_instruction = (
+                f"\n\n**IMPORTANT CONSTRAINT**: The `panel_label` field in your response MUST be EXACTLY "
+                f"one of the following valid panel labels for this figure: {expected_panels}. "
+                f"Do NOT use any other labels, sub-panel labels (like 'A-a', 'A-b'), descriptive labels "
+                f"(like 'Rice cell', 'Figure 8'), or panel labels with modifiers (like 'C (plot)', 'C (right)'). "
+                f"Use ONLY the exact labels from this list: {expected_panels}"
+            )
+            system_prompt += panels_instruction
+            user_prompt += panels_instruction
 
         # Determine the type of analysis and create appropriate messages
         if encoded_image is not None and caption is not None:

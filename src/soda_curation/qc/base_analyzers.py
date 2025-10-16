@@ -53,7 +53,11 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
     """Base class for panel-level QC tests."""
 
     def analyze_figure(
-        self, figure_label: str, encoded_image: str, figure_caption: str
+        self,
+        figure_label: str,
+        encoded_image: str,
+        figure_caption: str,
+        expected_panels: list = None,
     ) -> Tuple[bool, Any]:
         """Analyze a figure and return results."""
         try:
@@ -88,6 +92,7 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
                 caption=figure_caption,
                 prompt_config=test_config["openai"],
                 response_type=self.result_model,
+                expected_panels=expected_panels,
             )
 
             # Process and validate the response

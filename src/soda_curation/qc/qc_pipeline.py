@@ -35,6 +35,8 @@ class QCPipeline:
         self.extract_dir = extract_dir
         self.tests = self._initialize_tests()
         self.qc_results = {"figures": {}}
+        # Store valid panel labels for each figure (populated in run())
+        self.valid_panel_labels = {}
         logger.info("Initialized QC Pipeline")
 
     def _initialize_tests(self) -> Dict:
@@ -113,6 +115,18 @@ class QCPipeline:
 
         return tests
 
+    def _populate_valid_panel_labels(self, zip_structure: ZipStructure):
+        """Populate valid panel labels from zip_structure."""
+        valid_panel_labels = {}
+        if hasattr(zip_structure, "figures"):
+            for fig in zip_structure.figures:
+                if hasattr(fig, "figure_label") and hasattr(fig, "panels"):
+                    figure_label = fig.figure_label
+                    panel_labels = [panel.panel_label for panel in fig.panels]
+                    valid_panel_labels[figure_label] = panel_labels
+                    logger.debug(f"Valid panels for {figure_label}: {panel_labels}")
+        return valid_panel_labels
+
     def run(
         self,
         zip_structure: ZipStructure,
@@ -131,6 +145,9 @@ class QCPipeline:
             dict: QC results
         """
         logger.info("*** QC PIPELINE STARTED ***")
+
+        # Populate valid panel labels from zip_structure
+        self.valid_panel_labels = self._populate_valid_panel_labels(zip_structure)
 
         # Get figures from zip structure or figure_data
         figures = []
@@ -167,8 +184,15 @@ class QCPipeline:
                     # Call the appropriate analyze method based on the test type
                     if isinstance(test_analyzer, (PanelQCAnalyzer, FigureQCAnalyzer)):
                         # Panel and figure tests need figure data
+                        # Get expected panels for this figure (only for panel-level tests)
+                        expected_panels = None
+                        if isinstance(test_analyzer, PanelQCAnalyzer):
+                            expected_panels = self.valid_panel_labels.get(
+                                figure_label, []
+                            )
+
                         passed, result = test_analyzer.analyze_figure(
-                            figure_label, encoded_image, figure_caption
+                            figure_label, encoded_image, figure_caption, expected_panels
                         )
 
                         # Add results to output
