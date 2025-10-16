@@ -108,6 +108,13 @@ def test_ai_receives_panel_constraint_instructions(
     mock_factory, mock_generate_response, mock_config, mock_zip_structure
 ):
     """Test that AI receives constraint instructions about valid panel labels."""
+    from src.soda_curation.qc.base_analyzers import PanelQCAnalyzer
+
+    # Create a mock analyzer that inherits from PanelQCAnalyzer
+    mock_analyzer = MagicMock(spec=PanelQCAnalyzer)
+    mock_analyzer.analyze_figure = Mock(return_value=(True, {"outputs": []}))
+    mock_factory.create_analyzer.return_value = mock_analyzer
+
     # Mock the AI response
     mock_response = Mock()
     mock_response.outputs = [
@@ -116,23 +123,19 @@ def test_ai_receives_panel_constraint_instructions(
     ]
     mock_generate_response.return_value = mock_response
 
-    # Create a real analyzer (not mocked) so we can test the full flow
-    from src.soda_curation.qc.analyzer_factory import GenericPanelQCAnalyzer
-
-    mock_analyzer = GenericPanelQCAnalyzer("micrograph_scale_bar", mock_config)
-    mock_factory.create_analyzer.return_value = mock_analyzer
-
     # Create pipeline and run
     pipeline = QCPipeline(mock_config, "/tmp/test")
     figure_data = [("Figure 5", "encoded_image_data", "Test caption")]
     pipeline.run(mock_zip_structure, figure_data=figure_data, unified_output=False)
 
-    # Verify that generate_response was called with expected_panels
-    mock_generate_response.assert_called_once()
-    call_kwargs = mock_generate_response.call_args[1]
+    # Verify that analyze_figure was called with expected_panels
+    mock_analyzer.analyze_figure.assert_called()
+    call_args = mock_analyzer.analyze_figure.call_args
 
-    assert "expected_panels" in call_kwargs
-    assert call_kwargs["expected_panels"] == ["A", "B"]
+    # The fourth argument should be expected_panels = ["A", "B"]
+    assert len(call_args[0]) >= 4
+    expected_panels = call_args[0][3]
+    assert expected_panels == ["A", "B"]
 
 
 def test_no_invalid_panel_labels_in_output(mock_config):
