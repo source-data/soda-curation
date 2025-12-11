@@ -74,23 +74,18 @@ class TestObjectDetectionFix:
 
     def test_detect_panels_raises_error_with_dict(self):
         """Test that detect_panels raises an error when given a dictionary instead of PIL Image."""
-        # Create a mock YOLO model that will cause the error
+        # Create a mock YOLO model
         mock_model = Mock()
-        mock_model.side_effect = AttributeError(
-            "'dict' object has no attribute 'shape'"
-        )
 
         detector = ObjectDetection.__new__(ObjectDetection)
         detector.model = mock_model
 
-        # Test with a dictionary (this should cause the error we're fixing)
-        # The error will be caught and logged, but we can verify it happens
-        detections = detector.detect_panels({"not": "an image"})
+        # Test with a dictionary - should now raise TypeError with our validation
+        with pytest.raises(TypeError, match="Expected PIL Image, but received dict"):
+            detector.detect_panels({"not": "an image"})
 
-        # Should return empty list due to error handling
-        assert detections == []
-        # Verify the model was called (which would cause the error)
-        mock_model.assert_called_once()
+        # Model should NOT be called because validation happens before
+        mock_model.assert_not_called()
 
     def test_detect_panels_raises_error_with_none(self):
         """Test that detect_panels raises an error when given None."""
@@ -110,7 +105,7 @@ class TestObjectDetectionFix:
         # Mock the Path.exists method to return True for our test file
         with patch("pathlib.Path.exists", return_value=True):
             with patch(
-                "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLO"
+                "src.soda_curation.pipeline.match_caption_panel.object_detection.YOLOv10"
             ) as mock_yolo:
                 mock_yolo_instance = Mock()
                 mock_yolo.return_value = mock_yolo_instance

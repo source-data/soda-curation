@@ -60,6 +60,17 @@ class MatchPanelCaption(ABC):
                     f"convert_to_pil_image returned: image type={type(image)}, image={image}"
                 )
 
+                # Additional validation before passing to detect_panels
+                if not hasattr(image, "mode") or not hasattr(image, "size"):
+                    logger.error(
+                        f"Invalid image object for {figure.figure_label}: "
+                        f"type={type(image)}, has_mode={hasattr(image, 'mode')}, "
+                        f"has_size={hasattr(image, 'size')}, value={image}"
+                    )
+                    raise TypeError(
+                        f"convert_to_pil_image returned invalid object: {type(image)}"
+                    )
+
                 # Get only bounding boxes from detection
                 detected_regions = self.object_detector.detect_panels(image)
 

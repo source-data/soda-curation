@@ -16,7 +16,7 @@ import numpy as np
 import pdf2image
 from PIL import Image, ImageDraw
 from PIL.Image import DecompressionBombError
-from ultralytics import YOLO
+from ultralytics import YOLOv10
 
 logger = logging.getLogger(__name__)
 
@@ -489,7 +489,7 @@ class ObjectDetection:
             model_path (str): Path to the YOLOv10 model file.
         """
         self.model_path = model_path
-        self.model = YOLO(self.model_path)
+        self.model = YOLOv10(self.model_path)
         logger.info(f"Initialized ObjectDetection with model: {self.model_path}")
 
     def detect_panels(
@@ -522,7 +522,34 @@ class ObjectDetection:
         if image is None:
             raise ValueError("Input image cannot be None")
 
-        logger.info("Detecting panels in image")
+        # Validate that image is a PIL Image, not a dict or other type
+        if isinstance(image, dict):
+            logger.error(f"detect_panels received a dict instead of PIL Image: {image}")
+            raise TypeError(
+                f"Expected PIL Image, but received dict with keys: {list(image.keys())}. "
+                "This usually means detect_panels was called with detection results instead of an image."
+            )
+
+        # Check for PIL Image attributes
+        if not (
+            hasattr(image, "mode")
+            and hasattr(image, "size")
+            and hasattr(image, "convert")
+        ):
+            logger.error(
+                f"detect_panels received invalid object: type={type(image).__name__}, "
+                f"has_mode={hasattr(image, 'mode')}, has_size={hasattr(image, 'size')}, "
+                f"has_convert={hasattr(image, 'convert')}, repr={repr(image)[:200]}"
+            )
+            raise TypeError(
+                f"Expected PIL Image, but received {type(image).__name__}. "
+                f"Object does not have required PIL Image attributes (mode, size, convert). "
+                f"Type: {type(image)}, Module: {type(image).__module__}"
+            )
+
+        logger.info(
+            f"Detecting panels in image - type: {type(image).__name__}, mode: {image.mode}, size: {image.size}"
+        )
 
         try:
             np_image = np.array(image)
