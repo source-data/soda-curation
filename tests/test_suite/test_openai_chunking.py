@@ -44,7 +44,7 @@ def test_get_token_limit():
     """Test getting token limits for different models."""
     # Test known models
     assert get_token_limit("gpt-4o") == 120000
-    assert get_token_limit("gpt-5") == 250000
+    assert get_token_limit("gpt-5") == 270000
 
     # Test unknown model (should return default)
     assert get_token_limit("unknown-model") == 120000

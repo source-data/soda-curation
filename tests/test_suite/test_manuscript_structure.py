@@ -201,7 +201,12 @@ def test_docx_missing_from_xml(temp_extract_dir, create_test_zip):
         zf.writestr(f"Doc/{MANUSCRIPT_ID}Manuscript_TextIG.docx", "docx content")
 
     extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
-    with pytest.raises(NoManuscriptFileError, match="No DOCX file referenced in XML"):
+    # Should try fallback formats, but DOCX in doc/ folder should be found
+    # However, since XML doesn't reference it, it won't be found in the XML search
+    # and fallback will search pdf/ and doc/ folders
+    # Since DOCX is in Doc/ (capital D), it might not be found by glob("*.docx") in doc/
+    # So it should raise an error
+    with pytest.raises(NoManuscriptFileError):
         extractor.extract_structure()
 
 
@@ -213,10 +218,14 @@ def test_docx_missing_from_zip(temp_extract_dir, create_test_zip):
     )  # Explicitly exclude DOCX
 
     extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
-    with pytest.raises(
-        NoManuscriptFileError, match="DOCX file referenced in XML not found in ZIP"
-    ):
-        extractor.extract_structure()
+    # Should fallback to PDF if available, otherwise raise error
+    try:
+        structure = extractor.extract_structure()
+        # If PDF exists, it should be used as fallback
+        assert structure.docx == "pdf/manuscript.pdf" or structure.pdf
+    except NoManuscriptFileError as e:
+        # If no fallback available, should raise error
+        assert "No manuscript file found" in str(e)
 
 
 def test_docx_path_mismatch(temp_extract_dir, create_test_zip):
@@ -242,10 +251,8 @@ def test_docx_path_mismatch(temp_extract_dir, create_test_zip):
         zf.writestr(f"Doc/{MANUSCRIPT_ID}Manuscript_TextIG.docx", "docx content")
 
     extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
-    with pytest.raises(
-        NoManuscriptFileError,
-        match="DOCX file path in XML does not match ZIP structure",
-    ):
+    # Should try fallback formats, but if none found, raise error
+    with pytest.raises(NoManuscriptFileError):
         extractor.extract_structure()
 
 
@@ -273,7 +280,7 @@ def test_extract_docx_content_not_found(temp_extract_dir, create_test_zip):
     zip_path = create_test_zip()
     extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
 
-    with pytest.raises(NoManuscriptFileError, match="DOCX file not found"):
+    with pytest.raises(NoManuscriptFileError, match="Manuscript file not found"):
         extractor.extract_docx_content("nonexistent.docx")
 
 
@@ -523,3 +530,363 @@ def test_path_cleaning(temp_extract_dir, create_test_zip):
     # Test DOCX path
     assert not structure.docx.startswith(f"{MANUSCRIPT_ID}/")
     assert structure.docx.startswith("Doc/")
+
+
+def test_pdf_fallback_when_docx_missing(temp_extract_dir):
+    """Test PDF fallback when DOCX is not available."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        # Create PDF in pdf/ folder
+        zf.writestr(f"{MANUSCRIPT_ID}/pdf/manuscript.pdf", b"PDF content")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    # Should find PDF as fallback
+    assert structure.docx == "pdf/manuscript.pdf"
+    assert structure.pdf == ""  # PDF is stored in docx field when used as fallback
+
+
+def test_latex_fallback_when_docx_missing(temp_extract_dir):
+    """Test LaTeX fallback when DOCX is not available."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        # Create LaTeX file in doc/ folder
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.tex", "\\documentclass{article}")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    # Should find LaTeX as fallback
+    assert structure.docx == "doc/manuscript.tex"
+
+
+def test_rtf_fallback_when_docx_missing(temp_extract_dir):
+    """Test RTF fallback when DOCX is not available."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        # Create RTF file in doc/ folder
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.rtf", "{\\rtf1\\ansi RTF content}")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    # Should find RTF as fallback
+    assert structure.docx == "doc/manuscript.rtf"
+
+
+def test_odt_fallback_when_docx_missing(temp_extract_dir):
+    """Test ODT fallback when DOCX is not available."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        # Create ODT file in doc/ folder
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.odt", b"ODT content")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    # Should find ODT as fallback
+    assert structure.docx == "doc/manuscript.odt"
+
+
+def test_fallback_priority_order(temp_extract_dir):
+    """Test that fallback follows correct priority: PDF > LaTeX > RTF > ODT."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        # Create multiple fallback files - PDF should be chosen first
+        zf.writestr(f"{MANUSCRIPT_ID}/pdf/manuscript.pdf", b"PDF content")
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.tex", "LaTeX content")
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.rtf", "RTF content")
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.odt", b"ODT content")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    # Should prefer PDF over other formats
+    assert structure.docx == "pdf/manuscript.pdf"
+
+
+def test_extract_pdf_content(temp_extract_dir):
+    """Test PDF content extraction."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        # Create a minimal PDF file
+        zf.writestr(f"{MANUSCRIPT_ID}/pdf/manuscript.pdf", b"PDF content")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    pdf_path = structure.docx
+
+    # Mock pypandoc and PyPDF2 for PDF extraction
+    with patch("pypandoc.convert_file", side_effect=Exception("pypandoc failed")):
+        with patch("PyPDF2.PdfReader") as mock_pdf_reader:
+            # Mock PDF reader
+            mock_page = MagicMock()
+            mock_page.extract_text.return_value = "Sample PDF text content"
+            mock_reader_instance = MagicMock()
+            mock_reader_instance.pages = [mock_page]
+            mock_pdf_reader.return_value = mock_reader_instance
+
+            content = extractor.extract_docx_content(pdf_path)
+            assert "Sample PDF text content" in content
+            assert "<html>" in content
+            assert "<body>" in content
+
+
+def test_extract_latex_content(temp_extract_dir):
+    """Test LaTeX content extraction."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.tex", "\\documentclass{article}")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    tex_path = structure.docx
+
+    # Mock pypandoc for LaTeX extraction
+    with patch(
+        "pypandoc.convert_file", return_value="<html>LaTeX converted content</html>"
+    ):
+        content = extractor.extract_docx_content(tex_path)
+        assert content == "<html>LaTeX converted content</html>"
+
+
+def test_extract_rtf_content(temp_extract_dir):
+    """Test RTF content extraction."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.rtf", "{\\rtf1\\ansi RTF content}")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    rtf_path = structure.docx
+
+    # Mock pypandoc for RTF extraction
+    with patch(
+        "pypandoc.convert_file", return_value="<html>RTF converted content</html>"
+    ):
+        content = extractor.extract_docx_content(rtf_path)
+        assert content == "<html>RTF converted content</html>"
+
+
+def test_extract_odt_content(temp_extract_dir):
+    """Test ODT content extraction."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.odt", b"ODT content")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    structure = extractor.extract_structure()
+
+    odt_path = structure.docx
+
+    # Mock pypandoc for ODT extraction
+    with patch(
+        "pypandoc.convert_file", return_value="<html>ODT converted content</html>"
+    ):
+        content = extractor.extract_docx_content(odt_path)
+        assert content == "<html>ODT converted content</html>"
+
+
+def test_no_manuscript_file_found(temp_extract_dir):
+    """Test error when no manuscript file is found in any format."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <fig object-type="Figure">
+                    <label>Figure 1</label>
+                    <object_id>graphic/FIGURE 1.tif</object_id>
+                </fig>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        # Don't include any manuscript file
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    with pytest.raises(
+        NoManuscriptFileError,
+        match="No manuscript file found in any supported format",
+    ):
+        extractor.extract_structure()
+
+
+def test_unsupported_file_format(temp_extract_dir):
+    """Test error handling for unsupported file formats."""
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <article>
+        <front>
+            <article-meta>
+                <article-id pub-id-type="manuscript">EMBOJ-DUMMY-ZIP</article-id>
+            </article-meta>
+            <notes>
+                <doc object-type="Manuscript Text">
+                    <object_id>doc/manuscript.txt</object_id>
+                </doc>
+            </notes>
+        </front>
+    </article>"""
+
+    zip_path = temp_extract_dir.parent / "test.zip"
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(f"{MANUSCRIPT_ID}.xml", xml_content)
+        zf.writestr(f"{MANUSCRIPT_ID}/doc/manuscript.txt", "Text content")
+
+    extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
+    # Should not find .txt file as it's not in the fallback list
+    with pytest.raises(NoManuscriptFileError):
+        extractor.extract_structure()

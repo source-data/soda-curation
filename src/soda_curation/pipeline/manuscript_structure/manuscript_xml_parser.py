@@ -115,15 +115,20 @@ class XMLStructureExtractor:
 
     def _get_docx_file(self) -> str:
         """
-        Get the DOCX manuscript file path from XML and verify it exists in ZIP.
+        Get the manuscript file path from XML with fallback support for multiple formats.
+
+        Searches for files in this order:
+        1. DOCX file referenced in XML (in doc/ folder)
+        2. PDF file (in pdf/ folder)
+        3. LaTeX, RTF, ODT files (in doc/ folder)
 
         Returns:
-            str: Path to DOCX file as referenced in XML (without manuscript ID prefix)
+            str: Path to manuscript file (without manuscript ID prefix)
 
         Raises:
-            NoManuscriptFileError: If DOCX file is not found or there's a mismatch
+            NoManuscriptFileError: If no manuscript file is found in any supported format
         """
-        # Find DOCX reference in XML
+        # First, try to find DOCX reference in XML
         xpath_query = " | ".join(
             [f"//doc[@object-type='{type}']" for type in self.MANUSCRIPT_TEXT_TYPES]
             + [
@@ -138,26 +143,60 @@ class XMLStructureExtractor:
 
         for element in manuscript_elements:
             object_id = element.xpath(".//object_id")
-            if object_id and object_id[0].text.lower().endswith(".docx"):
+            if object_id:
                 raw_path = object_id[0].text
-                docx_path = self._clean_path(raw_path)
-                break
+                cleaned_path = self._clean_path(raw_path)
+                full_path = self.manuscript_extract_dir / cleaned_path
 
-        if not docx_path:
-            raise NoManuscriptFileError("No DOCX file referenced in XML")
+                # Check if DOCX exists
+                if raw_path.lower().endswith(".docx") and full_path.exists():
+                    docx_path = cleaned_path
+                    logger.info(f"Found DOCX file: {docx_path}")
+                    return docx_path
 
-        # Verify DOCX exists in extracted ZIP content
-        full_path = self.manuscript_extract_dir / docx_path
-        if not full_path.exists():
-            # For test differentiation - if path contains unexpected structure, it's a path mismatch
-            if any(x in docx_path for x in ["wrong/path", "incorrect"]):
-                raise NoManuscriptFileError(
-                    "DOCX file path in XML does not match ZIP structure"
-                )
-            # Otherwise, file is referenced but missing
-            raise NoManuscriptFileError("DOCX file referenced in XML not found in ZIP")
+        # If DOCX not found, try fallback formats
+        logger.warning("DOCX file not found, searching for fallback formats...")
+        # Try PDF in pdf/ folder
+        pdf_folder = self.manuscript_extract_dir / "pdf"
+        if pdf_folder.exists():
+            pdf_files = list(pdf_folder.glob("*.pdf"))
+            if pdf_files:
+                pdf_path = pdf_files[0].relative_to(self.manuscript_extract_dir)
+                logger.info(f"Found PDF file as fallback: {pdf_path}")
+                return str(pdf_path)
 
-        return docx_path  # Return the cleaned path instead of raw_path
+        # Try other formats in doc/ folder
+        doc_folder = self.manuscript_extract_dir / "doc"
+        if doc_folder.exists():
+            # Try LaTeX (.tex)
+            tex_files = list(doc_folder.glob("*.tex"))
+            if tex_files:
+                tex_path = tex_files[0].relative_to(self.manuscript_extract_dir)
+                logger.info(f"Found LaTeX file as fallback: {tex_path}")
+                return str(tex_path)
+
+            # Try RTF
+            rtf_files = list(doc_folder.glob("*.rtf"))
+            if rtf_files:
+                rtf_path = rtf_files[0].relative_to(self.manuscript_extract_dir)
+                logger.info(f"Found RTF file as fallback: {rtf_path}")
+                return str(rtf_path)
+
+            # Try ODT
+            odt_files = list(doc_folder.glob("*.odt"))
+            if odt_files:
+                odt_path = odt_files[0].relative_to(self.manuscript_extract_dir)
+                logger.info(f"Found ODT file as fallback: {odt_path}")
+                return str(odt_path)
+
+        # If nothing found, raise error
+        if docx_path:
+            raise NoManuscriptFileError(
+                f"DOCX file referenced in XML not found in ZIP: {docx_path}"
+            )
+        raise NoManuscriptFileError(
+            "No manuscript file found in any supported format (DOCX, PDF, LaTeX, RTF, ODT)"
+        )
 
     def _get_source_data_files(self, figure_label: str) -> List[str]:
         """Get source data files associated with a figure."""
@@ -265,7 +304,10 @@ class XMLStructureExtractor:
 
     def _get_xml_file(self) -> str:
         """Get name of the XML file."""
-        return os.path.basename(self.xml_content.base)
+        base = getattr(self.xml_content, "base", None)
+        if base:
+            return str(os.path.basename(base))
+        return ""
 
     def _get_pdf_file(self) -> str:
         """Get PDF file path from XML."""
@@ -321,14 +363,94 @@ class XMLStructureExtractor:
         return figures
 
     def extract_docx_content(self, docx_path: str) -> str:
-        """Extract content from DOCX file."""
+        """
+        Extract content from manuscript file, supporting multiple formats.
+
+        Supports: DOCX, PDF, LaTeX (.tex), RTF, ODT
+
+        Args:
+            docx_path: Path to manuscript file (may be DOCX, PDF, LaTeX, RTF, or ODT)
+
+        Returns:
+            str: HTML content extracted from the file
+
+        Raises:
+            NoManuscriptFileError: If file is not found or extraction fails
+        """
         try:
-            # Use manuscript_extract_dir instead of extract_dir
             full_path = self.manuscript_extract_dir / docx_path
             if not full_path.exists():
-                raise NoManuscriptFileError(f"DOCX file not found at {full_path}")
+                raise NoManuscriptFileError(f"Manuscript file not found at {full_path}")
 
-            return pypandoc.convert_file(str(full_path), "html")
-        except Exception as e:
-            logger.error(f"Error extracting DOCX content: {str(e)}")
+            file_ext = full_path.suffix.lower()
+
+            # Use pypandoc for formats it supports (DOCX, RTF, ODT, LaTeX)
+            if file_ext in [".docx", ".rtf", ".odt", ".tex"]:
+                logger.info(f"Extracting content from {file_ext} file using pypandoc")
+                result = pypandoc.convert_file(str(full_path), "html")
+                return str(result) if result else ""
+
+            # Handle PDF separately
+            elif file_ext == ".pdf":
+                logger.info("Extracting content from PDF file")
+                return self._extract_pdf_content(full_path)
+
+            else:
+                raise NoManuscriptFileError(
+                    f"Unsupported file format: {file_ext}. "
+                    f"Supported formats: DOCX, PDF, LaTeX (.tex), RTF, ODT"
+                )
+
+        except NoManuscriptFileError:
             raise
+        except Exception as e:
+            logger.error(f"Error extracting content from {docx_path}: {str(e)}")
+            raise NoManuscriptFileError(
+                f"Failed to extract content from {docx_path}: {str(e)}"
+            )
+
+    def _extract_pdf_content(self, pdf_path: Path) -> str:
+        """
+        Extract text content from PDF file and convert to HTML.
+
+        Args:
+            pdf_path: Path to PDF file
+
+        Returns:
+            str: HTML content extracted from PDF
+        """
+        try:
+            # Try using pypandoc first (if it supports PDF)
+            try:
+                result = pypandoc.convert_file(str(pdf_path), "html")
+                return str(result) if result else ""
+            except Exception:
+                # Fallback to PyPDF2 if pypandoc doesn't support PDF
+                logger.info("Using PyPDF2 for PDF extraction")
+                import PyPDF2
+
+                html_content = ["<html><body>"]
+                with open(pdf_path, "rb") as file:
+                    pdf_reader = PyPDF2.PdfReader(file)
+                    for page_num, page in enumerate(pdf_reader.pages, 1):
+                        text = page.extract_text()
+                        if text.strip():
+                            html_content.append(
+                                f"<div class='page' data-page='{page_num}'>"
+                            )
+                            # Escape HTML and preserve line breaks
+                            text_html = (
+                                text.replace("&", "&amp;")
+                                .replace("<", "&lt;")
+                                .replace(">", "&gt;")
+                                .replace("\n", "<br/>")
+                            )
+                            html_content.append(f"<p>{text_html}</p>")
+                            html_content.append("</div>")
+
+                html_content.append("</body></html>")
+                return "\n".join(html_content)
+
+        except Exception as e:
+            logger.error(f"Error extracting PDF content: {str(e)}")
+            raise NoManuscriptFileError(f"Failed to extract content from PDF: {str(e)}")

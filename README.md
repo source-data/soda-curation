@@ -788,6 +788,22 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 2.4.0 (2026-01-28)
+- **Automatic Request Chunking**: Implemented automatic chunking for large OpenAI API requests that exceed token limits
+- **Token Counting**: Added tiktoken integration for accurate token counting with fallback estimation
+- **Intelligent Chunking**: System automatically detects oversized requests and splits them into manageable chunks
+- **Response Merging**: Implemented seamless merging of chunked responses for Pydantic models (AsignedFilesList)
+- **Model-Specific Limits**: Added configurable token limits per model (GPT-5: 270k, GPT-4o: 120k)
+- **Error Handling**: Enhanced context_length_exceeded error handling with automatic fallback to chunking
+- **Comprehensive Testing**: Added test suite for chunking functionality with 15+ test cases
+- **Fixes**: Resolves issue where manuscripts with large source data files (6500+ files) exceeded token limits
+- **Backward Compatible**: All existing functionality preserved, chunking is transparent to users
+- **Document Format Fallback**: Added support for multiple manuscript file formats with automatic fallback
+  - Primary: DOCX files (in doc/ folder)
+  - Fallback 1: PDF files (in pdf/ folder)
+  - Fallback 2: LaTeX (.tex), RTF, ODT files (in doc/ folder)
+  - Automatic text extraction from all supported formats using pypandoc and PyPDF2
+
 ### 2.3.1 (2025-07-23)
 - **Bug Fix**: Fixed CI test failures in `test_prompt_registry.py` due to incorrect attribute references
 - **Test Fix**: Updated tests to use `prompt_file` instead of non-existent `prompt_number` attribute in PromptMetadata

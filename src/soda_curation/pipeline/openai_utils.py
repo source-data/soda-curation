@@ -353,9 +353,16 @@ def merge_pydantic_responses(
                 logger.error("Failed to parse response content as JSON")
                 parsed_objects.append(None)
 
-    # Check if we're dealing with AsignedFilesList (common case)
-    if response_format and hasattr(response_format, "__name__"):
-        if response_format.__name__ == "AsignedFilesList":
+    # Check if we're dealing with a Pydantic model that has assigned_files and not_assigned_files
+    # This handles AsignedFilesList and similar models
+    if response_format and parsed_objects:
+        # Check if first parsed object has the structure we expect
+        first_obj = next((obj for obj in parsed_objects if obj is not None), None)
+        if (
+            first_obj
+            and hasattr(first_obj, "assigned_files")
+            and hasattr(first_obj, "not_assigned_files")
+        ):
             # Merge assigned files lists
             all_assigned_files = []
             all_not_assigned_files = []
@@ -367,7 +374,7 @@ def merge_pydantic_responses(
                     if hasattr(obj, "not_assigned_files"):
                         all_not_assigned_files.extend(obj.not_assigned_files)
 
-            # Create merged response using the first response as template
+            # Create merged response using the response format class
             merged = response_format(
                 assigned_files=all_assigned_files,
                 not_assigned_files=all_not_assigned_files,
