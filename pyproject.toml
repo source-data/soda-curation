@@ -42,6 +42,7 @@ ultralytics = {git = "https://github.com/ultralytics/ultralytics.git", rev = "ma
 Wand = "0.6.13"
 soda-mmqc = {git = "https://github.com/source-data/soda-mmQC.git", rev = "dev"}
 datamodel-code-generator = "^0.31.2"
+tiktoken = "^0.8.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.0"
