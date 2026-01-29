@@ -69,15 +69,22 @@ class ModelAPI:
 
         # Add expected panels instruction if provided
         if expected_panels:
-            panels_instruction = (
-                f"\n\n**IMPORTANT CONSTRAINT**: The `panel_label` field in your response MUST be EXACTLY "
-                f"one of the following valid panel labels for this figure: {expected_panels}. "
-                f"Do NOT use any other labels, sub-panel labels (like 'A-a', 'A-b'), descriptive labels "
-                f"(like 'Rice cell', 'Figure 8'), or panel labels with modifiers (like 'C (plot)', 'C (right)'). "
-                f"Use ONLY the exact labels from this list: {expected_panels}"
+            panels_constraint = (
+                f"**CRITICAL PANEL LABEL CONSTRAINT**:\n"
+                f"The output panel labels for this task MUST be exactly equal to "
+                f"those defined for this figure. The allowed panel labels are: {expected_panels}\n"
+                f"Rules:\n"
+                f"- You MUST ONLY use panel labels from the list above.\n"
+                f"- Do NOT invent new panel labels or subdivisions.\n"
+                f"- Do NOT use sub-panel labels (e.g., 'A-a', 'A-b', 'A-l').\n"
+                f"- Do NOT use descriptive labels (e.g., 'Rice cell', 'Figure 8').\n"
+                f"- Do NOT add modifiers to labels (e.g., 'C (plot)', 'C (right)').\n"
+                f"- Each `panel_label` in your response MUST be exactly one of: {expected_panels}\n"
             )
-            system_prompt += panels_instruction
-            user_prompt += panels_instruction
+            # Prepend to system prompt so it acts as a ground rule
+            system_prompt = panels_constraint + "\n" + system_prompt
+            # Append to user prompt for reinforcement
+            user_prompt += "\n\n" + panels_constraint
 
         # Determine the type of analysis and create appropriate messages
         if encoded_image is not None and caption is not None:

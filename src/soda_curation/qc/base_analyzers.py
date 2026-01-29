@@ -98,6 +98,9 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
             # Process and validate the response
             result = self.process_response(response)
 
+            # Filter out panels with labels not in expected_panels
+            result = self._filter_valid_panels(result, expected_panels)
+
             # Check if the test passed
             passed = self.check_test_passed(result)
 
@@ -106,6 +109,47 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
         except Exception as e:
             logger.error(f"Error analyzing figure with {self.test_name}: {str(e)}")
             return False, self.create_empty_result()
+
+    @staticmethod
+    def _filter_valid_panels(
+        result: Dict, expected_panels: Optional[List[str]]
+    ) -> Dict:
+        """Filter response outputs to only include panels with valid labels.
+
+        Args:
+            result: Parsed response dict with an "outputs" list.
+            expected_panels: Allowed panel labels for this figure.
+
+        Returns:
+            The result dict with invalid-label outputs removed.
+        """
+        if not expected_panels or not isinstance(result, dict):
+            return result
+
+        outputs = result.get("outputs", [])
+        if not outputs:
+            return result
+
+        valid_outputs = []
+        for panel in outputs:
+            # Extract panel_label from dict or object
+            if isinstance(panel, dict):
+                label = panel.get("panel_label")
+            elif hasattr(panel, "panel_label"):
+                label = panel.panel_label
+            else:
+                label = None
+
+            if label in expected_panels:
+                valid_outputs.append(panel)
+            else:
+                logger.warning(
+                    f"Discarded panel with invalid label '{label}' "
+                    f"(expected one of {expected_panels})"
+                )
+
+        result["outputs"] = valid_outputs
+        return result
 
     def process_response(self, response: Any) -> Any:
         """Process the response from the model API."""
