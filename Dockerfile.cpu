@@ -82,8 +82,9 @@ COPY pyproject.toml poetry.lock* ./
 COPY src ./src
 COPY ./data/models/panel_detection_model_no_labels.pt /app/data/models/
 
-# Install dependencies and the package
-RUN poetry install --no-interaction --no-ansi --no-root
+# Create virtualenv explicitly before poetry uses it (VIRTUAL_ENV is pre-set in ENV)
+RUN python -m venv $VENV_PATH \
+    && poetry install --no-interaction --no-ansi --no-root
 
 # Install PyTorch for ARM/CPU
 RUN poetry run pip install --no-cache-dir \
