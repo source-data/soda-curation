@@ -1,5 +1,5 @@
 # Use a CPU-only Python image as the base image
-FROM python:3.9-slim-bullseye as base
+FROM python:3.9-slim-bullseye AS base
 
 # Set work directory
 WORKDIR /app
@@ -83,8 +83,7 @@ COPY src ./src
 COPY ./data/models/panel_detection_model_no_labels.pt /app/data/models/
 
 # Install dependencies and the package
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi --no-root
+RUN poetry install --no-interaction --no-ansi --no-root
 
 # Install PyTorch for ARM/CPU
 RUN poetry run pip install --no-cache-dir \
@@ -116,7 +115,7 @@ COPY config.qc.yaml /app/config.qc.yaml
 COPY config/ /app/config/
 
 # Set PYTHONPATH
-ENV PYTHONPATH=/app/src:$PYTHONPATH
+ENV PYTHONPATH=/app/src
 
 # Verify key package installations (including ImageMagick)
 RUN convert --version
@@ -132,11 +131,11 @@ RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__versio
 COPY .env.* /app/
 
 # Development stage
-FROM base as development
+FROM base AS development
 # No need to duplicate configuration here since it's already in base
 
 # Formatting and linting stage
-FROM base as formatting
+FROM base AS formatting
 
 # Install development dependencies (including formatting tools)
 RUN poetry install --with dev
@@ -150,7 +149,7 @@ RUN chmod +x /app/format_and_lint.sh
 ENTRYPOINT ["/app/format_and_lint.sh"]
 
 # Testing stage
-FROM base as testing
+FROM base AS testing
 
 # Copy test files
 COPY tests ./tests
