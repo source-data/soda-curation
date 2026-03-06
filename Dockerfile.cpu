@@ -82,7 +82,7 @@ COPY src ./src
 COPY ./data/models/panel_detection_model_no_labels.pt /app/data/models/
 
 # Install dependencies and the package
-RUN poetry install --no-interaction --no-ansi --no-root -vvv
+RUN poetry install --no-interaction --no-ansi --no-root
 
 # Install PyTorch for ARM/CPU
 RUN poetry run pip install --no-cache-dir \
