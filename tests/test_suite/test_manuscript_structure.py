@@ -444,6 +444,31 @@ class TestManuscriptXMLParser(unittest.TestCase):
 
         self.assertEqual(sorted(source_data_files), sorted(expected_files))
 
+    def test_extract_multiple_object_ids_in_single_form(self):
+        """Test that all object_ids within a single form element are collected."""
+        xml_content = """
+        <article>
+            <notes>
+                <form id="3030804" object-type="Figure Source Data Files">
+                    <label>Figure 1 Source Data</label>
+                    <object_id>EMM-2023-18636/suppl_data/Figure_1_file1.zip</object_id>
+                    <object_id>EMM-2023-18636/suppl_data/Figure_1_file2.xlsx</object_id>
+                    <object_id>EMM-2023-18636/suppl_data/Figure_1_file3.csv</object_id>
+                </form>
+            </notes>
+        </article>
+        """
+        self.parser.xml_content = etree.fromstring(xml_content)
+
+        source_data_files = self.parser._get_source_data_files("Figure 1")
+
+        expected_files = [
+            "suppl_data/Figure_1_file1.zip",
+            "suppl_data/Figure_1_file2.xlsx",
+            "suppl_data/Figure_1_file3.csv",
+        ]
+        self.assertEqual(sorted(source_data_files), sorted(expected_files))
+
     def test_clean_path_handles_different_manuscript_ids(self):
         """Test that _clean_path removes different manuscript ID formats."""
         test_cases = [

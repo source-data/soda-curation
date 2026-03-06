@@ -214,10 +214,9 @@ class XMLStructureExtractor:
         )
 
         for sd_element in self.xml_content.xpath(xpath_query):
-            object_id = sd_element.xpath(".//object_id")
-            if object_id:
+            for object_id in sd_element.xpath(".//object_id"):
                 # Clean the path to remove manuscript ID prefix
-                raw_path = object_id[0].text
+                raw_path = object_id.text
                 cleaned_path = self._clean_path(raw_path)
                 source_data_files.append(cleaned_path)
 
