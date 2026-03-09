@@ -340,7 +340,9 @@ class PromptRegistry:
                         ):
                             return "document"
                         else:
-                            return "panel"  # Default for list types
+                            # Cannot determine from schema alone; let config-based
+                            # detection decide (checklist_type / config section)
+                            return None
 
                 # Single object output (figure-level)
                 else:
