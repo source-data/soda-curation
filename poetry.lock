@@ -6925,7 +6925,7 @@ name = "soda-mmqc"
 version = "0.1.0"
 description = "SODA MMQC: A tool for quality control of scientific figures"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.10"
 groups = ["main"]
 files = []
 develop = false
@@ -6948,17 +6948,20 @@ python-docx = ">=0.8.11"
 python-dotenv = ">=1.0.0"
 pyyaml = ">=6.0.0"
 scikit-learn = ">=1.3.0"
+scipy = ">=1.10.0"
 sentence-transformers = ">=2.2.2"
 streamlit = ">=1.34.0"
+streamlit-image-zoom = ">=0.0.4"
 tenacity = ">=8.2.0"
+torch = ">=2.0.0,<3"
 tqdm = "*"
 watchdog = ">=3.0.0"
 
 [package.source]
 type = "git"
 url = "https://github.com/source-data/soda-mmQC.git"
-reference = "dev"
-resolved_reference = "35e117d5be305e678690128cfb42fdc7377d1183"
+reference = "master"
+resolved_reference = "0784699ed7fb0a82e8c9a0e045123214fb6c5f32"
 
 [[package]]
 name = "soupsieve"
@@ -7167,6 +7170,23 @@ charts = ["graphviz (>=0.19.0)", "matplotlib (>=3.0.0)", "orjson (>=3.5.0)", "pl
 pdf = ["streamlit-pdf (>=1.0.0)"]
 snowflake = ["snowflake-connector-python (>=3.3.0) ; python_version < \"3.12\"", "snowflake-snowpark-python[modin] (>=1.17.0) ; python_version < \"3.12\""]
 sql = ["SQLAlchemy (>=2.0.0)"]
+
+[[package]]
+name = "streamlit-image-zoom"
+version = "0.0.4"
+description = "A Streamlit Component to display an image with interactive zoom functionality."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "streamlit_image_zoom-0.0.4-py3-none-any.whl", hash = "sha256:6e0a763c52729f452bd3bc2ea22eff1fa090bdb6cfa3c3f7141b8f9c1db11c28"},
+    {file = "streamlit_image_zoom-0.0.4.tar.gz", hash = "sha256:ebd613e1656fbfd83cf38536c0218dc776b805c7a20c5a372797962b04c2c616"},
+]
+
+[package.dependencies]
+numpy = "*"
+Pillow = "*"
+streamlit = "*"
 
 [[package]]
 name = "sympy"
@@ -8498,4 +8518,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "27d5cf6a31ec6b5a46d761a8a601d975eeb8388b856bd73721049aa141c40383"
+content-hash = "f0ca0c3ec4e5f08934a834e99a5fe5b4b9a0a2031127d07ca2b4568b72f6cf70"
