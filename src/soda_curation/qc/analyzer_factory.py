@@ -97,9 +97,28 @@ class AnalyzerFactory:
 
     @classmethod
     def _determine_test_type(cls, test_name: str, config: Dict) -> str:
-        """Determine the test type based on schema structure, config structure, and test name."""
+        """Determine the test type based on config structure, schema, and test name.
 
-        # First, try to determine test type from schema structure
+        Priority order:
+        1. Config section membership (panel/figure/document) — authoritative
+        2. Schema-based inspection — fallback for tests not in config
+        3. Naming conventions — last resort
+        """
+
+        # First, check which section of qc_check_metadata contains this test.
+        # The config is the authoritative source of truth.
+        if "qc_check_metadata" in config:
+            panel_tests = config["qc_check_metadata"].get("panel", {})
+            if panel_tests and test_name in panel_tests:
+                return "panel"
+            figure_tests = config["qc_check_metadata"].get("figure", {})
+            if figure_tests and test_name in figure_tests:
+                return "figure"
+            document_tests = config["qc_check_metadata"].get("document", {})
+            if document_tests and test_name in document_tests:
+                return "document"
+
+        # Second, try schema-based detection (for tests not listed in config)
         try:
             schema_type = cls._determine_type_from_schema(test_name)
             if schema_type:
@@ -112,26 +131,12 @@ class AnalyzerFactory:
                 f"Could not determine type from schema for {test_name}: {str(e)}"
             )
 
-        # Second, check if the test is in the qc_check_metadata structure
-        if "qc_check_metadata" in config:
-            # Check each level
-            panel_tests = config["qc_check_metadata"].get("panel", {})
-            if panel_tests and test_name in panel_tests:
-                return "panel"
-            figure_tests = config["qc_check_metadata"].get("figure", {})
-            if figure_tests and test_name in figure_tests:
-                return "figure"
-
-            document_tests = config["qc_check_metadata"].get("document", {})
-            if document_tests and test_name in document_tests:
-                return "document"
-
         # Third, check if there's an explicit test_type in the test config
         test_config = config.get("default", {}).get("pipeline", {}).get(test_name, {})
         if "test_type" in test_config:
             return test_config["test_type"]
 
-        # Use naming conventions as fallback
+        # Use naming conventions as last resort
         if test_name.startswith("manuscript_") or test_name.startswith("document_"):
             return "document"
         elif test_name.startswith("figure_"):
