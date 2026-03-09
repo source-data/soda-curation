@@ -18,4 +18,5 @@ services:
       - .env.dev
     volumes:
       - ./:/app/
+      - /app/.venv
     command: tail -f /dev/null
