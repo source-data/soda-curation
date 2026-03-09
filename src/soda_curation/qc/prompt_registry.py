@@ -46,12 +46,27 @@ class PromptRegistry:
         self, mmqc_path: Optional[str] = None, config: Optional[Dict[str, Any]] = None
     ):
         # Use provided path, env variable, or default to neighboring directory
-        self.mmqc_path = Path(
+        configured_path = Path(
             mmqc_path
             or os.environ.get("SODA_MMQC_PATH")
             or Path(__file__).parents[4] / "soda-mmQC"
         )
-        self.base_data_path = self.mmqc_path / "soda_mmqc" / "data" / "checklist"
+        # If configured path doesn't exist, fall back to the installed soda_mmqc package
+        if configured_path.exists():
+            self.mmqc_path = configured_path
+            self.base_data_path = self.mmqc_path / "soda_mmqc" / "data" / "checklist"
+        else:
+            try:
+                import soda_mmqc as _soda_mmqc_pkg
+
+                pkg_dir = Path(_soda_mmqc_pkg.__file__).parent
+                self.mmqc_path = pkg_dir.parent
+                self.base_data_path = pkg_dir / "data" / "checklist"
+            except ImportError:
+                self.mmqc_path = configured_path
+                self.base_data_path = (
+                    self.mmqc_path / "soda_mmqc" / "data" / "checklist"
+                )
         self._model_cache: Dict[str, Type[BaseModel]] = {}
         self._benchmark_cache: Dict[
             str, BenchmarkMetadata
