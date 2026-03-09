@@ -59,7 +59,7 @@ qc_check_metadata:
       checklist_type: "doc-checklist"
     external_data_url_validation_agentic:
       name: "Validation of external URLs"
-      prompt_file: "prompt.1.txt"
+      prompt_file: "prompt1.txt"
       checklist_type: "doc-checklist"
     no_overclaim_in_abstract:
       name: "Abstract Does not Show Overclaims"

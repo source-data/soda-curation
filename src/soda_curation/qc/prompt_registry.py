@@ -364,8 +364,10 @@ class PromptRegistry:
         if "format" in schema and "schema" in schema["format"]:
             schema = schema["format"]["schema"]
 
-        # Convert test_name to a valid Python class name
-        clean_name = model_name.replace("-", "_").title().replace("_", "")
+        # Convert test_name to a valid Python class name (replace dots and hyphens)
+        clean_name = (
+            model_name.replace(".", "_").replace("-", "_").title().replace("_", "")
+        )
 
         # Create temporary files for output
         with tempfile.NamedTemporaryFile(
@@ -392,7 +394,7 @@ class PromptRegistry:
                     code = f.read()
 
                 # Create a module from the generated code
-                module_name = f"soda_curation_generated_{model_name.replace('-', '_')}"
+                module_name = f"soda_curation_generated_{model_name.replace('-', '_').replace('.', '_')}"
                 spec = importlib.util.spec_from_loader(module_name, loader=None)
                 if spec is None:
                     raise ImportError(f"Failed to create module spec for {module_name}")
