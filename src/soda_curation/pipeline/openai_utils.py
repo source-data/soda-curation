@@ -62,6 +62,28 @@ def is_context_length_error(error: Exception) -> bool:
     return any(indicator in error_message for indicator in context_indicators)
 
 
+def is_safety_block_error(error: Exception) -> bool:
+    """
+    Check if the error is a content safety block (e.g. gpt-5 refusing
+    sensitive biological content with HTTP 400 / invalid_prompt).
+
+    Args:
+        error: The exception to check
+
+    Returns:
+        True if the error is a safety/content-policy refusal
+    """
+    error_message = str(error).lower()
+    safety_indicators = [
+        "invalid_prompt",
+        "safety reasons",
+        "limited access to this content",
+        "content_policy_violation",
+        "content policy",
+    ]
+    return any(indicator in error_message for indicator in safety_indicators)
+
+
 def count_tokens(text: str, model: str = "gpt-4o") -> int:
     """
     Count the number of tokens in a text string for a given model.
@@ -717,8 +739,29 @@ def _call_openai_single(
                     json_mode=json_mode,
                     fallback_model=fallback_model,
                 )
+        elif is_safety_block_error(e) and model != fallback_model:
+            # Safety/content-policy block — retry with fallback model (e.g. gpt-4o)
+            logger.warning(
+                f"Safety block from model {model}, retrying with fallback {fallback_model}: {str(e)}"
+            )
+            fallback_params = prepare_model_params(
+                model=fallback_model,
+                messages=messages,
+                response_format=response_format,
+                temperature=temperature,
+                top_p=top_p,
+                frequency_penalty=frequency_penalty,
+                presence_penalty=presence_penalty,
+                max_tokens=max_tokens,
+                json_mode=json_mode,
+            )
+            response = client.beta.chat.completions.parse(**fallback_params)
+            logger.info(
+                f"Successfully completed API call with fallback model: {fallback_model}"
+            )
+            return response
         else:
-            # Re-raise non-context-length errors
+            # Re-raise other errors
             logger.error(f"Non-context-length error with model {model}: {str(e)}")
             raise e
 
