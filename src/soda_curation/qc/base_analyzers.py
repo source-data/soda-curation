@@ -306,6 +306,10 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
                 self.test_name
             )
 
+            # Set user prompt template: manuscript text is always the user message
+            if "user" not in test_config["openai"]["prompts"]:
+                test_config["openai"]["prompts"]["user"] = "$manuscript_text"
+
             # Extract word file content from zip_structure or provided path
             word_file_content = self.extract_word_file_content(
                 zip_structure, word_file_path
