@@ -109,6 +109,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
         # Extract captions from figures (second pipeline step)
         manuscript_content = extractor.extract_docx_content(zip_structure.docx)
+        zip_structure.manuscript_text = manuscript_content
         prompt_handler = PromptHandler(config_loader.config["pipeline"])
 
         # Extract relevant sections for the pipeline

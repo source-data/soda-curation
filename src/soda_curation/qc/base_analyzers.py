@@ -335,6 +335,15 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
     ) -> str:
         """Extract text content from word file in the manuscript structure."""
         try:
+            # Use pre-extracted manuscript text stored in zip_structure (preferred)
+            if (
+                not word_file_path
+                and zip_structure
+                and hasattr(zip_structure, "manuscript_text")
+                and zip_structure.manuscript_text
+            ):
+                return zip_structure.manuscript_text
+
             # Import python-docx for reading Word documents
             from docx import Document
 

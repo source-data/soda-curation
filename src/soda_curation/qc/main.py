@@ -113,15 +113,26 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Ensure Word document path is set for manuscript analysis
-    word_file_path = (
-        args.word_document
-        or "data/output/240429 EMM  DUSP6 targeting abrogates HER3 R2.docx"
-    )
-    if zip_structure and Path(word_file_path).exists():
+    word_file_path = args.word_document
+    if not word_file_path and zip_structure:
+        # Construct full path from manuscript_id + relative docx path
+        if (
+            hasattr(zip_structure, "manuscript_id")
+            and zip_structure.manuscript_id
+            and hasattr(zip_structure, "docx")
+            and zip_structure.docx
+        ):
+            word_file_path = str(
+                Path("data/archives") / zip_structure.manuscript_id / zip_structure.docx
+            )
+
+    if word_file_path and zip_structure and Path(word_file_path).exists():
         zip_structure._full_docx = word_file_path
         logger.info("Word document path set to: %s", word_file_path)
     elif word_file_path:
         logger.warning("Word document not found at: %s", word_file_path)
+    else:
+        logger.warning("No word document path could be determined")
 
     # Run the QC pipeline
     logger.info("Starting QC pipeline")

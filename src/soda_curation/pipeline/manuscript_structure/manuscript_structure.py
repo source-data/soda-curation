@@ -140,6 +140,7 @@ class ZipStructure:
     _full_pdf: str = ""
     ai_provider: str = ""
     cost: ProcessingCost = field(default_factory=ProcessingCost)
+    manuscript_text: str = ""
 
     def __post_init__(self):
         """Initialize any attributes that might be missing."""
