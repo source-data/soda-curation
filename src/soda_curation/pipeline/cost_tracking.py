@@ -5,12 +5,14 @@ from typing import Any
 from ..pipeline.manuscript_structure.manuscript_structure import TokenUsage
 
 pricing = {
+    # OpenAI models (USD per 1M tokens)
     "gpt-4o": {"input_tokens": 5.00, "output_tokens": 10.00},
     "gpt-4o-mini": {"input_tokens": 0.15, "output_tokens": 0.60},
-    "gpt-5": {
-        "input_tokens": 5.00,
-        "output_tokens": 15.00,
-    },  # Placeholder pricing for GPT-5
+    "gpt-5": {"input_tokens": 5.00, "output_tokens": 15.00},
+    # Anthropic Claude models (USD per 1M tokens)
+    "claude-opus-4-6": {"input_tokens": 15.00, "output_tokens": 75.00},
+    "claude-sonnet-4-6": {"input_tokens": 3.00, "output_tokens": 15.00},
+    "claude-haiku-4-5": {"input_tokens": 0.25, "output_tokens": 1.25},
 }
 
 

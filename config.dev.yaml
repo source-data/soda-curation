@@ -3,6 +3,8 @@
 ##########################################################
 include_qc: true
 environment: "dev"
+# AI provider: "openai" (default) or "anthropic"
+ai_provider: "openai"
 default: &default
   pipeline:
     ##########################################################
@@ -84,6 +86,11 @@ default: &default
             Extract the figure legends and data availability sections VERBATIM from the manuscript.
             Use the verification tool to ensure your extractions are exactly as they appear in the document.
 
+      anthropic:
+        model: "claude-sonnet-4-6"
+        temperature: 0.1
+        max_tokens: 16384
+
     ##########################################################
     # 2) Extract Individual Captions Step
     ##########################################################
@@ -134,6 +141,11 @@ default: &default
             
             Remember to verify your extraction is verbatim using the verification tool.
 
+      anthropic:
+        model: "claude-sonnet-4-6"
+        temperature: 0.1
+        max_tokens: 4096
+
     extract_panel_sequence:
       openai:
         model: "gpt-4o"
@@ -182,7 +194,12 @@ default: &default
             
             $figure_caption
             
-            Make sure to include ALL panels and verify that your panel sequence is complete without gaps using the verification tool. 
+            Make sure to include ALL panels and verify that your panel sequence is complete without gaps using the verification tool.
+      anthropic:
+        model: "claude-sonnet-4-6"
+        temperature: 0.1
+        max_tokens: 4096
+
     ##########################################################
     extract_data_sources:
       openai:
@@ -292,6 +309,11 @@ default: &default
             Extract all database sources and their details from this Data Availability section:
 
             $data_availability
+      anthropic:
+        model: "claude-sonnet-4-6"
+        temperature: 0.1
+        max_tokens: 2048
+
     ##########################################################
     # 4) Assign Panel Source Step
     ##########################################################
@@ -364,6 +386,11 @@ default: &default
 
             File list: $file_list
 
+      anthropic:
+        model: "claude-sonnet-4-6"
+        temperature: 0.3
+        max_tokens: 2048
+
     ##########################################################
     # 5) Match Caption Panel Step
     ##########################################################
@@ -406,6 +433,10 @@ default: &default
 
             Based on the image content and the caption text, identify which panel this represents and provide its specific caption maintaining scientific accuracy and completeness."""
 
+      anthropic:
+        model: "claude-sonnet-4-6"
+        temperature: 0.3
+        max_tokens: 512
 
     ##########################################################
     # 6) Object Detection Step (non-AI)

@@ -1,9 +1,10 @@
-"""OpenAI model API with retry logic for QC pipeline."""
+"""Model API with retry logic for QC pipeline (supports OpenAI and Anthropic)."""
 
 import json
 import logging
 from typing import Any, Dict, Optional, Type, TypeVar, Union
 
+import anthropic as anthropic_lib
 import openai
 from tenacity import (
     retry,
@@ -12,6 +13,7 @@ from tenacity import (
     wait_exponential,
 )
 
+from ..pipeline.anthropic_utils import call_anthropic
 from ..pipeline.cost_tracking import update_token_usage
 from ..pipeline.manuscript_structure.manuscript_structure import TokenUsage
 from ..pipeline.openai_utils import call_openai_with_fallback, validate_model_config
@@ -22,7 +24,7 @@ T = TypeVar("T")
 
 
 class ModelAPI:
-    """OpenAI model API with retry logic for QC pipeline."""
+    """Model API with retry logic for QC pipeline (supports OpenAI and Anthropic)."""
 
     def __init__(self, config: Dict[str, Any]):
         """
@@ -32,7 +34,11 @@ class ModelAPI:
             config: Configuration dictionary
         """
         self.config = config
+        self.ai_provider = config.get("ai_provider", "openai").lower()
         self.client = openai.OpenAI()
+        self.anthropic_client = (
+            anthropic_lib.Anthropic() if self.ai_provider == "anthropic" else None
+        )
         self.token_usage = TokenUsage()
 
     @retry(
@@ -122,7 +128,10 @@ class ModelAPI:
                 "(manuscript_text or word_file_content) for document analysis"
             )
 
-        # Get model configuration
+        if self.ai_provider == "anthropic":
+            return self._call_anthropic(messages, prompt_config, response_type)
+
+        # OpenAI path
         model = prompt_config.get("model", "gpt-4o")
 
         # Validate model configuration
@@ -153,5 +162,38 @@ class ModelAPI:
             # Parse JSON content
             content = response.choices[0].message.content
             if isinstance(content, str):
+                return json.loads(content)
+            return content
+
+    def _call_anthropic(
+        self,
+        messages: list,
+        prompt_config: Dict[str, Any],
+        response_type: Optional[Type],
+    ) -> Any:
+        """Call Anthropic API and return result in the same format as the OpenAI path."""
+        model = prompt_config.get("model", "claude-sonnet-4-6")
+
+        response = call_anthropic(
+            client=self.anthropic_client,
+            model=model,
+            messages=messages,
+            response_format=response_type,
+            temperature=prompt_config.get("temperature", 0.1),
+            max_tokens=prompt_config.get("max_tokens", 4096),
+        )
+
+        actual_model = response.model if hasattr(response, "model") else model
+        update_token_usage(self.token_usage, response, actual_model)
+
+        if response_type:
+            # Return JSON string so process_response can parse it
+            parsed = response.choices[0].message.parsed
+            if parsed is not None:
+                return json.dumps(parsed.model_dump())
+            return response.choices[0].message.content
+        else:
+            content = response.choices[0].message.content
+            if isinstance(content, str) and content:
                 return json.loads(content)
             return content

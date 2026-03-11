@@ -15,14 +15,26 @@ from ._main_utils import (
 from .config import ConfigurationLoader
 from .data_storage import save_figure_data, save_zip_structure
 from .logging_config import setup_logging
+from .pipeline.assign_panel_source.assign_panel_source_anthropic import (
+    PanelSourceAssignerAnthropic,
+)
 from .pipeline.assign_panel_source.assign_panel_source_openai import (
     PanelSourceAssignerOpenAI,
+)
+from .pipeline.data_availability.data_availability_anthropic import (
+    DataAvailabilityExtractorAnthropic,
 )
 from .pipeline.data_availability.data_availability_openai import (
     DataAvailabilityExtractorOpenAI,
 )
+from .pipeline.extract_captions.extract_captions_anthropic import (
+    FigureCaptionExtractorAnthropic,
+)
 from .pipeline.extract_captions.extract_captions_openai import (
     FigureCaptionExtractorOpenAI,
+)
+from .pipeline.extract_sections.extract_sections_anthropic import (
+    SectionExtractorAnthropic,
 )
 from .pipeline.extract_sections.extract_sections_openai import SectionExtractorOpenAI
 from .pipeline.manuscript_structure.manuscript_structure import (
@@ -30,6 +42,9 @@ from .pipeline.manuscript_structure.manuscript_structure import (
     ZipStructure,
 )
 from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
+from .pipeline.match_caption_panel.match_caption_panel_anthropic import (
+    MatchPanelCaptionAnthropic,
+)
 from .pipeline.match_caption_panel.match_caption_panel_openai import (
     MatchPanelCaptionOpenAI,
 )
@@ -112,8 +127,19 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
         zip_structure.manuscript_text = manuscript_content
         prompt_handler = PromptHandler(config_loader.config["pipeline"])
 
+        # Select AI provider (default: openai)
+        ai_provider = config_loader.config.get("ai_provider", "openai").lower()
+        logger.info(f"Using AI provider: {ai_provider}")
+
         # Extract relevant sections for the pipeline
-        section_extractor = SectionExtractorOpenAI(config_loader.config, prompt_handler)
+        if ai_provider == "anthropic":
+            section_extractor = SectionExtractorAnthropic(
+                config_loader.config, prompt_handler
+            )
+        else:
+            section_extractor = SectionExtractorOpenAI(
+                config_loader.config, prompt_handler
+            )
         (
             figure_legends,
             data_availability_text,
@@ -121,37 +147,60 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
         ) = section_extractor.extract_sections(
             doc_content=manuscript_content, zip_structure=zip_structure
         )
+
         # Extract individual captions from figure legends
-        caption_extractor = FigureCaptionExtractorOpenAI(
-            config_loader.config, prompt_handler
-        )
+        if ai_provider == "anthropic":
+            caption_extractor = FigureCaptionExtractorAnthropic(
+                config_loader.config, prompt_handler
+            )
+        else:
+            caption_extractor = FigureCaptionExtractorOpenAI(
+                config_loader.config, prompt_handler
+            )
         zip_structure = caption_extractor.extract_individual_captions(
             doc_content=figure_legends, zip_structure=zip_structure
         )
 
         # Extract data sources from data availability section
-        data_availability_extractor = DataAvailabilityExtractorOpenAI(
-            config_loader.config, prompt_handler
-        )
+        if ai_provider == "anthropic":
+            data_availability_extractor = DataAvailabilityExtractorAnthropic(
+                config_loader.config, prompt_handler
+            )
+        else:
+            data_availability_extractor = DataAvailabilityExtractorOpenAI(
+                config_loader.config, prompt_handler
+            )
         zip_structure = data_availability_extractor.extract_data_sources(
             section_text=data_availability_text, zip_structure=zip_structure
         )
 
         # Match panels with captions using object detection
-        panel_matcher = MatchPanelCaptionOpenAI(
-            config=config_loader.config,
-            prompt_handler=prompt_handler,
-            extract_dir=extractor.manuscript_extract_dir,  # Pass the manuscript-specific directory
-        )
+        if ai_provider == "anthropic":
+            panel_matcher = MatchPanelCaptionAnthropic(
+                config=config_loader.config,
+                prompt_handler=prompt_handler,
+                extract_dir=extractor.manuscript_extract_dir,
+            )
+        else:
+            panel_matcher = MatchPanelCaptionOpenAI(
+                config=config_loader.config,
+                prompt_handler=prompt_handler,
+                extract_dir=extractor.manuscript_extract_dir,
+            )
         _ = panel_matcher.process_figures(zip_structure)
 
         # Get figure images and captions for QC pipeline
         figure_data = panel_matcher.get_figure_images_and_captions()
 
         # Assign panel source
-        panel_source_assigner = PanelSourceAssignerOpenAI(
-            config_loader.config, prompt_handler, extractor.manuscript_extract_dir
-        )
+        if ai_provider == "anthropic":
+            panel_source_assigner = PanelSourceAssignerAnthropic(
+                config_loader.config, prompt_handler, extractor.manuscript_extract_dir
+            )
+        else:
+            panel_source_assigner = PanelSourceAssignerOpenAI(
+                config_loader.config, prompt_handler, extractor.manuscript_extract_dir
+            )
         processed_figures = panel_source_assigner.assign_panel_source(
             zip_structure,  # Pass figures list instead of whole structure
         )

@@ -39,6 +39,35 @@ class BaseQCAnalyzer(ABC):
         # Fallback to root level
         return self.config.get(self.test_name, {})
 
+    def _get_provider_config(self, test_config: Dict) -> Dict:
+        """Return the provider-specific config section (openai or anthropic)."""
+        provider = self.config.get("ai_provider", "openai").lower()
+
+        if provider == "anthropic":
+            if "anthropic" not in test_config:
+                test_config["anthropic"] = {
+                    "model": "claude-sonnet-4-6",
+                    "temperature": 0.1,
+                    "max_tokens": 4096,
+                }
+            if "prompts" not in test_config["anthropic"]:
+                test_config["anthropic"]["prompts"] = {}
+            return test_config["anthropic"]
+
+        # OpenAI (default)
+        if "openai" not in test_config:
+            if "default" in self.config and "openai" in self.config["default"]:
+                test_config["openai"] = self.config["default"]["openai"].copy()
+            else:
+                test_config["openai"] = {
+                    "model": "gpt-4o",
+                    "temperature": 0.1,
+                    "json_mode": True,
+                }
+        if "prompts" not in test_config["openai"]:
+            test_config["openai"]["prompts"] = {}
+        return test_config["openai"]
+
     @abstractmethod
     def analyze(self, *args, **kwargs) -> Tuple[bool, Any]:
         """Run the analysis and return results."""
@@ -63,34 +92,16 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
         try:
             # Get API config from main config or use defaults
             test_config = self.get_test_config()
-
-            # Make sure we have an openai section
-            if "openai" not in test_config:
-                # Use default openai config from main config
-                if "default" in self.config and "openai" in self.config["default"]:
-                    test_config["openai"] = self.config["default"]["openai"].copy()
-                else:
-                    # Create a minimal openai config
-                    test_config["openai"] = {
-                        "model": "gpt-4o",
-                        "temperature": 0.1,
-                        "json_mode": True,
-                    }
-
-            # Make sure we have prompts section
-            if "prompts" not in test_config["openai"]:
-                test_config["openai"]["prompts"] = {}
+            provider_config = self._get_provider_config(test_config)
 
             # Set system prompt with one from registry
-            test_config["openai"]["prompts"]["system"] = registry.get_prompt(
-                self.test_name
-            )
+            provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
 
             # Call the model with the correct parameters
             response = self.model_api.generate_response(
                 encoded_image=encoded_image,
                 caption=figure_caption,
-                prompt_config=test_config["openai"],
+                prompt_config=provider_config,
                 response_type=self.result_model,
                 expected_panels=expected_panels,
             )
@@ -204,34 +215,16 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
         try:
             # Get API config from main config or use defaults
             test_config = self.get_test_config()
-
-            # Make sure we have an openai section
-            if "openai" not in test_config:
-                # Use default openai config from main config
-                if "default" in self.config and "openai" in self.config["default"]:
-                    test_config["openai"] = self.config["default"]["openai"].copy()
-                else:
-                    # Create a minimal openai config
-                    test_config["openai"] = {
-                        "model": "gpt-4o",
-                        "temperature": 0.1,
-                        "json_mode": True,
-                    }
-
-            # Make sure we have prompts section
-            if "prompts" not in test_config["openai"]:
-                test_config["openai"]["prompts"] = {}
+            provider_config = self._get_provider_config(test_config)
 
             # Set system prompt with one from registry
-            test_config["openai"]["prompts"]["system"] = registry.get_prompt(
-                self.test_name
-            )
+            provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
 
             # Call the model with the correct parameters
             response = self.model_api.generate_response(
                 encoded_image=encoded_image,
                 caption=figure_caption,
-                prompt_config=test_config["openai"],
+                prompt_config=provider_config,
                 response_type=self.result_model,
             )
 
@@ -283,32 +276,14 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
         try:
             # Get API config from main config or use defaults
             test_config = self.get_test_config()
-
-            # Make sure we have an openai section
-            if "openai" not in test_config:
-                # Use default openai config from main config
-                if "default" in self.config and "openai" in self.config["default"]:
-                    test_config["openai"] = self.config["default"]["openai"].copy()
-                else:
-                    # Create a minimal openai config
-                    test_config["openai"] = {
-                        "model": "gpt-4o",
-                        "temperature": 0.1,
-                        "json_mode": True,
-                    }
-
-            # Make sure we have prompts section
-            if "prompts" not in test_config["openai"]:
-                test_config["openai"]["prompts"] = {}
+            provider_config = self._get_provider_config(test_config)
 
             # Set system prompt with one from registry
-            test_config["openai"]["prompts"]["system"] = registry.get_prompt(
-                self.test_name
-            )
+            provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
 
             # Set user prompt template: manuscript text is always the user message
-            if "user" not in test_config["openai"]["prompts"]:
-                test_config["openai"]["prompts"]["user"] = "$manuscript_text"
+            if "user" not in provider_config["prompts"]:
+                provider_config["prompts"]["user"] = "$manuscript_text"
 
             # Extract word file content from zip_structure or provided path
             word_file_content = self.extract_word_file_content(
@@ -317,7 +292,7 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
 
             # Call the model with the correct parameters
             response = self.model_api.generate_response(
-                prompt_config=test_config["openai"],
+                prompt_config=provider_config,
                 response_type=self.result_model,
                 word_file_content=word_file_content,
             )
