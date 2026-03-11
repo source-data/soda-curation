@@ -190,7 +190,7 @@ class ModelAPI:
             # Return JSON string so process_response can parse it
             parsed = response.choices[0].message.parsed
             if parsed is not None:
-                return json.dumps(parsed.model_dump())
+                return json.dumps(parsed.model_dump(mode="json"))
             return response.choices[0].message.content
         else:
             content = response.choices[0].message.content

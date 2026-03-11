@@ -368,9 +368,6 @@ class PromptRegistry:
         """Generate a Pydantic model from a JSON schema using datamodel-code-generator."""
         try:
             from datamodel_code_generator import InputFileType, generate
-            from datamodel_code_generator.model.pydantic import (
-                BaseModel as CodegenBaseModel,
-            )
         except ImportError:
             raise ImportError(
                 "datamodel-code-generator is required for schema to model conversion. "
