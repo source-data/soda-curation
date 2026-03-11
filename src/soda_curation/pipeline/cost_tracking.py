@@ -20,9 +20,19 @@ def calculate_cost(model: str, prompt_tokens: int, completion_tokens: int) -> fl
     input_tokens_million = prompt_tokens / 1_000_000
     output_tokens_million = completion_tokens / 1_000_000
 
-    # Retrieve pricing
-    input_cost = pricing[model]["input_tokens"]
-    output_cost = pricing[model]["output_tokens"]
+    # Retrieve pricing — exact match first, then prefix match for versioned IDs
+    # e.g. "gpt-5-2025-04-14" matches "gpt-5"
+    model_pricing = pricing.get(model)
+    if model_pricing is None:
+        for key in pricing:
+            if model.startswith(key):
+                model_pricing = pricing[key]
+                break
+    if model_pricing is None:
+        return 0.0
+
+    input_cost = model_pricing["input_tokens"]
+    output_cost = model_pricing["output_tokens"]
 
     # Calculate total cost
     total_cost = (input_tokens_million * input_cost) + (

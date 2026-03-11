@@ -282,6 +282,30 @@ class QCPipeline:
             output = self.qc_results
             output["status"] = pipeline_status
 
+        # Aggregate token usage and cost across all test analyzers
+        total_prompt_tokens = 0
+        total_completion_tokens = 0
+        total_cost = 0.0
+        for test_analyzer in self.tests.values():
+            if hasattr(test_analyzer, "model_api") and hasattr(
+                test_analyzer.model_api, "token_usage"
+            ):
+                usage = test_analyzer.model_api.token_usage
+                total_prompt_tokens += usage.prompt_tokens
+                total_completion_tokens += usage.completion_tokens
+                total_cost += usage.cost
+
+        output["cost"] = {
+            "prompt_tokens": total_prompt_tokens,
+            "completion_tokens": total_completion_tokens,
+            "total_tokens": total_prompt_tokens + total_completion_tokens,
+            "total_cost_usd": round(total_cost, 6),
+        }
+        logger.info(
+            f"QC pipeline token usage: {total_prompt_tokens} prompt, "
+            f"{total_completion_tokens} completion, ${total_cost:.4f} USD"
+        )
+
         # Report pipeline status
         if num_processed == 0:
             output["status"] = "unknown"

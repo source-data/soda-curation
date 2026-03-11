@@ -12,6 +12,8 @@ from tenacity import (
     wait_exponential,
 )
 
+from ..pipeline.cost_tracking import update_token_usage
+from ..pipeline.manuscript_structure.manuscript_structure import TokenUsage
 from ..pipeline.openai_utils import call_openai_with_fallback, validate_model_config
 
 logger = logging.getLogger(__name__)
@@ -31,6 +33,7 @@ class ModelAPI:
         """
         self.config = config
         self.client = openai.OpenAI()
+        self.token_usage = TokenUsage()
 
     @retry(
         stop=stop_after_attempt(3),
@@ -138,6 +141,10 @@ class ModelAPI:
             max_tokens=prompt_config.get("max_tokens", 2048),
             json_mode=prompt_config.get("json_mode", True),
         )
+
+        # Track token usage and cost for this call
+        actual_model = response.model if hasattr(response, "model") else model
+        update_token_usage(self.token_usage, response, actual_model)
 
         # Return appropriate type
         if response_type:
