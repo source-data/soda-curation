@@ -42,7 +42,7 @@ qc_check_metadata:
   figure:
     # Example figure-level tests would go here
   document:
-    Example document-level test
+    # Example document-level test
     author_contribution_in_ms:
       name: "Author micro-contributions listed"
       prompt_file: "prompt.1.txt"
