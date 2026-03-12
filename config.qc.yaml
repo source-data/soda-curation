@@ -9,6 +9,7 @@ qc_check_metadata:
     individual_data_points:
       name: "Individual Data Points Displayed"
       checklist_type: "fig-checklist"
+      langfuse_name: "checklists/fig-checklist/individual-data-points-copy"
     micrograph_scale_bar:
       name: "Micrograph Scale Bar Defined"
       checklist_type: "fig-checklist"
@@ -21,12 +22,14 @@ qc_check_metadata:
     plot_gap_labeling:
       name: "Plot Gap Labeling"
       checklist_type: "fig-checklist"
+      langfuse_name: "checklists/fig-checklist/plot-gap-labling"
     replicates_defined:
       name: "Replicates Defined"
       checklist_type: "fig-checklist"
     stat_significance_level:
       name: "Statistical Significance Level Defined"
       checklist_type: "fig-checklist"
+      langfuse_name: "checklists/fig-checklist/stat-significant-level"
     stat_test:
       name: "Statistical Test Mentioned"
       checklist_type: "fig-checklist"
@@ -48,6 +51,7 @@ qc_check_metadata:
     external_data_url_validation_agentic:
       name: "Validation of external URLs"
       checklist_type: "doc-checklist"
+      langfuse_name: "checklists/doc-checklist/external-data-url-validation"
     no_overclaim_in_abstract:
       name: "Abstract Does not Show Overclaims"
       checklist_type: "doc-checklist"

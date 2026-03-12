@@ -147,14 +147,29 @@ def test_get_schema():
 
 
 def test_get_schema_raises_when_not_in_config():
-    """get_schema raises FileNotFoundError when prompt config has no 'schema' key."""
+    """get_schema raises FileNotFoundError when prompt config has no schema."""
     registry = create_registry()
     mock_lf_prompt = MagicMock()
-    mock_lf_prompt.config = {}  # No schema key
+    mock_lf_prompt.config = {}  # Neither 'schema' nor 'output_schema'
 
     with patch.object(registry, "_get_langfuse_prompt", return_value=mock_lf_prompt):
         with pytest.raises(FileNotFoundError):
             registry.get_schema("individual_data_points")
+
+
+def test_get_schema_from_output_schema():
+    """get_schema understands the Langfuse output_schema.format.schema nesting."""
+    registry = create_registry()
+    inner_schema = {"type": "object", "properties": {"panel_label": {"type": "string"}}}
+    mock_lf_prompt = MagicMock()
+    mock_lf_prompt.config = {
+        "output_schema": {"format": {"type": "json_schema", "schema": inner_schema}}
+    }
+
+    with patch.object(registry, "_get_langfuse_prompt", return_value=mock_lf_prompt):
+        schema = registry.get_schema("individual_data_points")
+
+    assert schema == inner_schema
 
 
 def test_get_schema_raises_when_langfuse_unavailable():

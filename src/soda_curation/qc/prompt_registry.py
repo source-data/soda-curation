@@ -105,8 +105,21 @@ class PromptRegistry:
         return self._langfuse  # None when unavailable
 
     def _to_langfuse_name(self, test_name: str) -> str:
-        """Convert snake_case test name to kebab-case Langfuse prompt name."""
-        return test_name.replace("_", "-")
+        """Return the full Langfuse prompt name for a test.
+
+        If the test config has a ``langfuse_name`` override, that value is used
+        verbatim.  Otherwise the name is constructed as:
+            checklists/{checklist_type}/{snake_to_kebab(test_name)}
+
+        This matches the namespace used in the soda-mmQC Langfuse project.
+        """
+        local_cfg = self.get_test_config(test_name)
+        if local_cfg.get("langfuse_name"):
+            return local_cfg["langfuse_name"]
+
+        checklist_type = self.get_checklist_type(test_name)
+        kebab = test_name.replace("_", "-")
+        return f"checklists/{checklist_type}/{kebab}"
 
     def _get_langfuse_prompt(self, test_name: str):
         """Fetch a prompt from Langfuse, with in-process caching.
@@ -125,11 +138,20 @@ class PromptRegistry:
             langfuse_name = self._to_langfuse_name(test_name)
             logger.debug("Fetching Langfuse prompt: %s", langfuse_name)
             try:
+                # Default: fetch the prompt with the 'production' label
                 self._prompt_cache[test_name] = client.get_prompt(langfuse_name)
-            except Exception as exc:
-                raise RuntimeError(
-                    f"Failed to fetch Langfuse prompt '{langfuse_name}': {exc}"
-                ) from exc
+            except Exception:
+                # Fallback: try the 'latest' label (for prompts not yet promoted
+                # to production)
+                try:
+                    self._prompt_cache[test_name] = client.get_prompt(
+                        langfuse_name, label="latest"
+                    )
+                except Exception as exc:
+                    raise RuntimeError(
+                        f"Failed to fetch Langfuse prompt '{langfuse_name}' "
+                        f"(tried both 'production' and 'latest' labels): {exc}"
+                    ) from exc
         return self._prompt_cache[test_name]
 
     # ------------------------------------------------------------------
@@ -216,14 +238,26 @@ class PromptRegistry:
             ) from exc
 
         lf_cfg = lf_prompt.config or {}
-        schema = lf_cfg.get("schema")
-        if not schema:
-            raise FileNotFoundError(
-                f"No 'schema' key found in Langfuse prompt config for test "
-                f"'{test_name}' (prompt name: '{self._to_langfuse_name(test_name)}'). "
-                f"Add a 'schema' entry to the prompt's config in Langfuse."
-            )
-        return schema
+
+        # Primary location: config["schema"]
+        if lf_cfg.get("schema"):
+            return lf_cfg["schema"]
+
+        # Actual Langfuse structure: config["output_schema"]["format"]["schema"]
+        output_schema = lf_cfg.get("output_schema")
+        if output_schema:
+            fmt = output_schema.get("format", {})
+            if fmt.get("schema"):
+                return fmt["schema"]
+            # Return the whole output_schema; generate_pydantic_model_from_schema
+            # can unwrap the "format.schema" nesting.
+            return output_schema
+
+        raise FileNotFoundError(
+            f"No schema found in Langfuse prompt config for test "
+            f"'{test_name}' (prompt name: '{self._to_langfuse_name(test_name)}'). "
+            f"Expected config['schema'] or config['output_schema']."
+        )
 
     def get_prompt_metadata(self, test_name: str) -> PromptMetadata:
         """Return PromptMetadata fetched from Langfuse, with local config fallback."""
