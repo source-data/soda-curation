@@ -273,11 +273,7 @@ class QCPipeline:
                             output["qc_check_metadata"][test_name][
                                 "version"
                             ] = test_analyzer.metadata.version
-                        if hasattr(test_analyzer.metadata, "prompt_file"):
-                            output["qc_check_metadata"][test_name][
-                                "prompt_file"
-                            ] = test_analyzer.metadata.prompt_file
-                        # Note: example_class removed - now using schema-based type determination
+                        # Note: prompt_file removed - prompts are now in Langfuse
         else:
             output = self.qc_results
             output["status"] = pipeline_status

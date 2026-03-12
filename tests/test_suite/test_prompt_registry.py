@@ -1,27 +1,31 @@
 # tests/test_prompt_registry.py
+"""Tests for the Langfuse-backed PromptRegistry."""
+
 import json
-import os
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import openai
 import pytest
 
-from soda_curation.qc.prompt_registry import create_registry
+from soda_curation.qc.prompt_registry import PromptMetadata, create_registry
 from src.soda_curation.qc.model_api import ModelAPI
 from src.soda_curation.qc.qc_pipeline import QCPipeline
+
+# ---------------------------------------------------------------------------
+# Shared fixtures
+# ---------------------------------------------------------------------------
 
 
 @pytest.fixture
 def test_config():
     return {
-        "qc_version": "1.0.0",
+        "qc_version": "3.0.0",
         "qc_check_metadata": {
             "panel": {
                 "error_bars_defined": {
                     "name": "Error Bars Defined",
                     "description": "Test description",
-                    "permalink": "https://example.com/permalink",
+                    "checklist_type": "fig-checklist",
                 }
             }
         },
@@ -52,51 +56,123 @@ def model_config():
     return {"default": {"openai": {"model": "gpt-4o"}}}
 
 
+# ---------------------------------------------------------------------------
+# PromptRegistry core tests
+# ---------------------------------------------------------------------------
+
+
 def test_registry_initialization():
     registry = create_registry()
     assert registry is not None
     assert registry.config is not None
 
 
-def test_get_prompt_metadata():
-    # Check if test exists in config
+def test_get_prompt_metadata_returns_namedtuple():
+    """get_prompt_metadata always returns a PromptMetadata, even without Langfuse."""
     registry = create_registry()
-    metadata = registry.get_prompt_metadata("individual_data_points")
+    # Mock Langfuse as unavailable so we exercise the fallback path
+    with patch.object(
+        registry,
+        "_get_langfuse_prompt",
+        side_effect=RuntimeError("Langfuse unavailable"),
+    ):
+        metadata = registry.get_prompt_metadata("individual_data_points")
+
+    assert isinstance(metadata, PromptMetadata)
     assert metadata.name is not None
     assert metadata.description is not None
-    assert metadata.permalink is not None
-    assert metadata.version is not None  # Changed from prompt_version to version
-    assert metadata.prompt_file is not None  # Check for prompt_file instead
+    assert metadata.permalink == ""  # Fallback has empty permalink
+    assert metadata.version == "latest"  # Fallback version
+    assert metadata.prompt_file == ""  # Langfuse-backed: no file
 
 
-def test_get_prompt():
+def test_get_prompt_metadata_from_langfuse():
+    """get_prompt_metadata returns Langfuse data when available."""
     registry = create_registry()
+    mock_lf_prompt = MagicMock()
+    mock_lf_prompt.config = {
+        "name": "Individual Data Points",
+        "description": "Checks individual data points.",
+    }
+    mock_lf_prompt.version = 3
 
-    # Mock the path.exists method to return True
-    with patch("pathlib.Path.exists", return_value=True):
-        # Mock the read_text method to return a test prompt
-        with patch("pathlib.Path.read_text", return_value="This is a test prompt"):
-            prompt = registry.get_prompt("individual_data_points")
-            assert prompt == "This is a test prompt"
+    with patch.object(registry, "_get_langfuse_prompt", return_value=mock_lf_prompt):
+        # Local config name ("Individual Data Points Displayed") takes priority
+        metadata = registry.get_prompt_metadata("individual_data_points")
+
+    assert metadata.name == "Individual Data Points Displayed"
+    assert metadata.description == "Checks individual data points."
+    assert metadata.version == "3"
+    assert "individual-data-points" in metadata.permalink
+    assert metadata.prompt_file == ""
+
+
+def test_get_prompt_text():
+    """get_prompt returns the text prompt string from Langfuse."""
+    registry = create_registry()
+    mock_lf_prompt = MagicMock()
+    mock_lf_prompt.prompt = "This is a test system prompt."
+
+    with patch.object(registry, "_get_langfuse_prompt", return_value=mock_lf_prompt):
+        prompt = registry.get_prompt("individual_data_points")
+
+    assert prompt == "This is a test system prompt."
+
+
+def test_get_prompt_chat_format():
+    """get_prompt extracts system role from a chat-format prompt."""
+    registry = create_registry()
+    mock_lf_prompt = MagicMock()
+    mock_lf_prompt.prompt = [
+        {"role": "system", "content": "System instruction here."},
+        {"role": "user", "content": "User template {{text}}"},
+    ]
+
+    with patch.object(registry, "_get_langfuse_prompt", return_value=mock_lf_prompt):
+        prompt = registry.get_prompt("individual_data_points")
+
+    assert prompt == "System instruction here."
 
 
 def test_get_schema():
+    """get_schema returns the schema dict from Langfuse prompt config."""
     registry = create_registry()
+    mock_lf_prompt = MagicMock()
+    mock_lf_prompt.config = {"schema": {"type": "object", "properties": {}}}
 
-    # Mock the path.exists method to return True
-    with patch("pathlib.Path.exists", return_value=True):
-        # Mock the read_text method to return a test schema
-        with patch("pathlib.Path.read_text", return_value='{"type": "object"}'):
-            # Path.read_text returns a string, but json.loads converts it to a dict
-            with patch("json.loads", return_value={"type": "object"}):
-                schema = registry.get_schema("individual_data_points")
-                assert schema == {"type": "object"}
+    with patch.object(registry, "_get_langfuse_prompt", return_value=mock_lf_prompt):
+        schema = registry.get_schema("individual_data_points")
+
+    assert schema == {"type": "object", "properties": {}}
+
+
+def test_get_schema_raises_when_not_in_config():
+    """get_schema raises FileNotFoundError when prompt config has no 'schema' key."""
+    registry = create_registry()
+    mock_lf_prompt = MagicMock()
+    mock_lf_prompt.config = {}  # No schema key
+
+    with patch.object(registry, "_get_langfuse_prompt", return_value=mock_lf_prompt):
+        with pytest.raises(FileNotFoundError):
+            registry.get_schema("individual_data_points")
+
+
+def test_get_schema_raises_when_langfuse_unavailable():
+    """get_schema raises FileNotFoundError when Langfuse cannot be reached."""
+    registry = create_registry()
+    with patch.object(
+        registry,
+        "_get_langfuse_prompt",
+        side_effect=RuntimeError("Langfuse not available"),
+    ):
+        with pytest.raises(FileNotFoundError):
+            registry.get_schema("nonexistent_test")
 
 
 def test_get_pydantic_model():
+    """get_pydantic_model generates a model from the Langfuse schema."""
     registry = create_registry()
 
-    # Create a sample schema
     sample_schema = {
         "type": "object",
         "properties": {
@@ -110,9 +186,8 @@ def test_get_pydantic_model():
         },
     }
 
-    # Mock get_schema to return our sample schema
     with patch.object(registry, "get_schema", return_value=sample_schema):
-        # Mock generate_pydantic_model_from_schema to return a simple model class
+
         class MockModel:
             def model_validate_json(self, json_str):
                 return "validated_model"
@@ -124,15 +199,40 @@ def test_get_pydantic_model():
             assert model == MockModel
 
 
-def test_nonexistent_test():
+def test_nonexistent_test_fallback():
+    """get_prompt_metadata returns sensible fallback for unknown tests."""
     registry = create_registry()
-    metadata = registry.get_prompt_metadata("nonexistent_test")
-    # Check that the returned metadata is a PromptMetadata with default values
+
+    # Ensure Langfuse is unavailable so we exercise the pure-fallback path
+    with patch.object(
+        registry,
+        "_get_langfuse_prompt",
+        side_effect=RuntimeError("unavailable"),
+    ):
+        metadata = registry.get_prompt_metadata("nonexistent_test")
+
     assert metadata.name == "Nonexistent Test"
     assert metadata.description == ""
     assert metadata.permalink == ""
     assert metadata.version == "latest"
-    assert metadata.prompt_file == "prompt.1.txt"  # Default prompt file
+    assert metadata.prompt_file == ""  # Langfuse-backed: no file path
+
+
+def test_get_prompt_raises_when_langfuse_unavailable():
+    """get_prompt propagates the error when Langfuse is not reachable."""
+    registry = create_registry()
+    with patch.object(
+        registry,
+        "_get_langfuse_prompt",
+        side_effect=RuntimeError("Not found"),
+    ):
+        with pytest.raises(RuntimeError):
+            registry.get_prompt("nonexistent_test")
+
+
+# ---------------------------------------------------------------------------
+# Pipeline integration tests (no real Langfuse calls)
+# ---------------------------------------------------------------------------
 
 
 def test_pipeline_handles_malformed_analyzer_output(
@@ -150,7 +250,11 @@ def test_pipeline_handles_malformed_analyzer_output(
     result = pipeline.run(mock_zip_structure, figure_data)
     assert "qc_version" in result
     assert "figures" in result
-    # Should still produce a result, but panels may be empty or have error info
+
+
+# ---------------------------------------------------------------------------
+# ModelAPI tests
+# ---------------------------------------------------------------------------
 
 
 @patch("src.soda_curation.qc.model_api.openai.OpenAI")
@@ -185,21 +289,12 @@ def test_generate_response_invalid_json(mock_openai, model_config):
         )
 
 
-def test_get_schema_file_not_found():
-    registry = create_registry()
-    with pytest.raises(FileNotFoundError):
-        registry.get_schema("nonexistent_test")
-
-
-def test_get_prompt_file_not_found():
-    registry = create_registry()
-    with patch("pathlib.Path.exists", return_value=False):
-        with pytest.raises(FileNotFoundError):
-            registry.get_prompt("nonexistent_test")
+# ---------------------------------------------------------------------------
+# Config / YAML edge cases
+# ---------------------------------------------------------------------------
 
 
 def test_registry_with_malformed_config(tmp_path):
-    # Write a malformed YAML config
     config_path = tmp_path / "bad_config.yaml"
     config_path.write_text("not: [valid, yaml")
     with pytest.raises(Exception):

@@ -1,79 +1,61 @@
-qc_version: "2.3.3"
+qc_version: "3.0.0"
 # AI provider: "openai" (default) or "anthropic"
 ai_provider: "openai"
 qc_check_metadata:
   panel:
     error_bars_defined:
       name: "Error Bars Defined"
-      prompt_file: "prompt.1.txt" 
       checklist_type: "fig-checklist"
     individual_data_points:
       name: "Individual Data Points Displayed"
-      prompt_file: "prompt.2.txt"
       checklist_type: "fig-checklist"
     micrograph_scale_bar:
       name: "Micrograph Scale Bar Defined"
-      prompt_file: "prompt.1.txt" 
       checklist_type: "fig-checklist"
     micrograph_symbols_defined:
       name: "Micrograph Symbols Defined"
-      prompt_file: "prompt.2.txt" 
       checklist_type: "fig-checklist"
     plot_axis_units:
       name: "Plot Axis Units"
-      prompt_file: "prompt.1.txt"  # Still supported for backward compatibility
       checklist_type: "fig-checklist"
     plot_gap_labeling:
       name: "Plot Gap Labeling"
-      prompt_file: "prompt.1.txt" 
       checklist_type: "fig-checklist"
     replicates_defined:
       name: "Replicates Defined"
-      prompt_file: "prompt.1.txt" 
       checklist_type: "fig-checklist"
     stat_significance_level:
       name: "Statistical Significance Level Defined"
-      prompt_file: "prompt.1.txt"  # Example of custom filename
       checklist_type: "fig-checklist"
     stat_test:
       name: "Statistical Test Mentioned"
-      prompt_file: "prompt.4.txt"  # New flexible file naming
       checklist_type: "fig-checklist"
   figure:
-    # Example figure-level tests would go here
+    # Figure-level tests go here
   document:
-    # Example document-level test
     author_contribution_in_ms:
       name: "Author micro-contributions listed"
-      prompt_file: "prompt.1.txt"
       checklist_type: "doc-checklist"
     biorender_protocol.io_mentions:
       name: "Protocol mentions in the manuscript"
-      prompt_file: "prompt.1.txt"
       checklist_type: "doc-checklist"
     DAS_present_and_correct:
       name: "Data Availability Section Present and Correct"
-      prompt_file: "prompt.1.txt"
       checklist_type: "doc-checklist"
     data_not_shown:
       name: "Detection of missing or omitted data"
-      prompt_file: "prompt.1.txt"
       checklist_type: "doc-checklist"
     external_data_url_validation_agentic:
       name: "Validation of external URLs"
-      prompt_file: "prompt1.txt"
       checklist_type: "doc-checklist"
     no_overclaim_in_abstract:
       name: "Abstract Does not Show Overclaims"
-      prompt_file: "prompt.1.txt"
       checklist_type: "doc-checklist"
     reference_format_alphabetical:
       name: "References are in alphabetical order"
-      prompt_file: "prompt.1.txt"
       checklist_type: "doc-checklist"
     section_order:
       name: "Manuscript Structure Check"
-      prompt_file: "prompt.1.txt"
       checklist_type: "doc-checklist"
 
 default: &default
