@@ -40,7 +40,7 @@ pdf2image = "^1.16.3"
 openai-agents = "0.0.9"
 ultralytics = {git = "https://github.com/ultralytics/ultralytics.git", rev = "main"}
 Wand = "0.6.13"
-soda-mmqc = {git = "https://github.com/source-data/soda-mmQC.git", rev = "master"}
+soda-mmqc = {git = "https://github.com/source-data/soda-mmQC.git", rev = "v0.2.0"}
 datamodel-code-generator = "^0.31.2"
 tiktoken = "^0.8.0"
 

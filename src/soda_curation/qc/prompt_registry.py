@@ -85,6 +85,10 @@ class PromptRegistry:
         # GitHub repo info (can be configurable)
         self.github_owner = "source-data"
         self.github_repo = "soda-mmQC"
+        # Tag / ref used as fallback for permalink URLs when git history is
+        # unavailable (e.g. when the package is installed as a site-package).
+        # Keep this in sync with the rev pinned in pyproject.toml.
+        self.github_ref = "v0.2.0"
 
         # Build test_name to checklist_type mapping
         self._test_mapping = {}
@@ -212,14 +216,14 @@ class PromptRegistry:
 
     def get_permalink(self, file_path: Path) -> str:
         """Generate a GitHub permalink for a file."""
-        if not self.has_git:
-            # Fallback if git not available
-            relative_path = file_path.relative_to(self.mmqc_path)
-            return f"https://github.com/{self.github_owner}/{self.github_repo}/blob/main/{relative_path}"
+        relative_path = file_path.relative_to(self.mmqc_path)
 
-        # Get the latest commit hash for the file
+        if not self.has_git:
+            # No git repo available (installed as site-package); use the pinned tag.
+            return f"https://github.com/{self.github_owner}/{self.github_repo}/blob/{self.github_ref}/{relative_path}"
+
+        # Get the latest commit hash for the file for a precise permalink.
         try:
-            relative_path = file_path.relative_to(self.mmqc_path)
             commits = list(
                 self.repo.iter_commits(paths=str(relative_path), max_count=1)
             )
@@ -229,9 +233,8 @@ class PromptRegistry:
         except Exception:
             pass
 
-        # Fallback to branch name if commit lookup fails
-        relative_path = file_path.relative_to(self.mmqc_path)
-        return f"https://github.com/{self.github_owner}/{self.github_repo}/blob/main/{relative_path}"
+        # Fallback to the pinned tag if commit lookup fails.
+        return f"https://github.com/{self.github_owner}/{self.github_repo}/blob/{self.github_ref}/{relative_path}"
 
     def get_prompt_metadata(self, test_name: str) -> PromptMetadata:
         """Get metadata for a test's prompt, including permalink."""
