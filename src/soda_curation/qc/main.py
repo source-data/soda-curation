@@ -112,27 +112,44 @@ def main():
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Ensure Word document path is set for manuscript analysis
-    word_file_path = args.word_document
-    if not word_file_path and zip_structure:
-        # Construct full path from manuscript_id + relative docx path
-        if (
-            hasattr(zip_structure, "manuscript_id")
-            and zip_structure.manuscript_id
-            and hasattr(zip_structure, "docx")
-            and zip_structure.docx
-        ):
-            word_file_path = str(
-                Path("data/archives") / zip_structure.manuscript_id / zip_structure.docx
-            )
+    # Ensure manuscript text is available for document-level QC tests.
+    # Try multiple candidate paths for the Word/manuscript file, then extract
+    # text via pypandoc (same method as the main pipeline).
+    if not getattr(zip_structure, "manuscript_text", None):
+        docx_rel = getattr(zip_structure, "docx", "") or ""
+        manuscript_id = getattr(zip_structure, "manuscript_id", "") or ""
 
-    if word_file_path and zip_structure and Path(word_file_path).exists():
-        zip_structure._full_docx = word_file_path
-        logger.info("Word document path set to: %s", word_file_path)
-    elif word_file_path:
-        logger.warning("Word document not found at: %s", word_file_path)
-    else:
-        logger.warning("No word document path could be determined")
+        # Build a prioritised list of candidate paths
+        candidates = []
+        if args.word_document:
+            candidates.append(Path(args.word_document))
+        if docx_rel:
+            candidates.append(Path(args.extract_dir) / docx_rel)
+        if manuscript_id and docx_rel:
+            candidates.append(Path("data/archives") / manuscript_id / docx_rel)
+
+        docx_found = next((p for p in candidates if p.exists()), None)
+
+        if docx_found:
+            try:
+                import pypandoc
+
+                manuscript_text = pypandoc.convert_file(str(docx_found), "html")
+                zip_structure.manuscript_text = str(manuscript_text)
+                logger.info(
+                    "Extracted manuscript text from: %s (%d chars)",
+                    docx_found,
+                    len(zip_structure.manuscript_text),
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Could not extract manuscript text from %s: %s", docx_found, exc
+                )
+        else:
+            logger.warning(
+                "Word document not found. Tried: %s",
+                ", ".join(str(p) for p in candidates) or "(no candidates)",
+            )
 
     # Run the QC pipeline
     logger.info("Starting QC pipeline")

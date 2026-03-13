@@ -138,11 +138,17 @@ class PromptRegistry:
             langfuse_name = self._to_langfuse_name(test_name)
             logger.debug("Fetching Langfuse prompt: %s", langfuse_name)
             try:
-                # Default: fetch the prompt with the 'production' label
-                self._prompt_cache[test_name] = client.get_prompt(langfuse_name)
+                # Use explicit label="production" so the SDK caches under the
+                # correct key.  Without an explicit label the SDK silently falls
+                # back to 'latest' but still caches under the 'production' key,
+                # causing background-refresh warnings for every non-promoted prompt.
+                self._prompt_cache[test_name] = client.get_prompt(
+                    langfuse_name, label="production"
+                )
             except Exception:
-                # Fallback: try the 'latest' label (for prompts not yet promoted
-                # to production)
+                # Fallback: fetch with label="latest" (for prompts not yet
+                # promoted to production).  The SDK now caches under the
+                # 'latest' key, so background refresh works without warnings.
                 try:
                     self._prompt_cache[test_name] = client.get_prompt(
                         langfuse_name, label="latest"
