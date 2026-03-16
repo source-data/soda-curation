@@ -39,25 +39,22 @@ qc_check_metadata:
       name: "Statistical Test Mentioned"
       prompt_file: "prompt.4.txt"  # New flexible file naming
       checklist_type: "fig-checklist"
-    # The following 4 tests exist in soda-mmQC v0.2.0 but are commented out
-    # because the benchmark / evaluation data are not yet included.
-    # Uncomment each entry when the data becomes available.
-    # method_is_mentioned:
-    #   name: "Method Is Mentioned"
-    #   prompt_file: "prompt.1.txt"
-    #   checklist_type: "fig-checklist"
-    # n_larger_two:
-    #   name: "N Larger Than Two"
-    #   prompt_file: "prompt.1.txt"
-    #   checklist_type: "fig-checklist"
-    # panel_image_matches_caption:
-    #   name: "Panel Image Matches Caption"
-    #   prompt_file: "prompt.1.txt"
-    #   checklist_type: "fig-checklist"
-    # single_channel_for_overlay:
-    #   name: "Single Channel For Overlay"
-    #   prompt_file: "prompt.1.txt"
-    #   checklist_type: "fig-checklist"
+    method_is_mentioned:
+      name: "Method Is Mentioned"
+      prompt_file: "prompt.1.txt"
+      checklist_type: "fig-checklist"
+    n_larger_two:
+      name: "N Larger Than Two"
+      prompt_file: "prompt.1.txt"
+      checklist_type: "fig-checklist"
+    panel_image_matches_caption:
+      name: "Panel Image Matches Caption"
+      prompt_file: "prompt.1.txt"
+      checklist_type: "fig-checklist"
+    single_channel_for_overlay:
+      name: "Single Channel For Overlay"
+      prompt_file: "prompt.1.txt"
+      checklist_type: "fig-checklist"
   figure:
     # Example figure-level tests would go here
   document:
