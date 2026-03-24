@@ -97,6 +97,13 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
             # Set system prompt with one from registry
             provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
 
+            # Set user prompt to include the figure caption if not already set
+            if (
+                "user" not in provider_config["prompts"]
+                or not provider_config["prompts"]["user"]
+            ):
+                provider_config["prompts"]["user"] = "Figure caption:\n$figure_caption"
+
             # Call the model with the correct parameters
             response = self.model_api.generate_response(
                 encoded_image=encoded_image,
@@ -219,6 +226,13 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
 
             # Set system prompt with one from registry
             provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
+
+            # Set user prompt to include the figure caption if not already set
+            if (
+                "user" not in provider_config["prompts"]
+                or not provider_config["prompts"]["user"]
+            ):
+                provider_config["prompts"]["user"] = "Figure caption:\n$figure_caption"
 
             # Call the model with the correct parameters
             response = self.model_api.generate_response(

@@ -9,7 +9,11 @@ qc_check_metadata:
       checklist_type: "fig-checklist"
     individual_data_points:
       name: "Individual Data Points Displayed"
-      prompt_file: "prompt.2.txt"
+      prompt_file: "prompt.3.txt"
+      checklist_type: "fig-checklist"
+    method_is_mentioned:
+      name: "Method Is Mentioned"
+      prompt_file: "prompt.3.txt"
       checklist_type: "fig-checklist"
     micrograph_scale_bar:
       name: "Micrograph Scale Bar Defined"
@@ -35,14 +39,6 @@ qc_check_metadata:
       name: "Statistical Significance Level Defined"
       prompt_file: "prompt.1.txt"  # Example of custom filename
       checklist_type: "fig-checklist"
-    stat_test:
-      name: "Statistical Test Mentioned"
-      prompt_file: "prompt.4.txt"  # New flexible file naming
-      checklist_type: "fig-checklist"
-    method_is_mentioned:
-      name: "Method Is Mentioned"
-      prompt_file: "prompt.1.txt"
-      checklist_type: "fig-checklist"
     n_larger_two:
       name: "N Larger Than Two"
       prompt_file: "prompt.1.txt"
@@ -54,6 +50,10 @@ qc_check_metadata:
     single_channel_for_overlay:
       name: "Single Channel For Overlay"
       prompt_file: "prompt.1.txt"
+      checklist_type: "fig-checklist"
+    stat_test:
+      name: "Statistical Test Mentioned"
+      prompt_file: "prompt.4.txt"  # New flexible file naming
       checklist_type: "fig-checklist"
   figure:
     # Example figure-level tests would go here
@@ -94,7 +94,7 @@ qc_check_metadata:
 
 default: &default
   openai:
-    model: "gpt-5"  # Can be "gpt-4o", "gpt-4o-mini", or "gpt-5"
+    model: "gpt-5-mini"  # Can be "gpt-4o", "gpt-4o-mini", or "gpt-5"
     temperature: 0.1
     top_p: 1.0
     max_tokens: 2048

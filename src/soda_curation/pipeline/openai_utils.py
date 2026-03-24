@@ -19,8 +19,21 @@ T = TypeVar("T")
 # GPT-5 model identifier
 GPT5_MODEL = "gpt-5"
 
-# Models that don't support additional parameters (temperature, top_p, etc.)
-MODELS_WITHOUT_PARAMETERS = {GPT5_MODEL}
+# Model name prefixes that don't support additional parameters (temperature, top_p, max_tokens, etc.)
+# All gpt-5 family models (gpt-5, gpt-5-mini, gpt-5-2025-*, etc.) use max_completion_tokens
+# and don't accept temperature/top_p/frequency_penalty/presence_penalty/max_tokens.
+MODELS_WITHOUT_PARAMETERS_PREFIXES = {"gpt-5"}
+
+
+def _is_model_without_parameters(model: str) -> bool:
+    """Return True if the model is in the gpt-5 family (no extra params supported)."""
+    return any(
+        model == prefix
+        or model.startswith(prefix + "-")
+        or model.startswith(prefix + "/")
+        for prefix in MODELS_WITHOUT_PARAMETERS_PREFIXES
+    )
+
 
 # Model-specific token limits (input tokens)
 # Using conservative limits to account for response tokens and safety margin
@@ -510,8 +523,10 @@ def prepare_model_params(
     elif json_mode:
         params["response_format"] = {"type": "json_object"}
 
-    # Only add parameters that are supported by the model
-    if model not in MODELS_WITHOUT_PARAMETERS:
+    # Only add parameters that are supported by the model.
+    # The entire gpt-5 family (gpt-5, gpt-5-mini, gpt-5-2025-*, …) rejects
+    # max_tokens / temperature / top_p / frequency_penalty / presence_penalty.
+    if not _is_model_without_parameters(model):
         params.update(
             {
                 "temperature": temperature,
@@ -871,7 +886,7 @@ def validate_model_config(model: str, config: Dict[str, Any]) -> None:
     Raises:
         ValueError: If configuration is invalid for the model
     """
-    if model == GPT5_MODEL:
+    if _is_model_without_parameters(model):
         # GPT-5 doesn't support additional parameters
         unsupported_params = []
         for param in [
