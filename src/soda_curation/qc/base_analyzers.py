@@ -3,14 +3,17 @@
 import json
 import logging
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel
 
+from ..pipeline.ai_observability import safe_excerpt, summarize_text
 from .model_api import ModelAPI
 from .prompt_registry import registry
 
 logger = logging.getLogger(__name__)
+SUPPORTED_AI_PROVIDERS = {"openai", "anthropic"}
 
 
 class BaseQCAnalyzer(ABC):
@@ -42,31 +45,55 @@ class BaseQCAnalyzer(ABC):
     def _get_provider_config(self, test_config: Dict) -> Dict:
         """Return the provider-specific config section (openai or anthropic)."""
         provider = self.config.get("ai_provider", "openai").lower()
+        if provider not in SUPPORTED_AI_PROVIDERS:
+            raise ValueError(
+                f"Unsupported ai_provider '{provider}' for QC test '{self.test_name}'. "
+                f"Expected one of {sorted(SUPPORTED_AI_PROVIDERS)}."
+            )
+
+        has_openai = "openai" in test_config
+        has_anthropic = "anthropic" in test_config
+        assert not (has_openai and has_anthropic), (
+            f"QC configuration error for test '{self.test_name}': both 'openai' and "
+            "'anthropic' are defined. Define only one provider per test."
+        )
+
+        configured_provider = (
+            "openai" if has_openai else ("anthropic" if has_anthropic else None)
+        )
+        if configured_provider and configured_provider != provider:
+            raise ValueError(
+                f"QC provider mismatch for test '{self.test_name}': "
+                f"configured_provider='{configured_provider}', ai_provider='{provider}'."
+            )
 
         if provider == "anthropic":
-            if "anthropic" not in test_config:
-                test_config["anthropic"] = {
-                    "model": "claude-sonnet-4-6",
-                    "temperature": 0.1,
-                    "max_tokens": 4096,
-                }
-            if "prompts" not in test_config["anthropic"]:
-                test_config["anthropic"]["prompts"] = {}
-            return test_config["anthropic"]
+            if has_anthropic:
+                provider_config = deepcopy(test_config["anthropic"])
+            elif "default" in self.config and "anthropic" in self.config["default"]:
+                provider_config = deepcopy(self.config["default"]["anthropic"])
+            else:
+                raise ValueError(
+                    f"QC provider '{provider}' is selected but no '{provider}' config "
+                    f"was found for test '{self.test_name}' and no default fallback exists."
+                )
+            provider_config.setdefault("prompts", {})
+            return provider_config
 
         # OpenAI (default)
-        if "openai" not in test_config:
+        if has_openai:
+            provider_config = deepcopy(test_config["openai"])
+        else:
             if "default" in self.config and "openai" in self.config["default"]:
-                test_config["openai"] = self.config["default"]["openai"].copy()
+                provider_config = deepcopy(self.config["default"]["openai"])
             else:
-                test_config["openai"] = {
+                provider_config = {
                     "model": "gpt-4o",
                     "temperature": 0.1,
                     "json_mode": True,
                 }
-        if "prompts" not in test_config["openai"]:
-            test_config["openai"]["prompts"] = {}
-        return test_config["openai"]
+        provider_config.setdefault("prompts", {})
+        return provider_config
 
     @abstractmethod
     def analyze(self, *args, **kwargs) -> Tuple[bool, Any]:
@@ -90,6 +117,19 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
     ) -> Tuple[bool, Any]:
         """Analyze a figure and return results."""
         try:
+            if not encoded_image:
+                logger.warning(
+                    "Skipping panel QC call because encoded image is empty",
+                    extra={
+                        "operation": "qc.panel_check",
+                        "test_name": self.test_name,
+                        "figure_label": figure_label,
+                        "severity": "recoverable",
+                        "reason": "empty_image_payload",
+                    },
+                )
+                return False, self.create_empty_result()
+
             # Get API config from main config or use defaults
             test_config = self.get_test_config()
             provider_config = self._get_provider_config(test_config)
@@ -104,6 +144,13 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
                 prompt_config=provider_config,
                 response_type=self.result_model,
                 expected_panels=expected_panels,
+                operation="qc.panel_check",
+                context={
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "expected_panel_count": len(expected_panels or []),
+                    "figure_caption_summary": summarize_text(figure_caption),
+                },
             )
 
             # Process and validate the response
@@ -117,8 +164,31 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
 
             return passed, result
 
+        except ValueError as e:
+            logger.error(
+                "Panel QC call failed due to invalid request setup",
+                extra={
+                    "operation": "qc.panel_check",
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "severity": "critical",
+                    "reason": "invalid_request_setup",
+                    "error": str(e),
+                },
+            )
+            return False, self.create_empty_result()
         except Exception as e:
-            logger.error(f"Error analyzing figure with {self.test_name}: {str(e)}")
+            logger.error(
+                "Panel QC call failed with unexpected error",
+                extra={
+                    "operation": "qc.panel_check",
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "severity": "recoverable",
+                    "reason": "unexpected_analyzer_error",
+                    "error": str(e),
+                },
+            )
             return False, self.create_empty_result()
 
     @staticmethod
@@ -169,7 +239,14 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
             try:
                 response_data = json.loads(response)
             except json.JSONDecodeError:
-                logger.error(f"Failed to parse response as JSON: {response}")
+                logger.error(
+                    "Failed to parse panel QC response as JSON",
+                    extra={
+                        "operation": "qc.panel_check",
+                        "test_name": self.test_name,
+                        "response_excerpt": safe_excerpt(response),
+                    },
+                )
                 return self.create_empty_result()
         else:
             response_data = response
@@ -213,6 +290,19 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
     ) -> Tuple[bool, Any]:
         """Analyze a whole figure and return results."""
         try:
+            if not encoded_image:
+                logger.warning(
+                    "Skipping figure QC call because encoded image is empty",
+                    extra={
+                        "operation": "qc.figure_check",
+                        "test_name": self.test_name,
+                        "figure_label": figure_label,
+                        "severity": "recoverable",
+                        "reason": "empty_image_payload",
+                    },
+                )
+                return False, self.create_empty_result()
+
             # Get API config from main config or use defaults
             test_config = self.get_test_config()
             provider_config = self._get_provider_config(test_config)
@@ -226,6 +316,12 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
                 caption=figure_caption,
                 prompt_config=provider_config,
                 response_type=self.result_model,
+                operation="qc.figure_check",
+                context={
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "figure_caption_summary": summarize_text(figure_caption),
+                },
             )
 
             # Process and validate the response
@@ -236,8 +332,31 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
 
             return passed, result
 
+        except ValueError as e:
+            logger.error(
+                "Figure QC call failed due to invalid request setup",
+                extra={
+                    "operation": "qc.figure_check",
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "severity": "critical",
+                    "reason": "invalid_request_setup",
+                    "error": str(e),
+                },
+            )
+            return False, self.create_empty_result()
         except Exception as e:
-            logger.error(f"Error analyzing figure with {self.test_name}: {str(e)}")
+            logger.error(
+                "Figure QC call failed with unexpected error",
+                extra={
+                    "operation": "qc.figure_check",
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "severity": "recoverable",
+                    "reason": "unexpected_analyzer_error",
+                    "error": str(e),
+                },
+            )
             return False, self.create_empty_result()
 
     def process_response(self, response: Any) -> Any:
@@ -254,7 +373,12 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
                 return parsed_response
             except json.JSONDecodeError:
                 logger.error(
-                    f"Failed to parse JSON response for {self.test_name}: {response}"
+                    "Failed to parse figure QC response as JSON",
+                    extra={
+                        "operation": "qc.figure_check",
+                        "test_name": self.test_name,
+                        "response_excerpt": safe_excerpt(response),
+                    },
                 )
                 return self.create_empty_result()
 
@@ -295,6 +419,11 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
                 prompt_config=provider_config,
                 response_type=self.result_model,
                 word_file_content=word_file_content,
+                operation="qc.manuscript_check",
+                context={
+                    "test_name": self.test_name,
+                    "word_file_summary": summarize_text(word_file_content),
+                },
             )
 
             # Process and validate the response
@@ -305,8 +434,29 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
 
             return passed, result
 
+        except ValueError as e:
+            logger.error(
+                "Manuscript QC call failed due to invalid request setup",
+                extra={
+                    "operation": "qc.manuscript_check",
+                    "test_name": self.test_name,
+                    "severity": "critical",
+                    "reason": "invalid_request_setup",
+                    "error": str(e),
+                },
+            )
+            return False, self.create_empty_result()
         except Exception as e:
-            logger.error(f"Error analyzing manuscript with {self.test_name}: {str(e)}")
+            logger.error(
+                "Manuscript QC call failed with unexpected error",
+                extra={
+                    "operation": "qc.manuscript_check",
+                    "test_name": self.test_name,
+                    "severity": "recoverable",
+                    "reason": "unexpected_analyzer_error",
+                    "error": str(e),
+                },
+            )
             return False, self.create_empty_result()
 
     def extract_word_file_content(
@@ -410,7 +560,12 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
                 return parsed_response
             except json.JSONDecodeError:
                 logger.error(
-                    f"Failed to parse JSON response for {self.test_name}: {response}"
+                    "Failed to parse manuscript QC response as JSON",
+                    extra={
+                        "operation": "qc.manuscript_check",
+                        "test_name": self.test_name,
+                        "response_excerpt": safe_excerpt(response),
+                    },
                 )
                 return self.create_empty_result()
 

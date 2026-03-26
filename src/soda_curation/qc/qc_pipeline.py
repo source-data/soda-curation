@@ -172,6 +172,7 @@ class QCPipeline:
         # Track status
         num_processed = 0
         pipeline_status = "success"
+        recoverable_event_count = 0
 
         # Run tests on all figures
         for figure_label, encoded_image, figure_caption in figures:
@@ -197,6 +198,19 @@ class QCPipeline:
 
                         # Add results to output
                         self.add_qc_result(figure_id, test_name, passed, result)
+                        if not passed and pipeline_status == "success":
+                            pipeline_status = "degraded"
+                            recoverable_event_count += 1
+                            logger.warning(
+                                "QC check returned non-passing result",
+                                extra={
+                                    "operation": "qc.pipeline",
+                                    "figure_label": figure_label,
+                                    "test_name": test_name,
+                                    "severity": "recoverable",
+                                    "reason": "check_failed",
+                                },
+                            )
                     elif isinstance(test_analyzer, ManuscriptQCAnalyzer):
                         # Document tests need manuscript structure
                         # Only run once for the first figure to avoid duplicates
@@ -208,8 +222,12 @@ class QCPipeline:
                             if "manuscript" not in self.qc_results:
                                 self.qc_results["manuscript"] = {}
                             self.qc_results["manuscript"][test_name] = {
+                                "passed": passed,
                                 "result": result,
                             }
+                            if not passed and pipeline_status == "success":
+                                pipeline_status = "degraded"
+                                recoverable_event_count += 1
                     else:
                         # Fallback for other analyzer types
                         logger.warning(
@@ -305,7 +323,15 @@ class QCPipeline:
         # Report pipeline status
         if num_processed == 0:
             output["status"] = "unknown"
-        logger.info(f"QC pipeline completed with status: {output['status']}")
+        logger.info(
+            "QC pipeline completed",
+            extra={
+                "operation": "qc.pipeline",
+                "status": output["status"],
+                "processed_figures": num_processed,
+                "recoverable_event_count": recoverable_event_count,
+            },
+        )
         logger.info(f"Processed {num_processed} figures")
 
         return output
@@ -328,12 +354,23 @@ class QCPipeline:
 
         # Handle empty outputs
         if not outputs:
+            logger.warning(
+                "QC analyzer returned empty outputs",
+                extra={
+                    "operation": "qc.pipeline",
+                    "figure_id": figure_id,
+                    "test_name": test_name,
+                    "severity": "recoverable",
+                    "reason": "empty_outputs",
+                },
+            )
             self.qc_results["figures"][figure_id]["panels"].append(
                 {
                     "panel_label": "unknown",
                     "qc_checks": [
                         {
                             "check_name": test_name,
+                            "passed": passed,
                             "model_output": "No outputs",
                         }
                     ],
@@ -351,6 +388,16 @@ class QCPipeline:
                 panel_label = panel["panel_label"]
 
             if not panel_label:
+                logger.warning(
+                    "Skipping QC output entry without panel label",
+                    extra={
+                        "operation": "qc.pipeline",
+                        "figure_id": figure_id,
+                        "test_name": test_name,
+                        "severity": "recoverable",
+                        "reason": "missing_panel_label",
+                    },
+                )
                 continue
 
             # Look for existing panel
@@ -368,6 +415,7 @@ class QCPipeline:
             # Create test entry with only essential fields
             test_obj = {
                 "check_name": test_name,
+                "passed": passed,
             }
 
             # Add model output - convert to dict if needed

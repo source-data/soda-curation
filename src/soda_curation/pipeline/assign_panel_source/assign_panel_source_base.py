@@ -84,6 +84,15 @@ class PanelSourceAssigner(ABC):
 
     def _assign_to_figure(self, figure: Figure) -> None:
         """Process single figure."""
+        logger.info(
+            "Preparing panel source assignment",
+            extra={
+                "operation": "main.assign_panel_source",
+                "figure_label": figure.figure_label,
+                "existing_panel_count": len(figure.panels),
+                "sd_file_count": len(getattr(figure, "sd_files", [])),
+            },
+        )
         # First normalize and deduplicate existing panels
         normalized_panels = {}
         for panel in figure.panels:
@@ -111,6 +120,15 @@ class PanelSourceAssigner(ABC):
 
         if not sd_files:
             # If there are no source data files, return early with empty assignments
+            logger.warning(
+                "No source-data files available; skipping AI assignment",
+                extra={
+                    "operation": "main.assign_panel_source",
+                    "figure_label": figure.figure_label,
+                    "severity": "recoverable",
+                    "reason": "no_sd_files",
+                },
+            )
             assigned_files_list = AsignedFilesList(
                 assigned_files=[], not_assigned_files=[]
             )
@@ -120,6 +138,15 @@ class PanelSourceAssigner(ABC):
 
             # Get panel labels (now normalized)
             panel_labels = [panel.panel_label for panel in figure.panels]
+            logger.info(
+                "Prepared source-data payload for AI assignment",
+                extra={
+                    "operation": "main.assign_panel_source",
+                    "figure_label": figure.figure_label,
+                    "panel_count": len(panel_labels),
+                    "candidate_file_count": len(extracted_files),
+                },
+            )
 
             # Get the prompt
             prompt = self._get_assign_panel_source_prompt(
@@ -127,7 +154,23 @@ class PanelSourceAssigner(ABC):
             )
 
             # Call AI service
-            assigned_files_list = self.call_ai_service(prompt, extracted_files)
+            try:
+                assigned_files_list = self.call_ai_service(prompt, extracted_files)
+            except Exception as exc:
+                logger.warning(
+                    "AI panel-source assignment failed; falling back to empty assignments",
+                    extra={
+                        "operation": "main.assign_panel_source",
+                        "figure_label": figure.figure_label,
+                        "severity": "recoverable",
+                        "reason": "ai_assignment_failed",
+                        "error": str(exc),
+                    },
+                )
+                assigned_files_list = AsignedFilesList(
+                    assigned_files=[],
+                    not_assigned_files=extracted_files,
+                )
 
         # Convert assigned files to Panel objects and normalize their labels
         panels = self.parse_assigned_files_to_panels(assigned_files_list)
@@ -137,6 +180,15 @@ class PanelSourceAssigner(ABC):
         # Update figure with assignments
         self._update_figure_with_assignments(
             figure, panels, assigned_files_list.not_assigned_files
+        )
+        logger.info(
+            "Panel source assignment finalized for figure",
+            extra={
+                "operation": "main.assign_panel_source",
+                "figure_label": figure.figure_label,
+                "assigned_panel_count": len(panels),
+                "not_assigned_file_count": len(assigned_files_list.not_assigned_files),
+            },
         )
 
     @abstractmethod

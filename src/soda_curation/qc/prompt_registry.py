@@ -53,7 +53,8 @@ class PromptRegistry:
     """Registry backed by Langfuse for prompts, schemas and metadata.
 
     Langfuse credentials are read from environment variables:
-      LANGFUSE_SECRET_KEY, LANGFUSE_PUBLIC_KEY, LANGFUSE_BASE_URL
+      LANGFUSE_SECRET_KEY, LANGFUSE_PUBLIC_KEY, and optionally
+      LANGFUSE_HOST (preferred) or LANGFUSE_BASE_URL (legacy alias).
     These are typically provided via a .env file loaded by python-dotenv.
     """
 
@@ -75,6 +76,7 @@ class PromptRegistry:
         # _langfuse_failed is set True on first failed init so we don't retry.
         self._langfuse = None
         self._langfuse_failed = False
+        self._langfuse_failure_reason = ""
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -97,10 +99,44 @@ class PromptRegistry:
             try:
                 from langfuse import Langfuse
 
-                self._langfuse = Langfuse()
+                public_key = os.environ.get("LANGFUSE_PUBLIC_KEY", "").strip()
+                secret_key = os.environ.get("LANGFUSE_SECRET_KEY", "").strip()
+                host = (
+                    os.environ.get("LANGFUSE_HOST", "").strip()
+                    or os.environ.get("LANGFUSE_BASE_URL", "").strip()
+                    or None
+                )
+
+                missing = []
+                if not public_key:
+                    missing.append("LANGFUSE_PUBLIC_KEY")
+                if not secret_key:
+                    missing.append("LANGFUSE_SECRET_KEY")
+                if missing:
+                    self._langfuse_failed = True
+                    self._langfuse_failure_reason = (
+                        "Missing Langfuse environment variables: " + ", ".join(missing)
+                    )
+                    logger.warning(
+                        "Langfuse disabled for QC prompt fetching: %s. "
+                        "Falling back to local QC config metadata.",
+                        self._langfuse_failure_reason,
+                    )
+                    return None
+
+                self._langfuse = Langfuse(
+                    public_key=public_key,
+                    secret_key=secret_key,
+                    host=host,
+                )
             except Exception as exc:
-                logger.debug("Langfuse client init failed (check env vars): %s", exc)
                 self._langfuse_failed = True
+                self._langfuse_failure_reason = str(exc)
+                logger.warning(
+                    "Langfuse client init failed for QC prompt fetching: %s. "
+                    "Falling back to local QC config metadata.",
+                    exc,
+                )
 
         return self._langfuse  # None when unavailable
 
@@ -131,8 +167,7 @@ class PromptRegistry:
             client = self._get_langfuse()
             if client is None:
                 raise RuntimeError(
-                    f"Langfuse is not available "
-                    f"(check LANGFUSE_SECRET_KEY / LANGFUSE_PUBLIC_KEY env vars). "
+                    f"Langfuse is not available ({self._langfuse_failure_reason}). "
                     f"Cannot fetch prompt for '{test_name}'."
                 )
             langfuse_name = self._to_langfuse_name(test_name)
@@ -271,7 +306,11 @@ class PromptRegistry:
             lf_prompt = self._get_langfuse_prompt(test_name)
             lf_cfg = lf_prompt.config or {}
             langfuse_name = self._to_langfuse_name(test_name)
-            base_url = os.environ.get("LANGFUSE_BASE_URL", "https://cloud.langfuse.com")
+            base_url = (
+                os.environ.get("LANGFUSE_HOST")
+                or os.environ.get("LANGFUSE_BASE_URL")
+                or "https://cloud.langfuse.com"
+            )
             permalink = f"{base_url}/prompts/{langfuse_name}"
 
             local_cfg = self.get_test_config(test_name)
@@ -287,11 +326,19 @@ class PromptRegistry:
                 prompt_file="",
             )
         except Exception as exc:
-            logger.warning(
-                "Could not fetch Langfuse metadata for '%s': %s. Using local config.",
-                test_name,
-                exc,
-            )
+            # Avoid log spam when Langfuse is globally unavailable in this run.
+            if self._langfuse_failed:
+                logger.debug(
+                    "Skipping Langfuse metadata for '%s': %s. Using local config.",
+                    test_name,
+                    exc,
+                )
+            else:
+                logger.warning(
+                    "Could not fetch Langfuse metadata for '%s': %s. Using local config.",
+                    test_name,
+                    exc,
+                )
             local_cfg = self.get_test_config(test_name)
             return PromptMetadata(
                 name=local_cfg.get("name", test_name.replace("_", " ").title()),

@@ -99,6 +99,7 @@ ENV OMP_NUM_THREADS=1 \
 # Install additional packages
 RUN poetry run pip install --upgrade pip \
     && poetry run pip install opencv-python==4.8.0.74 \
+    && poetry run pip install huggingface-hub \
     && poetry run pip install -q git+https://github.com/THU-MIG/yolov10.git \
     && poetry run pip install opencv-fixer==0.2.5 \
     && poetry run pip install jupyterlab \
@@ -127,7 +128,7 @@ RUN poetry run python -c "import pdf2image; print(pdf2image.__file__)"
 RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 
 # Copy environment files (they will be selected at runtime)
-COPY .env.* /app/
+COPY .env* /app/
 
 # Development stage
 FROM base AS development

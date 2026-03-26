@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Tuple
 
 import openai
 
+from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
 from ..openai_utils import call_openai_with_fallback, validate_model_config
@@ -140,10 +141,21 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         prompts = self.prompt_handler.get_prompt(
             "match_caption_panel", {"figure_caption": figure_caption}
         )
+        model = self.openai_config.get("model", "gpt-4o")
+        logger.info(
+            "Preparing panel-caption vision request",
+            extra={
+                "operation": "main.match_caption_panel",
+                "provider": "openai",
+                "model": model,
+                "figure_caption_summary": summarize_text(figure_caption),
+                "encoded_image_chars": len(encoded_image),
+            },
+        )
 
         response = call_openai_with_fallback(
             client=self.client,
-            model=self.openai_config.get("model", "gpt-4o"),
+            model=model,
             messages=[
                 {"role": "system", "content": prompts["system"]},
                 {
@@ -165,13 +177,18 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             frequency_penalty=self.openai_config.get("frequency_penalty", 0),
             presence_penalty=self.openai_config.get("presence_penalty", 0),
             max_tokens=self.openai_config.get("max_tokens", 512),
+            operation="main.match_caption_panel",
+            request_metadata={
+                "provider": "openai",
+                "encoded_image_chars": len(encoded_image),
+            },
         )
         # Track token usage
         if hasattr(self, "zip_structure"):
             update_token_usage(
                 self.zip_structure.cost.match_caption_panel,
                 response,
-                self.openai_config["model"],
+                model,
             )
 
         # When using structured responses, the parsed content is in .parsed

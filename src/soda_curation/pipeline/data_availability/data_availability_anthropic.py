@@ -7,6 +7,7 @@ from typing import Any, Dict
 
 import anthropic
 
+from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
@@ -44,6 +45,14 @@ class DataAvailabilityExtractorAnthropic(DataAvailabilityExtractor):
         self, section_text: str, zip_structure: ZipStructure
     ) -> ZipStructure:
         """Extract data sources from data availability section."""
+        logger.info(
+            "Preparing data availability extraction request",
+            extra={
+                "operation": "main.extract_data_sources",
+                "provider": "anthropic",
+                "section_summary": summarize_text(section_text),
+            },
+        )
         db_registry_json = self._create_registry_info()
 
         prompts = self.prompt_handler.get_prompt(
@@ -72,6 +81,12 @@ class DataAvailabilityExtractorAnthropic(DataAvailabilityExtractor):
             response_format=ExtractDataSources,
             temperature=config_.get("temperature", 0.1),
             max_tokens=config_.get("max_tokens", 2048),
+            operation="main.extract_data_sources",
+            request_metadata={
+                "registry_database_count": len(
+                    self.database_registry.get("databases", [])
+                )
+            },
         )
 
         update_token_usage(zip_structure.cost.extract_data_sources, response, model_)
@@ -89,6 +104,15 @@ class DataAvailabilityExtractorAnthropic(DataAvailabilityExtractor):
             "section_text": section_text,
             "data_sources": parsed_data["sources"],
         }
+
+        logger.info(
+            "Data availability extraction completed",
+            extra={
+                "operation": "main.extract_data_sources",
+                "provider": "anthropic",
+                "data_source_count": len(parsed_data.get("sources", [])),
+            },
+        )
 
         return zip_structure
 

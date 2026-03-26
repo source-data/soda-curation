@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Tuple
 import openai
 from pydantic import BaseModel
 
+from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import (
     Figure,
@@ -97,6 +98,14 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
     ) -> Tuple[CaptionExtraction, TokenUsage]:
         """Extract caption title and text for a specific figure."""
         # Special case for testing with minimal content
+        logger.info(
+            "Preparing figure caption extraction request",
+            extra={
+                "operation": "main.extract_caption_title",
+                "figure_label": figure_label,
+                "captions_summary": summarize_text(all_captions),
+            },
+        )
 
         # Get prompts with variables substituted
         prompts = self.prompt_handler.get_prompt(
@@ -130,6 +139,8 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             top_p=config_.get("top_p", 1.0),
             frequency_penalty=config_.get("frequency_penalty", 0),
             presence_penalty=config_.get("presence_penalty", 0),
+            operation="main.extract_caption_title",
+            request_metadata={"figure_label": figure_label},
         )
         # Create token usage object
         token_usage = TokenUsage()
@@ -167,6 +178,14 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         self, figure_label: str, caption_text: str
     ) -> Tuple[PanelExtraction, TokenUsage]:
         """Extract panels for a specific figure."""
+        logger.info(
+            "Preparing panel sequence extraction request",
+            extra={
+                "operation": "main.extract_panel_sequence",
+                "figure_label": figure_label,
+                "caption_summary": summarize_text(caption_text),
+            },
+        )
         # Get prompts with variables substituted
         prompts = self.prompt_handler.get_prompt(
             step="extract_panel_sequence",
@@ -200,6 +219,8 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             top_p=config_.get("top_p", 1.0),
             frequency_penalty=config_.get("frequency_penalty", 0),
             presence_penalty=config_.get("presence_penalty", 0),
+            operation="main.extract_panel_sequence",
+            request_metadata={"figure_label": figure_label},
         )
 
         # Create token usage object
@@ -249,7 +270,15 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
 
         # Skip panel extraction if no caption was found
         if not caption_result.figure_caption:
-            logger.error(f"No caption extracted for {figure.figure_label}")
+            logger.warning(
+                "Caption extraction returned empty caption",
+                extra={
+                    "operation": "main.extract_caption_title",
+                    "figure_label": figure.figure_label,
+                    "severity": "recoverable",
+                    "reason": "empty_caption",
+                },
+            )
             figure.hallucination_score = 1  # Mark as non-verbatim
             return figure, total_token_usage
 

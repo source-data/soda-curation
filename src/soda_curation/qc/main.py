@@ -15,14 +15,9 @@ from typing import Any, Dict
 
 from ..config import ConfigurationLoader
 from ..data_storage import load_figure_data, load_zip_structure
+from ..logging_config import setup_logging
 from .prompt_registry import registry
 from .qc_pipeline import QCPipeline
-
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO,  # Set to DEBUG to see debug logs
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 
 logger = logging.getLogger(__name__)
 
@@ -74,21 +69,25 @@ def main():
     )
     args = parser.parse_args()
 
-    # Log the paths
+    # Load environment variables and validate required keys using the same
+    # loader as the main pipeline.
+    config_loader = ConfigurationLoader(args.config)
+
+    # Preserve the original QC config schema (including `default` section),
+    # because QC analyzers expect this structure directly.
+    import yaml  # type: ignore[import-untyped]
+
+    with open(args.config, "r") as config_file:
+        config = yaml.safe_load(config_file)
+
+    setup_logging(config_loader.config)
     logger.info("Using figure data from: %s", args.figure_data)
     logger.info("Using zip structure from: %s", args.zip_structure)
     logger.info("Using config from: %s", args.config)
-
-    # Load configuration
-    try:
-        # Try loading with ConfigurationLoader if it has the right method
-        config = ConfigurationLoader.load_from_file(args.config)
-    except (AttributeError, ImportError):
-        # Fall back to direct YAML loading
-        import yaml
-
-        with open(args.config, "r") as config_file:
-            config = yaml.safe_load(config_file)
+    logger.info(
+        "QC environment variables loaded from .env file",
+        extra={"environment": config_loader.environment},
+    )
 
     # Load figure data and zip structure
     figure_data = None

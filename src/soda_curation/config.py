@@ -41,9 +41,12 @@ class ConfigurationLoader:
 
     def _load_environment(self) -> None:
         """Load environment variables from appropriate .env file."""
+        # Load base .env first (if present), then environment-specific values.
+        # This allows shared keys (e.g., LANGFUSE_*) to live in .env while
+        # environment-specific overrides stay in .env.<environment>.
+        load_dotenv(".env")
         env_file = f".env.{self.environment}"
-
-        load_dotenv(env_file)
+        load_dotenv(env_file, override=True)
 
         # Validate required environment variables
         required_vars = ["OPENAI_API_KEY"]
