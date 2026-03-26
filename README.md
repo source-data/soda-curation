@@ -84,7 +84,7 @@ The configuration system uses a flexible, hierarchical approach supporting diffe
 - **QC config (`config.qc.yaml`)**: Controls all quality control tests, test metadata, and versioning. Example:
 
 ```yaml
-qc_version: "3.1.1"
+qc_version: "2"
 ai_provider: "openai"
 qc_check_metadata:
   panel:
