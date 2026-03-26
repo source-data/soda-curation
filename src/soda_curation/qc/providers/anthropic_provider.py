@@ -18,7 +18,7 @@ class AnthropicQCProvider(BaseQCProvider):
     """QC provider implementation backed by Anthropic Claude APIs."""
 
     provider_name = "anthropic"
-    supports_agentic = False
+    supports_agentic = True
 
     def __init__(self, client: Optional[anthropic.Anthropic] = None):
         self._init_error: Optional[Exception] = None
@@ -37,18 +37,7 @@ class AnthropicQCProvider(BaseQCProvider):
                 "Anthropic client is unavailable. "
                 f"Initialization failed with: {self._init_error}"
             )
-        if request.agentic_enabled or request.model_config:
-            logger.warning(
-                "agentic_not_supported: Agentic mode requested for Anthropic QC "
-                "provider; continuing with non-agentic call",
-                extra={
-                    "operation": request.operation,
-                    "provider": self.provider_name,
-                    "model": request.model,
-                    "reason": "agentic_not_supported",
-                },
-            )
-
+        agentic_requested = bool(request.agentic_enabled or request.model_config)
         response = call_anthropic(
             client=self.client,
             model=request.model,
@@ -58,6 +47,7 @@ class AnthropicQCProvider(BaseQCProvider):
             max_tokens=request.prompt_config.get("max_tokens", 4096),
             operation=request.operation,
             request_metadata=request.context,
+            model_config=request.model_config if agentic_requested else None,
         )
         message = response.choices[0].message
         parsed = getattr(message, "parsed", None)
@@ -82,5 +72,9 @@ class AnthropicQCProvider(BaseQCProvider):
             parsed=parsed,
             model=getattr(response, "model", request.model),
             usage=usage,
-            metadata={"api_mode": "messages"},
+            metadata={
+                "api_mode": "messages",
+                "agentic_requested": agentic_requested,
+                "tool_config_present": bool(request.model_config.get("tools")),
+            },
         )

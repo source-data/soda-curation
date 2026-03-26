@@ -23,7 +23,7 @@ def test_build_qc_provider_invalid():
 
 
 @patch("src.soda_curation.qc.providers.anthropic_provider.call_anthropic")
-def test_anthropic_provider_warns_when_agentic_requested(mock_call_anthropic, caplog):
+def test_anthropic_provider_passes_agentic_model_config(mock_call_anthropic):
     from src.soda_curation.qc.providers.anthropic_provider import AnthropicQCProvider
 
     mock_response = SimpleNamespace(
@@ -42,14 +42,47 @@ def test_anthropic_provider_warns_when_agentic_requested(mock_call_anthropic, ca
         operation="qc.test",
         context={},
         agentic_enabled=True,
-        model_config={"tools": [{"name": "tool"}]},
+        model_config={
+            "tools": [{"type": "web_search_20250305", "max_uses": 2}],
+            "tool_choice": "auto",
+        },
     )
 
-    with caplog.at_level("WARNING"):
-        response = provider.generate(request)
+    response = provider.generate(request)
 
     assert response.metadata["api_mode"] == "messages"
-    assert "agentic_not_supported" in caplog.text
+    assert response.metadata["agentic_requested"] is True
+    assert response.metadata["tool_config_present"] is True
+    kwargs = mock_call_anthropic.call_args.kwargs
+    assert kwargs["model_config"]["tool_choice"] == "auto"
+
+
+@patch("src.soda_curation.qc.providers.anthropic_provider.call_anthropic")
+def test_anthropic_provider_uses_model_config_without_agentic_flag(mock_call_anthropic):
+    from src.soda_curation.qc.providers.anthropic_provider import AnthropicQCProvider
+
+    mock_response = SimpleNamespace(
+        choices=[SimpleNamespace(message=SimpleNamespace(content="{}", parsed=None))],
+        usage=SimpleNamespace(prompt_tokens=1, completion_tokens=2, total_tokens=3),
+        model="claude-sonnet-4-6",
+    )
+    mock_call_anthropic.return_value = mock_response
+
+    provider = AnthropicQCProvider(client=MagicMock())
+    request = QCProviderRequest(
+        model="claude-sonnet-4-6",
+        messages=[{"role": "user", "content": "test"}],
+        prompt_config={},
+        response_type=None,
+        operation="qc.test",
+        context={},
+        agentic_enabled=False,
+        model_config={"tools": [{"type": "web_search_20250305"}]},
+    )
+
+    _ = provider.generate(request)
+    kwargs = mock_call_anthropic.call_args.kwargs
+    assert kwargs["model_config"]["tools"][0]["type"] == "web_search_20250305"
 
 
 def test_openai_provider_agentic_uses_responses_api():

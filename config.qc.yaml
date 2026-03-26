@@ -1,4 +1,4 @@
-qc_version: "3.1.0"
+qc_version: "3.1.1"
 # AI provider: "openai" (default), "anthropic", or "gemini"
 ai_provider: "openai"
 qc_check_metadata:
@@ -81,7 +81,7 @@ default: &default
     top_p: 1.0
     max_tokens: 2048
   pipeline: {}
-  # Example provider-specific override for an agentic check (OpenAI only):
+  # Example provider-specific override for an agentic check:
   # pipeline:
   #   external_data_url_validation_agentic:
   #     openai:
@@ -90,4 +90,13 @@ default: &default
   #       model_config:
   #         tools:
   #           - type: "web_search_preview"
+  #         tool_choice: "auto"
+  #     anthropic:
+  #       model: "claude-sonnet-4-6"
+  #       agentic: true
+  #       model_config:
+  #         tools:
+  #           - type: "web_search_20250305"
+  #             name: "web_search"
+  #             max_uses: 5
   #         tool_choice: "auto"

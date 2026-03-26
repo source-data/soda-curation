@@ -21,6 +21,7 @@ VALID_ANTHROPIC_MODELS = {
     "claude-haiku-4-5-20251001",
 }
 ANTHROPIC_MAX_RETRIES = 3
+_SUPPORTED_ANTHROPIC_TOOL_TYPE_PREFIXES = ("web_search", "web_fetch")
 
 
 class AnthropicUsage:
@@ -219,6 +220,81 @@ def _convert_messages(messages: List[Dict[str, Any]]) -> tuple:
     return system_prompt, anthropic_messages
 
 
+def _extract_supported_anthropic_tools(
+    model_config: Optional[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """Return Anthropic-compatible built-in tools from model config.
+
+    Current QC support is limited to provider-native built-in tools (e.g. web search).
+    Client-executed custom function tools are intentionally excluded because this code
+    path does not run tool-result loops.
+    """
+    if not model_config:
+        return []
+    raw_tools = model_config.get("tools")
+    if not isinstance(raw_tools, list):
+        return []
+
+    supported_tools: List[Dict[str, Any]] = []
+    for tool in raw_tools:
+        if not isinstance(tool, dict):
+            logger.warning(
+                "Ignoring invalid Anthropic tool entry (expected dict): %r", tool
+            )
+            continue
+        tool_type = str(tool.get("type", "")).strip()
+        if tool_type and any(
+            tool_type.startswith(prefix)
+            for prefix in _SUPPORTED_ANTHROPIC_TOOL_TYPE_PREFIXES
+        ):
+            supported_tools.append(tool)
+            continue
+        logger.warning(
+            "Ignoring unsupported Anthropic tool config; only built-in tool types "
+            "starting with %s are currently supported in QC provider path. tool=%s",
+            _SUPPORTED_ANTHROPIC_TOOL_TYPE_PREFIXES,
+            tool,
+        )
+    return supported_tools
+
+
+def _resolve_anthropic_tool_choice(
+    configured_choice: Any,
+    has_external_tools: bool,
+    structured_tool_name: str,
+) -> Dict[str, str]:
+    """Resolve Anthropic tool_choice while preserving structured-output guarantees."""
+    if configured_choice is None:
+        if has_external_tools:
+            return {"type": "auto"}
+        return {"type": "tool", "name": structured_tool_name}
+
+    if isinstance(configured_choice, str):
+        normalized = configured_choice.strip().lower()
+        if normalized in {"auto", "any"}:
+            return {"type": "auto"}
+        if normalized in {"none", "off", "disabled"}:
+            return {"type": "tool", "name": structured_tool_name}
+        logger.warning(
+            "Unsupported Anthropic tool_choice string '%s'; falling back to structured tool",
+            configured_choice,
+        )
+        return {"type": "tool", "name": structured_tool_name}
+
+    if isinstance(configured_choice, dict):
+        choice_type = str(configured_choice.get("type", "")).strip().lower()
+        if choice_type in {"auto", "any"}:
+            return {"type": "auto"}
+        if choice_type == "tool" and configured_choice.get("name"):
+            return {"type": "tool", "name": str(configured_choice["name"])}
+
+    logger.warning(
+        "Unsupported Anthropic tool_choice config '%s'; falling back to structured tool",
+        configured_choice,
+    )
+    return {"type": "tool", "name": structured_tool_name}
+
+
 def call_anthropic(
     client: anthropic.Anthropic,
     model: str,
@@ -228,6 +304,7 @@ def call_anthropic(
     max_tokens: int = 2048,
     operation: str = "unspecified_operation",
     request_metadata: Optional[Dict[str, Any]] = None,
+    model_config: Optional[Dict[str, Any]] = None,
 ) -> AnthropicResponseWrapper:
     """
     Call Anthropic Claude API, optionally enforcing structured output via tool use.
@@ -242,6 +319,7 @@ def call_anthropic(
         max_tokens: Maximum tokens in the response.
         operation: Operation name for structured logs.
         request_metadata: Additional metadata for structured logs.
+        model_config: Optional provider-specific runtime config (e.g. tools/tool_choice).
 
     Returns:
         AnthropicResponseWrapper compatible with OpenAI response format.
@@ -271,18 +349,22 @@ def call_anthropic(
         # Enforce structured output via tool use
         schema = response_format.model_json_schema()
         tool_name = "structured_output"
-        params["tools"] = [
-            {
-                "name": tool_name,
-                "description": f"Return structured data as {response_format.__name__}",
-                "input_schema": schema,
-            }
-        ]
-        params["tool_choice"] = {"type": "tool", "name": tool_name}
+        external_tools = _extract_supported_anthropic_tools(model_config)
+        structured_tool = {
+            "name": tool_name,
+            "description": f"Return structured data as {response_format.__name__}",
+            "input_schema": schema,
+        }
+        params["tools"] = [*external_tools, structured_tool]
+        params["tool_choice"] = _resolve_anthropic_tool_choice(
+            configured_choice=(model_config or {}).get("tool_choice"),
+            has_external_tools=bool(external_tools),
+            structured_tool_name=tool_name,
+        )
 
         logger.info(
             f"Calling Anthropic API with structured output ({response_format.__name__}) "
-            f"using model: {model}"
+            f"using model: {model} (external_tool_count={len(external_tools)})"
         )
         response = _create_with_retry(client, params, model, operation)
 
@@ -292,7 +374,7 @@ def call_anthropic(
         )
 
         parsed = None
-        raw_text = ""
+        raw_text_parts: List[str] = []
         for block in response.content:
             if block.type == "tool_use" and block.name == tool_name:
                 try:
@@ -302,7 +384,8 @@ def call_anthropic(
                         f"Failed to instantiate {response_format.__name__} from tool input: {e}"
                     )
             elif block.type == "text":
-                raw_text = block.text
+                raw_text_parts.append(block.text)
+        raw_text = "\n".join(part for part in raw_text_parts if part).strip()
 
         if parsed is None and raw_text:
             logger.warning(

@@ -84,7 +84,7 @@ The configuration system uses a flexible, hierarchical approach supporting diffe
 - **QC config (`config.qc.yaml`)**: Controls all quality control tests, test metadata, and versioning. Example:
 
 ```yaml
-qc_version: "3.1.0"
+qc_version: "3.1.1"
 ai_provider: "openai"
 qc_check_metadata:
   panel:
@@ -548,7 +548,7 @@ poetry run python -m src.soda_curation.qc.main \
 
 ```
 
-### Configuration Notes (v3.1.0)
+### Configuration Notes (v3.1.1)
 
 `config.qc.yaml` is now aligned with the Langfuse-based prompt workflow:
 
@@ -557,13 +557,13 @@ poetry run python -m src.soda_curation.qc.main \
 3. **Prompts can be resolved via Langfuse** using `langfuse_name` where needed.
 4. **Schema-based analyzer detection remains active** (panel/figure/document inferred from response schemas).
 5. **Provider-agnostic QC model calls** support `openai`, `anthropic`, and `gemini`.
-6. **Agentic mode is provider-specific**: currently enabled for OpenAI, explicitly downgraded for Anthropic/Gemini.
+6. **Agentic mode is provider-specific**: OpenAI supports full configured tool mode; Anthropic supports provider-native built-in tools (for example `web_search_*`, `web_fetch_*`) in QC; Gemini currently logs a warning and runs non-agentic.
 
-### What 3.1.0 Adds
+### What 3.1.1 Adds
 
 - **Provider abstraction layer in QC**: The QC pipeline now uses a normalized provider contract and factory, so analyzers stay provider-agnostic.
 - **Three provider adapters**: OpenAI, Anthropic, and Gemini are available under one API surface.
-- **Agentic mode wiring**: OpenAI supports agentic/tool mode in QC; Anthropic and Gemini emit explicit warnings and run non-agentic.
+- **Agentic mode wiring**: OpenAI supports configured tool mode; Anthropic supports built-in server tools via `model_config.tools`; Gemini currently remains non-agentic.
 - **Langfuse runtime hint compatibility**: Optional runtime hints (e.g., `agentic`, `model_config`, tool config) can be merged from prompt config while preserving existing prompt/schema behavior.
 - **Stronger documentation + config examples**: Clear support matrix and per-test override examples for rollout.
 
@@ -579,13 +579,32 @@ poetry run python -m src.soda_curation.qc.main \
 | Provider | Structured Output | Agentic / Tools |
 |---|---|---|
 | OpenAI | Yes | Yes (`agentic: true` + `model_config.tools`) |
-| Anthropic | Yes | Not yet (logs warning, runs non-agentic) |
+| Anthropic | Yes | Partial: built-in Anthropic tools via `model_config.tools` (for example `web_search_*`, `web_fetch_*`) |
 | Gemini | Yes | Not yet (logs warning, runs non-agentic) |
+
+Note: Anthropic custom client-executed function tools (manual tool-result loop) are not wired yet in QC. Current Anthropic agentic support is limited to provider-native built-in tools.
+
+Anthropic agentic override example:
+
+```yaml
+default:
+  pipeline:
+    external_data_url_validation_agentic:
+      anthropic:
+        model: "claude-sonnet-4-6"
+        agentic: true
+        model_config:
+          tools:
+            - type: "web_search_20250305"
+              name: "web_search"
+              max_uses: 5
+          tool_choice: "auto"
+```
 
 Minimal example:
 
 ```yaml
-qc_version: "3.1.0"
+qc_version: "3.1.1"
 ai_provider: "openai"
 qc_check_metadata:
   panel:
@@ -607,7 +626,7 @@ qc_check_metadata:
 Here's the full structure of a modern `config.qc.yaml`:
 
 ```yaml
-qc_version: "3.1.0"
+qc_version: "3.1.1"
 ai_provider: "openai"
 qc_check_metadata:
   panel:
@@ -712,7 +731,7 @@ This helps identify issues like:
 
 ```json
 {
-  "qc_version": "3.1.0",
+  "qc_version": "3.1.1",
   "qc_check_metadata": {
     "plot_axis_units": {
       "name": "Plot Axis Units",
@@ -804,7 +823,7 @@ To add a new test to the QC pipeline, follow these steps:
 ### Example QC Config Section
 
 ```yaml
-qc_version: "3.1.0"
+qc_version: "3.1.1"
 qc_check_metadata:
   panel:
     plot_axis_units:
@@ -848,9 +867,9 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
-### 3.1.0 (2026-03-26)
+### 3.1.1 (2026-03-26)
 - **QC multi-provider architecture**: Added provider abstraction and factory with OpenAI, Anthropic, and Gemini adapters.
-- **Agentic support in QC**: OpenAI agentic/tool mode support added with explicit capability fallback behavior for unsupported providers.
+- **Agentic support in QC**: OpenAI tool mode and Anthropic built-in server-side tools (`web_search_*`, `web_fetch_*`) supported from runtime `model_config`.
 - **Langfuse compatibility improvements**: Prompt/schema sourcing preserved with optional runtime-hint mapping for provider execution.
 - **Docs + config refresh**: README and `config.qc.yaml` updated with provider setup, support matrix, and non-agentic/agentic examples.
 - **Dependency hygiene pass**: Cleaned Poetry runtime dependencies by removing duplicate/unused entries.
