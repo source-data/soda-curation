@@ -23,6 +23,7 @@ import logging
 import os
 import sys
 import tempfile
+from copy import deepcopy
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple, Optional, Type, Union, cast
@@ -263,6 +264,21 @@ class PromptRegistry:
         except Exception:
             pass
         return None
+
+    def get_runtime_config(self, test_name: str) -> Dict[str, Any]:
+        """Return optional runtime hints from prompt config for provider execution."""
+        runtime_hints: Dict[str, Any] = {}
+
+        local_cfg = self.get_test_config(test_name)
+        _merge_runtime_hints(runtime_hints, local_cfg)
+
+        try:
+            lf_cfg = self._get_langfuse_prompt(test_name).config or {}
+            _merge_runtime_hints(runtime_hints, lf_cfg)
+        except Exception:
+            pass
+
+        return runtime_hints
 
     def get_schema(self, test_name: str) -> Dict[str, Any]:
         """Return the JSON schema for a test from Langfuse prompt config.
@@ -505,7 +521,7 @@ class PromptRegistry:
 
 def create_registry(config_path: Optional[str] = None) -> PromptRegistry:
     """Create a PromptRegistry with config loaded from disk."""
-    import yaml
+    import yaml  # type: ignore[import-untyped]
 
     if config_path is None:
         candidates = [
@@ -528,3 +544,44 @@ def create_registry(config_path: Optional[str] = None) -> PromptRegistry:
 
 
 registry = create_registry()
+
+
+def _merge_runtime_hints(base: Dict[str, Any], source: Dict[str, Any]) -> None:
+    """Merge supported runtime-hint keys into base dict."""
+    if not isinstance(source, dict):
+        return
+
+    if isinstance(source.get("runtime"), dict):
+        _deep_merge(base, source["runtime"])
+
+    direct_keys = {
+        "agentic",
+        "model_config",
+        "tools",
+        "tool_choice",
+        "reasoning",
+        "include",
+        "max_output_tokens",
+    }
+    for key in direct_keys:
+        if key in source:
+            base[key] = deepcopy(source[key])
+
+    # Backward-compatible bridge: tools at top-level become model_config.tools.
+    if "tools" in source:
+        base.setdefault("model_config", {})
+        if isinstance(base["model_config"], dict):
+            base["model_config"]["tools"] = deepcopy(source["tools"])
+    if "tool_choice" in source:
+        base.setdefault("model_config", {})
+        if isinstance(base["model_config"], dict):
+            base["model_config"]["tool_choice"] = deepcopy(source["tool_choice"])
+
+
+def _deep_merge(base: Dict[str, Any], extra: Dict[str, Any]) -> None:
+    """In-place deep merge for runtime hint dictionaries."""
+    for key, value in extra.items():
+        if key in base and isinstance(base[key], dict) and isinstance(value, dict):
+            _deep_merge(base[key], value)
+        else:
+            base[key] = deepcopy(value)

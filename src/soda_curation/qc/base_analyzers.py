@@ -13,7 +13,7 @@ from .model_api import ModelAPI
 from .prompt_registry import registry
 
 logger = logging.getLogger(__name__)
-SUPPORTED_AI_PROVIDERS = {"openai", "anthropic"}
+SUPPORTED_AI_PROVIDERS = {"openai", "anthropic", "gemini"}
 
 
 class BaseQCAnalyzer(ABC):
@@ -43,7 +43,7 @@ class BaseQCAnalyzer(ABC):
         return self.config.get(self.test_name, {})
 
     def _get_provider_config(self, test_config: Dict) -> Dict:
-        """Return the provider-specific config section (openai or anthropic)."""
+        """Return the provider-specific config section for the active AI provider."""
         provider = self.config.get("ai_provider", "openai").lower()
         if provider not in SUPPORTED_AI_PROVIDERS:
             raise ValueError(
@@ -51,15 +51,18 @@ class BaseQCAnalyzer(ABC):
                 f"Expected one of {sorted(SUPPORTED_AI_PROVIDERS)}."
             )
 
-        has_openai = "openai" in test_config
-        has_anthropic = "anthropic" in test_config
-        assert not (has_openai and has_anthropic), (
-            f"QC configuration error for test '{self.test_name}': both 'openai' and "
-            "'anthropic' are defined. Define only one provider per test."
+        provider_keys = ("openai", "anthropic", "gemini")
+        configured_provider_blocks = [
+            key for key in provider_keys if key in test_config
+        ]
+        assert len(configured_provider_blocks) <= 1, (
+            f"QC configuration error for test '{self.test_name}': provider blocks "
+            f"{configured_provider_blocks} are defined together. Define only one provider "
+            "per test."
         )
 
         configured_provider = (
-            "openai" if has_openai else ("anthropic" if has_anthropic else None)
+            configured_provider_blocks[0] if configured_provider_blocks else None
         )
         if configured_provider and configured_provider != provider:
             raise ValueError(
@@ -67,33 +70,40 @@ class BaseQCAnalyzer(ABC):
                 f"configured_provider='{configured_provider}', ai_provider='{provider}'."
             )
 
-        if provider == "anthropic":
-            if has_anthropic:
-                provider_config = deepcopy(test_config["anthropic"])
-            elif "default" in self.config and "anthropic" in self.config["default"]:
-                provider_config = deepcopy(self.config["default"]["anthropic"])
-            else:
-                raise ValueError(
-                    f"QC provider '{provider}' is selected but no '{provider}' config "
-                    f"was found for test '{self.test_name}' and no default fallback exists."
-                )
-            provider_config.setdefault("prompts", {})
-            return provider_config
-
-        # OpenAI (default)
-        if has_openai:
-            provider_config = deepcopy(test_config["openai"])
+        if configured_provider == provider:
+            provider_config = deepcopy(test_config[provider])
+        elif "default" in self.config and provider in self.config["default"]:
+            provider_config = deepcopy(self.config["default"][provider])
         else:
-            if "default" in self.config and "openai" in self.config["default"]:
-                provider_config = deepcopy(self.config["default"]["openai"])
+            # Safe baseline defaults when no provider block exists.
+            if provider == "anthropic":
+                provider_config = {
+                    "model": "claude-sonnet-4-6",
+                    "temperature": 0.1,
+                    "max_tokens": 4096,
+                }
+            elif provider == "gemini":
+                provider_config = {
+                    "model": "gemini-2.5-flash",
+                    "temperature": 0.1,
+                    "max_tokens": 2048,
+                }
             else:
                 provider_config = {
                     "model": "gpt-4o",
                     "temperature": 0.1,
                     "json_mode": True,
                 }
+
         provider_config.setdefault("prompts", {})
         return provider_config
+
+    def _apply_langfuse_runtime_hints(self, provider_config: Dict[str, Any]) -> None:
+        """Merge optional prompt-level runtime hints from Langfuse config."""
+        runtime_hints = registry.get_runtime_config(self.test_name)
+        if not runtime_hints:
+            return
+        _deep_merge_dict(provider_config, runtime_hints)
 
     @abstractmethod
     def analyze(self, *args, **kwargs) -> Tuple[bool, Any]:
@@ -136,6 +146,12 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
 
             # Set system prompt with one from registry
             provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
+            provider_config["prompts"]["user"] = (
+                registry.get_user_prompt(self.test_name)
+                or provider_config["prompts"].get("user")
+                or "$figure_caption"
+            )
+            self._apply_langfuse_runtime_hints(provider_config)
 
             # Call the model with the correct parameters
             response = self.model_api.generate_response(
@@ -309,6 +325,12 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
 
             # Set system prompt with one from registry
             provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
+            provider_config["prompts"]["user"] = (
+                registry.get_user_prompt(self.test_name)
+                or provider_config["prompts"].get("user")
+                or "$figure_caption"
+            )
+            self._apply_langfuse_runtime_hints(provider_config)
 
             # Call the model with the correct parameters
             response = self.model_api.generate_response(
@@ -404,6 +426,12 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
 
             # Set system prompt with one from registry
             provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
+            provider_config["prompts"]["user"] = (
+                registry.get_user_prompt(self.test_name)
+                or provider_config["prompts"].get("user")
+                or "$manuscript_text"
+            )
+            self._apply_langfuse_runtime_hints(provider_config)
 
             # Set user prompt template: manuscript text is always the user message
             if "user" not in provider_config["prompts"]:
@@ -575,3 +603,12 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
         """Check if the test passed based on the result."""
         # Manuscript-level implementation
         return bool(result)
+
+
+def _deep_merge_dict(base: Dict[str, Any], extra: Dict[str, Any]) -> None:
+    """In-place deep merge used for runtime-hint overlays."""
+    for key, value in extra.items():
+        if key in base and isinstance(base[key], dict) and isinstance(value, dict):
+            _deep_merge_dict(base[key], value)
+            continue
+        base[key] = deepcopy(value)

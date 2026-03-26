@@ -1,40 +1,25 @@
-"""Model API with retry logic for QC pipeline (supports OpenAI and Anthropic)."""
+"""Model API orchestrator with provider abstraction for the QC pipeline."""
+
+from __future__ import annotations
 
 import json
 import logging
 from typing import Any, Dict, Optional, Type, TypeVar, Union
 
-import anthropic as anthropic_lib
 import openai
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 from ..pipeline.ai_observability import summarize_messages, summarize_text
-from ..pipeline.anthropic_utils import call_anthropic, is_retryable_anthropic_error
+from ..pipeline.anthropic_utils import is_retryable_anthropic_error
 from ..pipeline.cost_tracking import update_token_usage
 from ..pipeline.manuscript_structure.manuscript_structure import TokenUsage
-from ..pipeline.openai_utils import (
-    call_openai_with_fallback,
-    is_retryable_openai_error,
-    validate_model_config,
-)
+from ..pipeline.openai_utils import is_retryable_openai_error
+from .providers import build_qc_provider
+from .providers.base import BaseQCProvider, QCProviderRequest, QCProviderResponse
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
-
-# Compatibility shim for environments/tests using older OpenAI SDKs.
-if not hasattr(openai, "OpenAI"):
-    if hasattr(openai, "Client"):
-        openai.OpenAI = openai.Client
-    else:
-
-        class _OpenAIClientMissing:  # pragma: no cover - defensive fallback
-            def __init__(self, *args, **kwargs):
-                raise RuntimeError(
-                    "OpenAI client class is unavailable in this environment"
-                )
-
-        openai.OpenAI = _OpenAIClientMissing
 
 
 def _is_qc_retryable_exception(exc: Exception) -> bool:
@@ -43,24 +28,45 @@ def _is_qc_retryable_exception(exc: Exception) -> bool:
         return True
     if isinstance(exc, openai.OpenAIError):
         return is_retryable_openai_error(exc)
-    return is_retryable_anthropic_error(exc)
+    if is_retryable_anthropic_error(exc):
+        return True
+
+    class_name = exc.__class__.__name__
+    retryable_names = {
+        "APIError",
+        "ServiceUnavailable",
+        "TooManyRequests",
+        "ServerError",
+    }
+    if class_name in retryable_names:
+        return True
+
+    message = str(exc).lower()
+    transient_markers = [
+        "rate limit",
+        "temporarily unavailable",
+        "timeout",
+        "timed out",
+        "503",
+        "504",
+    ]
+    return any(marker in message for marker in transient_markers)
 
 
 class ModelAPI:
-    """Model API with retry logic for QC pipeline (supports OpenAI and Anthropic)."""
+    """Provider-agnostic QC model API with retry and normalized outputs."""
 
-    def __init__(self, config: Dict[str, Any]):
-        """
-        Initialize ModelAPI.
-
-        Args:
-            config: Configuration dictionary
-        """
+    def __init__(
+        self,
+        config: Dict[str, Any],
+        provider: Optional[BaseQCProvider] = None,
+        provider_clients: Optional[Dict[str, Any]] = None,
+    ):
         self.config = config
         self.ai_provider = config.get("ai_provider", "openai").lower()
-        self.client = openai.OpenAI()
-        self.anthropic_client = (
-            anthropic_lib.Anthropic() if self.ai_provider == "anthropic" else None
+        self.provider = provider or build_qc_provider(
+            provider_name=self.ai_provider,
+            clients=provider_clients,
         )
         self.token_usage = TokenUsage()
 
@@ -82,26 +88,10 @@ class ModelAPI:
         operation: str = "qc.generate_response",
         context: Optional[Dict[str, Any]] = None,
     ) -> Union[Dict[str, Any], T]:
-        """
-        Generate response from OpenAI using beta.chat.completions.parse.
-
-        Args:
-            prompt_config: Prompt configuration with system and user prompts
-            response_type: Optional Pydantic model type for parsing response
-            encoded_image: Base64 encoded image (for figure analysis)
-            caption: Figure caption (for figure analysis)
-            manuscript_text: Manuscript text (for document analysis)
-            word_file_content: Word file content (for document analysis)
-            expected_panels: List of valid panel labels for this figure
-
-        Returns:
-            Response from OpenAI, either as parsed Pydantic model or raw dict
-        """
-        # Get prompts
+        """Generate a response for QC figure/manuscript prompts."""
         system_prompt = prompt_config.get("prompts", {}).get("system", "")
         user_prompt = prompt_config.get("prompts", {}).get("user", "")
 
-        # Add expected panels instruction if provided
         if expected_panels:
             panels_constraint = (
                 f"**CRITICAL PANEL LABEL CONSTRAINT**:\n"
@@ -115,14 +105,11 @@ class ModelAPI:
                 f"- Do NOT add modifiers to labels (e.g., 'C (plot)', 'C (right)').\n"
                 f"- Each `panel_label` in your response MUST be exactly one of: {expected_panels}\n"
             )
-            # Prepend to system prompt so it acts as a ground rule
             system_prompt = panels_constraint + "\n" + system_prompt
-            # Append to user prompt for reinforcement
             user_prompt += "\n\n" + panels_constraint
 
-        # Determine the type of analysis and create appropriate messages
+        request_context = context or {}
         if encoded_image is not None and caption is not None:
-            # Figure analysis with image and caption
             if not encoded_image.strip():
                 logger.warning(
                     "QC image payload is empty",
@@ -130,7 +117,7 @@ class ModelAPI:
                         "operation": operation,
                         "severity": "recoverable",
                         "reason": "empty_image_payload",
-                        "context": context or {},
+                        "context": request_context,
                     },
                 )
             user_prompt = user_prompt.replace("$figure_caption", caption)
@@ -150,7 +137,6 @@ class ModelAPI:
                 },
             ]
         elif manuscript_text is not None or word_file_content is not None:
-            # Document/manuscript analysis with text
             text_content = word_file_content or manuscript_text or ""
             if text_content.lower().startswith(
                 "no word file"
@@ -162,7 +148,7 @@ class ModelAPI:
                         "severity": "recoverable",
                         "reason": "placeholder_manuscript_text",
                         "manuscript_summary": summarize_text(text_content),
-                        "context": context or {},
+                        "context": request_context,
                     },
                 )
             user_prompt = user_prompt.replace("$manuscript_text", text_content)
@@ -176,111 +162,83 @@ class ModelAPI:
                 "(manuscript_text or word_file_content) for document analysis"
             )
 
+        model = prompt_config.get(
+            "model", _default_model_for_provider(self.ai_provider)
+        )
+        model_config = prompt_config.get("model_config", {}) or {}
+        agentic_enabled = bool(prompt_config.get("agentic", False))
+
         logger.info(
             "QC model request prepared",
             extra={
                 "operation": operation,
                 "provider": self.ai_provider,
-                "model": prompt_config.get("model"),
+                "model": model,
+                "agentic_enabled": agentic_enabled,
                 "message_summary": summarize_messages(messages),
-                "context": context or {},
+                "context": request_context,
             },
         )
 
-        if self.ai_provider == "anthropic":
-            return self._call_anthropic(
-                messages,
-                prompt_config,
-                response_type,
-                operation=operation,
-                context=context,
-            )
-
-        # OpenAI path
-        model = prompt_config.get("model", "gpt-4o")
-
-        # Validate model configuration
-        validate_model_config(model, prompt_config)
-
-        # Make API call with fallback support
-        response = call_openai_with_fallback(
-            client=self.client,
+        provider_request = QCProviderRequest(
             model=model,
             messages=messages,
-            response_format=response_type,
-            temperature=prompt_config.get("temperature", 0.1),
-            top_p=prompt_config.get("top_p", 1.0),
-            frequency_penalty=prompt_config.get("frequency_penalty", 0.0),
-            presence_penalty=prompt_config.get("presence_penalty", 0.0),
-            max_tokens=prompt_config.get("max_tokens", 2048),
-            json_mode=prompt_config.get("json_mode", True),
+            prompt_config=prompt_config,
+            response_type=response_type,
             operation=operation,
-            request_metadata=context or {},
+            context=request_context,
+            agentic_enabled=agentic_enabled,
+            model_config=model_config,
+        )
+        provider_response = self.provider.generate(provider_request)
+        self._update_usage(provider_response)
+        return self._format_response(
+            provider_response=provider_response,
+            response_type=response_type,
+            operation=operation,
+            context=request_context,
         )
 
-        # Track token usage and cost for this call
-        actual_model = response.model if hasattr(response, "model") else model
-        update_token_usage(self.token_usage, response, actual_model)
+    def _update_usage(self, provider_response: QCProviderResponse) -> None:
+        response_dict = {"usage": provider_response.usage}
+        update_token_usage(self.token_usage, response_dict, provider_response.model)
 
-        # Return appropriate type
+    def _format_response(
+        self,
+        provider_response: QCProviderResponse,
+        response_type: Optional[Type[T]],
+        operation: str,
+        context: Dict[str, Any],
+    ) -> Union[Dict[str, Any], T]:
         if response_type:
-            message = response.choices[0].message
-            parsed = getattr(message, "parsed", None)
+            parsed = provider_response.parsed
             if parsed is not None:
                 if hasattr(parsed, "model_dump"):
                     return json.dumps(parsed.model_dump(mode="json"))
                 return json.dumps(parsed)
-            if not message.content:
+
+            if not provider_response.content:
                 logger.warning(
                     "Structured QC response had empty content and no parsed object",
                     extra={
                         "operation": operation,
-                        "provider": "openai",
-                        "context": context or {},
+                        "provider": self.ai_provider,
+                        "context": context,
                     },
                 )
                 return "{}"
-            return message.content
-        else:
-            # Parse JSON content
-            content = response.choices[0].message.content
-            if isinstance(content, str):
-                return json.loads(content)
-            return content
+            return provider_response.content
 
-    def _call_anthropic(
-        self,
-        messages: list,
-        prompt_config: Dict[str, Any],
-        response_type: Optional[Type],
-        operation: str,
-        context: Optional[Dict[str, Any]],
-    ) -> Any:
-        """Call Anthropic API and return result in the same format as the OpenAI path."""
-        model = prompt_config.get("model", "claude-sonnet-4-6")
+        content = provider_response.content
+        if isinstance(content, str):
+            return json.loads(content)
+        return content
 
-        response = call_anthropic(
-            client=self.anthropic_client,
-            model=model,
-            messages=messages,
-            response_format=response_type,
-            temperature=prompt_config.get("temperature", 0.1),
-            max_tokens=prompt_config.get("max_tokens", 4096),
-            operation=operation,
-            request_metadata=context or {},
-        )
 
-        actual_model = response.model if hasattr(response, "model") else model
-        update_token_usage(self.token_usage, response, actual_model)
-
-        if response_type:
-            # Return JSON string so process_response can parse it
-            parsed = response.choices[0].message.parsed
-            if parsed is not None:
-                return json.dumps(parsed.model_dump(mode="json"))
-            return response.choices[0].message.content
-        else:
-            content = response.choices[0].message.content
-            if isinstance(content, str) and content:
-                return json.loads(content)
-            return content
+def _default_model_for_provider(provider: str) -> str:
+    defaults = {
+        "openai": "gpt-4o",
+        "anthropic": "claude-sonnet-4-6",
+        "gemini": "gemini-2.5-flash",
+    }
+    return defaults.get(provider.lower(), "gpt-4o")

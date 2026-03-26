@@ -4,11 +4,9 @@
 import json
 from unittest.mock import MagicMock, patch
 
-import openai
 import pytest
 
 from soda_curation.qc.prompt_registry import PromptMetadata, create_registry
-from src.soda_curation.qc.model_api import ModelAPI
 from src.soda_curation.qc.qc_pipeline import QCPipeline
 
 # ---------------------------------------------------------------------------
@@ -132,6 +130,21 @@ def test_get_prompt_chat_format():
         prompt = registry.get_prompt("individual_data_points")
 
     assert prompt == "System instruction here."
+
+
+def test_get_runtime_config_merges_hints():
+    registry = create_registry()
+    mock_lf_prompt = MagicMock()
+    mock_lf_prompt.config = {
+        "agentic": True,
+        "model_config": {"tools": [{"type": "web_search_preview"}]},
+    }
+    with patch.object(registry, "_get_langfuse_prompt", return_value=mock_lf_prompt):
+        hints = registry.get_runtime_config("individual_data_points")
+
+    assert hints["agentic"] is True
+    assert "model_config" in hints
+    assert hints["model_config"]["tools"][0]["type"] == "web_search_preview"
 
 
 def test_get_schema():
@@ -265,43 +278,6 @@ def test_pipeline_handles_malformed_analyzer_output(
     result = pipeline.run(mock_zip_structure, figure_data)
     assert "qc_version" in result
     assert "figures" in result
-
-
-# ---------------------------------------------------------------------------
-# ModelAPI tests
-# ---------------------------------------------------------------------------
-
-
-@patch("src.soda_curation.qc.model_api.openai.OpenAI")
-def test_generate_response_openai_error(mock_openai, model_config):
-    mock_client = MagicMock()
-    mock_openai.return_value = mock_client
-    mock_client.beta.chat.completions.parse.side_effect = openai.OpenAIError(
-        "API error"
-    )
-    api = ModelAPI(model_config)
-    with pytest.raises(openai.OpenAIError):
-        api.generate_response(
-            encoded_image="base64",
-            caption="caption",
-            prompt_config={"prompts": {"system": "", "user": ""}},
-        )
-
-
-@patch("src.soda_curation.qc.model_api.openai.OpenAI")
-def test_generate_response_invalid_json(mock_openai, model_config):
-    mock_client = MagicMock()
-    mock_openai.return_value = mock_client
-    mock_response = MagicMock()
-    mock_response.choices = [MagicMock(message=MagicMock(content="{not: valid json"))]
-    mock_client.beta.chat.completions.parse.return_value = mock_response
-    api = ModelAPI(model_config)
-    with pytest.raises(json.JSONDecodeError):
-        api.generate_response(
-            encoded_image="base64",
-            caption="caption",
-            prompt_config={"prompts": {"system": "", "user": ""}},
-        )
 
 
 # ---------------------------------------------------------------------------

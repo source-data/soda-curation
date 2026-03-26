@@ -7,15 +7,16 @@ soda-curation is a professional Python package for automated data curation of sc
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Configuration](#configuration)
-4. [Prompts](#prompts)
-5. [Usage](#usage)
+4. [Docker](#docker)
+5. [Testing](#testing)
 6. [Pipeline Steps](#pipeline-steps)
-7. [Output Schema](#output-schema)
-8. [Testing](#testing)
-9. [Docker](#docker)
+7. [Verbatim Extraction Verification](#verbatim-extraction-verification)
+8. [Output Schema](#output-schema)
+9. [Model benchmarking](#model-benchmarking)
 10. [Quality Control (QC) Pipeline](#quality-control-qc-pipeline)
 11. [Contributing](#contributing)
 12. [License](#license)
+13. [Changelog](#changelog)
 
 ## Features
 
@@ -32,20 +33,26 @@ soda-curation is a professional Python package for automated data curation of sc
 
 1. Clone the repository:
 
-   ```
+   ```bash
    git clone https://github.com/source-data/soda-curation.git
    cd soda-curation
    ```
 
 2. Install the package using Poetry:
 
-   ```
+   ```bash
    poetry install
+   ```
+
+   For development, benchmark tooling, and linting:
+
+   ```bash
+   poetry install --with dev,lint
    ```
 
    Or, if you prefer to use pip:
 
-   ```
+   ```bash
    pip install -e .
    ```
 
@@ -53,8 +60,13 @@ soda-curation is a professional Python package for automated data curation of sc
 
    Using environment variables is the recommended way to store sensitive information like API keys:
 
-    ```
+    ```bash
     OPENAI_API_KEY=your_openai_key
+    ANTHROPIC_API_KEY=your_anthropic_key
+    GOOGLE_API_KEY=your_google_ai_studio_key
+    LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
+    LANGFUSE_SECRET_KEY=your_langfuse_secret_key
+    LANGFUSE_HOST=https://cloud.langfuse.com
     ENVIRONMENT=test  # or dev or prod
     ```
 
@@ -72,7 +84,7 @@ The configuration system uses a flexible, hierarchical approach supporting diffe
 - **QC config (`config.qc.yaml`)**: Controls all quality control tests, test metadata, and versioning. Example:
 
 ```yaml
-qc_version: "3.0.0"
+qc_version: "3.1.0"
 ai_provider: "openai"
 qc_check_metadata:
   panel:
@@ -94,6 +106,12 @@ default:
     model: "gpt-4o"
     temperature: 0.1
     # ...
+  anthropic:
+    model: "claude-sonnet-4-6"
+    temperature: 0.1
+  gemini:
+    model: "gemini-2.5-flash"
+    temperature: 0.1
 ```
 
 ## Docker
@@ -128,8 +146,6 @@ docker compose -f docker-compose.dev.yml run --rm --entrypoint=/bin/bash soda
 
 ```bash
 docker run --rm \
-  -e OPENAI_API_KEY="${OPENAI_API_KEY}" \
-  -e ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY}" \
   -v "$(pwd)/data:/app/data" \
   soda-curation-cpu \
   poetry run python -m src.soda_curation.main \
@@ -146,8 +162,6 @@ Run this after the main pipeline has produced:
 
 ```bash
 docker run --rm \
-  -e OPENAI_API_KEY="${OPENAI_API_KEY}" \
-  -e ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY}" \
   -v "$(pwd)/data:/app/data" \
   soda-curation-cpu \
   poetry run python -m src.soda_curation.qc.main \
@@ -534,7 +548,7 @@ poetry run python -m src.soda_curation.qc.main \
 
 ```
 
-### Configuration Notes (v3.0.0)
+### Configuration Notes (v3.1.0)
 
 `config.qc.yaml` is now aligned with the Langfuse-based prompt workflow:
 
@@ -542,11 +556,36 @@ poetry run python -m src.soda_curation.qc.main \
 2. **Prompt version numbers are no longer required** in this repository config.
 3. **Prompts can be resolved via Langfuse** using `langfuse_name` where needed.
 4. **Schema-based analyzer detection remains active** (panel/figure/document inferred from response schemas).
+5. **Provider-agnostic QC model calls** support `openai`, `anthropic`, and `gemini`.
+6. **Agentic mode is provider-specific**: currently enabled for OpenAI, explicitly downgraded for Anthropic/Gemini.
+
+### What 3.1.0 Adds
+
+- **Provider abstraction layer in QC**: The QC pipeline now uses a normalized provider contract and factory, so analyzers stay provider-agnostic.
+- **Three provider adapters**: OpenAI, Anthropic, and Gemini are available under one API surface.
+- **Agentic mode wiring**: OpenAI supports agentic/tool mode in QC; Anthropic and Gemini emit explicit warnings and run non-agentic.
+- **Langfuse runtime hint compatibility**: Optional runtime hints (e.g., `agentic`, `model_config`, tool config) can be merged from prompt config while preserving existing prompt/schema behavior.
+- **Stronger documentation + config examples**: Clear support matrix and per-test override examples for rollout.
+
+#### Provider Setup
+
+- `ai_provider: "openai"` requires `OPENAI_API_KEY`.
+- `ai_provider: "anthropic"` requires `ANTHROPIC_API_KEY`.
+- `ai_provider: "gemini"` requires `GOOGLE_API_KEY`.
+- Langfuse-backed prompts/schemas require `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, and `LANGFUSE_HOST`.
+
+#### Agentic Support Matrix
+
+| Provider | Structured Output | Agentic / Tools |
+|---|---|---|
+| OpenAI | Yes | Yes (`agentic: true` + `model_config.tools`) |
+| Anthropic | Yes | Not yet (logs warning, runs non-agentic) |
+| Gemini | Yes | Not yet (logs warning, runs non-agentic) |
 
 Minimal example:
 
 ```yaml
-qc_version: "3.0.0"
+qc_version: "3.1.0"
 ai_provider: "openai"
 qc_check_metadata:
   panel:
@@ -568,7 +607,7 @@ qc_check_metadata:
 Here's the full structure of a modern `config.qc.yaml`:
 
 ```yaml
-qc_version: "3.0.0"
+qc_version: "3.1.0"
 ai_provider: "openai"
 qc_check_metadata:
   panel:
@@ -595,13 +634,35 @@ qc_check_metadata:
 # OpenAI configuration
 default: &default
   openai:
-    model: "gpt-5"
+    model: "gpt-5-mini"
     temperature: 0.1
     top_p: 1.0
     max_tokens: 2048
     frequency_penalty: 0.0
     presence_penalty: 0.0
     json_mode: true
+  anthropic:
+    model: "claude-sonnet-4-6"
+    temperature: 0.1
+    max_tokens: 4096
+  gemini:
+    model: "gemini-2.5-flash"
+    temperature: 0.1
+    top_p: 1.0
+    max_tokens: 2048
+  pipeline: {}
+
+# Optional: per-test OpenAI agentic override (example)
+# default:
+#   pipeline:
+#     external_data_url_validation_agentic:
+#       openai:
+#         model: "gpt-5"
+#         agentic: true
+#         model_config:
+#           tools:
+#             - type: "web_search_preview"
+#           tool_choice: "auto"
 ```
 
 ### Debugging QC Results
@@ -651,7 +712,7 @@ This helps identify issues like:
 
 ```json
 {
-  "qc_version": "3.0.0",
+  "qc_version": "3.1.0",
   "qc_check_metadata": {
     "plot_axis_units": {
       "name": "Plot Axis Units",
@@ -706,14 +767,26 @@ To add a new test to the QC pipeline, follow these steps:
      ```
 
 2. **Configure the test in the pipeline section:**
-   - Still in `config.qc.yaml`, add any specific settings under `default` if needed:
+   - Still in `config.qc.yaml`, add provider settings under `default` and optional per-test overrides under `default.pipeline`:
 
      ```yaml
      default:
        openai:
          model: "gpt-4o"
          temperature: 0.1
-         # ...other settings...
+        anthropic:
+          model: "claude-sonnet-4-6"
+        gemini:
+          model: "gemini-2.5-flash"
+        # Optional agentic override (OpenAI):
+        pipeline:
+          external_data_url_validation_agentic:
+            openai:
+              agentic: true
+              model_config:
+                tools:
+                  - type: "web_search_preview"
+                tool_choice: "auto"
      ```
 
 3. **Run the QC pipeline:**
@@ -731,7 +804,7 @@ To add a new test to the QC pipeline, follow these steps:
 ### Example QC Config Section
 
 ```yaml
-qc_version: "3.0.0"
+qc_version: "3.1.0"
 qc_check_metadata:
   panel:
     plot_axis_units:
@@ -774,6 +847,13 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 3.1.0 (2026-03-26)
+- **QC multi-provider architecture**: Added provider abstraction and factory with OpenAI, Anthropic, and Gemini adapters.
+- **Agentic support in QC**: OpenAI agentic/tool mode support added with explicit capability fallback behavior for unsupported providers.
+- **Langfuse compatibility improvements**: Prompt/schema sourcing preserved with optional runtime-hint mapping for provider execution.
+- **Docs + config refresh**: README and `config.qc.yaml` updated with provider setup, support matrix, and non-agentic/agentic examples.
+- **Dependency hygiene pass**: Cleaned Poetry runtime dependencies by removing duplicate/unused entries.
 
 ### 3.0.0 (2026-03-25)
 - **Langfuse prompt integration**: Prompt management moved to Langfuse for the active 3.x line.
