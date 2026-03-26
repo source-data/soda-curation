@@ -558,6 +558,7 @@ poetry run python -m src.soda_curation.qc.main \
 4. **Schema-based analyzer detection remains active** (panel/figure/document inferred from response schemas).
 5. **Provider-agnostic QC model calls** support `openai`, `anthropic`, and `gemini`.
 6. **Agentic mode is provider-specific**: OpenAI supports full configured tool mode; Anthropic supports provider-native built-in tools (for example `web_search_*`, `web_fetch_*`) in QC; Gemini currently logs a warning and runs non-agentic.
+7. **Schema-equivalence enforcement is available**: when enabled, QC fails fast if any test cannot use a Langfuse schema-derived model.
 
 ### What 3.1.1 Adds
 
@@ -606,6 +607,7 @@ Minimal example:
 ```yaml
 qc_version: "3.1.1"
 ai_provider: "openai"
+enforce_langfuse_schema_equivalence: true
 qc_check_metadata:
   panel:
     plot_axis_units:
@@ -628,6 +630,7 @@ Here's the full structure of a modern `config.qc.yaml`:
 ```yaml
 qc_version: "3.1.1"
 ai_provider: "openai"
+enforce_langfuse_schema_equivalence: true
 qc_check_metadata:
   panel:
     error_bars_defined:

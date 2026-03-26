@@ -63,6 +63,10 @@ class PromptRegistry:
         self.config = config or {}
         self._prompt_cache: Dict[str, Any] = {}
         self._model_cache: Dict[str, Type[BaseModel]] = {}
+        self._fallback_model_tests: set[str] = set()
+        self.enforce_langfuse_schema_equivalence = bool(
+            self.config.get("enforce_langfuse_schema_equivalence", False)
+        )
 
         # Build test_name -> checklist_type mapping from local config overrides
         self._test_mapping: Dict[str, str] = {}
@@ -501,7 +505,13 @@ class PromptRegistry:
                 self._model_cache[test_name] = self.generate_pydantic_model_from_schema(
                     schema, test_name
                 )
+                self._fallback_model_tests.discard(test_name)
             except (FileNotFoundError, Exception) as exc:
+                if self.enforce_langfuse_schema_equivalence:
+                    raise RuntimeError(
+                        f"Langfuse schema equivalence is enforced, but schema/model "
+                        f"generation failed for test '{test_name}': {exc}"
+                    ) from exc
                 logger.warning(
                     "Could not build Pydantic model for '%s': %s. Using fallback model.",
                     test_name,
@@ -511,7 +521,94 @@ class PromptRegistry:
                     f"{test_name.title().replace('_', '')}Model",
                     outputs=(List[Dict[str, Any]], ...),
                 )
+                self._fallback_model_tests.add(test_name)
         return self._model_cache[test_name]
+
+    def get_all_test_names(self) -> List[str]:
+        """Return all QC test names declared in config metadata."""
+        names: List[str] = []
+        metadata = self.config.get("qc_check_metadata", {})
+        if not isinstance(metadata, dict):
+            return names
+        for level_tests in metadata.values():
+            if isinstance(level_tests, dict):
+                names.extend(level_tests.keys())
+        # De-duplicate while preserving order
+        seen = set()
+        ordered = []
+        for name in names:
+            if name in seen:
+                continue
+            seen.add(name)
+            ordered.append(name)
+        return ordered
+
+    def validate_schema_equivalence(
+        self, test_names: Optional[List[str]] = None, strict: Optional[bool] = None
+    ) -> List[str]:
+        """Validate that every selected test is backed by a Langfuse schema-derived model.
+
+        Returns a list of error strings. If strict/effective-strict mode is enabled,
+        raises RuntimeError when any validation error is found.
+        """
+        effective_strict = (
+            self.enforce_langfuse_schema_equivalence if strict is None else bool(strict)
+        )
+        names = test_names or self.get_all_test_names()
+        errors: List[str] = []
+        for test_name in names:
+            try:
+                source_schema = self.get_schema(test_name)
+                model = self.get_pydantic_model(test_name)
+                self._assert_model_schema_compatibility(test_name, source_schema, model)
+                if test_name in self._fallback_model_tests:
+                    errors.append(
+                        f"{test_name}: fallback model in use (not Langfuse schema-equivalent)"
+                    )
+            except Exception as exc:
+                errors.append(f"{test_name}: {exc}")
+
+        if errors:
+            message = "QC Langfuse schema equivalence validation failed: " + "; ".join(
+                errors
+            )
+            if effective_strict:
+                raise RuntimeError(message)
+            logger.warning(message)
+        return errors
+
+    def _assert_model_schema_compatibility(
+        self, test_name: str, source_schema: Dict[str, Any], model: Type[BaseModel]
+    ) -> None:
+        """Check top-level schema compatibility between Langfuse and generated model.
+
+        This intentionally checks contract equivalence at the top level:
+        - source top-level properties must exist in model schema
+        - source top-level required fields must be required in model schema
+        """
+        normalized_source = source_schema
+        if (
+            isinstance(source_schema, dict)
+            and "format" in source_schema
+            and isinstance(source_schema.get("format"), dict)
+            and "schema" in source_schema["format"]
+        ):
+            normalized_source = cast(Dict[str, Any], source_schema["format"]["schema"])
+
+        source_props = set((normalized_source.get("properties") or {}).keys())
+        source_required = set(normalized_source.get("required") or [])
+        model_schema = model.model_json_schema()
+        model_props = set((model_schema.get("properties") or {}).keys())
+        model_required = set(model_schema.get("required") or [])
+
+        missing_props = source_props - model_props
+        missing_required = source_required - model_required
+        if missing_props or missing_required:
+            raise RuntimeError(
+                f"Generated model for '{test_name}' is not compatible with Langfuse "
+                f"schema. missing_props={sorted(missing_props)}, "
+                f"missing_required={sorted(missing_required)}"
+            )
 
 
 # ---------------------------------------------------------------------------

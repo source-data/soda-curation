@@ -107,6 +107,24 @@ def main():
     # Log the number of figures
     logger.info("Loaded %d figures from saved data", len(figure_data))
 
+    # Optional/strict preflight: ensure every configured QC test has a Langfuse
+    # schema-backed model contract (no fallback generic model).
+    try:
+        registry.config = config
+        registry.enforce_langfuse_schema_equivalence = bool(
+            config.get("enforce_langfuse_schema_equivalence", False)
+        )
+        registry.validate_schema_equivalence()
+        logger.info(
+            "QC schema-equivalence validation passed",
+            extra={
+                "enforce_langfuse_schema_equivalence": registry.enforce_langfuse_schema_equivalence
+            },
+        )
+    except Exception as exc:
+        logger.error("QC schema-equivalence validation failed: %s", exc)
+        return
+
     # Create output directory if it doesn't exist
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
