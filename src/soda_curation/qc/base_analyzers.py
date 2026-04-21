@@ -3,14 +3,17 @@
 import json
 import logging
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel
 
+from ..pipeline.ai_observability import safe_excerpt, summarize_text
 from .model_api import ModelAPI
 from .prompt_registry import registry
 
 logger = logging.getLogger(__name__)
+SUPPORTED_AI_PROVIDERS = {"openai", "anthropic", "gemini"}
 
 
 class BaseQCAnalyzer(ABC):
@@ -40,33 +43,67 @@ class BaseQCAnalyzer(ABC):
         return self.config.get(self.test_name, {})
 
     def _get_provider_config(self, test_config: Dict) -> Dict:
-        """Return the provider-specific config section (openai or anthropic)."""
+        """Return the provider-specific config section for the active AI provider."""
         provider = self.config.get("ai_provider", "openai").lower()
+        if provider not in SUPPORTED_AI_PROVIDERS:
+            raise ValueError(
+                f"Unsupported ai_provider '{provider}' for QC test '{self.test_name}'. "
+                f"Expected one of {sorted(SUPPORTED_AI_PROVIDERS)}."
+            )
 
-        if provider == "anthropic":
-            if "anthropic" not in test_config:
-                test_config["anthropic"] = {
+        provider_keys = ("openai", "anthropic", "gemini")
+        configured_provider_blocks = [
+            key for key in provider_keys if key in test_config
+        ]
+        assert len(configured_provider_blocks) <= 1, (
+            f"QC configuration error for test '{self.test_name}': provider blocks "
+            f"{configured_provider_blocks} are defined together. Define only one provider "
+            "per test."
+        )
+
+        configured_provider = (
+            configured_provider_blocks[0] if configured_provider_blocks else None
+        )
+        if configured_provider and configured_provider != provider:
+            raise ValueError(
+                f"QC provider mismatch for test '{self.test_name}': "
+                f"configured_provider='{configured_provider}', ai_provider='{provider}'."
+            )
+
+        if configured_provider == provider:
+            provider_config = deepcopy(test_config[provider])
+        elif "default" in self.config and provider in self.config["default"]:
+            provider_config = deepcopy(self.config["default"][provider])
+        else:
+            # Safe baseline defaults when no provider block exists.
+            if provider == "anthropic":
+                provider_config = {
                     "model": "claude-sonnet-4-6",
                     "temperature": 0.1,
                     "max_tokens": 4096,
                 }
-            if "prompts" not in test_config["anthropic"]:
-                test_config["anthropic"]["prompts"] = {}
-            return test_config["anthropic"]
-
-        # OpenAI (default)
-        if "openai" not in test_config:
-            if "default" in self.config and "openai" in self.config["default"]:
-                test_config["openai"] = self.config["default"]["openai"].copy()
+            elif provider == "gemini":
+                provider_config = {
+                    "model": "gemini-2.5-flash",
+                    "temperature": 0.1,
+                    "max_tokens": 2048,
+                }
             else:
-                test_config["openai"] = {
+                provider_config = {
                     "model": "gpt-4o",
                     "temperature": 0.1,
                     "json_mode": True,
                 }
-        if "prompts" not in test_config["openai"]:
-            test_config["openai"]["prompts"] = {}
-        return test_config["openai"]
+
+        provider_config.setdefault("prompts", {})
+        return provider_config
+
+    def _apply_langfuse_runtime_hints(self, provider_config: Dict[str, Any]) -> None:
+        """Merge optional prompt-level runtime hints from Langfuse config."""
+        runtime_hints = registry.get_runtime_config(self.test_name)
+        if not runtime_hints:
+            return
+        _deep_merge_dict(provider_config, runtime_hints)
 
     @abstractmethod
     def analyze(self, *args, **kwargs) -> Tuple[bool, Any]:
@@ -90,12 +127,31 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
     ) -> Tuple[bool, Any]:
         """Analyze a figure and return results."""
         try:
+            if not encoded_image:
+                logger.warning(
+                    "Skipping panel QC call because encoded image is empty",
+                    extra={
+                        "operation": "qc.panel_check",
+                        "test_name": self.test_name,
+                        "figure_label": figure_label,
+                        "severity": "recoverable",
+                        "reason": "empty_image_payload",
+                    },
+                )
+                return False, self.create_empty_result()
+
             # Get API config from main config or use defaults
             test_config = self.get_test_config()
             provider_config = self._get_provider_config(test_config)
 
             # Set system prompt with one from registry
             provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
+            provider_config["prompts"]["user"] = (
+                registry.get_user_prompt(self.test_name)
+                or provider_config["prompts"].get("user")
+                or "$figure_caption"
+            )
+            self._apply_langfuse_runtime_hints(provider_config)
 
             # Set user prompt to include the figure caption if not already set
             if (
@@ -111,6 +167,13 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
                 prompt_config=provider_config,
                 response_type=self.result_model,
                 expected_panels=expected_panels,
+                operation="qc.panel_check",
+                context={
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "expected_panel_count": len(expected_panels or []),
+                    "figure_caption_summary": summarize_text(figure_caption),
+                },
             )
 
             # Process and validate the response
@@ -124,8 +187,31 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
 
             return passed, result
 
+        except ValueError as e:
+            logger.error(
+                "Panel QC call failed due to invalid request setup",
+                extra={
+                    "operation": "qc.panel_check",
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "severity": "critical",
+                    "reason": "invalid_request_setup",
+                    "error": str(e),
+                },
+            )
+            return False, self.create_empty_result()
         except Exception as e:
-            logger.error(f"Error analyzing figure with {self.test_name}: {str(e)}")
+            logger.error(
+                "Panel QC call failed with unexpected error",
+                extra={
+                    "operation": "qc.panel_check",
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "severity": "recoverable",
+                    "reason": "unexpected_analyzer_error",
+                    "error": str(e),
+                },
+            )
             return False, self.create_empty_result()
 
     @staticmethod
@@ -176,7 +262,14 @@ class PanelQCAnalyzer(BaseQCAnalyzer):
             try:
                 response_data = json.loads(response)
             except json.JSONDecodeError:
-                logger.error(f"Failed to parse response as JSON: {response}")
+                logger.error(
+                    "Failed to parse panel QC response as JSON",
+                    extra={
+                        "operation": "qc.panel_check",
+                        "test_name": self.test_name,
+                        "response_excerpt": safe_excerpt(response),
+                    },
+                )
                 return self.create_empty_result()
         else:
             response_data = response
@@ -220,12 +313,31 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
     ) -> Tuple[bool, Any]:
         """Analyze a whole figure and return results."""
         try:
+            if not encoded_image:
+                logger.warning(
+                    "Skipping figure QC call because encoded image is empty",
+                    extra={
+                        "operation": "qc.figure_check",
+                        "test_name": self.test_name,
+                        "figure_label": figure_label,
+                        "severity": "recoverable",
+                        "reason": "empty_image_payload",
+                    },
+                )
+                return False, self.create_empty_result()
+
             # Get API config from main config or use defaults
             test_config = self.get_test_config()
             provider_config = self._get_provider_config(test_config)
 
             # Set system prompt with one from registry
             provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
+            provider_config["prompts"]["user"] = (
+                registry.get_user_prompt(self.test_name)
+                or provider_config["prompts"].get("user")
+                or "$figure_caption"
+            )
+            self._apply_langfuse_runtime_hints(provider_config)
 
             # Set user prompt to include the figure caption if not already set
             if (
@@ -240,6 +352,12 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
                 caption=figure_caption,
                 prompt_config=provider_config,
                 response_type=self.result_model,
+                operation="qc.figure_check",
+                context={
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "figure_caption_summary": summarize_text(figure_caption),
+                },
             )
 
             # Process and validate the response
@@ -250,8 +368,31 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
 
             return passed, result
 
+        except ValueError as e:
+            logger.error(
+                "Figure QC call failed due to invalid request setup",
+                extra={
+                    "operation": "qc.figure_check",
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "severity": "critical",
+                    "reason": "invalid_request_setup",
+                    "error": str(e),
+                },
+            )
+            return False, self.create_empty_result()
         except Exception as e:
-            logger.error(f"Error analyzing figure with {self.test_name}: {str(e)}")
+            logger.error(
+                "Figure QC call failed with unexpected error",
+                extra={
+                    "operation": "qc.figure_check",
+                    "test_name": self.test_name,
+                    "figure_label": figure_label,
+                    "severity": "recoverable",
+                    "reason": "unexpected_analyzer_error",
+                    "error": str(e),
+                },
+            )
             return False, self.create_empty_result()
 
     def process_response(self, response: Any) -> Any:
@@ -268,7 +409,12 @@ class FigureQCAnalyzer(BaseQCAnalyzer):
                 return parsed_response
             except json.JSONDecodeError:
                 logger.error(
-                    f"Failed to parse JSON response for {self.test_name}: {response}"
+                    "Failed to parse figure QC response as JSON",
+                    extra={
+                        "operation": "qc.figure_check",
+                        "test_name": self.test_name,
+                        "response_excerpt": safe_excerpt(response),
+                    },
                 )
                 return self.create_empty_result()
 
@@ -294,6 +440,12 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
 
             # Set system prompt with one from registry
             provider_config["prompts"]["system"] = registry.get_prompt(self.test_name)
+            provider_config["prompts"]["user"] = (
+                registry.get_user_prompt(self.test_name)
+                or provider_config["prompts"].get("user")
+                or "$manuscript_text"
+            )
+            self._apply_langfuse_runtime_hints(provider_config)
 
             # Set user prompt template: manuscript text is always the user message
             if "user" not in provider_config["prompts"]:
@@ -309,6 +461,11 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
                 prompt_config=provider_config,
                 response_type=self.result_model,
                 word_file_content=word_file_content,
+                operation="qc.manuscript_check",
+                context={
+                    "test_name": self.test_name,
+                    "word_file_summary": summarize_text(word_file_content),
+                },
             )
 
             # Process and validate the response
@@ -319,8 +476,29 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
 
             return passed, result
 
+        except ValueError as e:
+            logger.error(
+                "Manuscript QC call failed due to invalid request setup",
+                extra={
+                    "operation": "qc.manuscript_check",
+                    "test_name": self.test_name,
+                    "severity": "critical",
+                    "reason": "invalid_request_setup",
+                    "error": str(e),
+                },
+            )
+            return False, self.create_empty_result()
         except Exception as e:
-            logger.error(f"Error analyzing manuscript with {self.test_name}: {str(e)}")
+            logger.error(
+                "Manuscript QC call failed with unexpected error",
+                extra={
+                    "operation": "qc.manuscript_check",
+                    "test_name": self.test_name,
+                    "severity": "recoverable",
+                    "reason": "unexpected_analyzer_error",
+                    "error": str(e),
+                },
+            )
             return False, self.create_empty_result()
 
     def extract_word_file_content(
@@ -424,7 +602,12 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
                 return parsed_response
             except json.JSONDecodeError:
                 logger.error(
-                    f"Failed to parse JSON response for {self.test_name}: {response}"
+                    "Failed to parse manuscript QC response as JSON",
+                    extra={
+                        "operation": "qc.manuscript_check",
+                        "test_name": self.test_name,
+                        "response_excerpt": safe_excerpt(response),
+                    },
                 )
                 return self.create_empty_result()
 
@@ -434,3 +617,12 @@ class ManuscriptQCAnalyzer(BaseQCAnalyzer):
         """Check if the test passed based on the result."""
         # Manuscript-level implementation
         return bool(result)
+
+
+def _deep_merge_dict(base: Dict[str, Any], extra: Dict[str, Any]) -> None:
+    """In-place deep merge used for runtime-hint overlays."""
+    for key, value in extra.items():
+        if key in base and isinstance(base[key], dict) and isinstance(value, dict):
+            _deep_merge_dict(base[key], value)
+            continue
+        base[key] = deepcopy(value)

@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Tuple
 import openai
 from pydantic import ValidationError
 
+from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..openai_utils import call_openai_with_fallback, validate_model_config
 from ..prompt_handler import PromptHandler
@@ -45,6 +46,15 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
 
     def call_ai_service(self, prompt: str, allowed_files: List) -> AsignedFilesList:
         """Call OpenAI service with the given prompt."""
+        logger.info(
+            "Preparing OpenAI panel-source request",
+            extra={
+                "operation": "main.assign_panel_source",
+                "provider": "openai",
+                "prompt_summary": summarize_text(prompt),
+                "allowed_file_count": len(allowed_files),
+            },
+        )
         # Get both system and user prompts
         prompts = self.prompt_handler.get_prompt("assign_panel_source", {})
 
@@ -66,6 +76,11 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
             top_p=config_.get("top_p", 1.0),
             frequency_penalty=config_.get("frequency_penalty", 0),
             presence_penalty=config_.get("presence_penalty", 0),
+            operation="main.assign_panel_source",
+            request_metadata={
+                "provider": "openai",
+                "allowed_file_count": len(allowed_files),
+            },
         )
 
         # Update token usage

@@ -7,15 +7,16 @@ soda-curation is a professional Python package for automated data curation of sc
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Configuration](#configuration)
-4. [Prompts](#prompts)
-5. [Usage](#usage)
+4. [Docker](#docker)
+5. [Testing](#testing)
 6. [Pipeline Steps](#pipeline-steps)
-7. [Output Schema](#output-schema)
-8. [Testing](#testing)
-9. [Docker](#docker)
+7. [Verbatim Extraction Verification](#verbatim-extraction-verification)
+8. [Output Schema](#output-schema)
+9. [Model benchmarking](#model-benchmarking)
 10. [Quality Control (QC) Pipeline](#quality-control-qc-pipeline)
 11. [Contributing](#contributing)
 12. [License](#license)
+13. [Changelog](#changelog)
 
 ## Features
 
@@ -32,20 +33,26 @@ soda-curation is a professional Python package for automated data curation of sc
 
 1. Clone the repository:
 
-   ```
+   ```bash
    git clone https://github.com/source-data/soda-curation.git
    cd soda-curation
    ```
 
 2. Install the package using Poetry:
 
-   ```
+   ```bash
    poetry install
+   ```
+
+   For development, benchmark tooling, and linting:
+
+   ```bash
+   poetry install --with dev,lint
    ```
 
    Or, if you prefer to use pip:
 
-   ```
+   ```bash
    pip install -e .
    ```
 
@@ -53,8 +60,13 @@ soda-curation is a professional Python package for automated data curation of sc
 
    Using environment variables is the recommended way to store sensitive information like API keys:
 
-    ```
+    ```bash
     OPENAI_API_KEY=your_openai_key
+    ANTHROPIC_API_KEY=your_anthropic_key
+    GOOGLE_API_KEY=your_google_ai_studio_key
+    LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
+    LANGFUSE_SECRET_KEY=your_langfuse_secret_key
+    LANGFUSE_HOST=https://cloud.langfuse.com
     ENVIRONMENT=test  # or dev or prod
     ```
 
@@ -72,18 +84,17 @@ The configuration system uses a flexible, hierarchical approach supporting diffe
 - **QC config (`config.qc.yaml`)**: Controls all quality control tests, test metadata, and versioning. Example:
 
 ```yaml
-qc_version: "0.3.1"
-qc_test_metadata:
+qc_version: "2"
+ai_provider: "openai"
+qc_check_metadata:
   panel:
     plot_axis_units:
       name: "Plot Axis Units"
-      description: "Checks whether plot axes have defined units for quantitative data."
-      permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../plot-axis-units/prompts/prompt.3.txt"
+      checklist_type: "fig-checklist"
     error_bars_defined:
       name: "Error Bars Defined"
-      description: "Checks whether error bars are defined in the figure caption."
-      prompt_version: 2
       checklist_type: "fig-checklist"
+      langfuse_name: "checklists/fig-checklist/error-bars-defined"  # optional override
     # ... more tests ...
   figure:
     # Figure-level tests...
@@ -95,6 +106,12 @@ default:
     model: "gpt-4o"
     temperature: 0.1
     # ...
+  anthropic:
+    model: "claude-sonnet-4-6"
+    temperature: 0.1
+  gemini:
+    model: "gemini-2.5-flash"
+    temperature: 0.1
 ```
 
 ## Docker
@@ -105,6 +122,9 @@ The application supports different environments through Docker:
 ```bash
 # For CPU-only environments
 docker build -t soda-curation-cpu . -f Dockerfile.cpu --target development
+
+# Optional: select environment-specific config at build time (dev/test/prod)
+docker build -t soda-curation-cpu . -f Dockerfile.cpu --target development --build-arg DEPLOYMENT_ENV=dev
 ```
 
 ### Running the different environments
@@ -120,23 +140,35 @@ docker-compose -f docker-compose.dev.yml run --rm soda /bin/bash
 docker compose -f docker-compose.dev.yml run --rm --entrypoint=/bin/bash soda
 ```
 
-### Running the application
+### Running the pipelines with Docker
 
-Inside the container:
+#### Main pipeline (single `docker run`)
 
 ```bash
-poetry run python -m src.soda_curation.main \
-  --zip /app/data/archives/your-manuscript.zip \
-  --config /app/config.yaml \
-  --output /app/data/output/results.json 
-
-
+docker run --rm \
+  -v "$(pwd)/data:/app/data" \
+  soda-curation-cpu \
   poetry run python -m src.soda_curation.main \
-  --zip /app/data/archives/EMM-2023-18636.zip \
-  --config /app/config.dev.yaml \
-  --output /app/data/output/EMM-2023-18636.json
+    --zip /app/data/archives/EMM-2023-18636.zip \
+    --config /app/config.yaml \
+    --output /app/data/output/EMM-2023-18636.json
+```
 
+#### QC pipeline (single `docker run`)
 
+Run this after the main pipeline has produced:
+- `*_figure_data.json`
+- `*_zip_structure.pickle`
+
+```bash
+docker run --rm \
+  -v "$(pwd)/data:/app/data" \
+  soda-curation-cpu \
+  poetry run python -m src.soda_curation.qc.main \
+    --config /app/config.qc.yaml \
+    --figure-data /app/data/output/EMM-2023-18636_figure_data.json \
+    --zip-structure /app/data/output/EMM-2023-18636_zip_structure.pickle \
+    --output /app/data/output/EMM-2023-18636_qc_results.json
 ```
 
 ## Testing
@@ -171,7 +203,7 @@ The benchmarking system is configured through `config.benchmark.yaml`:
 output_dir: "/app/data/benchmark/"
 ground_truth_dir: "/app/data/ground_truth"
 manuscript_dir: "/app/data/archives"
-prompts_source: "/app/config.dev.yaml"
+prompts_source: "/app/config.yaml"
 
 # Test selection
 enabled_tests:
@@ -491,7 +523,7 @@ The QC pipeline provides automated, configurable, and extensible quality assessm
 ### Key Features
 - **Schema-based analyzer detection**: Automatically determines test types (panel/figure/document) by analyzing Pydantic model structures from schemas
 - **Intelligent fallback logic**: Uses schema analysis first, then config-based detection, then naming conventions
-- **Config-driven test metadata and versioning**: All test names, descriptions, and permalinks are defined in `config.qc.yaml`.
+- **Config-driven test metadata and versioning**: Test names/checklist types/versioning are defined in `config.qc.yaml`, with optional Langfuse prompt bindings.
 - **Flexible prompt file naming**: Supports arbitrary prompt filenames (e.g., `prompt.3.txt`, `custom_prompt.txt`) instead of fixed naming
 - **Benchmark.json metadata integration**: Enriches test metadata with descriptions and examples from mmQC repository
 - **Word document processing**: ManuscriptQCAnalyzer can process actual Word documents for document-level analysis
@@ -516,100 +548,143 @@ poetry run python -m src.soda_curation.qc.main \
 
 ```
 
-### Configuration Changes (v2.3.1)
+### Configuration Notes (v3.1.1)
 
-**Major configuration improvements** in `config.qc.yaml`:
+`config.qc.yaml` is now aligned with the Langfuse-based prompt workflow:
 
-1. **Removed `example_class` dependency**: The system now automatically detects analyzer types using schema analysis
-   ```yaml
-   # OLD (no longer needed):
-   qc_check_metadata:
-     panel:
-       plot_axis_units:
-         name: "Plot Axis Units"
-         prompt_file: "prompt.3.txt"
-         checklist_type: "fig-checklist"
-         example_class: "panel"  # ← REMOVED
-   
-   # NEW (automatic detection):
-   qc_check_metadata:
-     panel:
-       plot_axis_units:
-         name: "Plot Axis Units"
-         prompt_file: "prompt.3.txt"  # ← Clean, flexible naming
-         checklist_type: "fig-checklist"
-   ```
+1. **`qc_check_metadata` is the canonical key** for panel/figure/document checks.
+2. **Prompt version numbers are no longer required** in this repository config.
+3. **Prompts can be resolved via Langfuse** using `langfuse_name` where needed.
+4. **Schema-based analyzer detection remains active** (panel/figure/document inferred from response schemas).
+5. **Provider-agnostic QC model calls** support `openai`, `anthropic`, and `gemini`.
+6. **Agentic mode is provider-specific**: OpenAI supports full configured tool mode; Anthropic supports provider-native built-in tools (for example `web_search_*`, `web_fetch_*`) in QC; Gemini currently logs a warning and runs non-agentic.
+7. **Schema-equivalence enforcement is available**: when enabled, QC fails fast if any test cannot use a Langfuse schema-derived model.
 
-2. **Schema-based type detection**: Analyzer types are automatically determined by analyzing Pydantic models:
-   - **Panel-level**: Schemas with lists containing `panel_label` fields
-   - **Figure-level**: Schemas with object structures (no lists)
-   - **Document-level**: Schemas with document-related fields (`sections`, `abstract`, etc.)
+### What 3.1.1 Adds
 
-3. **Flexible prompt naming**: Support for arbitrary prompt filenames:
-   ```yaml
-   qc_check_metadata:
-     panel:
-       stat_test:
-         name: "Statistical Test Mentioned"
-         prompt_file: "prompt.4.txt"  # New flexible file naming
-       plot_axis_units:
-         name: "Plot Axis Units"
-         prompt_file: "prompt.3.txt"  # Still supported for backward compatibility
-       stat_significance_level:
-         name: "Statistical Significance Level Defined"
-         prompt_file: "prompt.2.txt"  # Example of custom filename
-     document:
-       section_order:
-         name: "Manuscript Structure Check"
-         prompt_file: "prompt.2.txt"
-         checklist_type: "doc-checklist"
-   ```
+- **Provider abstraction layer in QC**: The QC pipeline now uses a normalized provider contract and factory, so analyzers stay provider-agnostic.
+- **Three provider adapters**: OpenAI, Anthropic, and Gemini are available under one API surface.
+- **Agentic mode wiring**: OpenAI supports configured tool mode; Anthropic supports built-in server tools via `model_config.tools`; Gemini currently remains non-agentic.
+- **Langfuse runtime hint compatibility**: Optional runtime hints (e.g., `agentic`, `model_config`, tool config) can be merged from prompt config while preserving existing prompt/schema behavior.
+- **Stronger documentation + config examples**: Clear support matrix and per-test override examples for rollout.
 
-4. **Enhanced metadata integration**: Automatic enrichment from `benchmark.json` files in mmQC repository
+#### Provider Setup
 
-5. **Version bump**: Updated `qc_version` to "2.3.1" to reflect major improvements and bug fixes
+- `ai_provider: "openai"` requires `OPENAI_API_KEY`.
+- `ai_provider: "anthropic"` requires `ANTHROPIC_API_KEY`.
+- `ai_provider: "gemini"` requires `GOOGLE_API_KEY`.
+- Langfuse-backed prompts/schemas require `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, and `LANGFUSE_HOST`.
 
-**Migration Guide**: If upgrading from v2.2.x or earlier, simply remove all `example_class` fields from your `config.qc.yaml`. The system will automatically detect the correct analyzer types using the new schema-based detection.
+#### Agentic Support Matrix
+
+| Provider | Structured Output | Agentic / Tools |
+|---|---|---|
+| OpenAI | Yes | Yes (`agentic: true` + `model_config.tools`) |
+| Anthropic | Yes | Partial: built-in Anthropic tools via `model_config.tools` (for example `web_search_*`, `web_fetch_*`) |
+| Gemini | Yes | Not yet (logs warning, runs non-agentic) |
+
+Note: Anthropic custom client-executed function tools (manual tool-result loop) are not wired yet in QC. Current Anthropic agentic support is limited to provider-native built-in tools.
+
+Anthropic agentic override example:
+
+```yaml
+default:
+  pipeline:
+    external_data_url_validation_agentic:
+      anthropic:
+        model: "claude-sonnet-4-6"
+        agentic: true
+        model_config:
+          tools:
+            - type: "web_search_20250305"
+              name: "web_search"
+              max_uses: 5
+          tool_choice: "auto"
+```
+
+Minimal example:
+
+```yaml
+qc_version: "3.1.1"
+ai_provider: "openai"
+enforce_langfuse_schema_equivalence: true
+qc_check_metadata:
+  panel:
+    plot_axis_units:
+      name: "Plot Axis Units"
+      checklist_type: "fig-checklist"
+    stat_significance_level:
+      name: "Statistical Significance Level Defined"
+      checklist_type: "fig-checklist"
+      langfuse_name: "checklists/fig-checklist/stat-significant-level"
+  document:
+    section_order:
+      name: "Manuscript Structure Check"
+      checklist_type: "doc-checklist"
+```
 
 ### Complete Configuration Structure
 
 Here's the full structure of a modern `config.qc.yaml`:
 
 ```yaml
-qc_version: "2.3.1"
+qc_version: "3.1.1"
+ai_provider: "openai"
+enforce_langfuse_schema_equivalence: true
 qc_check_metadata:
   panel:
-    plot_axis_units:
-      name: "Plot Axis Units"
-      prompt_file: "prompt.3.txt"
-      checklist_type: "fig-checklist"
-    stat_test:
-      name: "Statistical Test Mentioned"
-      prompt_file: "prompt.4.txt"
+    error_bars_defined:
+      name: "Error Bars Defined"
       checklist_type: "fig-checklist"
     individual_data_points:
       name: "Individual Data Points Displayed"
-      prompt_file: "prompt.2.txt"
+      checklist_type: "fig-checklist"
+      langfuse_name: "checklists/fig-checklist/individual-data-points-copy"
+    plot_axis_units:
+      name: "Plot Axis Units"
       checklist_type: "fig-checklist"
   figure:
-    # Figure-level tests would go here
-    # (automatically detected from schema structure)
+    # Figure-level tests go here
   document:
+    DAS_present_and_correct:
+      name: "Data Availability Section Present and Correct"
+      checklist_type: "doc-checklist"
     section_order:
       name: "Manuscript Structure Check"
-      prompt_file: "prompt.2.txt"
       checklist_type: "doc-checklist"
 
 # OpenAI configuration
 default: &default
   openai:
-    model: "gpt-4o"
+    model: "gpt-5-mini"
     temperature: 0.1
     top_p: 1.0
     max_tokens: 2048
     frequency_penalty: 0.0
     presence_penalty: 0.0
     json_mode: true
+  anthropic:
+    model: "claude-sonnet-4-6"
+    temperature: 0.1
+    max_tokens: 4096
+  gemini:
+    model: "gemini-2.5-flash"
+    temperature: 0.1
+    top_p: 1.0
+    max_tokens: 2048
+  pipeline: {}
+
+# Optional: per-test OpenAI agentic override (example)
+# default:
+#   pipeline:
+#     external_data_url_validation_agentic:
+#       openai:
+#         model: "gpt-5"
+#         agentic: true
+#         model_config:
+#           tools:
+#             - type: "web_search_preview"
+#           tool_choice: "auto"
 ```
 
 ### Debugging QC Results
@@ -659,27 +734,21 @@ This helps identify issues like:
 
 ```json
 {
-  "qc_version": "2.3.1",
+  "qc_version": "3.1.1",
   "qc_check_metadata": {
     "plot_axis_units": {
       "name": "Plot Axis Units",
-      "prompt_file": "prompt.3.txt",
       "checklist_type": "fig-checklist",
-      "description": "Automatically extracted from benchmark.json",
-      "examples": ["Sample analysis examples..."],
-      "permalink": "https://github.com/source-data/soda-mmQC/tree/dev/prompt.3.txt"
+      "permalink": "https://github.com/source-data/soda-mmQC"
     },
     "stat_test": {
       "name": "Statistical Test Mentioned",
-      "prompt_file": "prompt.4.txt",
       "checklist_type": "fig-checklist",
-      "description": "Checks if statistical tests are mentioned",
-      "permalink": "https://github.com/source-data/soda-mmQC/tree/dev/prompt.4.txt"
+      "permalink": "https://github.com/source-data/soda-mmQC"
     }
   },
-  "figures": [
-    {
-      "figure_label": "Figure 1",
+  "figures": {
+    "figure_1": {
       "panels": [
         {
           "panel_label": "A",
@@ -687,13 +756,16 @@ This helps identify issues like:
             {
               "check_name": "plot_axis_units",
               "passed": true,
-              "details": "Units clearly defined on both axes"
+              "model_output": {
+                "panel_label": "A"
+              }
             }
           ]
         }
       ]
     }
-  ]
+  },
+  "status": "success"
 }
 ```
 
@@ -705,26 +777,38 @@ To add a new test to the QC pipeline, follow these steps:
 
 1. **Define test metadata in the config:**
    - Open `config.qc.yaml`.
-   - Under `qc_test_metadata` in the appropriate level (panel, figure, document), add a new entry for your test. Include at least `name`, `description`, and `permalink` fields. Example:
+   - Under `qc_check_metadata` in the appropriate level (panel, figure, document), add a new entry for your test. Include `name` and `checklist_type` (plus optional `langfuse_name` override). Example:
 
      ```yaml
-     qc_test_metadata:
+     qc_check_metadata:
        panel:
          my_new_test:
            name: "My New Test"
-           description: "Checks for a new quality control criterion."
-           permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../my-new-test/prompts/prompt.txt"
+           checklist_type: "fig-checklist"
+           langfuse_name: "checklists/fig-checklist/my-new-test"  # optional
      ```
 
 2. **Configure the test in the pipeline section:**
-   - Still in `config.qc.yaml`, add any specific settings under `default` if needed:
+   - Still in `config.qc.yaml`, add provider settings under `default` and optional per-test overrides under `default.pipeline`:
 
      ```yaml
      default:
        openai:
          model: "gpt-4o"
          temperature: 0.1
-         # ...other settings...
+        anthropic:
+          model: "claude-sonnet-4-6"
+        gemini:
+          model: "gemini-2.5-flash"
+        # Optional agentic override (OpenAI):
+        pipeline:
+          external_data_url_validation_agentic:
+            openai:
+              agentic: true
+              model_config:
+                tools:
+                  - type: "web_search_preview"
+                tool_choice: "auto"
      ```
 
 3. **Run the QC pipeline:**
@@ -732,7 +816,7 @@ To add a new test to the QC pipeline, follow these steps:
    - The system will generate appropriate test models and integrate results into the output.
 
 4. **(Optional) Add test documentation:**
-   - Ensure the `permalink` in your metadata points to documentation or a prompt for your test.
+   - Keep the checklist and prompt definitions synchronized with your Langfuse project and/or mmQC documentation.
 
 5. **(Optional) Add custom analyzer:**
    - If your test requires specific logic beyond what the generic analyzers provide, create a custom analyzer class that extends the appropriate base class.
@@ -742,18 +826,16 @@ To add a new test to the QC pipeline, follow these steps:
 ### Example QC Config Section
 
 ```yaml
-qc_version: "2.1.0"
-qc_test_metadata:
+qc_version: "3.1.1"
+qc_check_metadata:
   panel:
     plot_axis_units:
       name: "Plot Axis Units"
-      description: "Checks whether plot axes have defined units for quantitative data."
-      permalink: "https://github.com/source-data/soda-mmQC/blob/main/.../plot-axis-units/prompts/prompt.3.txt"
+      checklist_type: "fig-checklist"
     error_bars_defined:
       name: "Error Bars Defined"
-      description: "Checks whether error bars are defined in the figure caption."
-      prompt_version: 2
       checklist_type: "fig-checklist"
+      langfuse_name: "checklists/fig-checklist/error-bars-defined"
   # ... more tests ...
 ```
 
@@ -787,6 +869,39 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 3.1.3 (2026-04-21)
+- **Caption HTML sanitization**: Strip empty or whitespace-only `<li>…</li>` entries in figure caption HTML before panel extraction so Word/HTML artifacts do not inflate panel label sequences (OpenAI and Anthropic caption paths).
+- **Ultralytics compatibility**: Panel object detection imports `YOLOv10` when present and transparently falls back to `YOLO` when the ultralytics package exposes only the unified entrypoint.
+
+### 3.1.2 (2026-03-26)
+- **QC / Langfuse**: Stricter schema enforcement for QC prompts and outputs (aligns with Langfuse-managed QC expectations).
+
+### 3.1.1 (2026-03-26)
+- **QC multi-provider architecture**: Added provider abstraction and factory with OpenAI, Anthropic, and Gemini adapters.
+- **Agentic support in QC**: OpenAI tool mode and Anthropic built-in server-side tools (`web_search_*`, `web_fetch_*`) supported from runtime `model_config`.
+- **Langfuse compatibility improvements**: Prompt/schema sourcing preserved with optional runtime-hint mapping for provider execution.
+- **Docs + config refresh**: README and `config.qc.yaml` updated with provider setup, support matrix, and non-agentic/agentic examples.
+- **Dependency hygiene pass**: Cleaned Poetry runtime dependencies by removing duplicate/unused entries.
+
+#### Git tag subjects (3.1.x line)
+These match `git show <tag>` first-line summaries: **`3.1.1`** — Bumping to v3.1.1; Anthropic server-side tools (`web_search`, `web_fetch`). **`3.1.2`** — Bumping to v3.1.2; strict schema enforcement for QC. **`3.1.3`** — Bumping to v3.1.3; caption HTML sanitization and ultralytics `YOLO`/`YOLOv10` import fallback.
+
+### 3.0.0 (2026-03-25)
+- **Langfuse prompt integration**: Prompt management moved to Langfuse for the active 3.x line.
+- **Main + QC observability**: Added structured logging with safe payload summaries (lengths/counts + short excerpts, no full prompt dumps).
+- **Fallback visibility**: Explicit warning/error classification and reason codes for retries/fallback transitions.
+- **Resilience improvements**: Recoverable step failures are surfaced as degraded/warning paths instead of silent failures.
+- **QC status clarity**: QC outputs now include clearer per-check pass/fail handling and skipped-output warnings.
+
+### 2.5.17 (Production baseline)
+- **Stable production line**: Current production branch/tag before the 3.x Langfuse prompt migration.
+- **Prompt source**: Prompt selection remains configuration-driven in this line.
+
+### Additional tagged versions (maintenance releases)
+- **2.6.0**: Maintenance release in the 2.x line.
+- **2.5.x patch train**: `2.5.0` through `2.5.16` (followed by production `2.5.17`).
+- **Other tagged maintenance versions**: `2.3.2`, `2.2.0`, `2.0.1`–`2.0.3`, `1.2.2`–`1.2.7`, `1.1.1`, `1.1.3`–`1.1.9`.
 
 ### 2.4.0 (2026-01-28)
 - **Automatic Request Chunking**: Implemented automatic chunking for large OpenAI API requests that exceed token limits
@@ -835,7 +950,7 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ### 2.0.4 (2025-07-11)
 - QC pipeline now sources test metadata and version from config file
-- Output includes `qc_test_metadata` and `qc_version` fields for all runs
+- Output includes `qc_check_metadata` and `qc_version` fields for all runs
 - Permalinks for each QC test are included in the config and output
 - Improved handling of test status (`passed: null` when not needed)
 - Patch-level version bump for both soda-curation and QC pipeline
@@ -858,7 +973,7 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 ### 1.1.2 (2025-05-08)
 - Changed logic to modify EPS into thumbnails to have same results as UI
 
-### 1.1.2 (2025-05-06)
+### 1.1.1 (2025-05-06)
 - Semideterministic individual caption extraction
 
 ### 1.1.0 (2025-04-11)

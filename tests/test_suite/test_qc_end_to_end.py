@@ -21,7 +21,6 @@ def mock_config():
                 "error_bars_defined": {
                     "name": "Error Bars Defined",
                     "description": "Check if error bars are defined.",
-                    "prompt_version": 2,
                     "checklist_type": "fig-checklist",
                 }
             },

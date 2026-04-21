@@ -1,17 +1,36 @@
 # src/soda_curation/qc/prompt_registry.py
+"""Langfuse-backed prompt registry for the QC pipeline.
+
+Prompts and JSON schemas are stored in Langfuse (v3).  The registry fetches
+them by the test name (converted to kebab-case) and caches results in-process.
+No local file access to soda-mmQC is required.
+
+Langfuse prompt structure expected per test:
+  - prompt.prompt  : system prompt text (text prompt) OR list of role-messages
+                     (chat prompt, where the 'system' role is used as the
+                     system prompt and the optional 'user' role as the user
+                     prompt template).
+  - prompt.config  : dict that MAY contain:
+      "schema"         : JSON Schema dict used to generate the Pydantic model
+      "name"           : human-readable test name (overrides local config)
+      "description"    : description of the test
+      "checklist_type" : "fig-checklist" | "doc-checklist"
+"""
+
 import importlib.util
-import io
 import json
+import logging
 import os
-import subprocess
 import sys
 import tempfile
+from copy import deepcopy
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple, Optional, Type, Union, cast
 
-import git
 from pydantic import BaseModel, create_model
+
+logger = logging.getLogger(__name__)
 
 
 class PromptMetadata(NamedTuple):
@@ -21,15 +40,7 @@ class PromptMetadata(NamedTuple):
     description: str
     permalink: str
     version: str
-    prompt_file: str  # Added to store the actual prompt filename
-
-
-class BenchmarkMetadata(NamedTuple):
-    """Metadata from benchmark.json file."""
-
-    name: str
-    description: str
-    examples: List[str]
+    prompt_file: str  # Always "" for Langfuse-backed prompts; kept for compatibility
 
 
 class ChecklistType(str, Enum):
@@ -40,58 +51,25 @@ class ChecklistType(str, Enum):
 
 
 class PromptRegistry:
-    """Registry for accessing prompts and schemas from soda-mmQC."""
+    """Registry backed by Langfuse for prompts, schemas and metadata.
 
-    def __init__(
-        self, mmqc_path: Optional[str] = None, config: Optional[Dict[str, Any]] = None
-    ):
-        # Use provided path, env variable, or default to neighboring directory
-        configured_path = Path(
-            mmqc_path
-            or os.environ.get("SODA_MMQC_PATH")
-            or Path(__file__).parents[4] / "soda-mmQC"
-        )
-        # If configured path doesn't exist, fall back to the installed soda_mmqc package
-        if configured_path.exists():
-            self.mmqc_path = configured_path
-            self.base_data_path = self.mmqc_path / "soda_mmqc" / "data" / "checklist"
-        else:
-            try:
-                import soda_mmqc as _soda_mmqc_pkg
+    Langfuse credentials are read from environment variables:
+      LANGFUSE_SECRET_KEY, LANGFUSE_PUBLIC_KEY, and optionally
+      LANGFUSE_HOST (preferred) or LANGFUSE_BASE_URL (legacy alias).
+    These are typically provided via a .env file loaded by python-dotenv.
+    """
 
-                pkg_dir = Path(_soda_mmqc_pkg.__file__).parent
-                self.mmqc_path = pkg_dir.parent
-                self.base_data_path = pkg_dir / "data" / "checklist"
-            except ImportError:
-                self.mmqc_path = configured_path
-                self.base_data_path = (
-                    self.mmqc_path / "soda_mmqc" / "data" / "checklist"
-                )
-        self._model_cache: Dict[str, Type[BaseModel]] = {}
-        self._benchmark_cache: Dict[
-            str, BenchmarkMetadata
-        ] = {}  # Cache for benchmark data
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-        self._module_cache = {}
+        self._prompt_cache: Dict[str, Any] = {}
+        self._model_cache: Dict[str, Type[BaseModel]] = {}
+        self._fallback_model_tests: set[str] = set()
+        self.enforce_langfuse_schema_equivalence = bool(
+            self.config.get("enforce_langfuse_schema_equivalence", False)
+        )
 
-        # Initialize git repo if it's a git repository
-        try:
-            self.repo = git.Repo(self.mmqc_path)
-            self.has_git = True
-        except (git.InvalidGitRepositoryError, git.NoSuchPathError):
-            self.repo = None
-            self.has_git = False
-
-        # GitHub repo info (can be configurable)
-        self.github_owner = "source-data"
-        self.github_repo = "soda-mmQC"
-        # Tag / ref used as fallback for permalink URLs when git history is
-        # unavailable (e.g. when the package is installed as a site-package).
-        # Keep this in sync with the rev pinned in pyproject.toml.
-        self.github_ref = "v0.2.0"
-
-        # Build test_name to checklist_type mapping
-        self._test_mapping = {}
+        # Build test_name -> checklist_type mapping from local config overrides
+        self._test_mapping: Dict[str, str] = {}
         if "qc_check_metadata" in self.config:
             for level, level_tests in self.config["qc_check_metadata"].items():
                 if isinstance(level_tests, dict):
@@ -99,209 +77,303 @@ class PromptRegistry:
                         if isinstance(metadata, dict) and "checklist_type" in metadata:
                             self._test_mapping[test_name] = metadata["checklist_type"]
 
+        # Langfuse client is initialised lazily to avoid import-time side-effects.
+        # _langfuse_failed is set True on first failed init so we don't retry.
+        self._langfuse = None
+        self._langfuse_failed = False
+        self._langfuse_failure_reason = ""
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    def _get_langfuse(self):
+        """Lazily create and return the Langfuse client.
+
+        Returns None (and sets _langfuse_failed) if initialisation fails so that
+        callers can degrade gracefully without retrying on every call.
+        """
+        if self._langfuse is None and not self._langfuse_failed:
+            try:
+                from dotenv import load_dotenv
+
+                load_dotenv()
+            except ImportError:
+                pass
+
+            try:
+                from langfuse import Langfuse
+
+                public_key = os.environ.get("LANGFUSE_PUBLIC_KEY", "").strip()
+                secret_key = os.environ.get("LANGFUSE_SECRET_KEY", "").strip()
+                host = (
+                    os.environ.get("LANGFUSE_HOST", "").strip()
+                    or os.environ.get("LANGFUSE_BASE_URL", "").strip()
+                    or None
+                )
+
+                missing = []
+                if not public_key:
+                    missing.append("LANGFUSE_PUBLIC_KEY")
+                if not secret_key:
+                    missing.append("LANGFUSE_SECRET_KEY")
+                if missing:
+                    self._langfuse_failed = True
+                    self._langfuse_failure_reason = (
+                        "Missing Langfuse environment variables: " + ", ".join(missing)
+                    )
+                    logger.warning(
+                        "Langfuse disabled for QC prompt fetching: %s. "
+                        "Falling back to local QC config metadata.",
+                        self._langfuse_failure_reason,
+                    )
+                    return None
+
+                self._langfuse = Langfuse(
+                    public_key=public_key,
+                    secret_key=secret_key,
+                    host=host,
+                )
+            except Exception as exc:
+                self._langfuse_failed = True
+                self._langfuse_failure_reason = str(exc)
+                logger.warning(
+                    "Langfuse client init failed for QC prompt fetching: %s. "
+                    "Falling back to local QC config metadata.",
+                    exc,
+                )
+
+        return self._langfuse  # None when unavailable
+
+    def _to_langfuse_name(self, test_name: str) -> str:
+        """Return the full Langfuse prompt name for a test.
+
+        If the test config has a ``langfuse_name`` override, that value is used
+        verbatim.  Otherwise the name is constructed as:
+            checklists/{checklist_type}/{snake_to_kebab(test_name)}
+
+        This matches the namespace used in the soda-mmQC Langfuse project.
+        """
+        local_cfg = self.get_test_config(test_name)
+        if local_cfg.get("langfuse_name"):
+            return local_cfg["langfuse_name"]
+
+        checklist_type = self.get_checklist_type(test_name)
+        kebab = test_name.replace("_", "-")
+        return f"checklists/{checklist_type}/{kebab}"
+
+    def _get_langfuse_prompt(self, test_name: str):
+        """Fetch a prompt from Langfuse, with in-process caching.
+
+        Raises RuntimeError if Langfuse is unavailable or the prompt is not found.
+        Callers are expected to catch this and return fallback values.
+        """
+        if test_name not in self._prompt_cache:
+            client = self._get_langfuse()
+            if client is None:
+                raise RuntimeError(
+                    f"Langfuse is not available ({self._langfuse_failure_reason}). "
+                    f"Cannot fetch prompt for '{test_name}'."
+                )
+            langfuse_name = self._to_langfuse_name(test_name)
+            logger.debug("Fetching Langfuse prompt: %s", langfuse_name)
+            try:
+                # Use explicit label="production" so the SDK caches under the
+                # correct key.  Without an explicit label the SDK silently falls
+                # back to 'latest' but still caches under the 'production' key,
+                # causing background-refresh warnings for every non-promoted prompt.
+                self._prompt_cache[test_name] = client.get_prompt(
+                    langfuse_name, label="production"
+                )
+            except Exception:
+                # Fallback: fetch with label="latest" (for prompts not yet
+                # promoted to production).  The SDK now caches under the
+                # 'latest' key, so background refresh works without warnings.
+                try:
+                    self._prompt_cache[test_name] = client.get_prompt(
+                        langfuse_name, label="latest"
+                    )
+                except Exception as exc:
+                    raise RuntimeError(
+                        f"Failed to fetch Langfuse prompt '{langfuse_name}' "
+                        f"(tried both 'production' and 'latest' labels): {exc}"
+                    ) from exc
+        return self._prompt_cache[test_name]
+
+    # ------------------------------------------------------------------
+    # Config helpers (local qc_check_metadata)
+    # ------------------------------------------------------------------
+
     def get_test_config(self, test_name: str) -> Dict[str, Any]:
-        """Get configuration for a specific test."""
+        """Return local qc_check_metadata entry for a test, or {}."""
         if "qc_check_metadata" in self.config:
-            # Search in each level (panel, figure, document)
             for level, level_tests in self.config["qc_check_metadata"].items():
                 if isinstance(level_tests, dict) and test_name in level_tests:
-                    return level_tests[test_name]
+                    return level_tests[test_name] or {}
         return {}
 
-    def get_prompt_version(self, test_name: str) -> int:
-        """Get the prompt version for a test from config."""
-        return self.get_test_config(test_name).get("prompt_version", 1)
-
-    def get_prompt_file(self, test_name: str) -> str:
-        """Get the prompt filename for a test from config. Falls back to prompt.{version}.txt if not specified."""
-        test_config = self.get_test_config(test_name)
-
-        # First check if a specific prompt_file is specified
-        if "prompt_file" in test_config:
-            return test_config["prompt_file"]
-
-        # Fall back to the old version-based naming
-        version = test_config.get("prompt_version", 1)
-        return f"prompt.{version}.txt"
+    # ------------------------------------------------------------------
+    # Public interface (same as previous PromptRegistry)
+    # ------------------------------------------------------------------
 
     def get_checklist_type(self, test_name: str) -> str:
-        """Get the checklist type for a test."""
-        return self.get_test_config(test_name).get("checklist_type", "fig-checklist")
+        """Return checklist type for a test.
 
-    def get_checklist_path(self, checklist_type: Union[ChecklistType, str]) -> Path:
-        """Get the path for a specific checklist type."""
-        if isinstance(checklist_type, str):
-            checklist_type = ChecklistType(checklist_type)
-        return self.base_data_path / checklist_type.value
-
-    def list_tests(self, checklist_type: Union[ChecklistType, str]) -> List[str]:
-        """List all available QC tests for a checklist type."""
-        checklist_path = self.get_checklist_path(checklist_type)
-        return [d.name for d in checklist_path.iterdir() if d.is_dir()]
-
-    def get_mmqc_test_name(self, test_name: str) -> str:
-        """Convert snake_case to kebab-case for soda-mmQC directory names."""
-        return test_name.replace("_", "-")
-
-    def get_benchmark_metadata(self, test_name: str) -> Optional[BenchmarkMetadata]:
-        """Get benchmark metadata for a test from benchmark.json file."""
-        if test_name in self._benchmark_cache:
-            return self._benchmark_cache[test_name]
-
-        checklist_type = self.get_checklist_type(test_name)
-        mmqc_test_name = self.get_mmqc_test_name(test_name)
-
-        checklist_path = self.get_checklist_path(checklist_type)
-        benchmark_path = checklist_path / mmqc_test_name / "benchmark.json"
-
-        if not benchmark_path.exists():
-            self._benchmark_cache[test_name] = None
-            return None
+        Priority: local config > Langfuse prompt config > default "fig-checklist".
+        """
+        local_cfg = self.get_test_config(test_name)
+        if "checklist_type" in local_cfg:
+            return local_cfg["checklist_type"]
 
         try:
-            benchmark_data = json.loads(benchmark_path.read_text(encoding="utf-8"))
-            metadata = BenchmarkMetadata(
-                name=benchmark_data.get("name", test_name),
-                description=benchmark_data.get("description", ""),
-                examples=benchmark_data.get("examples", []),
-            )
-            self._benchmark_cache[test_name] = metadata
-            return metadata
-        except (json.JSONDecodeError, KeyError):
-            self._benchmark_cache[test_name] = None
-            return None
+            lf_cfg = self._get_langfuse_prompt(test_name).config or {}
+            return lf_cfg.get("checklist_type", "fig-checklist")
+        except Exception:
+            return "fig-checklist"
 
     def get_prompt(self, test_name: str) -> str:
-        """Get the prompt for a test based on config settings."""
-        checklist_type = self.get_checklist_type(test_name)
-        mmqc_test_name = self.get_mmqc_test_name(test_name)
-        prompt_file = self.get_prompt_file(test_name)
+        """Return the system prompt text for a test from Langfuse.
 
-        checklist_path = self.get_checklist_path(checklist_type)
-        prompt_path = checklist_path / mmqc_test_name / "prompts" / prompt_file
+        Supports both Langfuse text prompts (prompt is a plain string) and
+        chat prompts (prompt is a list of role-message dicts).
+        """
+        lf_prompt = self._get_langfuse_prompt(test_name)
+        content = lf_prompt.prompt
 
-        if not prompt_path.exists():
-            raise FileNotFoundError(
-                f"Prompt file '{prompt_file}' not found for test {test_name} at {prompt_path}"
+        if isinstance(content, str):
+            return content
+
+        if isinstance(content, list):
+            # Chat prompt – use the 'system' role message
+            for msg in content:
+                if isinstance(msg, dict) and msg.get("role") == "system":
+                    return msg.get("content", "")
+            # Fallback: join all content
+            return "\n".join(
+                msg.get("content", "") if isinstance(msg, dict) else str(msg)
+                for msg in content
             )
 
-        return prompt_path.read_text(encoding="utf-8")
+        return str(content)
 
-    def list_prompts(self, test_name: str) -> List[int]:
-        """List available prompt numbers for a test."""
-        checklist_type = self.get_checklist_type(test_name)
-        mmqc_test_name = self.get_mmqc_test_name(test_name)
-
-        checklist_path = self.get_checklist_path(checklist_type)
-        test_dir = checklist_path / mmqc_test_name / "prompts"
-
-        if not test_dir.exists():
-            raise ValueError(f"Test {test_name} not found in {checklist_type}")
-
-        prompt_files = list(test_dir.glob("prompt.*.txt"))
-        return sorted([int(f.stem.split(".")[1]) for f in prompt_files])
-
-    def get_schema(self, test_name: str) -> Dict[str, Any]:
-        """Get the JSON schema for a test."""
-        checklist_type = self.get_checklist_type(test_name)
-        mmqc_test_name = self.get_mmqc_test_name(test_name)
-
-        checklist_path = self.get_checklist_path(checklist_type)
-        schema_path = checklist_path / mmqc_test_name / "schema.json"
-
-        if not schema_path.exists():
-            raise FileNotFoundError(f"Schema not found for test {test_name}")
-
-        return json.loads(schema_path.read_text())
-
-    def get_permalink(self, file_path: Path) -> str:
-        """Generate a GitHub permalink for a file."""
-        relative_path = file_path.relative_to(self.mmqc_path)
-
-        if not self.has_git:
-            # No git repo available (installed as site-package); use the pinned tag.
-            return f"https://github.com/{self.github_owner}/{self.github_repo}/blob/{self.github_ref}/{relative_path}"
-
-        # Get the latest commit hash for the file for a precise permalink.
+    def get_user_prompt(self, test_name: str) -> Optional[str]:
+        """Return the user prompt template from a Langfuse chat prompt, if present."""
         try:
-            commits = list(
-                self.repo.iter_commits(paths=str(relative_path), max_count=1)
-            )
-            if commits:
-                commit_hash = commits[0].hexsha
-                return f"https://github.com/{self.github_owner}/{self.github_repo}/blob/{commit_hash}/{relative_path}"
+            lf_prompt = self._get_langfuse_prompt(test_name)
+            content = lf_prompt.prompt
+            if isinstance(content, list):
+                for msg in content:
+                    if isinstance(msg, dict) and msg.get("role") == "user":
+                        return msg.get("content")
+        except Exception:
+            pass
+        return None
+
+    def get_runtime_config(self, test_name: str) -> Dict[str, Any]:
+        """Return optional runtime hints from prompt config for provider execution."""
+        runtime_hints: Dict[str, Any] = {}
+
+        local_cfg = self.get_test_config(test_name)
+        _merge_runtime_hints(runtime_hints, local_cfg)
+
+        try:
+            lf_cfg = self._get_langfuse_prompt(test_name).config or {}
+            _merge_runtime_hints(runtime_hints, lf_cfg)
         except Exception:
             pass
 
-        # Fallback to the pinned tag if commit lookup fails.
-        return f"https://github.com/{self.github_owner}/{self.github_repo}/blob/{self.github_ref}/{relative_path}"
+        return runtime_hints
 
-    def get_prompt_metadata(self, test_name: str) -> PromptMetadata:
-        """Get metadata for a test's prompt, including permalink."""
-        # Check if test exists in config
-        test_config = self.get_test_config(test_name)
-        if not test_config:
-            # If not found in config, create minimal metadata
-            return PromptMetadata(
-                name=test_name.replace("_", " ").title(),
-                description="",
-                permalink="",
-                version="latest",
-                prompt_file="prompt.1.txt",  # Default to version 1
-            )
+    def get_schema(self, test_name: str) -> Dict[str, Any]:
+        """Return the JSON schema for a test from Langfuse prompt config.
 
-        checklist_type = self.get_checklist_type(test_name)
-        mmqc_test_name = self.get_mmqc_test_name(test_name)
-        prompt_file = self.get_prompt_file(test_name)
-
-        checklist_path = self.get_checklist_path(checklist_type)
-        prompt_path = checklist_path / mmqc_test_name / "prompts" / prompt_file
-
-        # Get version from git if available
-        version = "latest"
-        if self.has_git and prompt_path.exists():
-            try:
-                relative_path = prompt_path.relative_to(self.mmqc_path)
-                commits = list(
-                    self.repo.iter_commits(paths=str(relative_path), max_count=1)
-                )
-                if commits:
-                    version = commits[0].hexsha[:7]  # Short hash
-            except Exception:
-                pass
-
-        # Try to get benchmark metadata for more complete information
-        benchmark_metadata = self.get_benchmark_metadata(test_name)
-
-        # Use benchmark description if available, otherwise fall back to config
-        description = test_config.get("description", "")
-        if benchmark_metadata and benchmark_metadata.description:
-            description = benchmark_metadata.description
-
-        # Note: example_class logic removed - now using schema-based type determination
-
-        return PromptMetadata(
-            name=test_config.get("name", test_name.replace("_", " ").title()),
-            description=description,
-            permalink=self.get_permalink(prompt_path) if prompt_path.exists() else "",
-            version=version,
-            prompt_file=prompt_file,
-        )
-
-    def determine_test_type_from_model(self, model_class) -> Optional[str]:
-        """Determine test type by inspecting the Pydantic model structure.
-
-        Args:
-            model_class: The generated Pydantic model class
-
-        Returns:
-            'panel' for panel-level tests (list of panels)
-            'figure' for figure-level tests (single result)
-            'document' for document/manuscript tests
-            None if type cannot be determined
+        Expects prompt.config["schema"] to be a JSON Schema dict.
+        Raises FileNotFoundError (for compatibility with existing callers) when
+        no schema is present or Langfuse is unavailable.
         """
         try:
-            # Get the model fields
+            lf_prompt = self._get_langfuse_prompt(test_name)
+        except RuntimeError as exc:
+            raise FileNotFoundError(
+                f"Could not retrieve schema for '{test_name}' from Langfuse: {exc}"
+            ) from exc
+
+        lf_cfg = lf_prompt.config or {}
+
+        # Primary location: config["schema"]
+        if lf_cfg.get("schema"):
+            return lf_cfg["schema"]
+
+        # Actual Langfuse structure: config["output_schema"]["format"]["schema"]
+        output_schema = lf_cfg.get("output_schema")
+        if output_schema:
+            fmt = output_schema.get("format", {})
+            if fmt.get("schema"):
+                return fmt["schema"]
+            # Return the whole output_schema; generate_pydantic_model_from_schema
+            # can unwrap the "format.schema" nesting.
+            return output_schema
+
+        raise FileNotFoundError(
+            f"No schema found in Langfuse prompt config for test "
+            f"'{test_name}' (prompt name: '{self._to_langfuse_name(test_name)}'). "
+            f"Expected config['schema'] or config['output_schema']."
+        )
+
+    def get_prompt_metadata(self, test_name: str) -> PromptMetadata:
+        """Return PromptMetadata fetched from Langfuse, with local config fallback."""
+        try:
+            lf_prompt = self._get_langfuse_prompt(test_name)
+            lf_cfg = lf_prompt.config or {}
+            langfuse_name = self._to_langfuse_name(test_name)
+            base_url = (
+                os.environ.get("LANGFUSE_HOST")
+                or os.environ.get("LANGFUSE_BASE_URL")
+                or "https://cloud.langfuse.com"
+            )
+            permalink = f"{base_url}/prompts/{langfuse_name}"
+
+            local_cfg = self.get_test_config(test_name)
+            return PromptMetadata(
+                name=(
+                    local_cfg.get("name")
+                    or lf_cfg.get("name")
+                    or test_name.replace("_", " ").title()
+                ),
+                description=lf_cfg.get("description", local_cfg.get("description", "")),
+                permalink=permalink,
+                version=str(lf_prompt.version),
+                prompt_file="",
+            )
+        except Exception as exc:
+            # Avoid log spam when Langfuse is globally unavailable in this run.
+            if self._langfuse_failed:
+                logger.debug(
+                    "Skipping Langfuse metadata for '%s': %s. Using local config.",
+                    test_name,
+                    exc,
+                )
+            else:
+                logger.warning(
+                    "Could not fetch Langfuse metadata for '%s': %s. Using local config.",
+                    test_name,
+                    exc,
+                )
+            local_cfg = self.get_test_config(test_name)
+            return PromptMetadata(
+                name=local_cfg.get("name", test_name.replace("_", " ").title()),
+                description=local_cfg.get("description", ""),
+                permalink="",
+                version="latest",
+                prompt_file="",
+            )
+
+    def determine_test_type_from_model(self, model_class) -> Optional[str]:
+        """Determine test type by inspecting the generated Pydantic model structure.
+
+        Returns 'panel', 'figure', 'document', or None.
+        """
+        try:
             if hasattr(model_class, "__fields__"):
                 fields = model_class.__fields__
             elif hasattr(model_class, "model_fields"):
@@ -309,11 +381,9 @@ class PromptRegistry:
             else:
                 return None
 
-            # Check if there's an 'outputs' field
             if "outputs" in fields:
                 outputs_field = fields["outputs"]
 
-                # Get the type information
                 if hasattr(outputs_field, "type_"):
                     field_type = outputs_field.type_
                 elif hasattr(outputs_field, "annotation"):
@@ -321,13 +391,10 @@ class PromptRegistry:
                 else:
                     return None
 
-                # Check if it's a List type (indicates panel-level)
                 if hasattr(field_type, "__origin__") and field_type.__origin__ is list:
-                    # Further inspect the list items to distinguish panel vs document
                     if hasattr(field_type, "__args__") and field_type.__args__:
                         item_type = field_type.__args__[0]
 
-                        # Check if the list items have 'panel_label' field (panel-level)
                         if hasattr(item_type, "__fields__"):
                             item_fields = item_type.__fields__
                         elif hasattr(item_type, "model_fields"):
@@ -338,158 +405,280 @@ class PromptRegistry:
                         if "panel_label" in item_fields:
                             return "panel"
                         elif any(
-                            keyword in str(item_fields).lower()
-                            for keyword in ["section", "manuscript", "document"]
+                            kw in str(item_fields).lower()
+                            for kw in ["section", "manuscript", "document"]
                         ):
                             return "document"
                         else:
-                            # Cannot determine from schema alone; let config-based
-                            # detection decide (checklist_type / config section)
                             return None
-
-                # Single object output (figure-level)
                 else:
                     return "figure"
 
-            # Check for document-specific indicators in field names
             field_names = list(fields.keys())
             if any(
-                keyword in " ".join(field_names).lower()
-                for keyword in ["section", "manuscript", "document"]
+                kw in " ".join(field_names).lower()
+                for kw in ["section", "manuscript", "document"]
             ):
                 return "document"
 
             return None
 
         except Exception:
-            # Error in determining test type from model, falling back to other methods
             return None
 
     def generate_pydantic_model_from_schema(
         self, schema: Dict[str, Any], model_name: str
     ) -> Type[BaseModel]:
-        """Generate a Pydantic model from a JSON schema using datamodel-code-generator."""
+        """Generate a Pydantic model from a JSON schema via datamodel-code-generator."""
         try:
-            from datamodel_code_generator import DataModelType, InputFileType, generate
+            from datamodel_code_generator import InputFileType, generate
         except ImportError:
             raise ImportError(
-                "datamodel-code-generator is required for schema to model conversion. "
+                "datamodel-code-generator is required for schema→model conversion. "
                 "Install it with: poetry add datamodel-code-generator"
             )
 
-        # Clean up schema format if needed
-        if "format" in schema and "schema" in schema["format"]:
+        # Unwrap nested format if present
+        if "format" in schema and "schema" in schema.get("format", {}):
             schema = schema["format"]["schema"]
 
-        # Convert test_name to a valid Python class name (replace dots and hyphens)
+        # Build a valid Python class name
         clean_name = (
             model_name.replace(".", "_").replace("-", "_").title().replace("_", "")
         )
 
-        # Create temporary files for output
         with tempfile.NamedTemporaryFile(
             mode="w+", suffix=".py", delete=False
         ) as output_file:
             try:
-                # Generate Python code from schema string
-                schema_str = json.dumps(schema)
                 output_path = Path(output_file.name)
-
-                # Generate Python code
                 generate(
-                    schema_str,
+                    json.dumps(schema),
                     input_file_type=InputFileType.JsonSchema,
                     output=output_path,
                     class_name=clean_name,
                     field_include_all_keys=False,
                     use_standard_collections=True,
                     use_field_description=True,
-                    output_model_type=DataModelType("pydantic_v2.BaseModel"),
                 )
 
-                # Read generated code
-                with open(output_path, "r") as f:
-                    code = f.read()
+                code = output_path.read_text()
 
-                # Create a module from the generated code
-                module_name = f"soda_curation_generated_{model_name.replace('-', '_').replace('.', '_')}"
+                module_name = (
+                    f"soda_curation_generated_"
+                    f"{model_name.replace('-', '_').replace('.', '_')}"
+                )
                 spec = importlib.util.spec_from_loader(module_name, loader=None)
                 if spec is None:
                     raise ImportError(f"Failed to create module spec for {module_name}")
 
                 module = importlib.util.module_from_spec(spec)
                 sys.modules[module_name] = module
-                exec(code, module.__dict__)
+                exec(code, module.__dict__)  # noqa: S102
 
-                # Extract the main model class
                 if hasattr(module, clean_name):
-                    model_class = getattr(module, clean_name)
-                    return cast(Type[BaseModel], model_class)
-                else:
-                    # If the main class wasn't found, look for other classes
-                    for name, obj in module.__dict__.items():
-                        if (
-                            isinstance(obj, type)
-                            and issubclass(obj, BaseModel)
-                            and obj != BaseModel
-                        ):
-                            return cast(Type[BaseModel], obj)
+                    return cast(Type[BaseModel], getattr(module, clean_name))
+
+                # Fallback: return the first BaseModel subclass found
+                for obj in module.__dict__.values():
+                    if (
+                        isinstance(obj, type)
+                        and issubclass(obj, BaseModel)
+                        and obj is not BaseModel
+                    ):
+                        return cast(Type[BaseModel], obj)
 
                 raise ValueError(
                     f"Could not find Pydantic model in generated code for {model_name}"
                 )
-
             finally:
-                # Clean up temporary file
                 try:
                     os.unlink(output_file.name)
                 except Exception:
                     pass
 
     def get_pydantic_model(self, test_name: str) -> Type[BaseModel]:
-        """Get or create a Pydantic model from the JSON schema."""
+        """Return (or generate) the Pydantic response model for a test."""
         if test_name not in self._model_cache:
             try:
                 schema = self.get_schema(test_name)
                 self._model_cache[test_name] = self.generate_pydantic_model_from_schema(
                     schema, test_name
                 )
-            except FileNotFoundError:
-                # If schema not found, create a simple default model
+                self._fallback_model_tests.discard(test_name)
+            except (FileNotFoundError, Exception) as exc:
+                if self.enforce_langfuse_schema_equivalence:
+                    raise RuntimeError(
+                        f"Langfuse schema equivalence is enforced, but schema/model "
+                        f"generation failed for test '{test_name}': {exc}"
+                    ) from exc
+                logger.warning(
+                    "Could not build Pydantic model for '%s': %s. Using fallback model.",
+                    test_name,
+                    exc,
+                )
                 self._model_cache[test_name] = create_model(
                     f"{test_name.title().replace('_', '')}Model",
                     outputs=(List[Dict[str, Any]], ...),
                 )
-
+                self._fallback_model_tests.add(test_name)
         return self._model_cache[test_name]
 
+    def get_all_test_names(self) -> List[str]:
+        """Return all QC test names declared in config metadata."""
+        names: List[str] = []
+        metadata = self.config.get("qc_check_metadata", {})
+        if not isinstance(metadata, dict):
+            return names
+        for level_tests in metadata.values():
+            if isinstance(level_tests, dict):
+                names.extend(level_tests.keys())
+        # De-duplicate while preserving order
+        seen = set()
+        ordered = []
+        for name in names:
+            if name in seen:
+                continue
+            seen.add(name)
+            ordered.append(name)
+        return ordered
 
-# Function to create the registry with the current config
+    def validate_schema_equivalence(
+        self, test_names: Optional[List[str]] = None, strict: Optional[bool] = None
+    ) -> List[str]:
+        """Validate that every selected test is backed by a Langfuse schema-derived model.
+
+        Returns a list of error strings. If strict/effective-strict mode is enabled,
+        raises RuntimeError when any validation error is found.
+        """
+        effective_strict = (
+            self.enforce_langfuse_schema_equivalence if strict is None else bool(strict)
+        )
+        names = test_names or self.get_all_test_names()
+        errors: List[str] = []
+        for test_name in names:
+            try:
+                source_schema = self.get_schema(test_name)
+                model = self.get_pydantic_model(test_name)
+                self._assert_model_schema_compatibility(test_name, source_schema, model)
+                if test_name in self._fallback_model_tests:
+                    errors.append(
+                        f"{test_name}: fallback model in use (not Langfuse schema-equivalent)"
+                    )
+            except Exception as exc:
+                errors.append(f"{test_name}: {exc}")
+
+        if errors:
+            message = "QC Langfuse schema equivalence validation failed: " + "; ".join(
+                errors
+            )
+            if effective_strict:
+                raise RuntimeError(message)
+            logger.warning(message)
+        return errors
+
+    def _assert_model_schema_compatibility(
+        self, test_name: str, source_schema: Dict[str, Any], model: Type[BaseModel]
+    ) -> None:
+        """Check top-level schema compatibility between Langfuse and generated model.
+
+        This intentionally checks contract equivalence at the top level:
+        - source top-level properties must exist in model schema
+        - source top-level required fields must be required in model schema
+        """
+        normalized_source = source_schema
+        if (
+            isinstance(source_schema, dict)
+            and "format" in source_schema
+            and isinstance(source_schema.get("format"), dict)
+            and "schema" in source_schema["format"]
+        ):
+            normalized_source = cast(Dict[str, Any], source_schema["format"]["schema"])
+
+        source_props = set((normalized_source.get("properties") or {}).keys())
+        source_required = set(normalized_source.get("required") or [])
+        model_schema = model.model_json_schema()
+        model_props = set((model_schema.get("properties") or {}).keys())
+        model_required = set(model_schema.get("required") or [])
+
+        missing_props = source_props - model_props
+        missing_required = source_required - model_required
+        if missing_props or missing_required:
+            raise RuntimeError(
+                f"Generated model for '{test_name}' is not compatible with Langfuse "
+                f"schema. missing_props={sorted(missing_props)}, "
+                f"missing_required={sorted(missing_required)}"
+            )
+
+
+# ---------------------------------------------------------------------------
+# Module-level singleton
+# ---------------------------------------------------------------------------
+
+
 def create_registry(config_path: Optional[str] = None) -> PromptRegistry:
-    """Create a PromptRegistry with the current configuration."""
-    import yaml
+    """Create a PromptRegistry with config loaded from disk."""
+    import yaml  # type: ignore[import-untyped]
 
     if config_path is None:
-        # Default config paths to try
-        config_paths = [
+        candidates = [
             Path("config.qc.yaml"),
             Path(__file__).parents[3] / "config.qc.yaml",
             Path(__file__).parents[4] / "config.qc.yaml",
         ]
-
-        for path in config_paths:
+        for path in candidates:
             if path.exists():
                 config_path = path
                 break
 
     if config_path and Path(config_path).exists():
-        with open(config_path, "r") as f:
-            config = yaml.safe_load(f)
+        with open(config_path, "r") as fh:
+            config = yaml.safe_load(fh)
     else:
         config = {}
 
     return PromptRegistry(config=config)
 
 
-# Create a singleton instance
 registry = create_registry()
+
+
+def _merge_runtime_hints(base: Dict[str, Any], source: Dict[str, Any]) -> None:
+    """Merge supported runtime-hint keys into base dict."""
+    if not isinstance(source, dict):
+        return
+
+    if isinstance(source.get("runtime"), dict):
+        _deep_merge(base, source["runtime"])
+
+    direct_keys = {
+        "agentic",
+        "model_config",
+        "tools",
+        "tool_choice",
+        "reasoning",
+        "include",
+        "max_output_tokens",
+    }
+    for key in direct_keys:
+        if key in source:
+            base[key] = deepcopy(source[key])
+
+    # Backward-compatible bridge: tools at top-level become model_config.tools.
+    if "tools" in source:
+        base.setdefault("model_config", {})
+        if isinstance(base["model_config"], dict):
+            base["model_config"]["tools"] = deepcopy(source["tools"])
+    if "tool_choice" in source:
+        base.setdefault("model_config", {})
+        if isinstance(base["model_config"], dict):
+            base["model_config"]["tool_choice"] = deepcopy(source["tool_choice"])
+
+
+def _deep_merge(base: Dict[str, Any], extra: Dict[str, Any]) -> None:
+    """In-place deep merge for runtime hint dictionaries."""
+    for key, value in extra.items():
+        if key in base and isinstance(base[key], dict) and isinstance(value, dict):
+            _deep_merge(base[key], value)
+        else:
+            base[key] = deepcopy(value)

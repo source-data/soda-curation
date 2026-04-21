@@ -1,11 +1,17 @@
 """OpenAI utility functions with GPT-5 fallback support."""
 
+from __future__ import annotations
+
 import json
 import logging
+import re
+import time
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 
 import openai
 from openai import OpenAIError
+
+from .ai_observability import summarize_messages
 
 try:
     import tiktoken
@@ -15,25 +21,15 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
+_TIKTOKEN_FALLBACK_WARNED_MODELS: set[str] = set()
 
 # GPT-5 model identifier
 GPT5_MODEL = "gpt-5"
 
-# Model name prefixes that don't support additional parameters (temperature, top_p, max_tokens, etc.)
-# All gpt-5 family models (gpt-5, gpt-5-mini, gpt-5-2025-*, etc.) use max_completion_tokens
-# and don't accept temperature/top_p/frequency_penalty/presence_penalty/max_tokens.
+# Model name prefixes that don't support additional parameters (temperature, top_p, etc.)
 MODELS_WITHOUT_PARAMETERS_PREFIXES = {"gpt-5"}
-
-
-def _is_model_without_parameters(model: str) -> bool:
-    """Return True if the model is in the gpt-5 family (no extra params supported)."""
-    return any(
-        model == prefix
-        or model.startswith(prefix + "-")
-        or model.startswith(prefix + "/")
-        for prefix in MODELS_WITHOUT_PARAMETERS_PREFIXES
-    )
-
+# Backward-compatible symbol expected by existing tests/importers.
+MODELS_WITHOUT_PARAMETERS = {GPT5_MODEL}
 
 # Model-specific token limits (input tokens)
 # Using conservative limits to account for response tokens and safety margin
@@ -47,6 +43,36 @@ MODEL_TOKEN_LIMITS = {
 
 # Default token limit for unknown models
 DEFAULT_TOKEN_LIMIT = 120000
+OPENAI_MAX_RETRIES = 3
+
+
+def _fallback_encoding_for_model(model: str) -> str:
+    """Return best-effort encoding fallback when tiktoken has no model mapping."""
+    modern_o200k_prefixes = (
+        "gpt-5",
+        "gpt-4o",
+        "gpt-4.1",
+        "gpt-4.5",
+        "o1",
+        "o3",
+        "o4-mini",
+    )
+    if any(
+        model == prefix or model.startswith(prefix + "-")
+        for prefix in modern_o200k_prefixes
+    ):
+        return "o200k_base"
+    return "cl100k_base"
+
+
+def _is_model_without_parameters(model: str) -> bool:
+    """Return True if model belongs to a family with restricted parameters."""
+    return any(
+        model == prefix
+        or model.startswith(prefix + "-")
+        or model.startswith(prefix + "/")
+        for prefix in MODELS_WITHOUT_PARAMETERS_PREFIXES
+    )
 
 
 def is_context_length_error(error: Exception) -> bool:
@@ -63,16 +89,57 @@ def is_context_length_error(error: Exception) -> bool:
     context_indicators = [
         "context length",
         "maximum context length",
+        "maximum context",
         "token limit",
         "too long",
         "context window",
+        "context_window_exceeded",
         "maximum tokens",
         "input too long",
         "length limit",
-        "length was reached",
         "context_length_exceeded",
     ]
     return any(indicator in error_message for indicator in context_indicators)
+
+
+def extract_context_length_error_details(error: Exception) -> Dict[str, int]:
+    """Extract token counts from provider error messages when available."""
+    message = str(error)
+    details: Dict[str, int] = {}
+
+    patterns = {
+        "api_max_context_tokens": r"maximum context length is\s*([0-9,]+)\s*tokens",
+        "api_requested_tokens": r"(?:resulted in|you requested)\s*([0-9,]+)\s*tokens",
+        "api_prompt_tokens": r"([0-9,]+)\s*in your prompt",
+        "api_completion_tokens": r"([0-9,]+)\s*for completion",
+    }
+    for key, pattern in patterns.items():
+        match = re.search(pattern, message, flags=re.IGNORECASE)
+        if not match:
+            continue
+        try:
+            details[key] = int(match.group(1).replace(",", ""))
+        except ValueError:
+            continue
+
+    return details
+
+
+def is_output_length_error(error: Exception) -> bool:
+    """
+    Check if the model stopped due to output token length limits.
+
+    This is different from input context overflow and should not trigger a
+    model-context fallback.
+    """
+    error_message = str(error).lower()
+    output_length_indicators = [
+        "lengthfinishreasonerror",
+        "finish_reason",
+        "length limit was reached",
+        "response was truncated",
+    ]
+    return any(indicator in error_message for indicator in output_length_indicators)
 
 
 def is_safety_block_error(error: Exception) -> bool:
@@ -97,6 +164,57 @@ def is_safety_block_error(error: Exception) -> bool:
     return any(indicator in error_message for indicator in safety_indicators)
 
 
+def is_retryable_openai_error(error: Exception) -> bool:
+    """Return True when the OpenAI error is likely transient."""
+    retryable_error_names = {
+        "RateLimitError",
+        "APIConnectionError",
+        "APITimeoutError",
+        "InternalServerError",
+    }
+    error_name = error.__class__.__name__
+    if error_name in retryable_error_names:
+        return True
+
+    message = str(error).lower()
+    transient_indicators = [
+        "timed out",
+        "timeout",
+        "rate limit",
+        "temporarily unavailable",
+        "connection reset",
+        "503",
+        "504",
+        "502",
+    ]
+    return any(indicator in message for indicator in transient_indicators)
+
+
+def classify_openai_error(error: Exception) -> Dict[str, str]:
+    """Classify OpenAI errors for consistent warning/error behavior."""
+    if is_context_length_error(error):
+        return {"severity": "recoverable", "reason": "context_length"}
+    if is_output_length_error(error):
+        return {"severity": "recoverable", "reason": "output_length_limit"}
+    if is_safety_block_error(error):
+        return {"severity": "recoverable", "reason": "safety_block"}
+    if is_retryable_openai_error(error):
+        return {"severity": "recoverable", "reason": "transient_api_error"}
+
+    class_name = error.__class__.__name__
+    critical_map = {
+        "BadRequestError": "invalid_request",
+        "AuthenticationError": "authentication_error",
+        "PermissionDeniedError": "permission_denied",
+        "NotFoundError": "not_found",
+        "UnprocessableEntityError": "unprocessable_request",
+    }
+    if class_name in critical_map:
+        return {"severity": "critical", "reason": critical_map[class_name]}
+
+    return {"severity": "critical", "reason": "unexpected_error"}
+
+
 def count_tokens(text: str, model: str = "gpt-4o") -> int:
     """
     Count the number of tokens in a text string for a given model.
@@ -108,10 +226,10 @@ def count_tokens(text: str, model: str = "gpt-4o") -> int:
     Returns:
         Number of tokens in the text
     """
-    if tiktoken is None:
+    if tiktoken is None or not hasattr(tiktoken, "encoding_for_model"):
         # Fallback: rough estimation (1 token ≈ 4 characters for English text)
         logger.warning(
-            "tiktoken not installed, using rough token estimation. "
+            "tiktoken unavailable or incompatible, using rough token estimation. "
             "Install tiktoken for accurate token counting: pip install tiktoken"
         )
         return len(text) // 4
@@ -119,11 +237,18 @@ def count_tokens(text: str, model: str = "gpt-4o") -> int:
     try:
         encoding = tiktoken.encoding_for_model(model)
     except KeyError:
-        # Fallback to cl100k_base encoding (used by GPT-4 and GPT-3.5-turbo)
-        logger.warning(
-            f"Model {model} not found in tiktoken, using cl100k_base encoding"
-        )
-        encoding = tiktoken.get_encoding("cl100k_base")
+        if not hasattr(tiktoken, "get_encoding"):
+            logger.warning(
+                "tiktoken get_encoding unavailable, using rough token estimation"
+            )
+            return len(text) // 4
+        fallback_encoding = _fallback_encoding_for_model(model)
+        if model not in _TIKTOKEN_FALLBACK_WARNED_MODELS:
+            logger.warning(
+                f"Model {model} not found in tiktoken, using {fallback_encoding} encoding"
+            )
+            _TIKTOKEN_FALLBACK_WARNED_MODELS.add(model)
+        encoding = tiktoken.get_encoding(fallback_encoding)
 
     return len(encoding.encode(text))
 
@@ -523,9 +648,7 @@ def prepare_model_params(
     elif json_mode:
         params["response_format"] = {"type": "json_object"}
 
-    # Only add parameters that are supported by the model.
-    # The entire gpt-5 family (gpt-5, gpt-5-mini, gpt-5-2025-*, …) rejects
-    # max_tokens / temperature / top_p / frequency_penalty / presence_penalty.
+    # Only add parameters that are supported by the model
     if not _is_model_without_parameters(model):
         params.update(
             {
@@ -544,6 +667,48 @@ def prepare_model_params(
     return params
 
 
+def _parse_with_retry(
+    client: openai.OpenAI,
+    params: Dict[str, Any],
+    model: str,
+    operation: str,
+) -> Any:
+    """Parse chat completion with retries for transient errors."""
+    for attempt in range(1, OPENAI_MAX_RETRIES + 1):
+        try:
+            if attempt > 1:
+                logger.warning(
+                    "Retrying OpenAI call",
+                    extra={
+                        "operation": operation,
+                        "model": model,
+                        "attempt": attempt,
+                        "max_attempts": OPENAI_MAX_RETRIES,
+                    },
+                )
+            return client.beta.chat.completions.parse(**params)
+        except OpenAIError as error:
+            classification = classify_openai_error(error)
+            retryable = (
+                is_retryable_openai_error(error) and attempt < OPENAI_MAX_RETRIES
+            )
+            if retryable:
+                wait_seconds = min(2 ** (attempt - 1), 8)
+                logger.warning(
+                    "Recoverable OpenAI error; retrying",
+                    extra={
+                        "operation": operation,
+                        "model": model,
+                        "reason": classification["reason"],
+                        "attempt": attempt,
+                        "retry_in_s": wait_seconds,
+                    },
+                )
+                time.sleep(wait_seconds)
+                continue
+            raise
+
+
 def call_openai_with_fallback(
     client: openai.OpenAI,
     model: str,
@@ -557,6 +722,8 @@ def call_openai_with_fallback(
     json_mode: bool = True,
     fallback_model: str = GPT5_MODEL,
     enable_chunking: bool = True,
+    operation: str = "unspecified_operation",
+    request_metadata: Optional[Dict[str, Any]] = None,
 ) -> Any:
     """
     Call OpenAI API with automatic fallback to GPT-5 on context length errors
@@ -575,6 +742,8 @@ def call_openai_with_fallback(
         json_mode: Whether to use JSON mode
         fallback_model: Model to use as fallback (default: gpt-5)
         enable_chunking: Whether to enable automatic chunking for large requests
+        operation: Operation name for structured logs
+        request_metadata: Additional metadata for structured logs
 
     Returns:
         Response from OpenAI API (or merged responses if chunked)
@@ -582,14 +751,32 @@ def call_openai_with_fallback(
     Raises:
         OpenAIError: If both primary and fallback models fail
     """
+    logger.info(
+        "OpenAI request prepared",
+        extra={
+            "operation": operation,
+            "model": model,
+            "fallback_model": fallback_model,
+            "message_summary": summarize_messages(messages),
+            "request_metadata": request_metadata or {},
+        },
+    )
+
     # Check if messages exceed token limit and need chunking
     token_limit = get_token_limit(model)
     current_tokens = count_messages_tokens(messages, model)
 
     if enable_chunking and current_tokens > token_limit:
         logger.warning(
-            f"Messages exceed token limit ({current_tokens} > {token_limit}). "
-            f"Enabling automatic chunking."
+            "Fallback strategy activated: chunking",
+            extra={
+                "operation": operation,
+                "model": model,
+                "reason": "context_length_precheck",
+                "context_length_source": "local_estimate",
+                "current_tokens": current_tokens,
+                "token_limit": token_limit,
+            },
         )
         return _call_openai_with_chunking(
             client=client,
@@ -603,6 +790,8 @@ def call_openai_with_fallback(
             max_tokens=max_tokens,
             json_mode=json_mode,
             fallback_model=fallback_model,
+            operation=operation,
+            request_metadata=request_metadata,
         )
 
     # Standard call without chunking
@@ -618,6 +807,8 @@ def call_openai_with_fallback(
         max_tokens=max_tokens,
         json_mode=json_mode,
         fallback_model=fallback_model,
+        operation=operation,
+        request_metadata=request_metadata,
     )
 
 
@@ -633,6 +824,8 @@ def _call_openai_single(
     max_tokens: int = 2048,
     json_mode: bool = True,
     fallback_model: str = GPT5_MODEL,
+    operation: str = "unspecified_operation",
+    request_metadata: Optional[Dict[str, Any]] = None,
 ) -> Any:
     """
     Make a single API call with fallback support.
@@ -653,19 +846,57 @@ def _call_openai_single(
     )
 
     try:
-        logger.info(f"Attempting API call with model: {model}")
-        response = client.beta.chat.completions.parse(**params)
-        logger.info(f"Successfully completed API call with model: {model}")
+        logger.info(
+            "Attempting OpenAI API call",
+            extra={
+                "operation": operation,
+                "model": model,
+                "request_metadata": request_metadata or {},
+            },
+        )
+        response = _parse_with_retry(client, params, model, operation)
+        logger.info(
+            "OpenAI API call succeeded",
+            extra={
+                "operation": operation,
+                "model": model,
+            },
+        )
         return response
 
     except OpenAIError as e:
+        classification = classify_openai_error(e)
         # Check if this is a context length error
         if is_context_length_error(e):
-            logger.warning(f"Context length error with model {model}: {str(e)}")
+            local_token_count = count_messages_tokens(messages, model)
+            local_token_limit = get_token_limit(model)
+            api_context_details = extract_context_length_error_details(e)
+            logger.warning(
+                "Fallback strategy activated: context length",
+                extra={
+                    "operation": operation,
+                    "from_model": model,
+                    "to_model": fallback_model,
+                    "severity": classification["severity"],
+                    "reason": classification["reason"],
+                    "context_length_source": "api_error",
+                    "local_estimated_tokens": local_token_count,
+                    "local_model_token_limit": local_token_limit,
+                    **api_context_details,
+                },
+            )
 
             # If we haven't tried the fallback model yet, try it
             if model != fallback_model:
-                logger.info(f"Attempting fallback to model: {fallback_model}")
+                logger.info(
+                    "Attempting model fallback",
+                    extra={
+                        "operation": operation,
+                        "from_model": model,
+                        "to_model": fallback_model,
+                        "reason": "context_length",
+                    },
+                )
 
                 # Check if fallback model would still exceed limits
                 fallback_token_limit = get_token_limit(fallback_model)
@@ -673,9 +904,15 @@ def _call_openai_single(
 
                 if current_tokens > fallback_token_limit:
                     logger.warning(
-                        f"Fallback model {fallback_model} would also exceed token limit "
-                        f"({current_tokens} > {fallback_token_limit}). "
-                        f"Will attempt chunking with fallback model."
+                        "Fallback model also exceeds token limit; chunking",
+                        extra={
+                            "operation": operation,
+                            "model": fallback_model,
+                            "reason": "context_length",
+                            "context_length_source": "local_estimate",
+                            "current_tokens": current_tokens,
+                            "token_limit": fallback_token_limit,
+                        },
                     )
                     return _call_openai_with_chunking(
                         client=client,
@@ -689,6 +926,8 @@ def _call_openai_single(
                         max_tokens=max_tokens,
                         json_mode=json_mode,
                         fallback_model=fallback_model,  # No further fallback
+                        operation=operation,
+                        request_metadata=request_metadata,
                     )
 
                 # Prepare parameters for the fallback model
@@ -705,18 +944,41 @@ def _call_openai_single(
                 )
 
                 try:
-                    response = client.beta.chat.completions.parse(**fallback_params)
+                    response = _parse_with_retry(
+                        client, fallback_params, fallback_model, operation
+                    )
                     logger.info(
-                        f"Successfully completed API call with fallback model: {fallback_model}"
+                        "Fallback model call succeeded",
+                        extra={
+                            "operation": operation,
+                            "model": fallback_model,
+                            "reason": "context_length",
+                        },
                     )
                     return response
 
                 except OpenAIError as fallback_error:
+                    fallback_classification = classify_openai_error(fallback_error)
                     # If fallback also has context length error, try chunking
                     if is_context_length_error(fallback_error):
+                        fallback_api_context_details = (
+                            extract_context_length_error_details(fallback_error)
+                        )
                         logger.warning(
-                            f"Fallback model {fallback_model} also has context length error. "
-                            f"Attempting chunking."
+                            "Fallback model context-length error; chunking as last resort",
+                            extra={
+                                "operation": operation,
+                                "model": fallback_model,
+                                "reason": "context_length",
+                                "context_length_source": "api_error",
+                                "local_estimated_tokens": count_messages_tokens(
+                                    messages, fallback_model
+                                ),
+                                "local_model_token_limit": get_token_limit(
+                                    fallback_model
+                                ),
+                                **fallback_api_context_details,
+                            },
                         )
                         return _call_openai_with_chunking(
                             client=client,
@@ -730,16 +992,34 @@ def _call_openai_single(
                             max_tokens=max_tokens,
                             json_mode=json_mode,
                             fallback_model=fallback_model,
+                            operation=operation,
+                            request_metadata=request_metadata,
                         )
                     logger.error(
-                        f"Fallback model {fallback_model} also failed: {str(fallback_error)}"
+                        "Fallback model failed",
+                        extra={
+                            "operation": operation,
+                            "model": fallback_model,
+                            "severity": fallback_classification["severity"],
+                            "reason": fallback_classification["reason"],
+                            "error": str(fallback_error),
+                        },
                     )
                     raise fallback_error
             else:
                 # Already using fallback model, can't fallback further - try chunking
                 logger.warning(
-                    f"Context length error with fallback model {fallback_model}. "
-                    f"Attempting chunking as last resort."
+                    "Context length with fallback model; chunking as last resort",
+                    extra={
+                        "operation": operation,
+                        "model": fallback_model,
+                        "reason": "context_length",
+                        "context_length_source": "api_error",
+                        "local_estimated_tokens": count_messages_tokens(
+                            messages, fallback_model
+                        ),
+                        "local_model_token_limit": get_token_limit(fallback_model),
+                    },
                 )
                 return _call_openai_with_chunking(
                     client=client,
@@ -753,11 +1033,19 @@ def _call_openai_single(
                     max_tokens=max_tokens,
                     json_mode=json_mode,
                     fallback_model=fallback_model,
+                    operation=operation,
+                    request_metadata=request_metadata,
                 )
         elif is_safety_block_error(e) and model != fallback_model:
             # Safety/content-policy block — retry with fallback model (e.g. gpt-4o)
             logger.warning(
-                f"Safety block from model {model}, retrying with fallback {fallback_model}: {str(e)}"
+                "Fallback strategy activated: safety block",
+                extra={
+                    "operation": operation,
+                    "from_model": model,
+                    "to_model": fallback_model,
+                    "reason": "safety_block",
+                },
             )
             fallback_params = prepare_model_params(
                 model=fallback_model,
@@ -770,18 +1058,107 @@ def _call_openai_single(
                 max_tokens=max_tokens,
                 json_mode=json_mode,
             )
-            response = client.beta.chat.completions.parse(**fallback_params)
+            response = _parse_with_retry(
+                client, fallback_params, fallback_model, operation
+            )
             logger.info(
-                f"Successfully completed API call with fallback model: {fallback_model}"
+                "Fallback model call succeeded",
+                extra={
+                    "operation": operation,
+                    "model": fallback_model,
+                    "reason": "safety_block",
+                },
             )
             return response
+        elif is_output_length_error(e):
+            # Output truncation/parse length issues are not input-context overflows.
+            # Retry once with a higher completion budget when supported.
+            if not _is_model_without_parameters(model):
+                retry_max_tokens = min(max(max_tokens * 2, 1024), 8192)
+                if retry_max_tokens > max_tokens:
+                    logger.warning(
+                        "Output length limit reached; retrying with higher max_tokens",
+                        extra={
+                            "operation": operation,
+                            "model": model,
+                            "severity": "recoverable",
+                            "reason": "output_length_limit",
+                            "max_tokens_before": max_tokens,
+                            "max_tokens_after": retry_max_tokens,
+                        },
+                    )
+                    retry_params = prepare_model_params(
+                        model=model,
+                        messages=messages,
+                        response_format=response_format,
+                        temperature=temperature,
+                        top_p=top_p,
+                        frequency_penalty=frequency_penalty,
+                        presence_penalty=presence_penalty,
+                        max_tokens=retry_max_tokens,
+                        json_mode=json_mode,
+                    )
+                    try:
+                        response = _parse_with_retry(
+                            client, retry_params, model, operation
+                        )
+                        logger.info(
+                            "OpenAI call succeeded after max_tokens increase",
+                            extra={
+                                "operation": operation,
+                                "model": model,
+                                "reason": "output_length_limit",
+                                "max_tokens_after": retry_max_tokens,
+                            },
+                        )
+                        return response
+                    except OpenAIError as retry_error:
+                        retry_classification = classify_openai_error(retry_error)
+                        logger.error(
+                            "OpenAI retry after output-length limit failed",
+                            extra={
+                                "operation": operation,
+                                "model": model,
+                                "severity": retry_classification["severity"],
+                                "reason": retry_classification["reason"],
+                                "error": str(retry_error),
+                            },
+                        )
+                        raise retry_error
+            logger.error(
+                "OpenAI call hit output-length limit and could not be recovered",
+                extra={
+                    "operation": operation,
+                    "model": model,
+                    "severity": classification["severity"],
+                    "reason": classification["reason"],
+                    "error": str(e),
+                },
+            )
+            raise e
         else:
             # Re-raise other errors
-            logger.error(f"Non-context-length error with model {model}: {str(e)}")
+            logger.error(
+                "OpenAI call failed",
+                extra={
+                    "operation": operation,
+                    "model": model,
+                    "severity": classification["severity"],
+                    "reason": classification["reason"],
+                    "error": str(e),
+                },
+            )
             raise e
 
     except Exception as e:
-        logger.error(f"Unexpected error with model {model}: {str(e)}")
+        logger.error(
+            "Unexpected OpenAI call failure",
+            extra={
+                "operation": operation,
+                "model": model,
+                "error": str(e),
+            },
+        )
         raise e
 
 
@@ -797,6 +1174,8 @@ def _call_openai_with_chunking(
     max_tokens: int = 2048,
     json_mode: bool = True,
     fallback_model: str = GPT5_MODEL,
+    operation: str = "unspecified_operation",
+    request_metadata: Optional[Dict[str, Any]] = None,
 ) -> Any:
     """
     Make multiple API calls by chunking large messages and merge the responses.
@@ -807,7 +1186,13 @@ def _call_openai_with_chunking(
     Returns:
         Merged response from all chunks
     """
-    logger.info(f"Chunking messages for model: {model}")
+    logger.info(
+        "Chunking request payload",
+        extra={
+            "operation": operation,
+            "model": model,
+        },
+    )
 
     # Get token limit for the model
     token_limit = get_token_limit(model)
@@ -832,6 +1217,8 @@ def _call_openai_with_chunking(
             max_tokens=max_tokens,
             json_mode=json_mode,
             fallback_model=fallback_model,
+            operation=operation,
+            request_metadata=request_metadata,
         )
 
     logger.info(f"Processing {len(chunked_message_lists)} chunks...")
@@ -858,6 +1245,8 @@ def _call_openai_with_chunking(
                 max_tokens=max_tokens,
                 json_mode=json_mode,
                 fallback_model=fallback_model,
+                operation=operation,
+                request_metadata=request_metadata,
             )
             responses.append(response)
         except Exception as e:

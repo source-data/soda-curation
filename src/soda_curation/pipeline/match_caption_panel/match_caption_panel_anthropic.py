@@ -6,6 +6,7 @@ from typing import Any, Dict
 
 import anthropic
 
+from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
 from .match_caption_panel_base import MatchPanelCaption, PanelObject
@@ -92,6 +93,16 @@ class MatchPanelCaptionAnthropic(MatchPanelCaption):
         )
 
         model = self.anthropic_config.get("model", "claude-sonnet-4-6")
+        logger.info(
+            "Preparing panel-caption vision request",
+            extra={
+                "operation": "main.match_caption_panel",
+                "provider": "anthropic",
+                "model": model,
+                "figure_caption_summary": summarize_text(figure_caption),
+                "encoded_image_chars": len(encoded_image),
+            },
+        )
 
         response = call_anthropic(
             client=self.client,
@@ -114,6 +125,11 @@ class MatchPanelCaptionAnthropic(MatchPanelCaption):
             response_format=PanelObject,
             temperature=self.anthropic_config.get("temperature", 0.1),
             max_tokens=self.anthropic_config.get("max_tokens", 512),
+            operation="main.match_caption_panel",
+            request_metadata={
+                "provider": "anthropic",
+                "encoded_image_chars": len(encoded_image),
+            },
         )
 
         if hasattr(self, "zip_structure"):

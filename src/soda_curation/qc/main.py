@@ -15,14 +15,9 @@ from typing import Any, Dict
 
 from ..config import ConfigurationLoader
 from ..data_storage import load_figure_data, load_zip_structure
+from ..logging_config import setup_logging
 from .prompt_registry import registry
 from .qc_pipeline import QCPipeline
-
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO,  # Set to DEBUG to see debug logs
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 
 logger = logging.getLogger(__name__)
 
@@ -74,21 +69,25 @@ def main():
     )
     args = parser.parse_args()
 
-    # Log the paths
+    # Load environment variables and validate required keys using the same
+    # loader as the main pipeline.
+    config_loader = ConfigurationLoader(args.config)
+
+    # Preserve the original QC config schema (including `default` section),
+    # because QC analyzers expect this structure directly.
+    import yaml  # type: ignore[import-untyped]
+
+    with open(args.config, "r") as config_file:
+        config = yaml.safe_load(config_file)
+
+    setup_logging(config_loader.config)
     logger.info("Using figure data from: %s", args.figure_data)
     logger.info("Using zip structure from: %s", args.zip_structure)
     logger.info("Using config from: %s", args.config)
-
-    # Load configuration
-    try:
-        # Try loading with ConfigurationLoader if it has the right method
-        config = ConfigurationLoader.load_from_file(args.config)
-    except (AttributeError, ImportError):
-        # Fall back to direct YAML loading
-        import yaml
-
-        with open(args.config, "r") as config_file:
-            config = yaml.safe_load(config_file)
+    logger.info(
+        "QC environment variables loaded from .env file",
+        extra={"environment": config_loader.environment},
+    )
 
     # Load figure data and zip structure
     figure_data = None
@@ -108,31 +107,66 @@ def main():
     # Log the number of figures
     logger.info("Loaded %d figures from saved data", len(figure_data))
 
+    # Optional/strict preflight: ensure every configured QC test has a Langfuse
+    # schema-backed model contract (no fallback generic model).
+    try:
+        registry.config = config
+        registry.enforce_langfuse_schema_equivalence = bool(
+            config.get("enforce_langfuse_schema_equivalence", False)
+        )
+        registry.validate_schema_equivalence()
+        logger.info(
+            "QC schema-equivalence validation passed",
+            extra={
+                "enforce_langfuse_schema_equivalence": registry.enforce_langfuse_schema_equivalence
+            },
+        )
+    except Exception as exc:
+        logger.error("QC schema-equivalence validation failed: %s", exc)
+        return
+
     # Create output directory if it doesn't exist
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Ensure Word document path is set for manuscript analysis
-    word_file_path = args.word_document
-    if not word_file_path and zip_structure:
-        # Construct full path from manuscript_id + relative docx path
-        if (
-            hasattr(zip_structure, "manuscript_id")
-            and zip_structure.manuscript_id
-            and hasattr(zip_structure, "docx")
-            and zip_structure.docx
-        ):
-            word_file_path = str(
-                Path("data/archives") / zip_structure.manuscript_id / zip_structure.docx
-            )
+    # Ensure manuscript text is available for document-level QC tests.
+    # Try multiple candidate paths for the Word/manuscript file, then extract
+    # text via pypandoc (same method as the main pipeline).
+    if not getattr(zip_structure, "manuscript_text", None):
+        docx_rel = getattr(zip_structure, "docx", "") or ""
+        manuscript_id = getattr(zip_structure, "manuscript_id", "") or ""
 
-    if word_file_path and zip_structure and Path(word_file_path).exists():
-        zip_structure._full_docx = word_file_path
-        logger.info("Word document path set to: %s", word_file_path)
-    elif word_file_path:
-        logger.warning("Word document not found at: %s", word_file_path)
-    else:
-        logger.warning("No word document path could be determined")
+        # Build a prioritised list of candidate paths
+        candidates = []
+        if args.word_document:
+            candidates.append(Path(args.word_document))
+        if docx_rel:
+            candidates.append(Path(args.extract_dir) / docx_rel)
+        if manuscript_id and docx_rel:
+            candidates.append(Path("data/archives") / manuscript_id / docx_rel)
+
+        docx_found = next((p for p in candidates if p.exists()), None)
+
+        if docx_found:
+            try:
+                import pypandoc
+
+                manuscript_text = pypandoc.convert_file(str(docx_found), "html")
+                zip_structure.manuscript_text = str(manuscript_text)
+                logger.info(
+                    "Extracted manuscript text from: %s (%d chars)",
+                    docx_found,
+                    len(zip_structure.manuscript_text),
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Could not extract manuscript text from %s: %s", docx_found, exc
+                )
+        else:
+            logger.warning(
+                "Word document not found. Tried: %s",
+                ", ".join(str(p) for p in candidates) or "(no candidates)",
+            )
 
     # Run the QC pipeline
     logger.info("Starting QC pipeline")
