@@ -16,7 +16,13 @@ import numpy as np
 import pdf2image
 from PIL import Image, ImageDraw
 from PIL.Image import DecompressionBombError
-from ultralytics import YOLOv10
+
+try:
+    # ultralytics renamed/flattened model entrypoints across versions.
+    # Prefer YOLOv10 when available, otherwise fall back to YOLO.
+    from ultralytics import YOLOv10 as _YOLOModel
+except ImportError:
+    from ultralytics import YOLO as _YOLOModel
 
 logger = logging.getLogger(__name__)
 
@@ -489,7 +495,7 @@ class ObjectDetection:
             model_path (str): Path to the YOLOv10 model file.
         """
         self.model_path = model_path
-        self.model = YOLOv10(self.model_path)
+        self.model = _YOLOModel(self.model_path)
         logger.info(f"Initialized ObjectDetection with model: {self.model_path}")
 
     def detect_panels(

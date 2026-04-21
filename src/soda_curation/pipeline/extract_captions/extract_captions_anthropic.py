@@ -189,8 +189,10 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
             logger.info(f"Skipping processing for EV figure: {figure.figure_label}")
             return figure, total_token_usage
 
+        sanitized_all_captions = self._sanitize_caption_html(all_captions)
+
         caption_result, caption_token_usage = self.extract_figure_caption(
-            figure.figure_label, all_captions, zip_structure
+            figure.figure_label, sanitized_all_captions, zip_structure
         )
 
         total_token_usage.prompt_tokens += caption_token_usage.prompt_tokens
@@ -211,6 +213,10 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
             )
             figure.hallucination_score = 1
             return figure, total_token_usage
+
+        caption_result.figure_caption = self._sanitize_caption_html(
+            caption_result.figure_caption
+        )
 
         panel_result, panel_token_usage = self.extract_figure_panels(
             figure.figure_label, caption_result.figure_caption
