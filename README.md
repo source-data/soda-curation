@@ -870,6 +870,11 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 3.1.4 (2026-04-21)
+- **Main branch**: Merged `feature/langfuse-v3` into `main` so the Langfuse 3.x line is the default development line.
+- **QC prompts**: Panel and figure analyzers default the provider `user` prompt to include the figure caption when Langfuse/runtime hints leave it empty (`Figure caption:\n$figure_caption`).
+- **CI**: Set `COMPOSE_HTTP_TIMEOUT` for Docker Compose in GitHub Actions to reduce flaky image pulls/builds.
+
 ### 3.1.3 (2026-04-21)
 - **Caption HTML sanitization**: Strip empty or whitespace-only `<li>…</li>` entries in figure caption HTML before panel extraction so Word/HTML artifacts do not inflate panel label sequences (OpenAI and Anthropic caption paths).
 - **Ultralytics compatibility**: Panel object detection imports `YOLOv10` when present and transparently falls back to `YOLO` when the ultralytics package exposes only the unified entrypoint.
@@ -885,7 +890,7 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 - **Dependency hygiene pass**: Cleaned Poetry runtime dependencies by removing duplicate/unused entries.
 
 #### Git tag subjects (3.1.x line)
-These match `git show <tag>` first-line summaries: **`3.1.1`** — Bumping to v3.1.1; Anthropic server-side tools (`web_search`, `web_fetch`). **`3.1.2`** — Bumping to v3.1.2; strict schema enforcement for QC. **`3.1.3`** — Bumping to v3.1.3; caption HTML sanitization and ultralytics `YOLO`/`YOLOv10` import fallback.
+These match `git show <tag>` first-line summaries: **`3.1.1`** — Bumping to v3.1.1; Anthropic server-side tools (`web_search`, `web_fetch`). **`3.1.2`** — Bumping to v3.1.2; strict schema enforcement for QC. **`3.1.3`** — Bumping to v3.1.3; caption HTML sanitization and ultralytics `YOLO`/`YOLOv10` import fallback. **`3.1.4`** — Bumping to v3.1.4; mainline merge, QC default user prompt, CI Docker timeout.
 
 ### 3.0.0 (2026-03-25)
 - **Langfuse prompt integration**: Prompt management moved to Langfuse for the active 3.x line.
