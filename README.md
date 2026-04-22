@@ -1077,3 +1077,5 @@ This tag is the stable version of the soda-curation package to extract the follo
 - Support for OpenAI and Anthropic AI providers
 - Implemented figure and panel detection
 - Added caption extraction and matching functionality
+
+### 0.0.0
