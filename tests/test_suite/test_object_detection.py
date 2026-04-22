@@ -620,6 +620,11 @@ class TestTiffTifffileHelpers(unittest.TestCase):
         rgb = _tiff_array_to_rgb_uint8(one)
         self.assertEqual(rgb.shape, (5, 6, 3))
 
+    def test_tiff_array_to_rgb_uint8_channels_first(self):
+        chw = np.random.randint(0, 255, (3, 7, 9), dtype=np.uint8)
+        rgb = _tiff_array_to_rgb_uint8(chw)
+        self.assertEqual(rgb.shape, (7, 9, 3))
+
 
 def test_create_standard_thumbnail_tiff_falls_back_to_tifffile(tmp_path):
     """If OpenCV cannot read a TIFF, tifffile still decodes a simple TIFF."""
@@ -848,7 +853,7 @@ def test_create_standard_thumbnail_eps():
 def test_create_standard_thumbnail_tiff():
     """Test creating a standard thumbnail from a TIFF file."""
     with patch(
-        "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_tiff_with_cv2"
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_tiff_with_tifffile"
     ) as mock_convert_tiff:
         mock_convert_tiff.return_value = "test_converted.png"
 

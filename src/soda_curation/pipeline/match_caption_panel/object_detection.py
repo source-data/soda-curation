@@ -143,15 +143,24 @@ def convert_tiff_with_cv2(tiff_path: str, output_path: str) -> str:
         cv2.imwrite(output_path, img)
         return output_path
     except Exception as e:
-        logger.error(f"OpenCV TIFF conversion failed: {str(e)}")
+        logger.warning(f"OpenCV TIFF conversion failed: {str(e)}")
         raise ValueError(f"Failed to convert TIFF with OpenCV: {str(e)}")
 
 
 def _tiff_array_to_rgb_uint8(arr: np.ndarray) -> np.ndarray:
     """Normalize a decoded TIFF array to HxWx3 uint8 RGB for saving as PNG."""
+    arr = np.asarray(arr)
+
+    # Multi-page/extra-dimensional TIFFs are represented as stacked frames; use first page.
+    while arr.ndim > 3:
+        arr = arr[0]
+
     if arr.ndim == 2:
         rgb = np.stack([arr, arr, arr], axis=-1)
     elif arr.ndim == 3:
+        # Handle channels-first TIFF arrays (C, H, W).
+        if arr.shape[0] in (1, 3, 4) and arr.shape[-1] not in (1, 3, 4):
+            arr = np.moveaxis(arr, 0, -1)
         c = arr.shape[2]
         if c == 1:
             rgb = np.repeat(arr, 3, axis=2)
@@ -413,13 +422,13 @@ def create_standard_thumbnail(
 
         elif file_ext in [".tif", ".tiff"]:
             try:
-                return convert_tiff_with_cv2(image_path, output_path)
-            except Exception as e:
-                logger.warning(f"TIFF conversion with CV2 failed: {str(e)}")
-            try:
                 return convert_tiff_with_tifffile(image_path, output_path)
             except Exception as e:
                 logger.warning(f"TIFF conversion with tifffile failed: {str(e)}")
+            try:
+                return convert_tiff_with_cv2(image_path, output_path)
+            except Exception as e:
+                logger.warning(f"TIFF conversion with CV2 failed: {str(e)}")
                 # Will fall through to generic cv2 / PIL
 
         elif file_ext == ".pdf":
