@@ -1,9 +1,62 @@
 """Logging configuration with environment support."""
 
+import json
 import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
+
+_RESERVED_LOG_RECORD_FIELDS = {
+    "name",
+    "msg",
+    "args",
+    "levelname",
+    "levelno",
+    "pathname",
+    "filename",
+    "module",
+    "exc_info",
+    "exc_text",
+    "stack_info",
+    "lineno",
+    "funcName",
+    "created",
+    "msecs",
+    "relativeCreated",
+    "thread",
+    "threadName",
+    "processName",
+    "process",
+    "message",
+    "asctime",
+}
+
+
+class ContextAwareFormatter(logging.Formatter):
+    """Formatter that appends structured `extra` context to each log line."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        base = super().format(record)
+        extras = {
+            key: value
+            for key, value in record.__dict__.items()
+            if key not in _RESERVED_LOG_RECORD_FIELDS and not key.startswith("_")
+        }
+        if not extras:
+            return base
+
+        def _stringify(value: Any) -> str:
+            if isinstance(value, (dict, list, tuple, set)):
+                try:
+                    return json.dumps(value, ensure_ascii=False, default=str)
+                except Exception:
+                    return str(value)
+            return str(value)
+
+        extras_str = " ".join(
+            f"{key}={_stringify(value)}" for key, value in sorted(extras.items())
+        )
+        return f"{base} | {extras_str}"
 
 
 def setup_logging(config: Dict[str, Any]) -> None:
@@ -30,11 +83,16 @@ def setup_logging(config: Dict[str, Any]) -> None:
     log_file = log_dir / f"{timestamp}.log"
 
     # Configure logging
+    formatter = ContextAwareFormatter(log_format, datefmt=date_format)
+    file_handler = logging.FileHandler(log_file)
+    stream_handler = logging.StreamHandler()
+    file_handler.setFormatter(formatter)
+    stream_handler.setFormatter(formatter)
+
     logging.basicConfig(
         level=log_level,
-        format=log_format,
-        datefmt=date_format,
-        handlers=[logging.FileHandler(log_file), logging.StreamHandler()],
+        handlers=[file_handler, stream_handler],
+        force=True,
     )
 
     logging.info(f"Logging initialized. Log file: {log_file}")

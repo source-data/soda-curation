@@ -1,6 +1,7 @@
 """Tests for XMLStructureExtractor class."""
 
 import shutil
+import tempfile
 import unittest
 import zipfile
 from pathlib import Path
@@ -376,6 +377,12 @@ class TestManuscriptXMLParser(unittest.TestCase):
     @patch("zipfile.ZipFile")
     @patch("lxml.etree.parse")  # Add this patch for the initialization
     def setUp(self, mock_etree_parse, mock_zipfile):
+        self._tmpdir = tempfile.mkdtemp()
+        extract_dir = Path(self._tmpdir) / "extract"
+        extract_dir.mkdir(parents=True)
+        zip_path = Path(self._tmpdir) / "dummy.zip"
+        zip_path.touch()
+
         # Mock the zipfile and its contents
         mock_zip = MagicMock()
         mock_zip.__enter__.return_value = mock_zip
@@ -404,12 +411,11 @@ class TestManuscriptXMLParser(unittest.TestCase):
             getroot=MagicMock(return_value=mock_root)
         )
 
-        # Provide mock paths for zip_path and extract_dir
-        zip_path = "/mock/path/to/zip"
-        extract_dir = "/mock/path/to/extract"
+        # Initialize the parser with writable paths (avoid /mock on read-only roots)
+        self.parser = XMLStructureExtractor(str(zip_path), str(extract_dir))
 
-        # Initialize the parser with the required arguments
-        self.parser = XMLStructureExtractor(zip_path, extract_dir)
+    def tearDown(self):
+        shutil.rmtree(self._tmpdir, ignore_errors=True)
 
     def test_extract_source_data_files(self):
         """Test extraction of source data files from XML."""

@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Tuple
 
 import anthropic
 
+from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
 from ..prompt_handler import PromptHandler
@@ -35,6 +36,15 @@ class PanelSourceAssignerAnthropic(PanelSourceAssigner):
 
     def call_ai_service(self, prompt: str, allowed_files: List) -> AsignedFilesList:
         """Call Claude with the given prompt and return assigned files."""
+        logger.info(
+            "Preparing Anthropic panel-source request",
+            extra={
+                "operation": "main.assign_panel_source",
+                "provider": "anthropic",
+                "prompt_summary": summarize_text(prompt),
+                "allowed_file_count": len(allowed_files),
+            },
+        )
         prompts = self.prompt_handler.get_prompt("assign_panel_source", {})
 
         messages = [
@@ -52,6 +62,11 @@ class PanelSourceAssignerAnthropic(PanelSourceAssigner):
             response_format=AsignedFilesList,
             temperature=config_.get("temperature", 0.3),
             max_tokens=config_.get("max_tokens", 2048),
+            operation="main.assign_panel_source",
+            request_metadata={
+                "provider": "anthropic",
+                "allowed_file_count": len(allowed_files),
+            },
         )
 
         update_token_usage(

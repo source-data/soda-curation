@@ -1,6 +1,7 @@
 """Base class for figure caption extraction."""
 
 import logging
+import re
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
@@ -110,6 +111,27 @@ class FigureCaptionExtractor(ABC):
         except Exception as e:
             logger.error(f"Error parsing captions: {str(e)}")
             return {}
+
+    def _sanitize_caption_html(self, text: str) -> str:
+        """
+        Remove known empty HTML list-item artifacts from caption text.
+
+        Some DOCX exports can introduce empty list items such as `<li></li>`
+        (or whitespace-only variants), which can cause downstream panel
+        sequence extraction to hallucinate additional panel labels.
+        """
+        if not text:
+            return text
+
+        # Remove empty or whitespace-only list items, including common
+        # non-breaking space representations.
+        sanitized = re.sub(
+            r"<li>\s*(?:&nbsp;|&#160;|\u00a0|<br\s*/?>|\s)*\s*</li>",
+            "",
+            text,
+            flags=re.IGNORECASE,
+        )
+        return sanitized
 
     def _remove_duplicate_panels(self, zip_structure: ZipStructure) -> ZipStructure:
         """

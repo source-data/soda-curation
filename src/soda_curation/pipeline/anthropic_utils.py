@@ -2,9 +2,12 @@
 
 import json
 import logging
+import time
 from typing import Any, Dict, List, Optional, Type, TypeVar
 
 import anthropic
+
+from .ai_observability import summarize_messages
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +20,8 @@ VALID_ANTHROPIC_MODELS = {
     "claude-haiku-4-5",
     "claude-haiku-4-5-20251001",
 }
+ANTHROPIC_MAX_RETRIES = 3
+_SUPPORTED_ANTHROPIC_TOOL_TYPE_PREFIXES = ("web_search", "web_fetch")
 
 
 class AnthropicUsage:
@@ -58,6 +63,114 @@ class AnthropicResponseWrapper:
         ]
         self.usage = usage
         self.model = model
+
+
+def _is_retryable_anthropic_error(error: Exception) -> bool:
+    """Return True for likely transient Anthropic failures."""
+    class_name = error.__class__.__name__
+    retryable_names = {
+        "RateLimitError",
+        "APIConnectionError",
+        "APITimeoutError",
+        "InternalServerError",
+        "OverloadedError",
+    }
+    if class_name in retryable_names:
+        return True
+
+    message = str(error).lower()
+    transient_indicators = [
+        "timed out",
+        "timeout",
+        "rate limit",
+        "overloaded",
+        "temporarily unavailable",
+        "connection reset",
+        "503",
+        "504",
+        "502",
+    ]
+    return any(indicator in message for indicator in transient_indicators)
+
+
+def is_retryable_anthropic_error(error: Exception) -> bool:
+    """Public wrapper used by callers to detect transient Anthropic errors."""
+    return _is_retryable_anthropic_error(error)
+
+
+def _classify_anthropic_error(error: Exception) -> Dict[str, str]:
+    """Classify Anthropic failures for warning/error semantics."""
+    if _is_retryable_anthropic_error(error):
+        return {"severity": "recoverable", "reason": "transient_api_error"}
+
+    class_name = error.__class__.__name__
+    critical_map = {
+        "BadRequestError": "invalid_request",
+        "AuthenticationError": "authentication_error",
+        "PermissionDeniedError": "permission_denied",
+        "NotFoundError": "not_found",
+        "UnprocessableEntityError": "unprocessable_request",
+    }
+    if class_name in critical_map:
+        return {"severity": "critical", "reason": critical_map[class_name]}
+    return {"severity": "critical", "reason": "unexpected_error"}
+
+
+def _create_with_retry(
+    client: anthropic.Anthropic,
+    params: Dict[str, Any],
+    model: str,
+    operation: str,
+) -> Any:
+    """Retry Anthropic calls when failures look transient."""
+    for attempt in range(1, ANTHROPIC_MAX_RETRIES + 1):
+        try:
+            if attempt > 1:
+                logger.warning(
+                    "Retrying Anthropic call",
+                    extra={
+                        "operation": operation,
+                        "model": model,
+                        "attempt": attempt,
+                        "max_attempts": ANTHROPIC_MAX_RETRIES,
+                    },
+                )
+            return client.messages.create(**params)
+        except Exception as error:
+            classification = _classify_anthropic_error(error)
+            retryable = (
+                _is_retryable_anthropic_error(error) and attempt < ANTHROPIC_MAX_RETRIES
+            )
+            if retryable:
+                wait_seconds = min(2 ** (attempt - 1), 8)
+                logger.warning(
+                    "Recoverable Anthropic error; retrying",
+                    extra={
+                        "operation": operation,
+                        "model": model,
+                        "reason": classification["reason"],
+                        "attempt": attempt,
+                        "retry_in_s": wait_seconds,
+                    },
+                )
+                time.sleep(wait_seconds)
+                continue
+            log_method = (
+                logger.error
+                if classification["severity"] == "critical"
+                else logger.warning
+            )
+            log_method(
+                "Anthropic call failed",
+                extra={
+                    "operation": operation,
+                    "model": model,
+                    "severity": classification["severity"],
+                    "reason": classification["reason"],
+                    "error": str(error),
+                },
+            )
+            raise
 
 
 def _convert_messages(messages: List[Dict[str, Any]]) -> tuple:
@@ -107,6 +220,81 @@ def _convert_messages(messages: List[Dict[str, Any]]) -> tuple:
     return system_prompt, anthropic_messages
 
 
+def _extract_supported_anthropic_tools(
+    model_config: Optional[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """Return Anthropic-compatible built-in tools from model config.
+
+    Current QC support is limited to provider-native built-in tools (e.g. web search).
+    Client-executed custom function tools are intentionally excluded because this code
+    path does not run tool-result loops.
+    """
+    if not model_config:
+        return []
+    raw_tools = model_config.get("tools")
+    if not isinstance(raw_tools, list):
+        return []
+
+    supported_tools: List[Dict[str, Any]] = []
+    for tool in raw_tools:
+        if not isinstance(tool, dict):
+            logger.warning(
+                "Ignoring invalid Anthropic tool entry (expected dict): %r", tool
+            )
+            continue
+        tool_type = str(tool.get("type", "")).strip()
+        if tool_type and any(
+            tool_type.startswith(prefix)
+            for prefix in _SUPPORTED_ANTHROPIC_TOOL_TYPE_PREFIXES
+        ):
+            supported_tools.append(tool)
+            continue
+        logger.warning(
+            "Ignoring unsupported Anthropic tool config; only built-in tool types "
+            "starting with %s are currently supported in QC provider path. tool=%s",
+            _SUPPORTED_ANTHROPIC_TOOL_TYPE_PREFIXES,
+            tool,
+        )
+    return supported_tools
+
+
+def _resolve_anthropic_tool_choice(
+    configured_choice: Any,
+    has_external_tools: bool,
+    structured_tool_name: str,
+) -> Dict[str, str]:
+    """Resolve Anthropic tool_choice while preserving structured-output guarantees."""
+    if configured_choice is None:
+        if has_external_tools:
+            return {"type": "auto"}
+        return {"type": "tool", "name": structured_tool_name}
+
+    if isinstance(configured_choice, str):
+        normalized = configured_choice.strip().lower()
+        if normalized in {"auto", "any"}:
+            return {"type": "auto"}
+        if normalized in {"none", "off", "disabled"}:
+            return {"type": "tool", "name": structured_tool_name}
+        logger.warning(
+            "Unsupported Anthropic tool_choice string '%s'; falling back to structured tool",
+            configured_choice,
+        )
+        return {"type": "tool", "name": structured_tool_name}
+
+    if isinstance(configured_choice, dict):
+        choice_type = str(configured_choice.get("type", "")).strip().lower()
+        if choice_type in {"auto", "any"}:
+            return {"type": "auto"}
+        if choice_type == "tool" and configured_choice.get("name"):
+            return {"type": "tool", "name": str(configured_choice["name"])}
+
+    logger.warning(
+        "Unsupported Anthropic tool_choice config '%s'; falling back to structured tool",
+        configured_choice,
+    )
+    return {"type": "tool", "name": structured_tool_name}
+
+
 def call_anthropic(
     client: anthropic.Anthropic,
     model: str,
@@ -114,6 +302,9 @@ def call_anthropic(
     response_format: Optional[Type[T]] = None,
     temperature: float = 0.1,
     max_tokens: int = 2048,
+    operation: str = "unspecified_operation",
+    request_metadata: Optional[Dict[str, Any]] = None,
+    model_config: Optional[Dict[str, Any]] = None,
 ) -> AnthropicResponseWrapper:
     """
     Call Anthropic Claude API, optionally enforcing structured output via tool use.
@@ -126,6 +317,9 @@ def call_anthropic(
             used to enforce a structured JSON response that is parsed into this type.
         temperature: Sampling temperature (0–1).
         max_tokens: Maximum tokens in the response.
+        operation: Operation name for structured logs.
+        request_metadata: Additional metadata for structured logs.
+        model_config: Optional provider-specific runtime config (e.g. tools/tool_choice).
 
     Returns:
         AnthropicResponseWrapper compatible with OpenAI response format.
@@ -141,24 +335,38 @@ def call_anthropic(
     if system_prompt:
         params["system"] = system_prompt
 
+    logger.info(
+        "Anthropic request prepared",
+        extra={
+            "operation": operation,
+            "model": model,
+            "message_summary": summarize_messages(messages),
+            "request_metadata": request_metadata or {},
+        },
+    )
+
     if response_format is not None:
         # Enforce structured output via tool use
         schema = response_format.model_json_schema()
         tool_name = "structured_output"
-        params["tools"] = [
-            {
-                "name": tool_name,
-                "description": f"Return structured data as {response_format.__name__}",
-                "input_schema": schema,
-            }
-        ]
-        params["tool_choice"] = {"type": "tool", "name": tool_name}
+        external_tools = _extract_supported_anthropic_tools(model_config)
+        structured_tool = {
+            "name": tool_name,
+            "description": f"Return structured data as {response_format.__name__}",
+            "input_schema": schema,
+        }
+        params["tools"] = [*external_tools, structured_tool]
+        params["tool_choice"] = _resolve_anthropic_tool_choice(
+            configured_choice=(model_config or {}).get("tool_choice"),
+            has_external_tools=bool(external_tools),
+            structured_tool_name=tool_name,
+        )
 
         logger.info(
             f"Calling Anthropic API with structured output ({response_format.__name__}) "
-            f"using model: {model}"
+            f"using model: {model} (external_tool_count={len(external_tools)})"
         )
-        response = client.messages.create(**params)
+        response = _create_with_retry(client, params, model, operation)
 
         usage = AnthropicUsage(
             input_tokens=response.usage.input_tokens,
@@ -166,7 +374,7 @@ def call_anthropic(
         )
 
         parsed = None
-        raw_text = ""
+        raw_text_parts: List[str] = []
         for block in response.content:
             if block.type == "tool_use" and block.name == tool_name:
                 try:
@@ -176,7 +384,8 @@ def call_anthropic(
                         f"Failed to instantiate {response_format.__name__} from tool input: {e}"
                     )
             elif block.type == "text":
-                raw_text = block.text
+                raw_text_parts.append(block.text)
+        raw_text = "\n".join(part for part in raw_text_parts if part).strip()
 
         if parsed is None and raw_text:
             logger.warning(
@@ -199,7 +408,7 @@ def call_anthropic(
     else:
         # Plain text response (JSON expected in prompt instructions)
         logger.info(f"Calling Anthropic API with model: {model}")
-        response = client.messages.create(**params)
+        response = _create_with_retry(client, params, model, operation)
 
         usage = AnthropicUsage(
             input_tokens=response.usage.input_tokens,

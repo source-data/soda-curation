@@ -3,8 +3,11 @@
 import argparse
 import json
 import logging
+import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
+from uuid import uuid4
 
 from ._main_utils import (
     calculate_hallucination_score,
@@ -59,6 +62,125 @@ from .qc.qc_pipeline import QCPipeline
 
 
 logger = logging.getLogger(__name__)
+SUPPORTED_AI_PROVIDERS = {"openai", "anthropic"}
+AI_PROVIDER_STEPS = (
+    "extract_sections",
+    "extract_caption_title",
+    "extract_panel_sequence",
+    "extract_data_sources",
+    "match_caption_panel",
+    "assign_panel_source",
+)
+
+
+@dataclass
+class StepFailure:
+    """Structured record of recoverable step failures."""
+
+    step: str
+    reason: str
+
+
+def _execute_pipeline_step(
+    step_name: str,
+    runner,
+    run_id: str,
+    critical: bool,
+    recoverable_failures: list[StepFailure],
+):
+    """Execute a pipeline step with structured logging and severity handling."""
+    started = time.perf_counter()
+    logger.info(
+        "Pipeline step started",
+        extra={"run_id": run_id, "step": step_name, "critical": critical},
+    )
+    try:
+        result = runner()
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        logger.info(
+            "Pipeline step completed",
+            extra={
+                "run_id": run_id,
+                "step": step_name,
+                "critical": critical,
+                "elapsed_ms": elapsed_ms,
+            },
+        )
+        return result
+    except Exception as exc:
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        if critical:
+            logger.error(
+                "Critical pipeline step failed",
+                extra={
+                    "run_id": run_id,
+                    "step": step_name,
+                    "critical": True,
+                    "elapsed_ms": elapsed_ms,
+                    "error": str(exc),
+                },
+            )
+            raise
+
+        logger.warning(
+            "Recoverable pipeline step failed; continuing with fallback behavior",
+            extra={
+                "run_id": run_id,
+                "step": step_name,
+                "critical": False,
+                "elapsed_ms": elapsed_ms,
+                "error": str(exc),
+            },
+        )
+        recoverable_failures.append(StepFailure(step=step_name, reason=str(exc)))
+        return None
+
+
+def _validate_ai_provider_config(config: dict, ai_provider: str, run_id: str) -> None:
+    """Ensure runtime provider selection is explicit and configuration is consistent."""
+    if ai_provider not in SUPPORTED_AI_PROVIDERS:
+        raise ValueError(
+            f"Unsupported ai_provider '{ai_provider}'. Expected one of {sorted(SUPPORTED_AI_PROVIDERS)}."
+        )
+
+    pipeline_config = config.get("pipeline", {})
+    if not isinstance(pipeline_config, dict):
+        raise ValueError("Invalid configuration: missing `pipeline` section.")
+
+    ignored_provider = "anthropic" if ai_provider == "openai" else "openai"
+    for step_name in AI_PROVIDER_STEPS:
+        step_config = pipeline_config.get(step_name, {})
+        if not isinstance(step_config, dict):
+            raise ValueError(
+                f"Invalid configuration for step '{step_name}': expected mapping."
+            )
+
+        has_openai = "openai" in step_config
+        has_anthropic = "anthropic" in step_config
+        assert has_openai or has_anthropic, (
+            f"Configuration error in step '{step_name}': no provider block found. "
+            "Define exactly one of 'openai' or 'anthropic'."
+        )
+        assert not (has_openai and has_anthropic), (
+            f"Configuration error in step '{step_name}': both 'openai' and 'anthropic' "
+            "are defined. Define only one provider per step."
+        )
+
+        configured_provider = "openai" if has_openai else "anthropic"
+        if configured_provider != ai_provider:
+            raise ValueError(
+                "Selected provider does not match step configuration. "
+                f"step={step_name}, configured_provider={configured_provider}, "
+                f"ai_provider={ai_provider}, ignored_provider={ignored_provider}"
+            )
+
+    logger.info(
+        "AI provider configuration validated",
+        extra={
+            "run_id": run_id,
+            "ai_provider": ai_provider,
+        },
+    )
 
 
 def run_qc_pipeline_async(
@@ -111,25 +233,43 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
     # Setup logging based on environment
     setup_logging(config_loader.config)
-    logger.info("Starting SODA curation pipeline")
+    run_id = uuid4().hex[:10]
+    logger.info("Starting SODA curation pipeline", extra={"run_id": run_id})
 
     # Setup extraction directory
     extract_dir = setup_extract_dir()
     config_loader.config["extraction_dir"] = str(extract_dir)
+    recoverable_failures: list[StepFailure] = []
 
     try:
         # Extract manuscript structure (first pipeline step)
         extractor = XMLStructureExtractor(zip_path, str(extract_dir))
-        zip_structure = extractor.extract_structure()
+        zip_structure = _execute_pipeline_step(
+            step_name="extract_structure",
+            runner=extractor.extract_structure,
+            run_id=run_id,
+            critical=True,
+            recoverable_failures=recoverable_failures,
+        )
 
-        # Extract captions from figures (second pipeline step)
-        manuscript_content = extractor.extract_docx_content(zip_structure.docx)
+        # Extract manuscript content for downstream AI steps
+        manuscript_content = _execute_pipeline_step(
+            step_name="extract_docx_content",
+            runner=lambda: extractor.extract_docx_content(zip_structure.docx),
+            run_id=run_id,
+            critical=True,
+            recoverable_failures=recoverable_failures,
+        )
         zip_structure.manuscript_text = manuscript_content
         prompt_handler = PromptHandler(config_loader.config["pipeline"])
 
         # Select AI provider (default: openai)
         ai_provider = config_loader.config.get("ai_provider", "openai").lower()
-        logger.info(f"Using AI provider: {ai_provider}")
+        logger.info(
+            f"Using AI provider: {ai_provider}",
+            extra={"run_id": run_id, "ai_provider": ai_provider},
+        )
+        _validate_ai_provider_config(config_loader.config, ai_provider, run_id)
 
         # Extract relevant sections for the pipeline
         if ai_provider == "anthropic":
@@ -144,8 +284,14 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             figure_legends,
             data_availability_text,
             zip_structure,
-        ) = section_extractor.extract_sections(
-            doc_content=manuscript_content, zip_structure=zip_structure
+        ) = _execute_pipeline_step(
+            step_name="extract_sections",
+            runner=lambda: section_extractor.extract_sections(
+                doc_content=manuscript_content, zip_structure=zip_structure
+            ),
+            run_id=run_id,
+            critical=True,
+            recoverable_failures=recoverable_failures,
         )
 
         # Extract individual captions from figure legends
@@ -157,8 +303,14 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             caption_extractor = FigureCaptionExtractorOpenAI(
                 config_loader.config, prompt_handler
             )
-        zip_structure = caption_extractor.extract_individual_captions(
-            doc_content=figure_legends, zip_structure=zip_structure
+        zip_structure = _execute_pipeline_step(
+            step_name="extract_individual_captions",
+            runner=lambda: caption_extractor.extract_individual_captions(
+                doc_content=figure_legends, zip_structure=zip_structure
+            ),
+            run_id=run_id,
+            critical=True,
+            recoverable_failures=recoverable_failures,
         )
 
         # Extract data sources from data availability section
@@ -170,8 +322,14 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             data_availability_extractor = DataAvailabilityExtractorOpenAI(
                 config_loader.config, prompt_handler
             )
-        zip_structure = data_availability_extractor.extract_data_sources(
-            section_text=data_availability_text, zip_structure=zip_structure
+        zip_structure = _execute_pipeline_step(
+            step_name="extract_data_sources",
+            runner=lambda: data_availability_extractor.extract_data_sources(
+                section_text=data_availability_text, zip_structure=zip_structure
+            ),
+            run_id=run_id,
+            critical=True,
+            recoverable_failures=recoverable_failures,
         )
 
         # Match panels with captions using object detection
@@ -187,10 +345,26 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 prompt_handler=prompt_handler,
                 extract_dir=extractor.manuscript_extract_dir,
             )
-        _ = panel_matcher.process_figures(zip_structure)
+        panel_processing_result = _execute_pipeline_step(
+            step_name="match_caption_panel",
+            runner=lambda: panel_matcher.process_figures(zip_structure),
+            run_id=run_id,
+            critical=False,
+            recoverable_failures=recoverable_failures,
+        )
+        if panel_processing_result is not None:
+            zip_structure = panel_processing_result
 
         # Get figure images and captions for QC pipeline
-        figure_data = panel_matcher.get_figure_images_and_captions()
+        figure_data = _execute_pipeline_step(
+            step_name="collect_qc_figure_payloads",
+            runner=panel_matcher.get_figure_images_and_captions,
+            run_id=run_id,
+            critical=False,
+            recoverable_failures=recoverable_failures,
+        )
+        if figure_data is None:
+            figure_data = []
 
         # Assign panel source
         if ai_provider == "anthropic":
@@ -201,11 +375,23 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             panel_source_assigner = PanelSourceAssignerOpenAI(
                 config_loader.config, prompt_handler, extractor.manuscript_extract_dir
             )
-        processed_figures = panel_source_assigner.assign_panel_source(
-            zip_structure,  # Pass figures list instead of whole structure
+        processed_figures = _execute_pipeline_step(
+            step_name="assign_panel_source",
+            runner=lambda: panel_source_assigner.assign_panel_source(
+                zip_structure,
+            ),
+            run_id=run_id,
+            critical=False,
+            recoverable_failures=recoverable_failures,
         )
         # Preserve all ZipStructure data while updating figures
-        zip_structure.figures = processed_figures
+        if processed_figures is not None:
+            zip_structure.figures = processed_figures
+        else:
+            logger.warning(
+                "Proceeding without panel source assignments due to recoverable failure",
+                extra={"run_id": run_id, "step": "assign_panel_source"},
+            )
 
         # Update total costs before returning results
         zip_structure.update_total_cost()
@@ -272,13 +458,32 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             with open(output_path, "w", encoding="utf-8") as f:
                 f.write(output_json)
 
+        if recoverable_failures:
+            logger.warning(
+                "Pipeline completed with recoverable failures",
+                extra={
+                    "run_id": run_id,
+                    "recoverable_failure_count": len(recoverable_failures),
+                    "recoverable_failures": [
+                        {"step": item.step, "reason": item.reason}
+                        for item in recoverable_failures
+                    ],
+                },
+            )
+        else:
+            logger.info(
+                "Pipeline completed without recoverable failures",
+                extra={"run_id": run_id},
+            )
+
         return output_json
 
     finally:
         cleanup_extract_dir(extract_dir)
 
 
-if __name__ == "__main__":
+def cli() -> int:
+    """Command-line entry point for the ``soda-curation`` script."""
     parser = argparse.ArgumentParser(
         description="Process a ZIP file using SODA curation"
     )
@@ -293,3 +498,8 @@ if __name__ == "__main__":
     output_json = main(args.zip, args.config, args.output)
     if not args.output:
         print(output_json)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(cli())

@@ -14,9 +14,7 @@ from typing import Dict, List, Optional
 from bs4 import BeautifulSoup
 from rapidfuzz import fuzz
 
-from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
-    ZipStructure,
-)
+from .pipeline.manuscript_structure.manuscript_structure import ZipStructure
 
 logger = logging.getLogger(__name__)
 

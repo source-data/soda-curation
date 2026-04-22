@@ -1,3 +1,5 @@
+import shutil
+import tempfile
 import unittest
 from pathlib import Path
 from typing import Any, List
@@ -68,6 +70,8 @@ class TestPanelSourceAssigner(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
+        self._tmpdir = tempfile.mkdtemp()
+        self.extract_dir = Path(self._tmpdir)
         self.config = {
             "assign_panel_source": {
                 "prompts": {
@@ -82,13 +86,15 @@ class TestPanelSourceAssigner(unittest.TestCase):
                 },
                 "cost": {},
             },
-            "extraction_dir": "/mock/extraction/dir",  # Mock extraction directory
+            "extraction_dir": str(self.extract_dir),
         }
         self.prompt_handler = MagicMock()  # Mock the PromptHandler
-        self.extract_dir = Path("/mock/extraction/dir")  # Add extract_dir
         self.assigner = self.ConcretePanelSourceAssigner(
             self.config, self.prompt_handler, self.extract_dir  # Pass extract_dir
         )
+
+    def tearDown(self):
+        shutil.rmtree(self._tmpdir, ignore_errors=True)
 
     @patch("zipfile.ZipFile")
     def test_get_zip_contents(self, mock_zipfile):
@@ -364,6 +370,8 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
+        self._tmpdir = tempfile.mkdtemp()
+        self.extract_dir = Path(self._tmpdir)
         self.config = {
             "pipeline": {
                 "assign_panel_source": {
@@ -380,13 +388,15 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
                     "cost": {},
                 },
             },
-            "extraction_dir": "/mock/extraction/dir",
+            "extraction_dir": str(self.extract_dir),
         }
         self.prompt_handler = MagicMock()
-        self.extract_dir = Path("/mock/extraction/dir")  # Add extract_dir
         self.assigner = TestPanelSourceAssigner.ConcretePanelSourceAssigner(
             self.config, self.prompt_handler, self.extract_dir  # Pass extract_dir
         )
+
+    def tearDown(self):
+        shutil.rmtree(self._tmpdir, ignore_errors=True)
 
     def test_hallucinated_files_validation(self):
         """Test that hallucinated file paths are rejected."""

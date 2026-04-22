@@ -7,6 +7,7 @@ from typing import Dict, Tuple
 
 import openai
 
+from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
 from ..openai_utils import call_openai_with_fallback, validate_model_config
@@ -47,6 +48,14 @@ class SectionExtractorOpenAI(SectionExtractor):
         zip_structure: ZipStructure,
     ) -> Tuple[str, str, ZipStructure]:
         """Extract figure legends and data availability sections."""
+        logger.info(
+            "Preparing section extraction request",
+            extra={
+                "operation": "main.extract_sections",
+                "figure_count": len(zip_structure.figures),
+                "manuscript_summary": summarize_text(doc_content),
+            },
+        )
         # try:
         # Get prompts with variables substituted
         prompts = self.prompt_handler.get_prompt(
@@ -78,6 +87,13 @@ class SectionExtractorOpenAI(SectionExtractor):
             top_p=config_.get("top_p", 1.0),
             frequency_penalty=config_.get("frequency_penalty", 0),
             presence_penalty=config_.get("presence_penalty", 0),
+            operation="main.extract_sections",
+            request_metadata={
+                "figure_count": len(zip_structure.figures),
+                "expected_labels_count": len(
+                    [figure.figure_label for figure in zip_structure.figures]
+                ),
+            },
         )
 
         # Update token usage
@@ -87,19 +103,8 @@ class SectionExtractorOpenAI(SectionExtractor):
             model_,
         )
 
-        # Store response in both relevant places for backward compatibility
-        # When using structured responses, the parsed content is in .parsed
-        logger.info(f"Response type: {type(response)}")
-        logger.info(f"Response choices type: {type(response.choices)}")
-        logger.info(f"Response choices length: {len(response.choices)}")
-        logger.info(f"Response message type: {type(response.choices[0].message)}")
-        logger.info(
-            f"Response message has parsed: {hasattr(response.choices[0].message, 'parsed')}"
-        )
-
         if hasattr(response.choices[0].message, "parsed"):
             result = response.choices[0].message.parsed
-            logger.info(f"Parsed result type: {type(result)}")
             # result is a Pydantic model object, access attributes directly
             figure_legends = result.figure_legends
             data_availability = result.data_availability
@@ -111,6 +116,15 @@ class SectionExtractorOpenAI(SectionExtractor):
             # result is a dictionary, access with keys
             figure_legends = result["figure_legends"]
             data_availability = result["data_availability"]
+
+        logger.info(
+            "Section extraction completed",
+            extra={
+                "operation": "main.extract_sections",
+                "figure_legends_summary": summarize_text(figure_legends),
+                "data_availability_summary": summarize_text(data_availability),
+            },
+        )
 
         zip_structure.ai_response_locate_captions = figure_legends
         return (

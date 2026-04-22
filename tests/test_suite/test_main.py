@@ -26,6 +26,22 @@ MOCK_CONFIG = {
                 "prompts": {"system": "System prompt", "user": "User prompt"},
             }
         },
+        "extract_caption_title": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
+        "extract_panel_sequence": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
         "extract_individual_captions": {
             "openai": {
                 "model": "gpt-4o",
@@ -153,10 +169,23 @@ def test_main_creates_output_directory(
         "src.soda_curation.main.FigureCaptionExtractorOpenAI"
     ) as mock_caption_extractor, patch(
         "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
-    ) as mock_data_extractor:
+    ) as mock_data_extractor, patch(
+        "src.soda_curation.main.MatchPanelCaptionOpenAI"
+    ) as mock_matcher_cls, patch(
+        "src.soda_curation.main.PanelSourceAssignerOpenAI"
+    ) as mock_assign_cls:
         # Configure mocks
         extract_dir = tmp_path / "extract"
         mock_setup_dir.return_value = extract_dir
+
+        mock_panel_matcher = MagicMock()
+        mock_panel_matcher.process_figures.return_value = mock_structure
+        mock_panel_matcher.get_figure_images_and_captions.return_value = []
+        mock_matcher_cls.return_value = mock_panel_matcher
+
+        mock_assign = MagicMock()
+        mock_assign.assign_panel_source.return_value = mock_structure.figures
+        mock_assign_cls.return_value = mock_assign
 
         # XML extractor mock
         mock_instance = MagicMock()
@@ -223,7 +252,9 @@ def test_main_successful_run(
         "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
     ) as mock_data_extractor, patch(
         "src.soda_curation.main.PanelSourceAssignerOpenAI"
-    ) as mock_panel_assigner:
+    ) as mock_panel_assigner, patch(
+        "src.soda_curation.main.MatchPanelCaptionOpenAI"
+    ) as mock_matcher_cls:
         # Configure mocks
         mock_instance = MagicMock()
         mock_instance.extract_structure.return_value = test_structure
@@ -250,6 +281,11 @@ def test_main_successful_run(
         mock_panel_instance = MagicMock()
         mock_panel_instance.assign_panel_source.return_value = test_structure.figures
         mock_panel_assigner.return_value = mock_panel_instance
+
+        mock_panel_matcher = MagicMock()
+        mock_panel_matcher.process_figures.return_value = test_structure
+        mock_panel_matcher.get_figure_images_and_captions.return_value = []
+        mock_matcher_cls.return_value = mock_panel_matcher
 
         # Run main
         result = main(mock_zip_content, mock_config)
@@ -293,7 +329,11 @@ def test_main_no_output_path_returns_json(
         "src.soda_curation.main.FigureCaptionExtractorOpenAI"
     ) as mock_caption_extractor, patch(
         "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
-    ) as mock_data_extractor:
+    ) as mock_data_extractor, patch(
+        "src.soda_curation.main.MatchPanelCaptionOpenAI"
+    ) as mock_matcher_cls, patch(
+        "src.soda_curation.main.PanelSourceAssignerOpenAI"
+    ) as mock_assign_cls:
         # Configure mocks to return the ZipStructure object
         mock_instance = MagicMock()
         mock_instance.extract_structure.return_value = test_structure
@@ -315,6 +355,15 @@ def test_main_no_output_path_returns_json(
         mock_data_instance = MagicMock()
         mock_data_instance.extract_data_sources.return_value = test_structure
         mock_data_extractor.return_value = mock_data_instance
+
+        mock_panel_matcher = MagicMock()
+        mock_panel_matcher.process_figures.return_value = test_structure
+        mock_panel_matcher.get_figure_images_and_captions.return_value = []
+        mock_matcher_cls.return_value = mock_panel_matcher
+
+        mock_assign = MagicMock()
+        mock_assign.assign_panel_source.return_value = test_structure.figures
+        mock_assign_cls.return_value = mock_assign
 
         result = main(mock_zip_content, mock_config)
         assert isinstance(result, str)

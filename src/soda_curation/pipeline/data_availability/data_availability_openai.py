@@ -8,6 +8,7 @@ from typing import Any, Dict
 
 import openai
 
+from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
 from ..openai_utils import call_openai_with_fallback, validate_model_config
@@ -67,6 +68,13 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
         self, section_text: str, zip_structure: ZipStructure
     ) -> ZipStructure:
         """Extract data sources from data availability section."""
+        logger.info(
+            "Preparing data availability extraction request",
+            extra={
+                "operation": "main.extract_data_sources",
+                "section_summary": summarize_text(section_text),
+            },
+        )
         # Provide database registry as JSON string for the prompt
         db_registry_json = self._create_registry_info()
 
@@ -102,6 +110,12 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             top_p=config_.get("top_p", 1.0),
             frequency_penalty=config_.get("frequency_penalty", 0),
             presence_penalty=config_.get("presence_penalty", 0),
+            operation="main.extract_data_sources",
+            request_metadata={
+                "registry_database_count": len(
+                    self.database_registry.get("databases", [])
+                )
+            },
         )
 
         # Update token usage
@@ -124,6 +138,14 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             "section_text": section_text,
             "data_sources": parsed_data["sources"],
         }
+
+        logger.info(
+            "Data availability extraction completed",
+            extra={
+                "operation": "main.extract_data_sources",
+                "data_source_count": len(parsed_data.get("sources", [])),
+            },
+        )
 
         return zip_structure
 

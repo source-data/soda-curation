@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Tuple
 import anthropic
 from pydantic import BaseModel
 
+from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import (
@@ -69,6 +70,15 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
         self, figure_label: str, all_captions: str, zip_structure: ZipStructure
     ) -> Tuple[CaptionExtraction, TokenUsage]:
         """Extract caption title and text for a specific figure."""
+        logger.info(
+            "Preparing figure caption extraction request",
+            extra={
+                "operation": "main.extract_caption_title",
+                "provider": "anthropic",
+                "figure_label": figure_label,
+                "captions_summary": summarize_text(all_captions),
+            },
+        )
         prompts = self.prompt_handler.get_prompt(
             step="extract_caption_title",
             variables={
@@ -96,6 +106,8 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
             response_format=CaptionExtraction,
             temperature=config_.get("temperature", 0.1),
             max_tokens=config_.get("max_tokens", 4096),
+            operation="main.extract_caption_title",
+            request_metadata={"figure_label": figure_label},
         )
 
         token_usage = TokenUsage()
@@ -113,6 +125,15 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
         self, figure_label: str, caption_text: str
     ) -> Tuple[PanelExtraction, TokenUsage]:
         """Extract panels for a specific figure."""
+        logger.info(
+            "Preparing panel sequence extraction request",
+            extra={
+                "operation": "main.extract_panel_sequence",
+                "provider": "anthropic",
+                "figure_label": figure_label,
+                "caption_summary": summarize_text(caption_text),
+            },
+        )
         prompts = self.prompt_handler.get_prompt(
             step="extract_panel_sequence",
             variables={
@@ -140,6 +161,8 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
             response_format=PanelExtraction,
             temperature=config_.get("temperature", 0.1),
             max_tokens=config_.get("max_tokens", 4096),
+            operation="main.extract_panel_sequence",
+            request_metadata={"figure_label": figure_label},
         )
 
         token_usage = TokenUsage()
@@ -166,8 +189,10 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
             logger.info(f"Skipping processing for EV figure: {figure.figure_label}")
             return figure, total_token_usage
 
+        sanitized_all_captions = self._sanitize_caption_html(all_captions)
+
         caption_result, caption_token_usage = self.extract_figure_caption(
-            figure.figure_label, all_captions, zip_structure
+            figure.figure_label, sanitized_all_captions, zip_structure
         )
 
         total_token_usage.prompt_tokens += caption_token_usage.prompt_tokens
@@ -176,9 +201,22 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
         total_token_usage.cost += caption_token_usage.cost
 
         if not caption_result.figure_caption:
-            logger.error(f"No caption extracted for {figure.figure_label}")
+            logger.warning(
+                "Caption extraction returned empty caption",
+                extra={
+                    "operation": "main.extract_caption_title",
+                    "provider": "anthropic",
+                    "figure_label": figure.figure_label,
+                    "severity": "recoverable",
+                    "reason": "empty_caption",
+                },
+            )
             figure.hallucination_score = 1
             return figure, total_token_usage
+
+        caption_result.figure_caption = self._sanitize_caption_html(
+            caption_result.figure_caption
+        )
 
         panel_result, panel_token_usage = self.extract_figure_panels(
             figure.figure_label, caption_result.figure_caption

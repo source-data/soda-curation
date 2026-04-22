@@ -10,6 +10,7 @@ from PIL import Image
 from pydantic import BaseModel
 
 from ...pipeline.prompt_handler import PromptHandler
+from ..ai_observability import summarize_text
 from ..manuscript_structure.manuscript_structure import Panel, ZipStructure
 from .object_detection import convert_to_pil_image, create_object_detection
 
@@ -46,6 +47,14 @@ class MatchPanelCaption(ABC):
         self.zip_structure = zip_structure
         for figure in zip_structure.figures:
             try:
+                logger.info(
+                    "Processing figure for panel-caption matching",
+                    extra={
+                        "operation": "main.match_caption_panel",
+                        "figure_label": figure.figure_label,
+                        "figure_caption_summary": summarize_text(figure.figure_caption),
+                    },
+                )
                 # Store original panels in a dictionary for quick lookup by label
                 original_panels = {panel.panel_label: panel for panel in figure.panels}
 
@@ -73,6 +82,14 @@ class MatchPanelCaption(ABC):
 
                 # Get only bounding boxes from detection
                 detected_regions = self.object_detector.detect_panels(image)
+                logger.info(
+                    "Detected panel candidate regions",
+                    extra={
+                        "operation": "main.match_caption_panel",
+                        "figure_label": figure.figure_label,
+                        "detected_region_count": len(detected_regions),
+                    },
+                )
 
                 if not detected_regions:
                     logger.warning(
@@ -92,6 +109,19 @@ class MatchPanelCaption(ABC):
                     encoded_image = self._extract_panel_image(image, detection["bbox"])
 
                     if encoded_image:
+                        logger.info(
+                            "Sending panel crop to AI matcher",
+                            extra={
+                                "operation": "main.match_caption_panel",
+                                "figure_label": figure.figure_label,
+                                "detection_index": idx,
+                                "bbox_confidence": detection["confidence"],
+                                "caption_summary": summarize_text(
+                                    figure.figure_caption
+                                ),
+                                "encoded_image_chars": len(encoded_image),
+                            },
+                        )
                         panel_object = self._match_panel_caption(
                             encoded_image, figure.figure_caption
                         )
@@ -118,8 +148,29 @@ class MatchPanelCaption(ABC):
                 # Update figure panels
                 figure.panels = processed_panels
 
+            except FileNotFoundError as e:
+                logger.warning(
+                    "Figure image missing; continuing with next figure",
+                    extra={
+                        "operation": "main.match_caption_panel",
+                        "figure_label": figure.figure_label,
+                        "severity": "recoverable",
+                        "reason": "figure_image_missing",
+                        "error": str(e),
+                    },
+                )
+                continue
             except Exception as e:
-                logger.error(f"Error processing figure {figure.figure_label}: {str(e)}")
+                logger.warning(
+                    "Recoverable failure while processing figure; continuing",
+                    extra={
+                        "operation": "main.match_caption_panel",
+                        "figure_label": figure.figure_label,
+                        "severity": "recoverable",
+                        "reason": "figure_processing_error",
+                        "error": str(e),
+                    },
+                )
                 continue
 
         return zip_structure
