@@ -20,6 +20,24 @@ from src.soda_curation.qc.model_api import ModelAPI
 from src.soda_curation.qc.prompt_registry import registry  # Add this import
 
 
+@pytest.fixture(autouse=True)
+def _patch_qc_model_api():
+    """Avoid constructing real ModelAPI (side effects / slow init) in unit tests."""
+    with patch("src.soda_curation.qc.base_analyzers.ModelAPI"), patch(
+        "src.soda_curation.qc.analyzer_factory.ModelAPI"
+    ):
+        yield
+
+
+@pytest.fixture(autouse=True)
+def _patch_registry_prompt_lookups():
+    """Panel/Figure analyzers call the registry on init; keep lookups cheap."""
+    with patch.object(
+        registry, "get_prompt_metadata", return_value={"name": "Test"}
+    ), patch.object(registry, "get_pydantic_model", return_value=MagicMock()):
+        yield
+
+
 class TestBaseAnalyzers:
     """Test the base analyzer classes."""
 
@@ -298,8 +316,10 @@ class TestBaseAnalyzers:
             def analyze(self, *args, **kwargs):
                 return True, {}
 
-        # Mock the registry to avoid actual API calls
-        with patch("src.soda_curation.qc.base_analyzers.registry") as mock_registry:
+        # Mock the registry and ModelAPI (TestAnalyzer constructs ModelAPI in __init__)
+        with patch(
+            "src.soda_curation.qc.base_analyzers.registry"
+        ) as mock_registry, patch("src.soda_curation.qc.base_analyzers.ModelAPI"):
             mock_registry.get_prompt_metadata.return_value = {"name": "Test"}
             mock_registry.get_pydantic_model.return_value = MagicMock()
 
@@ -362,10 +382,11 @@ class TestAnalyzerFactory:
         mock_instance = MagicMock()
         mock_generic_analyzer.return_value = mock_instance
 
-        # Use the correct method signature
-        analyzer = AnalyzerFactory.create_analyzer("test_name", {})
+        # List test under panel metadata so _determine_test_type skips schema/Langfuse lookup.
+        config = {"qc_check_metadata": {"panel": {"test_name": {}}}}
+        analyzer = AnalyzerFactory.create_analyzer("test_name", config)
 
-        mock_generic_analyzer.assert_called_once_with("test_name", {})
+        mock_generic_analyzer.assert_called_once_with("test_name", config)
         assert analyzer == mock_instance
 
     @patch("src.soda_curation.qc.analyzer_factory.GenericFigureQCAnalyzer")
@@ -402,33 +423,41 @@ class TestAnalyzerFactory:
 
     def test_determine_test_type(self):
         """Test determining the test type from config and name."""
-        # Test panel level from config
-        config = {"qc_check_metadata": {"panel": {"test1": {}}}}
-        assert AnalyzerFactory._determine_test_type("test1", config) == "panel"
+        # Empty config falls back to schema lookup, which can call Langfuse; skip for unit test.
+        with patch.object(
+            AnalyzerFactory, "_determine_type_from_schema", return_value=None
+        ):
+            # Test panel level from config
+            config = {"qc_check_metadata": {"panel": {"test1": {}}}}
+            assert AnalyzerFactory._determine_test_type("test1", config) == "panel"
 
-        # Test figure level from config
-        config = {"qc_check_metadata": {"figure": {"test2": {}}}}
-        # Config-based detection should correctly identify figure-level tests
-        assert AnalyzerFactory._determine_test_type("test2", config) == "figure"
+            # Test figure level from config
+            config = {"qc_check_metadata": {"figure": {"test2": {}}}}
+            # Config-based detection should correctly identify figure-level tests
+            assert AnalyzerFactory._determine_test_type("test2", config) == "figure"
 
-        # Test document level from config
-        config = {"qc_check_metadata": {"document": {"test3": {}}}}
-        # Note: Without schema-based detection, this also falls back to panel (default)
-        # The new schema-based approach will override this when schemas are available
-        assert AnalyzerFactory._determine_test_type("test3", config) == "document"
+            # Test document level from config
+            config = {"qc_check_metadata": {"document": {"test3": {}}}}
+            # Note: Without schema-based detection, this also falls back to panel (default)
+            # The new schema-based approach will override this when schemas are available
+            assert AnalyzerFactory._determine_test_type("test3", config) == "document"
 
-        # Test fallback to naming convention
-        config = {}
-        assert (
-            AnalyzerFactory._determine_test_type("manuscript_test", config)
-            == "document"
-        )
-        assert AnalyzerFactory._determine_test_type("figure_test", config) == "figure"
-        assert AnalyzerFactory._determine_test_type("regular_test", config) == "panel"
+            # Test fallback to naming convention
+            config = {}
+            assert (
+                AnalyzerFactory._determine_test_type("manuscript_test", config)
+                == "document"
+            )
+            assert (
+                AnalyzerFactory._determine_test_type("figure_test", config) == "figure"
+            )
+            assert (
+                AnalyzerFactory._determine_test_type("regular_test", config) == "panel"
+            )
 
-        # Test with explicit test_type in config
-        config = {"default": {"pipeline": {"test4": {"test_type": "figure"}}}}
-        assert AnalyzerFactory._determine_test_type("test4", config) == "figure"
+            # Test with explicit test_type in config
+            config = {"default": {"pipeline": {"test4": {"test_type": "figure"}}}}
+            assert AnalyzerFactory._determine_test_type("test4", config) == "figure"
 
     @patch("src.soda_curation.qc.analyzer_factory.registry")
     @patch("src.soda_curation.qc.analyzer_factory.ModelAPI")

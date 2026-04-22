@@ -270,13 +270,6 @@ class TestMatchPanelCaptionBase:
         figure_path.parent.mkdir(parents=True)
         figure_path.touch()
 
-        # Initialize matcher with manuscript directory
-        matcher = MockMatchPanelCaption(
-            config=mock_config,
-            prompt_handler=mock_prompt_handler,
-            extract_dir=manuscript_dir,
-        )
-
         # Create test figure
         figure = Figure(
             figure_label="Figure 1",
@@ -298,6 +291,12 @@ class TestMatchPanelCaptionBase:
                 {"bbox": [0.1, 0.1, 0.3, 0.3], "confidence": 0.9}
             ]
             mock_create_detector.return_value = mock_detector
+
+            matcher = MockMatchPanelCaption(
+                config=mock_config,
+                prompt_handler=mock_prompt_handler,
+                extract_dir=manuscript_dir,
+            )
 
             # Process figure
             matcher.process_figure(figure)
@@ -547,7 +546,10 @@ class TestMatchPanelCaptionOpenAI:
         manuscript_dir = tmp_path / "TEST-ID"
         manuscript_dir.mkdir(parents=True)
 
-        with patch("openai.OpenAI") as mock_openai:
+        with patch("openai.OpenAI") as mock_openai, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector:
+            mock_create_detector.return_value = Mock()
             # Create a PanelObject instance
             panel_obj = PanelObject(
                 panel_label="A", panel_caption="AI generated caption"
@@ -589,7 +591,10 @@ class TestMatchPanelCaptionOpenAI:
         manuscript_dir = tmp_path / "TEST-ID"
         manuscript_dir.mkdir(parents=True)
 
-        with patch("openai.OpenAI") as mock_openai:
+        with patch("openai.OpenAI") as mock_openai, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector:
+            mock_create_detector.return_value = Mock()
             mock_client = Mock()
             mock_client.beta.chat.completions.parse.side_effect = Exception("API Error")
             mock_openai.return_value = mock_client

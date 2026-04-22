@@ -20,9 +20,10 @@ from PIL.Image import DecompressionBombError
 try:
     # ultralytics renamed/flattened model entrypoints across versions.
     # Prefer YOLOv10 when available, otherwise fall back to YOLO.
-    from ultralytics import YOLOv10 as _YOLOModel
+    # Keep the name ``YOLOv10`` at module scope so tests can patch it.
+    from ultralytics import YOLOv10
 except ImportError:
-    from ultralytics import YOLO as _YOLOModel
+    from ultralytics import YOLO as YOLOv10
 
 logger = logging.getLogger(__name__)
 
@@ -146,6 +147,83 @@ def convert_tiff_with_cv2(tiff_path: str, output_path: str) -> str:
         raise ValueError(f"Failed to convert TIFF with OpenCV: {str(e)}")
 
 
+def _tiff_array_to_rgb_uint8(arr: np.ndarray) -> np.ndarray:
+    """Normalize a decoded TIFF array to HxWx3 uint8 RGB for saving as PNG."""
+    if arr.ndim == 2:
+        rgb = np.stack([arr, arr, arr], axis=-1)
+    elif arr.ndim == 3:
+        c = arr.shape[2]
+        if c == 1:
+            rgb = np.repeat(arr, 3, axis=2)
+        elif c == 3:
+            rgb = arr
+        elif c == 4:
+            # Drop alpha (same intent as OpenCV RGBA→RGB path)
+            rgb = arr[:, :, :3]
+        else:
+            raise ValueError(f"Unsupported channel count: {c}")
+    else:
+        raise ValueError(f"Unsupported TIFF array shape: {arr.shape}")
+
+    if rgb.dtype == np.uint8:
+        pass
+    elif rgb.dtype == np.uint16:
+        rgb = (rgb.astype(np.float32) / 65535.0 * 255.0).clip(0, 255).astype(np.uint8)
+    elif np.issubdtype(rgb.dtype, np.floating):
+        mx = float(np.nanmax(rgb)) if rgb.size else 0.0
+        if mx <= 1.0:
+            rgb = (rgb * 255.0).clip(0, 255).astype(np.uint8)
+        elif mx > 0:
+            rgb = (rgb / mx * 255.0).clip(0, 255).astype(np.uint8)
+        else:
+            rgb = np.zeros_like(rgb, dtype=np.uint8)
+    else:
+        mx = float(rgb.max()) if rgb.size else 0.0
+        if mx > 0:
+            rgb = (rgb.astype(np.float32) / mx * 255.0).clip(0, 255).astype(np.uint8)
+        else:
+            rgb = np.zeros(rgb.shape, dtype=np.uint8)
+
+    return rgb
+
+
+def convert_tiff_with_tifffile(tiff_path: str, output_path: str) -> str:
+    """
+    Decode TIFFs that OpenCV/Pillow/ImageMagick reject.
+
+    Some exports (e.g. LZW with an invalid ``SampleFormat`` tag) fail in libtiff
+    with ``TIFFReadDirectory: Incorrect count for "SampleFormat"`` while
+    ``tifffile`` (with ``imagecodecs`` for LZW) can still read the pixel data.
+    """
+    try:
+        import tifffile
+    except ImportError as exc:
+        raise ValueError(
+            "tifffile is required for problematic TIFF decoding; install tifffile (+ imagecodecs for LZW)"
+        ) from exc
+
+    try:
+        arr = tifffile.imread(tiff_path)
+    except Exception as e:
+        logger.error(f"tifffile read failed for {tiff_path}: {e}")
+        raise ValueError(f"Failed to read TIFF with tifffile: {e}") from e
+
+    try:
+        rgb = _tiff_array_to_rgb_uint8(arr)
+    except Exception as e:
+        logger.error(f"Could not normalize TIFF array {tiff_path}: {e}")
+        raise ValueError(f"Failed to normalize TIFF array: {e}") from e
+
+    try:
+        img = Image.fromarray(rgb)
+        img.save(output_path, "PNG")
+    except Exception as e:
+        logger.error(f"Failed to save PNG from tifffile decode: {e}")
+        raise ValueError(f"Failed to save PNG after tifffile decode: {e}") from e
+
+    return output_path
+
+
 def scale_down_large_image(file_path: str, max_pixels: int = 178956970) -> str:
     """
     Scale down an image file if it exceeds the maximum pixel limit.
@@ -159,8 +237,20 @@ def scale_down_large_image(file_path: str, max_pixels: int = 178956970) -> str:
         str: Path to the scaled down image
     """
     try:
+        file_ext = os.path.splitext(file_path)[1].lower()
         # Read image dimensions first
         img = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
+        if img is None and file_ext in (".tif", ".tiff"):
+            try:
+                import tifffile
+
+                arr = tifffile.imread(file_path)
+                rgb = _tiff_array_to_rgb_uint8(arr)
+                img = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+            except Exception as exc:
+                logger.warning(
+                    "TIFF scale-down: tifffile fallback after OpenCV failed: %s", exc
+                )
         if img is None:
             raise ValueError(f"Failed to open image: {file_path}")
 
@@ -326,8 +416,11 @@ def create_standard_thumbnail(
                 return convert_tiff_with_cv2(image_path, output_path)
             except Exception as e:
                 logger.warning(f"TIFF conversion with CV2 failed: {str(e)}")
-                # Will fall through to generic approach
-                pass
+            try:
+                return convert_tiff_with_tifffile(image_path, output_path)
+            except Exception as e:
+                logger.warning(f"TIFF conversion with tifffile failed: {str(e)}")
+                # Will fall through to generic cv2 / PIL
 
         elif file_ext == ".pdf":
             pages = pdf2image.convert_from_path(image_path, dpi=dpi)
@@ -495,7 +588,7 @@ class ObjectDetection:
             model_path (str): Path to the YOLOv10 model file.
         """
         self.model_path = model_path
-        self.model = _YOLOModel(self.model_path)
+        self.model = YOLOv10(self.model_path)
         logger.info(f"Initialized ObjectDetection with model: {self.model_path}")
 
     def detect_panels(

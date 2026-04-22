@@ -12,9 +12,11 @@ from PIL import Image, UnidentifiedImageError
 
 from src.soda_curation.pipeline.match_caption_panel.object_detection import (
     ObjectDetection,
+    _tiff_array_to_rgb_uint8,
     convert_and_resize_image,
     convert_eps_to_png,
     convert_tiff_with_cv2,
+    convert_tiff_with_tifffile,
     convert_to_pil_image,
     create_object_detection,
     create_standard_thumbnail,
@@ -560,18 +562,20 @@ class TestObjectDetection(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def create_test_image(self, size=(15000, 12000)):
-        """Helper to create a test image file."""
+    def create_test_image(self, size=(800, 600)):
+        """Helper to create a test image file. ``size`` is (width, height)."""
         img_path = os.path.join(self.test_dir, "test.png")
         img = np.zeros((size[1], size[0], 3), dtype=np.uint8)
         cv2.imwrite(img_path, img)
         return img_path
 
     def test_scale_down_large_image(self):
-        """Test that large images are properly scaled down."""
-        original_path = self.create_test_image((15000, 12000))
+        """Test that images above the pixel budget are scaled down (small image, low cap)."""
+        # Avoid multi-hundred-MB fixtures: use a modest image and a tight max_pixels.
+        max_px = 500_000
+        original_path = self.create_test_image((501, 1000))  # 501_000 pixels > max_px
 
-        scaled_path = scale_down_large_image(original_path)
+        scaled_path = scale_down_large_image(original_path, max_pixels=max_px)
 
         self.assertNotEqual(original_path, scaled_path)
         self.assertTrue(os.path.exists(scaled_path))
@@ -579,10 +583,10 @@ class TestObjectDetection(unittest.TestCase):
         # Check dimensions of scaled image
         img = cv2.imread(scaled_path)
         height, width = img.shape[:2]
-        self.assertLess(width * height, 178956970)
+        self.assertLess(width * height, max_px)
 
-        # Check aspect ratio
-        original_ratio = 15000 / 12000
+        # Check aspect ratio (create_test_image uses width × height)
+        original_ratio = 501 / 1000
         scaled_ratio = width / height
         self.assertAlmostEqual(original_ratio, scaled_ratio, places=2)
 
@@ -596,6 +600,54 @@ class TestObjectDetection(unittest.TestCase):
         img = cv2.imread(scaled_path)
         height, width = img.shape[:2]
         self.assertEqual((width, height), (800, 600))
+
+
+class TestTiffTifffileHelpers(unittest.TestCase):
+    """Unit tests for TIFF decoding fallbacks (tifffile + imagecodecs)."""
+
+    def test_tiff_array_to_rgb_uint8_grayscale(self):
+        g = np.random.randint(0, 255, (8, 12), dtype=np.uint8)
+        rgb = _tiff_array_to_rgb_uint8(g)
+        self.assertEqual(rgb.shape, (8, 12, 3))
+
+    def test_tiff_array_to_rgb_uint8_rgba(self):
+        rgba = np.random.randint(0, 255, (10, 10, 4), dtype=np.uint8)
+        rgb = _tiff_array_to_rgb_uint8(rgba)
+        self.assertEqual(rgb.shape, (10, 10, 3))
+
+    def test_tiff_array_to_rgb_uint8_single_channel_stack(self):
+        one = np.random.randint(0, 255, (5, 6, 1), dtype=np.uint8)
+        rgb = _tiff_array_to_rgb_uint8(one)
+        self.assertEqual(rgb.shape, (5, 6, 3))
+
+
+def test_create_standard_thumbnail_tiff_falls_back_to_tifffile(tmp_path):
+    """If OpenCV cannot read a TIFF, tifffile still decodes a simple TIFF."""
+    tifffile = pytest.importorskip("tifffile")
+    arr = np.random.randint(0, 255, (24, 16, 3), dtype=np.uint8)
+    tiff_path = tmp_path / "small.tif"
+    tifffile.imwrite(tiff_path, arr)
+    out_png = tmp_path / "out.png"
+    with patch(
+        "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_tiff_with_cv2"
+    ) as mock_cv2:
+        mock_cv2.side_effect = ValueError("simulate OpenCV/libtiff failure")
+        create_standard_thumbnail(str(tiff_path), str(out_png))
+    assert out_png.is_file()
+    assert out_png.stat().st_size > 0
+
+
+def test_convert_tiff_with_tifffile_roundtrip(tmp_path):
+    """Write a TIFF with tifffile and read it back through convert_tiff_with_tifffile."""
+    tifffile = pytest.importorskip("tifffile")
+    arr = np.random.randint(0, 255, (20, 14, 3), dtype=np.uint8)
+    tiff_path = tmp_path / "rgb.tif"
+    tifffile.imwrite(tiff_path, arr)
+    out_png = tmp_path / "decoded.png"
+    convert_tiff_with_tifffile(str(tiff_path), str(out_png))
+    assert out_png.is_file()
+    pil = Image.open(out_png)
+    assert pil.mode == "RGB"
 
 
 def test_fallback_ghostscript_conversion(mock_subprocess):

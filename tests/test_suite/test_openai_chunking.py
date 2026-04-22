@@ -64,12 +64,12 @@ def test_count_messages_tokens():
 
 def test_chunk_file_list():
     """Test chunking file lists."""
-    # Create a file list with many files
-    files = [f"file_{i}.txt" for i in range(1000)]
+    # Enough lines to force multiple chunks without huge tokenization cost
+    files = [f"file_{i}.txt" for i in range(200)]
     file_list_str = "\n".join(files)
 
-    # Chunk with a small limit
-    chunks = chunk_file_list(file_list_str, chunk_size=1000, model="gpt-4o")
+    # Chunk with a small byte budget so we split without thousands of lines
+    chunks = chunk_file_list(file_list_str, chunk_size=400, model="gpt-4o")
 
     # Should create multiple chunks
     assert len(chunks) > 1
@@ -100,8 +100,8 @@ def test_chunk_file_list_single_large_file():
 
 def test_create_chunked_messages():
     """Test creating chunked messages."""
-    # Create messages with a large file list
-    file_list = "\n".join([f"source_data/file_{i}.txt" for i in range(1000)])
+    # Create messages with a large file list (keep moderate size for CI speed)
+    file_list = "\n".join([f"source_data/file_{i}.txt" for i in range(200)])
 
     messages = [
         {"role": "system", "content": "You are a helpful assistant."},
@@ -111,9 +111,9 @@ def test_create_chunked_messages():
         },
     ]
 
-    # Create chunks with a small token limit
+    # Tight token budget forces multiple chunks without a 1000-line list
     chunked_messages = create_chunked_messages(
-        messages, model="gpt-4o", token_limit=5000
+        messages, model="gpt-4o", token_limit=800
     )
 
     # Should create multiple message lists
@@ -248,7 +248,7 @@ def test_create_chunked_messages_without_file_list_marker():
             "file1.txt",
             "file2.txt",
         ]
-        + [f"file{i}.txt" for i in range(3, 1000)]
+        + [f"file{i}.txt" for i in range(3, 200)]
     )
 
     messages = [
@@ -263,7 +263,3 @@ def test_create_chunked_messages_without_file_list_marker():
 
     # Should still create chunks (may use generic line splitting)
     assert len(chunked_messages) >= 1
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])

@@ -142,3 +142,9 @@ class ConfigurationLoader:
         if isinstance(debug_cfg, dict):
             return cast(Dict[str, Any], debug_cfg)
         return {}
+
+
+def load_config(config_path: str) -> Dict[str, Any]:
+    """Load merged pipeline configuration from a YAML file (backward-compatible API)."""
+    loader = ConfigurationLoader(config_path)
+    return cast(Dict[str, Any], loader.config)
