@@ -8,15 +8,16 @@ matching them based on the visual content and the full figure caption.
 
 import base64
 import io
+import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import openai
 
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
-from ..manuscript_structure.manuscript_structure import ZipStructure
+from ..manuscript_structure.manuscript_structure import Panel, ZipStructure
 from ..openai_utils import call_openai_with_fallback, validate_model_config
 from .match_caption_panel_base import MatchPanelCaption, PanelObject
 from .object_detection import convert_to_pil_image  # Import the function directly
@@ -131,16 +132,33 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         return result
 
     def _match_panel_caption(
-        self, encoded_image: str, figure_caption: str
+        self,
+        encoded_image: str,
+        figure_caption: str,
+        allowed_panels: Optional[List[Panel]] = None,
     ) -> PanelObject:
-        """Match panel with caption using OpenAI's vision model."""
+        """Pick the caption-derived panel label for this crop; captions are fixed upstream."""
         if not encoded_image:
             logger.error("Encoded image is empty, skipping API call")
             return PanelObject(panel_label="", panel_caption="")
 
-        prompts = self.prompt_handler.get_prompt(
-            "match_caption_panel", {"figure_caption": figure_caption}
-        )
+        catalog = []
+        if allowed_panels:
+            catalog = [
+                {
+                    "panel_label": p.panel_label,
+                    "panel_caption": p.panel_caption,
+                }
+                for p in allowed_panels
+            ]
+        variables = {
+            "figure_caption": figure_caption,
+            "allowed_panel_labels": ", ".join(
+                p.panel_label for p in (allowed_panels or [])
+            ),
+            "allowed_panel_catalog_json": json.dumps(catalog, ensure_ascii=False),
+        }
+        prompts = self.prompt_handler.get_prompt("match_caption_panel", variables)
         model = self.openai_config.get("model", "gpt-4o")
         logger.info(
             "Preparing panel-caption vision request",

@@ -38,6 +38,25 @@ class MatchPanelCaption(ABC):
         # Initialize object detector using the create_object_detection helper
         self.object_detector = create_object_detection(config)
 
+    @staticmethod
+    def _align_panel_object_with_catalog(
+        panel_obj: PanelObject, original_panels: Dict[str, Panel]
+    ) -> PanelObject:
+        """Map vision output to caption-derived labels; caption always comes from catalog."""
+        label = (panel_obj.panel_label or "").strip()
+        if not label:
+            return PanelObject(panel_label="", panel_caption="")
+        for key, orig in original_panels.items():
+            if key.upper() == label.upper():
+                return PanelObject(panel_label=key, panel_caption=orig.panel_caption)
+        logger.warning(
+            "Panel label %r from vision matcher is not in caption-derived panels %s; "
+            "treating crop as unlabeled for assignment",
+            label,
+            list(original_panels.keys()),
+        )
+        return PanelObject(panel_label="", panel_caption="")
+
     @abstractmethod
     def _validate_config(self) -> None:
         pass
@@ -123,12 +142,17 @@ class MatchPanelCaption(ABC):
                             },
                         )
                         panel_object = self._match_panel_caption(
-                            encoded_image, figure.figure_caption
+                            encoded_image,
+                            figure.figure_caption,
+                            figure.panels,
                         )
                         panel_object = (
                             PanelObject(**json.loads(panel_object))
                             if isinstance(panel_object, str)
                             else panel_object
+                        )
+                        panel_object = self._align_panel_object_with_catalog(
+                            panel_object, original_panels
                         )
 
                         # Store the detection index with the panel match
@@ -249,9 +273,12 @@ class MatchPanelCaption(ABC):
 
     @abstractmethod
     def _match_panel_caption(
-        self, panel_image: Image.Image, figure_caption: str
-    ) -> Dict[str, str]:
-        """Match a panel image with its caption using AI."""
+        self,
+        encoded_image: str,
+        figure_caption: str,
+        allowed_panels: Optional[List[Panel]] = None,
+    ) -> PanelObject:
+        """Pick which caption-derived panel a crop belongs to (label only in practice)."""
         pass
 
     def _resolve_panel_conflicts(

@@ -141,7 +141,9 @@ class TestMatchPanelCaptionBase:
             def _validate_config(self):
                 pass
 
-            def _match_panel_caption(self, panel_image, figure_caption):
+            def _match_panel_caption(
+                self, panel_image, figure_caption, allowed_panels=None
+            ):
                 return PanelObject(panel_label="A", panel_caption="New caption A")
 
             def process_figure(self, figure):
@@ -203,7 +205,9 @@ class TestMatchPanelCaptionBase:
             def _validate_config(self):
                 pass
 
-            def _match_panel_caption(self, panel_image, figure_caption):
+            def _match_panel_caption(
+                self, panel_image, figure_caption, allowed_panels=None
+            ):
                 return PanelObject(panel_label="A", panel_caption="New caption A")
 
         with patch(
@@ -244,7 +248,9 @@ class TestMatchPanelCaptionBase:
             def _validate_config(self):
                 pass
 
-            def _match_panel_caption(self, panel_image, figure_caption):
+            def _match_panel_caption(
+                self, panel_image, figure_caption, allowed_panels=None
+            ):
                 return PanelObject(panel_label="A", panel_caption="Test caption")
 
             def process_figure(self, figure):
@@ -328,7 +334,9 @@ class TestMatchPanelCaptionBase:
             def _validate_config(self):
                 pass
 
-            def _match_panel_caption(self, panel_image, figure_caption):
+            def _match_panel_caption(
+                self, panel_image, figure_caption, allowed_panels=None
+            ):
                 # Return the same panel label "A" for first two panels
                 # to simulate conflict
                 if self.match_count < 2:
@@ -452,7 +460,9 @@ class TestMatchPanelCaptionBase:
             def _validate_config(self):
                 pass
 
-            def _match_panel_caption(self, panel_image, figure_caption):
+            def _match_panel_caption(
+                self, panel_image, figure_caption, allowed_panels=None
+            ):
                 # Return panel labels with different captions than original
                 if "A" in panel_image:  # Mock this check based on encoded image
                     return PanelObject(
@@ -652,7 +662,9 @@ class TestPanelPreservation:
                 def _validate_config(self):
                     pass
 
-                def _match_panel_caption(self, panel_image, figure_caption):
+                def _match_panel_caption(
+                    self, panel_image, figure_caption, allowed_panels=None
+                ):
                     return Panel(panel_label="A", panel_caption="Matched Caption A")
 
             # Process the figure
@@ -755,7 +767,9 @@ class TestPanelPreservation:
                 def _validate_config(self):
                     pass
 
-                def _match_panel_caption(self, panel_image, figure_caption):
+                def _match_panel_caption(
+                    self, panel_image, figure_caption, allowed_panels=None
+                ):
                     nonlocal match_count
                     match_count += 1
 
@@ -813,16 +827,13 @@ class TestPanelPreservation:
                     panel.sd_files == original_panel.sd_files
                 ), f"SD files for panel {label} should be preserved"
 
-            # Verify sequential labeling for new panels
+            # Extra detections beyond caption-derived panels: bbox only; captions stay empty
+            # (vision text is not trusted once labels are caption-sourced).
             panel_d = next(p for p in result.figures[0].panels if p.panel_label == "D")
             panel_e = next(p for p in result.figures[0].panels if p.panel_label == "E")
 
-            assert (
-                panel_d.panel_caption == "AI Caption for D"
-            ), "Panel D should have AI-generated caption"
-            assert (
-                panel_e.panel_caption == "AI Caption for unknown panel"
-            ), "Panel E should have AI-generated caption"
+            assert panel_d.panel_caption == ""
+            assert panel_e.panel_caption == ""
 
             # Verify bounding boxes were correctly assigned
             assert panel_d.panel_bbox == [0.7, 0.7, 0.8, 0.8]
@@ -913,7 +924,9 @@ class TestPanelPreservation:
                 def _validate_config(self):
                     pass
 
-                def _match_panel_caption(self, panel_image, figure_caption):
+                def _match_panel_caption(
+                    self, panel_image, figure_caption, allowed_panels=None
+                ):
                     nonlocal match_count
                     match_count += 1
 
@@ -1043,7 +1056,9 @@ class TestPanelPreservation:
                 def _validate_config(self):
                     pass
 
-                def _match_panel_caption(self, panel_image, figure_caption):
+                def _match_panel_caption(
+                    self, panel_image, figure_caption, allowed_panels=None
+                ):
                     # Return lowercase panel labels (different case from original)
                     if "0.1, 0.1" in str(
                         panel_image

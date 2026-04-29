@@ -121,6 +121,8 @@ default: &default
           user: |
             # User prompt template with variables:
             # $figure_caption
+            # $allowed_panel_labels
+            # $allowed_panel_catalog_json
 
     ##########################################################
     # 6) Object Detection (non-AI)

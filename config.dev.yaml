@@ -14,7 +14,7 @@ default: &default
     extract_sections:
       openai:
         # OpenAI-specific parameters remain the same
-        model: "gpt-4o"  # Can be "gpt-4o", "gpt-4o-mini", or "gpt-5"
+        model: "gpt-5.4-mini"  # Can be "gpt-4o", "gpt-4o-mini", or "gpt-5"
         temperature: 0.1
         top_p: 1.0
         max_tokens: 2048
@@ -91,7 +91,7 @@ default: &default
     ##########################################################
     extract_caption_title:
       openai:
-        model: "gpt-4o"
+        model: "gpt-5.4-mini"
         temperature: 0.1
         top_p: 1.0
         max_tokens: 4096
@@ -138,7 +138,7 @@ default: &default
 
     extract_panel_sequence:
       openai:
-        model: "gpt-4o"
+        model: "gpt-5.4-mini"
         temperature: 0.1
         top_p: 1.0
         max_tokens: 4096
@@ -147,49 +147,43 @@ default: &default
         json_mode: true
         prompts:
           system: |
-            You are an AI assistant specializing in extracting figure panel information from scientific manuscript captions.
-            
-            Your task is to extract ONLY the panel labels and their descriptions from a figure caption:
-            1. Identify all panel labels (A, B, C, etc.)
-            2. Extract the description for each panel
-            
-            Guidelines:
-            - Panel labels typically appear as (A), (B), etc., or A), B), etc. in the caption
-            - Make sure to extract ALL panel labels in the caption
-            - Extract panel descriptions EXACTLY as they appear (VERBATIM)
-            - Panel labels must follow a monotonically increasing sequence:
-              * For letters: A, B, C, D, E... (not A, B, D, E...)
-              * For Roman numerals: I, II, III, IV... (not I, II, IV...)
-              * For numbers: 1, 2, 3, 4... (not 1, 3, 4...)
-            
-            CRITICAL: You have access to a tool called 'verify_panel_sequence' that checks if your panel labels follow a complete sequence without gaps.
-            ALWAYS use this tool to verify your panel labels before finalizing your answer.
-            
-            If the tool indicates that your sequence has gaps:
-            1. Add the missing panel labels to your list
-            2. Use empty strings as captions for the added panels
-            
-            Return your result as:
+            You extract figure panel structure from the figure caption text ONLY
+            Output JSON with one object per panel, in strict left-to-right reading order of the caption.
+
+            Panel labels
+            - Collect every distinct panel tag mentioned in the caption: (A), (B, C), B and C, (H, I), etc.
+
+            Full contiguous run (critical)
+            - Let L_min and L_max be the minimum and maximum panel labels under the caption’s scheme (e.g. if the caption mentions A and J, L_min=A and L_max=J).
+            - You MUST emit exactly one entry for every label from L_min through L_max inclusive, with no omissions, even if some letters never appear literally in the text.
+            - Order panels by that full sequence (e.g. A,B,C,…,J), not only by order of first mention.
+
+            panel_caption
+            - For each panel, set "panel_caption" to the VERBATIM substring of the caption that describes that panel only, when the caption clearly assigns text to that letter.
+            - If the caption groups multiple letters in one sentence, split the text: assign each phrase/clause to the panel it clearly belongs to; if a letter is only implied by the contiguous run, use an empty string "" for that panel’s "panel_caption".
+            - Never invent facts; never paraphrase outside copying contiguous spans from the caption.
+
+            Return exactly this shape:
             {
               "figure_label": "Figure X",
               "panels": [
-                {"panel_label": "A", "panel_caption": "Description of panel A"},
-                {"panel_label": "B", "panel_caption": "Description of panel B"},
-                ...
+                {"panel_label": "A", "panel_caption": "..."},
+                {"panel_label": "B", "panel_caption": "..."}
               ]
             }
-          
+
           user: |
-            Extract all panel labels and their descriptions from the following caption for $figure_label:
-            
+            Figure: $figure_label
+
+            Caption (only source of truth):
             $figure_caption
-            
-            Make sure to include ALL panels and verify that your panel sequence is complete without gaps using the verification tool.
+
+            Emit the full contiguous panel list and verbatim (or empty) panel_captions as specified in the system message.
 
     ##########################################################
     extract_data_sources:
       openai:
-        model: "gpt-4o"
+        model: "gpt-5.4-mini"
         temperature: 0.5
         top_p: 0.5
         max_tokens: 2048
@@ -300,7 +294,7 @@ default: &default
     ##########################################################
     assign_panel_source:
       openai:
-        model: "gpt-5"
+        model: "gpt-5.4-mini"
         temperature: 0.3
         top_p: 1.0
         max_tokens: 2048
@@ -372,7 +366,7 @@ default: &default
     ##########################################################
     match_caption_panel:
       openai:
-        model: "gpt-4o"
+        model: "gpt-5.4-mini"
         temperature: 0.3
         top_p: 1.0
         max_tokens: 2048
@@ -381,33 +375,28 @@ default: &default
         json_mode: true
         prompts:
           system: |
-            You are an AI assistant specialized in analyzing scientific figures. Your task is to match panel images with their corresponding captions from the main figure caption. Follow these instructions carefully:
+            You match ONE cropped panel image to the correct entry from a fixed catalog of panels.
+            Panel labels and panel_caption text were already taken from the figure caption in an earlier step — you must NOT rewrite or improve them.
 
-            1. Look at the provided panel image and read the full figure caption carefully.
-            2. Identify which part of the caption corresponds to the panel image you see.
-            3. Look for panel labels like (A), (B), etc., or descriptions that clearly match the image content.
-              - These panel labels will be in most of the cases upper case letters A, B, C..
-              - They will be located in most of the cases in the upper left corener of the image
-              - Please ensure to panel label detection as the primary panel assignement method.
-              - Only if you do not find the panel label follow the steps below. 
-            4. If you would not find a panel label in the image, then, assign a label to the panel image
-              by comparing to the most likely panel caption in the figure legend given to you int he context.
+            Rules:
+            1. You will receive JSON "allowed_panel_catalog" listing allowed panel_label values and their exact panel_caption strings. Treat these as the only source of truth for text.
+            2. Using the crop image and the full figure caption for context, choose exactly ONE allowed panel_label that best corresponds to this crop.
+            3. In your JSON response, set "panel_caption" to the exact string from the catalog for that chosen label (character-for-character identical). If you cannot decide, pick the closest match; still copy the catalog caption for your chosen label.
+            4. Never invent a new label. Never output a label not present in allowed_panel_labels.
 
-            5. Ensure panel labels are in the specified format below.
-
-            Example response format:
-
-            {
-              "panel_label": "A",
-              "panel_caption": ""
-            }
+            Response shape:
+            {"panel_label": "<one of allowed labels>", "panel_caption": "<exact catalog string for that label>"}
 
           user: |
-            Please analyze this panel image from a figure with the following caption:
-
+            Full figure caption (context):
             $figure_caption
 
-            Based on the image content and the caption text, identify which panel this represents and provide its specific caption maintaining scientific accuracy and completeness."""
+            Allowed panel labels (choose one): $allowed_panel_labels
+
+            Allowed panel catalog (JSON array of {panel_label, panel_caption}):
+            $allowed_panel_catalog_json
+
+            The next message part is the panel crop image. Return only the JSON object described in the system message.
 
     ##########################################################
     # 6) Object Detection Step (non-AI)

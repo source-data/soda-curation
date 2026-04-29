@@ -1,14 +1,16 @@
 """Anthropic Claude implementation for matching panel captions with panel images."""
 
+import json
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 import anthropic
 
 from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
+from ..manuscript_structure.manuscript_structure import Panel
 from .match_caption_panel_base import MatchPanelCaption, PanelObject
 
 logger = logging.getLogger(__name__)
@@ -81,16 +83,33 @@ class MatchPanelCaptionAnthropic(MatchPanelCaption):
         return result
 
     def _match_panel_caption(
-        self, encoded_image: str, figure_caption: str
+        self,
+        encoded_image: str,
+        figure_caption: str,
+        allowed_panels: Optional[List[Panel]] = None,
     ) -> PanelObject:
-        """Match a panel image with its caption using Claude vision."""
+        """Pick the caption-derived panel label for this crop; captions are fixed upstream."""
         if not encoded_image:
             logger.error("Encoded image is empty, skipping API call")
             return PanelObject(panel_label="", panel_caption="")
 
-        prompts = self.prompt_handler.get_prompt(
-            "match_caption_panel", {"figure_caption": figure_caption}
-        )
+        catalog = []
+        if allowed_panels:
+            catalog = [
+                {
+                    "panel_label": p.panel_label,
+                    "panel_caption": p.panel_caption,
+                }
+                for p in allowed_panels
+            ]
+        variables = {
+            "figure_caption": figure_caption,
+            "allowed_panel_labels": ", ".join(
+                p.panel_label for p in (allowed_panels or [])
+            ),
+            "allowed_panel_catalog_json": json.dumps(catalog, ensure_ascii=False),
+        }
+        prompts = self.prompt_handler.get_prompt("match_caption_panel", variables)
 
         model = self.anthropic_config.get("model", "claude-sonnet-4-6")
         logger.info(
