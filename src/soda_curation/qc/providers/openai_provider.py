@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional
 
 import openai
 
-from ...pipeline.openai_utils import call_openai_with_fallback, validate_model_config
+from ...pipeline.openai_utils import call_openai, validate_model_config
 from .base import BaseQCProvider, QCProviderRequest, QCProviderResponse
 
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ class OpenAIQCProvider(BaseQCProvider):
 
     def _generate_standard(self, request: QCProviderRequest) -> QCProviderResponse:
         validate_model_config(request.model, request.prompt_config)
-        response = call_openai_with_fallback(
+        response = call_openai(
             client=self.client,
             model=request.model,
             messages=request.messages,
@@ -81,7 +81,6 @@ class OpenAIQCProvider(BaseQCProvider):
             presence_penalty=request.prompt_config.get("presence_penalty", 0.0),
             max_tokens=request.prompt_config.get("max_tokens", 2048),
             json_mode=request.prompt_config.get("json_mode", True),
-            fallback_model=request.prompt_config.get("fallback_model", "gpt-5"),
             operation=request.operation,
             request_metadata=request.context,
         )

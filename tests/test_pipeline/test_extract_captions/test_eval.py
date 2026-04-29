@@ -17,11 +17,11 @@ from deepeval.test_case import LLMTestCase
 from tabulate import tabulate
 
 from soda_curation.config import load_config
-from soda_curation.data_availability.data_availability_openai import (
-    DataAvailabilityExtractorGPT,
+from soda_curation.pipeline.data_availability.data_availability_openai import (
+    DataAvailabilityExtractorOpenAI,
 )
 from soda_curation.pipeline.extract_captions.extract_captions_openai import (
-    FigureCaptionExtractorGpt,
+    FigureCaptionExtractorOpenAI,
 )
 
 # from src.soda_curation.pipeline.assign_panel_source.assign_panel_source import (
@@ -328,7 +328,7 @@ def _get_extractor(strategy):
     config = _configure_openai_settings(config, model, config_type, config_value)
     config = config["openai"]
     config["model"] = model
-    return FigureCaptionExtractorGpt(config)
+    return FigureCaptionExtractorOpenAI(config)
 
 
 @lru_cache
@@ -1145,7 +1145,7 @@ def _get_data_availability_extractor(strategy):
     config = _get_base_config()
     config = _configure_openai_settings(config, model, config_type, config_value)
 
-    return DataAvailabilityExtractorGPT(config)
+    return DataAvailabilityExtractorOpenAI(config)
 
 
 @file_cache("data_availability")

@@ -13,7 +13,7 @@ from ..pipeline.ai_observability import summarize_messages, summarize_text
 from ..pipeline.anthropic_utils import is_retryable_anthropic_error
 from ..pipeline.cost_tracking import update_token_usage
 from ..pipeline.manuscript_structure.manuscript_structure import TokenUsage
-from ..pipeline.openai_utils import is_retryable_openai_error
+from ..pipeline.openai_utils import DEFAULT_OPENAI_MODEL, is_retryable_openai_error
 from .providers import build_qc_provider
 from .providers.base import BaseQCProvider, QCProviderRequest, QCProviderResponse
 
@@ -237,8 +237,8 @@ class ModelAPI:
 
 def _default_model_for_provider(provider: str) -> str:
     defaults = {
-        "openai": "gpt-4o",
+        "openai": DEFAULT_OPENAI_MODEL,
         "anthropic": "claude-sonnet-4-6",
         "gemini": "gemini-2.5-flash",
     }
-    return defaults.get(provider.lower(), "gpt-4o")
+    return defaults.get(provider.lower(), DEFAULT_OPENAI_MODEL)

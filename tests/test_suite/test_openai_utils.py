@@ -1,19 +1,52 @@
-"""Tests for OpenAI utility functions with GPT-5 fallback support."""
+"""Tests for OpenAI utility helpers (GPT-5–first; chunking on context limits)."""
 
 import json
 from unittest.mock import MagicMock, patch
 
 import openai
 import pytest
+from pydantic import ValidationError
 
+from src.soda_curation.pipeline.extract_captions.extract_captions_openai import (
+    CaptionExtraction,
+)
 from src.soda_curation.pipeline.openai_utils import (
     GPT5_MODEL,
     MODELS_WITHOUT_PARAMETERS,
-    call_openai_with_fallback,
+    call_openai,
+    extract_first_json_value,
     is_context_length_error,
     prepare_model_params,
     validate_model_config,
 )
+
+
+class TestExtractFirstJsonValue:
+    """Decode first JSON object when models append junk after valid JSON."""
+
+    def test_accepts_trailing_text_after_json_object(self):
+        payload = '{"figure_label": "Figure 1", "caption_title": "", "figure_caption": "x", "is_verbatim": false}'
+        raw = payload + "\n\nAdditional commentary."
+        assert (
+            extract_first_json_value(raw, operation="test.op")["figure_label"]
+            == "Figure 1"
+        )
+
+    def test_strips_markdown_fence(self):
+        inner = '{"a": 1}'
+        raw = "```json\n" + inner + "\n```"
+        assert extract_first_json_value(raw)["a"] == 1
+
+    def test_trailing_chars_trigger_strict_parse_failure_then_lenient_succeeds(self):
+        """Reproduce pydantic json_invalid trailing characters; lenient path validates."""
+        bad = (
+            '{"figure_label":"F","caption_title":"","figure_caption":"c","is_verbatim":false}'
+            "\nextras"
+        )
+        with pytest.raises(ValidationError):
+            CaptionExtraction.model_validate_json(bad)
+        parsed = CaptionExtraction.model_validate(extract_first_json_value(bad))
+        assert parsed.figure_label == "F"
 
 
 class TestContextLengthErrorDetection:
@@ -233,8 +266,8 @@ class TestModelValidation:
             validate_model_config("gpt-4o", config)
 
 
-class TestOpenAICallWithFallback:
-    """Test OpenAI API call with fallback functionality."""
+class TestCallOpenAI:
+    """Exercise ``call_openai`` (single request + chunking on context overflow)."""
 
     @pytest.fixture
     def mock_client(self):
@@ -253,15 +286,13 @@ class TestOpenAICallWithFallback:
         response.usage.total_tokens = 15
         return response
 
-    def test_call_openai_with_fallback_success_primary_model(
-        self, mock_client, mock_response
-    ):
-        """Test successful call with primary model."""
+    def test_call_openai_success_primary_model(self, mock_client, mock_response):
+        """Successful call with the configured model."""
         mock_client.beta.chat.completions.parse.return_value = mock_response
 
         messages = [{"role": "user", "content": "test"}]
 
-        response = call_openai_with_fallback(
+        response = call_openai(
             client=mock_client,
             model="gpt-4o",
             messages=messages,
@@ -271,88 +302,83 @@ class TestOpenAICallWithFallback:
         assert response == mock_response
         mock_client.beta.chat.completions.parse.assert_called_once()
 
-    def test_call_openai_with_fallback_context_error_fallback_success(
+    def test_call_openai_context_error_invokes_chunking(
         self, mock_client, mock_response
     ):
-        """Test fallback to GPT-5 on context length error."""
-        # First call fails with context length error, second succeeds
+        """Context-length API errors delegate to chunked execution (same model)."""
         context_error = openai.OpenAIError("maximum context length exceeded")
-        mock_client.beta.chat.completions.parse.side_effect = [
-            context_error,
-            mock_response,
-        ]
+        mock_client.beta.chat.completions.parse.side_effect = [context_error]
 
         messages = [{"role": "user", "content": "test"}]
 
-        with patch("src.soda_curation.pipeline.openai_utils.logger") as mock_logger:
-            response = call_openai_with_fallback(
-                client=mock_client,
-                model="gpt-4o",
-                messages=messages,
-                temperature=0.1,
-            )
+        with patch(
+            "src.soda_curation.pipeline.openai_utils._call_openai_with_chunking",
+            return_value=mock_response,
+        ) as mock_chunk:
+            with patch("src.soda_curation.pipeline.openai_utils.logger"):
+                response = call_openai(
+                    client=mock_client,
+                    model="gpt-4o",
+                    messages=messages,
+                    temperature=0.1,
+                )
 
         assert response == mock_response
-        assert mock_client.beta.chat.completions.parse.call_count == 2
+        mock_client.beta.chat.completions.parse.assert_called_once()
+        mock_chunk.assert_called_once()
 
-        # Check that fallback was logged
-        mock_logger.warning.assert_called()
-        mock_logger.info.assert_called()
-
-    def test_call_openai_with_fallback_non_context_error_raises(self, mock_client):
-        """Test that non-context errors are re-raised."""
+    def test_call_openai_non_context_error_raises(self, mock_client):
+        """Non-context errors are re-raised."""
         api_error = openai.OpenAIError("API key invalid")
         mock_client.beta.chat.completions.parse.side_effect = api_error
 
         messages = [{"role": "user", "content": "test"}]
 
         with pytest.raises(openai.OpenAIError, match="API key invalid"):
-            call_openai_with_fallback(
+            call_openai(
                 client=mock_client,
                 model="gpt-4o",
                 messages=messages,
             )
 
-    def test_call_openai_with_fallback_both_models_fail(self, mock_client):
-        """Test that both primary and fallback model failures are handled."""
+    def test_call_openai_context_error_chunking_propagates(self, mock_client):
+        """If chunking fails after a context-length error, the chunking error propagates."""
         context_error = openai.OpenAIError("maximum context length exceeded")
-        fallback_error = openai.OpenAIError("fallback model failed")
-        mock_client.beta.chat.completions.parse.side_effect = [
-            context_error,
-            fallback_error,
-        ]
+        mock_client.beta.chat.completions.parse.side_effect = [context_error]
+        chunk_error = openai.OpenAIError("chunking failed")
 
         messages = [{"role": "user", "content": "test"}]
 
-        with pytest.raises(openai.OpenAIError, match="fallback model failed"):
-            call_openai_with_fallback(
-                client=mock_client,
-                model="gpt-4o",
-                messages=messages,
-            )
+        with patch(
+            "src.soda_curation.pipeline.openai_utils._call_openai_with_chunking",
+            side_effect=chunk_error,
+        ):
+            with pytest.raises(openai.OpenAIError, match="chunking failed"):
+                call_openai(
+                    client=mock_client,
+                    model="gpt-4o",
+                    messages=messages,
+                )
 
-    def test_call_openai_with_fallback_gpt5_parameters_ignored(
-        self, mock_client, mock_response
-    ):
-        """Test that GPT-5 parameters are properly ignored."""
+    def test_call_openai_gpt5_parameters_ignored(self, mock_client, mock_response):
+        """GPT-5 family omits sampling / max_tokens in the API payload."""
         mock_client.beta.chat.completions.parse.return_value = mock_response
 
         messages = [{"role": "user", "content": "test"}]
 
-        response = call_openai_with_fallback(
+        response = call_openai(
             client=mock_client,
             model=GPT5_MODEL,
             messages=messages,
-            temperature=0.5,  # Should be ignored
-            top_p=0.9,  # Should be ignored
-            frequency_penalty=0.1,  # Should be ignored
-            presence_penalty=0.2,  # Should be ignored
-            max_tokens=1000,  # Should be ignored
+            temperature=0.5,
+            top_p=0.9,
+            frequency_penalty=0.1,
+            presence_penalty=0.2,
+            max_tokens=1000,
         )
 
         assert response == mock_response
 
-        # Check that the call was made with only basic parameters
         call_args = mock_client.beta.chat.completions.parse.call_args[1]
         assert call_args["model"] == GPT5_MODEL
         assert call_args["messages"] == messages
@@ -362,16 +388,14 @@ class TestOpenAICallWithFallback:
         assert "presence_penalty" not in call_args
         assert "max_tokens" not in call_args
 
-    def test_call_openai_with_fallback_response_format(
-        self, mock_client, mock_response
-    ):
-        """Test that response format is properly handled."""
+    def test_call_openai_response_format(self, mock_client, mock_response):
+        """Response format is forwarded to the client."""
         mock_client.beta.chat.completions.parse.return_value = mock_response
 
         messages = [{"role": "user", "content": "test"}]
         response_format = {"type": "json_object"}
 
-        response = call_openai_with_fallback(
+        response = call_openai(
             client=mock_client,
             model="gpt-4o",
             messages=messages,
@@ -380,35 +404,44 @@ class TestOpenAICallWithFallback:
 
         assert response == mock_response
 
-        # Check that response format was included
         call_args = mock_client.beta.chat.completions.parse.call_args[1]
         assert call_args["response_format"] == response_format
 
-    def test_call_openai_with_fallback_custom_fallback_model(
-        self, mock_client, mock_response
-    ):
-        """Test custom fallback model."""
-        context_error = openai.OpenAIError("maximum context length exceeded")
-        mock_client.beta.chat.completions.parse.side_effect = [
-            context_error,
-            mock_response,
-        ]
+    def test_call_openai_lenient_when_strict_parse_validation_error(self, mock_client):
+        """If ``parse()`` fails on assistant text, retry via ``create`` + first-value JSON + schema."""
+        try:
+            CaptionExtraction.model_validate_json(
+                '{"figure_label":"F","caption_title":"","figure_caption":"c","is_verbatim":false}'
+                "\ntrailing"
+            )
+        except ValidationError as exc:
+            parse_err = exc
+        mock_client.beta.chat.completions.parse.side_effect = parse_err
 
-        messages = [{"role": "user", "content": "test"}]
+        completion = MagicMock()
+        completion.choices = [MagicMock()]
+        completion.choices[0].message.content = (
+            '{"figure_label":"Fig","caption_title":"","figure_caption":"body","is_verbatim":false}'
+            "\n\nextra"
+        )
+        completion.usage = MagicMock()
+        completion.usage.prompt_tokens = 1
+        completion.usage.completion_tokens = 2
+        completion.usage.total_tokens = 3
+        mock_client.chat.completions.create.return_value = completion
 
-        response = call_openai_with_fallback(
+        out = call_openai(
             client=mock_client,
             model="gpt-4o",
-            messages=messages,
-            fallback_model="custom-model",
+            messages=[{"role": "user", "content": "test"}],
+            response_format=CaptionExtraction,
+            enable_chunking=False,
+            operation="test.op",
         )
 
-        assert response == mock_response
-        assert mock_client.beta.chat.completions.parse.call_count == 2
-
-        # Check that custom fallback model was used
-        second_call_args = mock_client.beta.chat.completions.parse.call_args_list[1][1]
-        assert second_call_args["model"] == "custom-model"
+        mock_client.chat.completions.create.assert_called_once()
+        assert out.choices[0].message.parsed.figure_caption == "body"
+        assert out.choices[0].message.parsed.figure_label == "Fig"
 
 
 class TestConstants:

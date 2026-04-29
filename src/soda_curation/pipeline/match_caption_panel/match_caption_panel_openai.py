@@ -18,7 +18,7 @@ import openai
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import Panel, ZipStructure
-from ..openai_utils import call_openai_with_fallback, validate_model_config
+from ..openai_utils import DEFAULT_OPENAI_MODEL, call_openai, validate_model_config
 from .match_caption_panel_base import MatchPanelCaption, PanelObject
 from .object_detection import convert_to_pil_image  # Import the function directly
 
@@ -57,7 +57,7 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
         config_ = self.config["pipeline"]["match_caption_panel"]["openai"]
-        model = config_.get("model", "gpt-4o")
+        model = config_.get("model", DEFAULT_OPENAI_MODEL)
         validate_model_config(model, config_)
 
     def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
@@ -148,7 +148,7 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             "allowed_panel_catalog_json": json.dumps(catalog, ensure_ascii=False),
         }
         prompts = self.prompt_handler.get_prompt("match_caption_panel", variables)
-        model = self.openai_config.get("model", "gpt-4o")
+        model = self.openai_config.get("model", DEFAULT_OPENAI_MODEL)
         logger.info(
             "Preparing panel-caption vision request",
             extra={
@@ -160,7 +160,7 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             },
         )
 
-        response = call_openai_with_fallback(
+        response = call_openai(
             client=self.client,
             model=model,
             messages=[

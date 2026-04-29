@@ -8,7 +8,7 @@ from pydantic import ValidationError
 
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
-from ..openai_utils import call_openai_with_fallback, validate_model_config
+from ..openai_utils import DEFAULT_OPENAI_MODEL, call_openai, validate_model_config
 from ..prompt_handler import PromptHandler
 from .assign_panel_source_base import (
     AsignedFiles,
@@ -30,7 +30,7 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
         config_ = self.config["pipeline"]["assign_panel_source"]["openai"]
-        model = config_.get("model", "gpt-4o")
+        model = config_.get("model", DEFAULT_OPENAI_MODEL)
         validate_model_config(model, config_)
 
     def call_ai_service(self, prompt: str, allowed_files: List) -> AsignedFilesList:
@@ -56,7 +56,7 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
         config_ = self.config["pipeline"]["assign_panel_source"]["openai"]
         model_ = config_.get("model", "gpt-4o")
 
-        response = call_openai_with_fallback(
+        response = call_openai(
             client=self.client,
             model=model_,
             messages=messages,

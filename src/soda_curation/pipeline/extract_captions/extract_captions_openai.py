@@ -16,7 +16,7 @@ from ..manuscript_structure.manuscript_structure import (
     TokenUsage,
     ZipStructure,
 )
-from ..openai_utils import call_openai_with_fallback, validate_model_config
+from ..openai_utils import DEFAULT_OPENAI_MODEL, call_openai, validate_model_config
 from .extract_captions_base import FigureCaptionExtractor
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         """Validate OpenAI configuration parameters."""
         for step in ["extract_caption_title", "extract_panel_sequence"]:
             config_ = self.config["pipeline"][step]["openai"]
-            model = config_.get("model", "gpt-4o")
+            model = config_.get("model", DEFAULT_OPENAI_MODEL)
             validate_model_config(model, config_)
 
     def is_ev_figure(self, figure_label: str) -> bool:
@@ -120,9 +120,9 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         ]
 
         config_ = self.caption_config
-        model_ = config_.get("model", "gpt-4o")
+        model_ = config_.get("model", DEFAULT_OPENAI_MODEL)
 
-        response = call_openai_with_fallback(
+        response = call_openai(
             client=self.client,
             model=model_,
             messages=messages,
@@ -199,10 +199,10 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         ]
 
         config_ = self.panel_config
-        model_ = config_.get("model", "gpt-4o")
+        model_ = config_.get("model", DEFAULT_OPENAI_MODEL)
 
         # Make direct API call
-        response = call_openai_with_fallback(
+        response = call_openai(
             client=self.client,
             model=model_,
             messages=messages,

@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from pydantic import BaseModel
 
 from ..pipeline.ai_observability import safe_excerpt, summarize_text
+from ..pipeline.openai_utils import DEFAULT_OPENAI_MODEL
 from .model_api import ModelAPI
 from .prompt_registry import registry
 
@@ -90,7 +91,7 @@ class BaseQCAnalyzer(ABC):
                 }
             else:
                 provider_config = {
-                    "model": "gpt-4o",
+                    "model": DEFAULT_OPENAI_MODEL,
                     "temperature": 0.1,
                     "json_mode": True,
                 }

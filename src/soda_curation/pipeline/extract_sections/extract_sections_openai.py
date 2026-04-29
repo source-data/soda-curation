@@ -10,7 +10,7 @@ import openai
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
-from ..openai_utils import call_openai_with_fallback, validate_model_config
+from ..openai_utils import DEFAULT_OPENAI_MODEL, call_openai, validate_model_config
 from .extract_sections_base import ExtractedSections, SectionExtractor
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ class SectionExtractorOpenAI(SectionExtractor):
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
         config_ = self.config["pipeline"]["extract_sections"]["openai"]
-        model = config_.get("model", "gpt-4o")
+        model = config_.get("model", DEFAULT_OPENAI_MODEL)
         validate_model_config(model, config_)
 
     def extract_sections(
@@ -70,9 +70,9 @@ class SectionExtractorOpenAI(SectionExtractor):
         ]
 
         config_ = self.config["pipeline"]["extract_sections"]["openai"]
-        model_ = config_.get("model", "gpt-4o")
+        model_ = config_.get("model", DEFAULT_OPENAI_MODEL)
 
-        response = call_openai_with_fallback(
+        response = call_openai(
             client=self.client,
             model=model_,
             messages=messages,
