@@ -15,12 +15,25 @@ from src.soda_curation.pipeline.manuscript_structure.exceptions import (
     NoManuscriptFileError,
     NoXMLFileFoundError,
 )
+from src.soda_curation.pipeline.manuscript_structure.html_normalization import (
+    pandoc_html_to_plain_text,
+)
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
     ZipStructure,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
     XMLStructureExtractor,
 )
+
+
+def test_pandoc_html_to_plain_text_strips_tags():
+    assert pandoc_html_to_plain_text("<p>alpha</p><p>beta</p>") == "alpha\nbeta"
+
+
+def test_pandoc_html_to_plain_text_empty():
+    assert pandoc_html_to_plain_text("") == ""
+    assert pandoc_html_to_plain_text(None) == ""
+
 
 # Constants for tests
 MANUSCRIPT_ID = "EMBOJ-DUMMY-ZIP"
@@ -269,7 +282,7 @@ def test_extract_docx_content(temp_extract_dir, create_test_zip):
     # Mock pypandoc.convert_file to avoid actual conversion
     with patch("pypandoc.convert_file", return_value="<html>test content</html>"):
         content = extractor.extract_docx_content(docx_path)
-        assert content == "<html>test content</html>"
+        assert content == "test content"
 
     # Verify the file exists in the manuscript directory
     full_path = extractor.manuscript_extract_dir / docx_path
@@ -757,8 +770,7 @@ def test_extract_pdf_content(temp_extract_dir):
 
             content = extractor.extract_docx_content(pdf_path)
             assert "Sample PDF text content" in content
-            assert "<html>" in content
-            assert "<body>" in content
+            assert "<" not in content
 
 
 def test_extract_latex_content(temp_extract_dir):
@@ -793,7 +805,7 @@ def test_extract_latex_content(temp_extract_dir):
         "pypandoc.convert_file", return_value="<html>LaTeX converted content</html>"
     ):
         content = extractor.extract_docx_content(tex_path)
-        assert content == "<html>LaTeX converted content</html>"
+        assert content == "LaTeX converted content"
 
 
 def test_extract_rtf_content(temp_extract_dir):
@@ -828,7 +840,7 @@ def test_extract_rtf_content(temp_extract_dir):
         "pypandoc.convert_file", return_value="<html>RTF converted content</html>"
     ):
         content = extractor.extract_docx_content(rtf_path)
-        assert content == "<html>RTF converted content</html>"
+        assert content == "RTF converted content"
 
 
 def test_extract_odt_content(temp_extract_dir):
@@ -863,7 +875,7 @@ def test_extract_odt_content(temp_extract_dir):
         "pypandoc.convert_file", return_value="<html>ODT converted content</html>"
     ):
         content = extractor.extract_docx_content(odt_path)
-        assert content == "<html>ODT converted content</html>"
+        assert content == "ODT converted content"
 
 
 def test_no_manuscript_file_found(temp_extract_dir):

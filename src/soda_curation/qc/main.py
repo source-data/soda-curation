@@ -16,6 +16,7 @@ from typing import Any, Dict
 from ..config import ConfigurationLoader
 from ..data_storage import load_figure_data, load_zip_structure
 from ..logging_config import setup_logging
+from ..pipeline.manuscript_structure.html_normalization import pandoc_html_to_plain_text
 from .prompt_registry import registry
 from .qc_pipeline import QCPipeline
 
@@ -151,8 +152,10 @@ def main():
             try:
                 import pypandoc
 
-                manuscript_text = pypandoc.convert_file(str(docx_found), "html")
-                zip_structure.manuscript_text = str(manuscript_text)
+                manuscript_html = pypandoc.convert_file(str(docx_found), "html")
+                zip_structure.manuscript_text = pandoc_html_to_plain_text(
+                    str(manuscript_html)
+                )
                 logger.info(
                     "Extracted manuscript text from: %s (%d chars)",
                     docx_found,

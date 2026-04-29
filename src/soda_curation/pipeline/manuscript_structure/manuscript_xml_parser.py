@@ -17,6 +17,7 @@ import pypandoc
 from lxml import etree
 
 from .exceptions import NoManuscriptFileError, NoXMLFileFoundError
+from .html_normalization import pandoc_html_to_plain_text
 from .manuscript_structure import Figure, ZipStructure
 
 logger = logging.getLogger(__name__)
@@ -371,7 +372,7 @@ class XMLStructureExtractor:
             docx_path: Path to manuscript file (may be DOCX, PDF, LaTeX, RTF, or ODT)
 
         Returns:
-            str: HTML content extracted from the file
+            str: Plain text extracted from the file (HTML from pandoc is stripped).
 
         Raises:
             NoManuscriptFileError: If file is not found or extraction fails
@@ -387,7 +388,8 @@ class XMLStructureExtractor:
             if file_ext in [".docx", ".rtf", ".odt", ".tex"]:
                 logger.info(f"Extracting content from {file_ext} file using pypandoc")
                 result = pypandoc.convert_file(str(full_path), "html")
-                return str(result) if result else ""
+                html = str(result) if result else ""
+                return pandoc_html_to_plain_text(html)
 
             # Handle PDF separately
             elif file_ext == ".pdf":
@@ -416,13 +418,14 @@ class XMLStructureExtractor:
             pdf_path: Path to PDF file
 
         Returns:
-            str: HTML content extracted from PDF
+            str: Plain text extracted from PDF (same normalization as DOCX via pandoc).
         """
         try:
             # Try using pypandoc first (if it supports PDF)
             try:
                 result = pypandoc.convert_file(str(pdf_path), "html")
-                return str(result) if result else ""
+                html = str(result) if result else ""
+                return pandoc_html_to_plain_text(html)
             except Exception:
                 # Fallback to PyPDF2 if pypandoc doesn't support PDF
                 logger.info("Using PyPDF2 for PDF extraction")
@@ -448,7 +451,7 @@ class XMLStructureExtractor:
                             html_content.append("</div>")
 
                 html_content.append("</body></html>")
-                return "\n".join(html_content)
+                return pandoc_html_to_plain_text("\n".join(html_content))
 
         except Exception as e:
             logger.error(f"Error extracting PDF content: {str(e)}")
