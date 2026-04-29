@@ -57,8 +57,11 @@ def _fallback_encoding_for_model(model: str) -> str:
         "o3",
         "o4-mini",
     )
+    lower = model.lower()
     if any(
-        model == prefix or model.startswith(prefix + "-")
+        lower == prefix.lower()
+        or lower.startswith(prefix.lower() + "-")
+        or lower.startswith(prefix.lower() + ".")
         for prefix in modern_o200k_prefixes
     ):
         return "o200k_base"
@@ -66,13 +69,21 @@ def _fallback_encoding_for_model(model: str) -> str:
 
 
 def _is_model_without_parameters(model: str) -> bool:
-    """Return True if model belongs to a family with restricted parameters."""
-    return any(
-        model == prefix
-        or model.startswith(prefix + "-")
-        or model.startswith(prefix + "/")
-        for prefix in MODELS_WITHOUT_PARAMETERS_PREFIXES
-    )
+    """Return True if the API accepts only model/messages/response_format (no sampling or max_tokens).
+
+    Matches ``gpt-5``, ``gpt-5-mini``, ``gpt-5.4-mini``, ``gpt-5-turbo``, etc.
+    """
+    if not model:
+        return False
+    lower = model.lower()
+    if lower == "gpt-5":
+        return True
+    # Dot or hyphen after major id (OpenAI uses both naming styles)
+    if lower.startswith("gpt-5.") or lower.startswith("gpt-5-"):
+        return True
+    if lower.startswith("gpt-5/"):
+        return True
+    return False
 
 
 def is_context_length_error(error: Exception) -> bool:
@@ -297,7 +308,12 @@ def get_token_limit(model: str) -> int:
     Returns:
         Token limit for the model
     """
-    return MODEL_TOKEN_LIMITS.get(model, DEFAULT_TOKEN_LIMIT)
+    if model in MODEL_TOKEN_LIMITS:
+        return MODEL_TOKEN_LIMITS[model]
+    lower = model.lower()
+    if lower.startswith("gpt-5"):
+        return MODEL_TOKEN_LIMITS.get(GPT5_MODEL, DEFAULT_TOKEN_LIMIT)
+    return DEFAULT_TOKEN_LIMIT
 
 
 def chunk_file_list(file_list_str: str, chunk_size: int, model: str) -> List[str]:
@@ -648,7 +664,7 @@ def prepare_model_params(
     elif json_mode:
         params["response_format"] = {"type": "json_object"}
 
-    # Only add parameters that are supported by the model
+    # GPT-5 family: API rejects temperature/max_tokens etc.; send model + messages (+ format).
     if not _is_model_without_parameters(model):
         params.update(
             {
@@ -658,10 +674,6 @@ def prepare_model_params(
                 "presence_penalty": presence_penalty,
                 "max_tokens": max_tokens,
             }
-        )
-    else:
-        logger.info(
-            f"Model {model} does not support additional parameters, using basic configuration"
         )
 
     return params
@@ -1266,48 +1278,27 @@ def _call_openai_with_chunking(
 
 def validate_model_config(model: str, config: Dict[str, Any]) -> None:
     """
-    Validate model configuration, checking for GPT-5 specific requirements.
+    Validate sampling/range fields for models that accept them.
 
-    Args:
-        model: The model name
-        config: Configuration dictionary
-
-    Raises:
-        ValueError: If configuration is invalid for the model
+    GPT-5 family models ignore these in ``prepare_model_params``; YAML may still list
+    them for documentation — no validation here.
     """
     if _is_model_without_parameters(model):
-        # GPT-5 doesn't support additional parameters
-        unsupported_params = []
-        for param in [
-            "temperature",
-            "top_p",
-            "frequency_penalty",
-            "presence_penalty",
-            "max_tokens",
-        ]:
-            if param in config and config[param] is not None:
-                unsupported_params.append(param)
+        return
 
-        if unsupported_params:
-            logger.warning(
-                f"Model {GPT5_MODEL} does not support parameters: {unsupported_params}. "
-                "These will be ignored during API calls."
-            )
-    else:
-        # Standard validation for other models
-        if not 0 <= config.get("temperature", 0.1) <= 2:
-            raise ValueError(
-                f"Temperature must be between 0 and 2, value: `{config.get('temperature', 0.1)}`"
-            )
-        if not 0 <= config.get("top_p", 1.0) <= 1:
-            raise ValueError(
-                f"Top_p must be between 0 and 1, value: `{config.get('top_p', 1.0)}`"
-            )
-        if "frequency_penalty" in config and not -2 <= config["frequency_penalty"] <= 2:
-            raise ValueError(
-                f"Frequency penalty must be between -2 and 2, value: `{config.get('frequency_penalty', 0.)}`"
-            )
-        if "presence_penalty" in config and not -2 <= config["presence_penalty"] <= 2:
-            raise ValueError(
-                f"Presence penalty must be between -2 and 2, value: `{config.get('presence_penalty', 0.)}`"
-            )
+    if not 0 <= config.get("temperature", 0.1) <= 2:
+        raise ValueError(
+            f"Temperature must be between 0 and 2, value: `{config.get('temperature', 0.1)}`"
+        )
+    if not 0 <= config.get("top_p", 1.0) <= 1:
+        raise ValueError(
+            f"Top_p must be between 0 and 1, value: `{config.get('top_p', 1.0)}`"
+        )
+    if "frequency_penalty" in config and not -2 <= config["frequency_penalty"] <= 2:
+        raise ValueError(
+            f"Frequency penalty must be between -2 and 2, value: `{config.get('frequency_penalty', 0.)}`"
+        )
+    if "presence_penalty" in config and not -2 <= config["presence_penalty"] <= 2:
+        raise ValueError(
+            f"Presence penalty must be between -2 and 2, value: `{config.get('presence_penalty', 0.)}`"
+        )

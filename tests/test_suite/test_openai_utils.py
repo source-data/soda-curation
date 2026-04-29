@@ -107,6 +107,18 @@ class TestModelParameters:
         }
         assert params == expected
 
+    def test_prepare_model_params_gpt5_dot_release_no_sampling(self):
+        """gpt-5.4-mini style ids must not send max_tokens (API uses different knobs)."""
+        messages = [{"role": "user", "content": "test"}]
+        params = prepare_model_params(
+            model="gpt-5.4-mini",
+            messages=messages,
+            temperature=0.1,
+            max_tokens=4096,
+            json_mode=False,
+        )
+        assert params == {"model": "gpt-5.4-mini", "messages": messages}
+
     def test_prepare_model_params_with_response_format(self):
         """Test parameter preparation with response format."""
         messages = [{"role": "user", "content": "test"}]
@@ -176,7 +188,7 @@ class TestModelValidation:
         validate_model_config("gpt-4o", config)
 
     def test_validate_model_config_gpt5_model(self):
-        """Test validation for GPT-5 model (warns about unsupported parameters)."""
+        """GPT-5 family skips sampling validation; YAML may still list unused keys."""
         config = {
             "temperature": 0.5,
             "top_p": 0.9,
@@ -184,10 +196,9 @@ class TestModelValidation:
             "presence_penalty": 0.2,
         }
 
-        # Should not raise any exception, but should log warnings
         with patch("src.soda_curation.pipeline.openai_utils.logger") as mock_logger:
             validate_model_config(GPT5_MODEL, config)
-            mock_logger.warning.assert_called()
+            mock_logger.warning.assert_not_called()
 
     def test_validate_model_config_invalid_temperature(self):
         """Test validation with invalid temperature."""
