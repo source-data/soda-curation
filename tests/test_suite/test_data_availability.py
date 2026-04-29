@@ -29,12 +29,6 @@ VALID_CONFIG = {
     }
 }
 
-INVALID_MODEL_CONFIG = {
-    "pipeline": {
-        "extract_data_sources": {"openai": {"model": "invalid-model"}},
-    }
-}
-
 INVALID_PARAMS_CONFIG = {
     "pipeline": {
         "extract_data_sources": {
@@ -156,10 +150,23 @@ class TestConfigValidation:
         assert extractor.config == VALID_CONFIG
 
     @patch("builtins.open", mock_open(read_data=MOCK_REGISTRY_CONTENT))
-    def test_invalid_model(self, mock_prompt_handler):
-        """Test that invalid model raises ValueError."""
-        with pytest.raises(ValueError, match="Invalid model"):
-            DataAvailabilityExtractorOpenAI(INVALID_MODEL_CONFIG, mock_prompt_handler)
+    def test_custom_model_name_accepted(self, mock_prompt_handler):
+        """OpenAI model id is configurable (not restricted to a fixed whitelist)."""
+        cfg = {
+            "pipeline": {
+                "extract_data_sources": {
+                    "openai": {
+                        **VALID_CONFIG["pipeline"]["extract_data_sources"]["openai"],
+                        "model": "gpt-5.4-mini",
+                    }
+                }
+            }
+        }
+        extractor = DataAvailabilityExtractorOpenAI(cfg, mock_prompt_handler)
+        assert (
+            extractor.config["pipeline"]["extract_data_sources"]["openai"]["model"]
+            == "gpt-5.4-mini"
+        )
 
     @patch("builtins.open", mock_open(read_data=MOCK_REGISTRY_CONTENT))
     def test_invalid_parameters(self, mock_prompt_handler):

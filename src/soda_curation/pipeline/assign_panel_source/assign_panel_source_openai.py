@@ -29,19 +29,8 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
 
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
-        valid_models = [
-            "gpt-4o",
-            "gpt-4o-mini",
-            "gpt-4o-2024-08-06",
-            "gpt-4o-mini-2024-07-18",
-            "gpt-5",
-        ]
         config_ = self.config["pipeline"]["assign_panel_source"]["openai"]
         model = config_.get("model", "gpt-4o")
-        if model not in valid_models:
-            raise ValueError(f"Invalid model: {model}. Must be one of {valid_models}")
-
-        # Use the utility function for validation
         validate_model_config(model, config_)
 
     def call_ai_service(self, prompt: str, allowed_files: List) -> AsignedFilesList:

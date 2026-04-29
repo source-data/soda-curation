@@ -29,12 +29,6 @@ VALID_CONFIG = {
     }
 }
 
-INVALID_MODEL_CONFIG = {
-    "pipeline": {
-        "extract_sections": {"openai": {"model": "invalid-model"}},
-    }
-}
-
 INVALID_PARAMS_CONFIG = {
     "pipeline": {
         "extract_sections": {
@@ -112,10 +106,23 @@ class TestConfigValidation:
         extractor = SectionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
         assert extractor.config == VALID_CONFIG
 
-    def test_invalid_model(self, mock_prompt_handler):
-        """Test that invalid model raises ValueError."""
-        with pytest.raises(ValueError, match="Invalid model"):
-            SectionExtractorOpenAI(INVALID_MODEL_CONFIG, mock_prompt_handler)
+    def test_custom_model_name_accepted(self, mock_prompt_handler):
+        """OpenAI model id is configurable (not restricted to a fixed whitelist)."""
+        cfg = {
+            "pipeline": {
+                "extract_sections": {
+                    "openai": {
+                        **VALID_CONFIG["pipeline"]["extract_sections"]["openai"],
+                        "model": "gpt-5.4-mini",
+                    }
+                }
+            }
+        }
+        extractor = SectionExtractorOpenAI(cfg, mock_prompt_handler)
+        assert (
+            extractor.config["pipeline"]["extract_sections"]["openai"]["model"]
+            == "gpt-5.4-mini"
+        )
 
     def test_invalid_parameters(self, mock_prompt_handler):
         """Test that invalid parameters raise ValueError."""

@@ -43,13 +43,6 @@ VALID_CONFIG = {
     }
 }
 
-INVALID_MODEL_CONFIG = {
-    "pipeline": {
-        "extract_caption_title": {"openai": {"model": "invalid-model"}},
-        "extract_panel_sequence": {"openai": {"model": "invalid-model"}},
-    }
-}
-
 INVALID_PARAMS_CONFIG = {
     "pipeline": {
         "extract_caption_title": {
@@ -221,10 +214,20 @@ class TestConfigValidation:
         extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
         assert extractor.config == VALID_CONFIG
 
-    def test_invalid_model(self, mock_prompt_handler):
-        """Test that invalid model raises ValueError."""
-        with pytest.raises(ValueError, match="Invalid model"):
-            FigureCaptionExtractorOpenAI(INVALID_MODEL_CONFIG, mock_prompt_handler)
+    def test_custom_model_name_accepted(self, mock_prompt_handler):
+        """OpenAI model id is configurable (not restricted to a fixed whitelist)."""
+        cfg = json.loads(json.dumps(VALID_CONFIG))
+        cfg["pipeline"]["extract_caption_title"]["openai"]["model"] = "gpt-5.4-mini"
+        cfg["pipeline"]["extract_panel_sequence"]["openai"]["model"] = "gpt-5.4-mini"
+        extractor = FigureCaptionExtractorOpenAI(cfg, mock_prompt_handler)
+        assert (
+            extractor.config["pipeline"]["extract_caption_title"]["openai"]["model"]
+            == "gpt-5.4-mini"
+        )
+        assert (
+            extractor.config["pipeline"]["extract_panel_sequence"]["openai"]["model"]
+            == "gpt-5.4-mini"
+        )
 
     def test_invalid_parameters(self, mock_prompt_handler):
         """Test that invalid parameters raise ValueError."""

@@ -66,17 +66,9 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
 
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
-        # Validate model
-        valid_models = ["gpt-4o", "gpt-4o-mini", "gpt-5"]
         for step in ["extract_caption_title", "extract_panel_sequence"]:
             config_ = self.config["pipeline"][step]["openai"]
             model = config_.get("model", "gpt-4o")
-            if model not in valid_models:
-                raise ValueError(
-                    f"Invalid model: {model}. Must be one of {valid_models}"
-                )
-
-            # Use the utility function for validation
             validate_model_config(model, config_)
 
     def is_ev_figure(self, figure_label: str) -> bool:

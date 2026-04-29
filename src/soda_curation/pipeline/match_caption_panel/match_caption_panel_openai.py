@@ -56,19 +56,8 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
 
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
-        valid_models = [
-            "gpt-4o",
-            "gpt-4o-mini",
-            "gpt-4o-2024-08-06",
-            "gpt-4o-mini-2024-07-18",
-            "gpt-5",
-        ]
         config_ = self.config["pipeline"]["match_caption_panel"]["openai"]
         model = config_.get("model", "gpt-4o")
-        if model not in valid_models:
-            raise ValueError(f"Invalid model: {model}. Must be one of {valid_models}")
-
-        # Use the utility function for validation
         validate_model_config(model, config_)
 
     def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:

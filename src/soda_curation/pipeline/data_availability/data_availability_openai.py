@@ -54,14 +54,8 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
 
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
-        # Validate model
-        valid_models = ["gpt-4o", "gpt-4o-mini", "gpt-5"]
         config_ = self.config["pipeline"]["extract_data_sources"]["openai"]
         model = config_.get("model", "gpt-4o")
-        if model not in valid_models:
-            raise ValueError(f"Invalid model: {model}. Must be one of {valid_models}")
-
-        # Use the utility function for validation
         validate_model_config(model, config_)
 
     def extract_data_sources(
