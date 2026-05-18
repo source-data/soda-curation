@@ -149,9 +149,9 @@ docker run --rm \
   -v "$(pwd)/data:/app/data" \
   soda-curation-cpu \
   poetry run python -m src.soda_curation.main \
-    --zip /app/data/archives/EMM-2023-18636.zip \
+    --zip /app/data/archives/EMBOR-2025-62929V1-T.zip \
     --config /app/config.yaml \
-    --output /app/data/output/EMM-2023-18636.json
+    --output /app/data/output/EMBOR-2025-62929V1-T.json
 ```
 
 #### QC pipeline (single `docker run`)

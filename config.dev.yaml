@@ -118,6 +118,10 @@ default: &default
             ALWAYS use this tool to verify your extraction before finalizing your answer.
             If after 5 tries you can not get the full verbatim, return the most similar caption possible.
 
+            If a figure caption is expected but it is not present, return "figure_caption": "Figure caption not present in text".
+            If you expect a Figure 8 and it is not present return "figure_caption": "Figure 8 not present in text". Do not return
+            Figure 8EV. EV is not included in this workload.
+
             Return your result as:
 
             ```json
