@@ -273,7 +273,7 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
                     "reason": "empty_caption",
                 },
             )
-            figure.hallucination_score = 1  # Mark as non-verbatim
+            # hallucination_score is set centrally by verify_captions_against_manuscript
             return figure, total_token_usage
 
         caption_result.figure_caption = self._sanitize_caption_html(
@@ -295,8 +295,9 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         figure.caption_title = caption_result.caption_title
         figure.figure_caption = caption_result.figure_caption
 
-        # Set verbatim flag for hallucination scoring
-        figure.hallucination_score = 0 if caption_result.is_verbatim else 1
+        # hallucination_score is set centrally by verify_captions_against_manuscript
+        # using rapidfuzz on the normalized manuscript text. The LLM's
+        # ``is_verbatim`` self-report is not trusted here.
 
         # Add panels to the figure
         figure.panels = []

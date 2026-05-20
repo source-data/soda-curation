@@ -91,8 +91,22 @@ class PanelSourceAssigner(ABC):
                 "figure_label": figure.figure_label,
                 "existing_panel_count": len(figure.panels),
                 "sd_file_count": len(getattr(figure, "sd_files", [])),
+                "caption_verified": getattr(figure, "caption_verified", True),
             },
         )
+
+        if not getattr(figure, "caption_verified", True):
+            logger.warning(
+                "Skipping source-data assignment for figure with unverified caption",
+                extra={
+                    "operation": "main.assign_panel_source",
+                    "figure_label": figure.figure_label,
+                    "severity": "recoverable",
+                    "reason": "caption_not_verified",
+                },
+            )
+            figure.unassigned_sd_files = list(getattr(figure, "sd_files", []) or [])
+            return
         # First normalize and deduplicate existing panels
         normalized_panels = {}
         for panel in figure.panels:

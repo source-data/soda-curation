@@ -435,10 +435,10 @@ class TestMatchPanelCaptionBase:
                 0.6,
             ]  # Should match original position
 
-            # Check that conflicts were tracked
-            assert hasattr(result.figures[0], "conflicting_panels")
-            assert len(result.figures[0].conflicting_panels) == 1
-            assert result.figures[0].conflicting_panels[0]["panel_label"] == "A"
+            # Conflicts are tracked on a private attribute (never in output JSON).
+            assert hasattr(result.figures[0], "_conflicting_panels")
+            assert len(result.figures[0]._conflicting_panels) == 1
+            assert result.figures[0]._conflicting_panels[0]["panel_label"] == "A"
 
     def test_preserve_original_captions(
         self,
@@ -1101,3 +1101,109 @@ class TestPanelPreservation:
                 assert (
                     panel.ai_response == original_panel.ai_response
                 ), f"AI response for panel {label} should be preserved"
+
+
+class TestUnverifiedCaptionShortCircuit:
+    """When figure.caption_verified=False we skip the vision LLM and emit bbox-only panels."""
+
+    def test_unverified_figure_emits_bbox_only_panels(
+        self, mock_config, mock_prompt_handler, mock_image, tmp_path
+    ):
+        manuscript_dir = tmp_path / "TEST-ID"
+        manuscript_dir.mkdir(parents=True)
+        figure_path = manuscript_dir / "figure_unverified.png"
+        figure_path.touch()
+
+        figure = Figure(
+            figure_label="Figure 8",
+            img_files=["figure_unverified.png"],
+            sd_files=[],
+            figure_caption="FIGURE CAPTION NOT PRESENT OR POSSIBLY HALLUCINATED, PLEASE CHECK.",
+            panels=[],
+        )
+        figure.caption_verified = False
+        zs = ZipStructure(figures=[figure])
+
+        class TestMatcher(MatchPanelCaption):
+            def _validate_config(self):
+                pass
+
+            def _match_panel_caption(
+                self, panel_image, figure_caption, allowed_panels=None
+            ):
+                raise AssertionError(
+                    "Vision LLM must not be invoked for unverified figures"
+                )
+
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+        ) as mock_convert, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector:
+            mock_convert.return_value = (mock_image, "figure_unverified.png")
+            mock_detector = Mock()
+            mock_detector.detect_panels.return_value = [
+                {"bbox": [0.0, 0.0, 0.2, 0.2], "confidence": 0.91},
+                {"bbox": [0.3, 0.0, 0.5, 0.2], "confidence": 0.84},
+                {"bbox": [0.6, 0.0, 0.8, 0.2], "confidence": 0.10},
+            ]
+            mock_create_detector.return_value = mock_detector
+
+            matcher = TestMatcher(
+                mock_config, mock_prompt_handler, extract_dir=manuscript_dir
+            )
+            result = matcher.process_figures(zs)
+
+        emitted = result.figures[0].panels
+        assert len(emitted) == 2, "Low-confidence detections must be filtered out"
+        for panel in emitted:
+            assert panel.panel_label == ""
+            assert panel.panel_caption == ""
+            assert panel.panel_bbox  # bbox preserved
+            assert panel.confidence >= 0.25
+
+    def test_unverified_figure_without_detections_yields_no_panels(
+        self, mock_config, mock_prompt_handler, mock_image, tmp_path
+    ):
+        manuscript_dir = tmp_path / "TEST-ID"
+        manuscript_dir.mkdir(parents=True)
+        figure_path = manuscript_dir / "figure_unverified.png"
+        figure_path.touch()
+
+        figure = Figure(
+            figure_label="Figure 8",
+            img_files=["figure_unverified.png"],
+            sd_files=[],
+            figure_caption="FIGURE CAPTION NOT PRESENT OR POSSIBLY HALLUCINATED, PLEASE CHECK.",
+            panels=[],
+        )
+        figure.caption_verified = False
+        zs = ZipStructure(figures=[figure])
+
+        class TestMatcher(MatchPanelCaption):
+            def _validate_config(self):
+                pass
+
+            def _match_panel_caption(
+                self, panel_image, figure_caption, allowed_panels=None
+            ):
+                raise AssertionError(
+                    "Vision LLM must not be invoked for unverified figures"
+                )
+
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+        ) as mock_convert, patch(
+            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+        ) as mock_create_detector:
+            mock_convert.return_value = (mock_image, "figure_unverified.png")
+            mock_detector = Mock()
+            mock_detector.detect_panels.return_value = []
+            mock_create_detector.return_value = mock_detector
+
+            matcher = TestMatcher(
+                mock_config, mock_prompt_handler, extract_dir=manuscript_dir
+            )
+            result = matcher.process_figures(zs)
+
+        assert result.figures[0].panels == []

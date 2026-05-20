@@ -71,6 +71,13 @@ class Figure:
     hallucination_score: float = 0.0
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
+    # True when the figure_caption was verified to be present in the manuscript
+    # by ``verify_captions_against_manuscript``. False when the caption is empty,
+    # below the partial_ratio threshold, or has been replaced with the
+    # UNVERIFIED_CAPTION_PLACEHOLDER. Downstream steps (panel matching, source
+    # assignment, empty-panel cleanup) use this flag to avoid fabricating data
+    # for figures whose captions are unknown.
+    caption_verified: bool = True
     duplicated_panels: List[Panel] = field(
         default_factory=list
     )  # Add this field with default empty list
@@ -174,6 +181,14 @@ class ZipStructure:
         total.total_tokens = total.prompt_tokens + total.completion_tokens
 
 
+# Figure fields used only inside the pipeline; never written to output JSON.
+_FIGURE_INTERNAL_JSON_FIELDS = frozenset({"caption_verified", "conflicting_panels"})
+
+# Panel hallucination_score is never populated by the main pipeline (always the
+# dataclass default 0.0). Omit it so consumers only see the figure-level score.
+_PANEL_OMIT_JSON_FIELDS = frozenset({"hallucination_score"})
+
+
 class CustomJSONEncoder(json.JSONEncoder):
     """Custom JSON encoder for ZipStructure and related objects."""
 
@@ -184,6 +199,10 @@ class CustomJSONEncoder(json.JSONEncoder):
             dict_obj = {}
             for k, v in vars(obj).items():
                 if k.startswith("_"):
+                    continue
+                if isinstance(obj, Figure) and k in _FIGURE_INTERNAL_JSON_FIELDS:
+                    continue
+                if isinstance(obj, Panel) and k in _PANEL_OMIT_JSON_FIELDS:
                     continue
 
                 # Handle special cases that might cause circular references

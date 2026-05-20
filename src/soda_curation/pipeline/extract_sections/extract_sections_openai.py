@@ -7,6 +7,7 @@ from typing import Dict, Tuple
 
 import openai
 
+from ..._main_utils import dedupe_consecutive_paragraphs
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
@@ -110,6 +111,13 @@ class SectionExtractorOpenAI(SectionExtractor):
             # result is a dictionary, access with keys
             figure_legends = result["figure_legends"]
             data_availability = result["data_availability"]
+
+        # Defensive guardrail: models occasionally fall into a repetition loop
+        # and emit the same paragraph dozens of times in long-form sections.
+        # Collapse those runs back to a single occurrence so downstream
+        # consumers (and the frontend) see clean text.
+        figure_legends = dedupe_consecutive_paragraphs(figure_legends)
+        data_availability = dedupe_consecutive_paragraphs(data_availability)
 
         logger.info(
             "Section extraction completed",

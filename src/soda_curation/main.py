@@ -12,8 +12,12 @@ from uuid import uuid4
 from ._main_utils import (
     calculate_hallucination_score,
     cleanup_extract_dir,
+    finalize_figure_output,
+    repair_empty_panel_markers,
     setup_extract_dir,
+    sort_panels_by_label,
     validate_paths,
+    verify_captions_against_manuscript,
 )
 from .config import ConfigurationLoader
 from .data_storage import save_figure_data, save_zip_structure
@@ -313,6 +317,40 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             recoverable_failures=recoverable_failures,
         )
 
+        # Provider-independent guardrail: replace captions that the AI may have
+        # hallucinated (i.e. not actually present in the manuscript text) with a
+        # fixed placeholder before any downstream step consumes them.
+        caption_verification_cfg = (
+            config_loader.config.get("caption_verification", {}) or {}
+        )
+        caption_verification_threshold = float(
+            caption_verification_cfg.get("partial_ratio_threshold", 90.0)
+        )
+        _execute_pipeline_step(
+            step_name="verify_captions_against_manuscript",
+            runner=lambda: verify_captions_against_manuscript(
+                zip_structure,
+                manuscript_content,
+                threshold=caption_verification_threshold,
+            ),
+            run_id=run_id,
+            critical=False,
+            recoverable_failures=recoverable_failures,
+        )
+
+        # Repair phantom panel markers (e.g. stray "A." / "G." lines): drop
+        # empty-caption panels, relabel survivors sequentially A,B,C,... and
+        # rewrite the leading markers inside figure_caption to match. Runs
+        # BEFORE match_caption_panel so the panel-label catalog used by
+        # object-detection alignment is already in its corrected form.
+        _execute_pipeline_step(
+            step_name="repair_empty_panel_markers",
+            runner=lambda: repair_empty_panel_markers(zip_structure),
+            run_id=run_id,
+            critical=False,
+            recoverable_failures=recoverable_failures,
+        )
+
         # Extract data sources from data availability section
         if ai_provider == "anthropic":
             data_availability_extractor = DataAvailabilityExtractorAnthropic(
@@ -355,6 +393,12 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
         if panel_processing_result is not None:
             zip_structure = panel_processing_result
 
+        # Figures whose caption could not be verified must never keep vision
+        # conflict metadata from a full panel-matching pass.
+        for _fig in zip_structure.figures:
+            if not getattr(_fig, "caption_verified", True):
+                _fig._conflicting_panels = []
+
         # Get figure images and captions for QC pipeline
         figure_data = _execute_pipeline_step(
             step_name="collect_qc_figure_payloads",
@@ -393,10 +437,23 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 extra={"run_id": run_id, "step": "assign_panel_source"},
             )
 
+        # Final cosmetic ordering: panels are sorted alphabetically by label
+        # so the JSON output reads top-to-bottom A, B, C, ... regardless of
+        # the order detections / vision matching produced. Empty-label panels
+        # (only present on unverified figures) sink to the bottom.
+        _execute_pipeline_step(
+            step_name="sort_panels_by_label",
+            runner=lambda: sort_panels_by_label(zip_structure),
+            run_id=run_id,
+            critical=False,
+            recoverable_failures=recoverable_failures,
+        )
+
         # Update total costs before returning results
         zip_structure.update_total_cost()
 
-        # Check for possible hallucinations
+        # Section-level hallucination scores (figure-level scores are set by
+        # verify_captions_against_manuscript right after caption extraction).
         zip_structure.locate_captions_hallucination_score = (
             calculate_hallucination_score(
                 zip_structure.ai_response_locate_captions, manuscript_content
@@ -407,12 +464,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 zip_structure.data_availability["section_text"], manuscript_content
             )
         )
-        for fig in zip_structure.figures:
-            if fig.figure_caption:
-                if fig.hallucination_score == 1:
-                    fig.hallucination_score = calculate_hallucination_score(
-                        fig.figure_caption, manuscript_content
-                    )
 
         # Save data for QC pipeline
         if output_path:
@@ -446,6 +497,14 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             logger.info(
                 f"Saved QC pipeline data: {figure_data_path} and {zip_structure_path}"
             )
+
+        # Mandatory: rapidfuzz hallucination_score + strip conflicting_panels for
+        # unverified captions (runs even if verify_captions was skipped earlier).
+        finalize_figure_output(
+            zip_structure,
+            manuscript_content or getattr(zip_structure, "manuscript_text", "") or "",
+            threshold=caption_verification_threshold,
+        )
 
         # Convert to JSON using CustomJSONEncoder
         output_json = json.dumps(

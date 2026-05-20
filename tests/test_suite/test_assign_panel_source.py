@@ -948,6 +948,41 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
         self.assertEqual(panel.ai_response, "Original AI Response")
         self.assertEqual(panel.sd_files, ["new_file.csv"])  # Only this should change
 
+    def test_assign_panel_source_skips_unverified_figures(self):
+        """Figures with caption_verified=False must not call the AI service."""
+        figure = Figure(
+            figure_label="Figure 8",
+            panels=[
+                Panel(
+                    panel_label="",
+                    panel_caption="",
+                    panel_bbox=[0.0, 0.0, 0.1, 0.1],
+                    confidence=0.92,
+                ),
+            ],
+            sd_files=["source_data8.zip"],
+            img_files=["figure_8.png"],
+        )
+        figure.caption_verified = False
+
+        called: list[Any] = []
+
+        def _raise_if_called(*_args, **_kwargs):
+            called.append(True)
+            raise AssertionError(
+                "call_ai_service must not be invoked for unverified figures"
+            )
+
+        self.assigner.call_ai_service = _raise_if_called  # type: ignore[method-assign]
+
+        self.assigner._assign_to_figure(figure)
+
+        assert called == []
+        assert len(figure.panels) == 1
+        assert figure.panels[0].panel_label == ""
+        assert figure.panels[0].panel_caption == ""
+        assert figure.unassigned_sd_files == ["source_data8.zip"]
+
     def test_character_replacements(self):
         """Test replacement of non-standard characters in filenames."""
         zip_dir = self.extract_dir / "suppl_data"

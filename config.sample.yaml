@@ -1,6 +1,12 @@
 ##########################################################
 #  Default Profile
 ##########################################################
+# Provider-independent guardrail: any extracted figure caption whose rapidfuzz
+# partial_ratio against the normalized manuscript text is below this threshold
+# is replaced with the UNVERIFIED_CAPTION_PLACEHOLDER. Default is 90.0; the key
+# is optional.
+caption_verification:
+  partial_ratio_threshold: 90.0
 default: &default
   pipeline:
     ##########################################################

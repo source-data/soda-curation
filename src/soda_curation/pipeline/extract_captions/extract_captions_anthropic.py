@@ -211,7 +211,7 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
                     "reason": "empty_caption",
                 },
             )
-            figure.hallucination_score = 1
+            # hallucination_score is set centrally by verify_captions_against_manuscript
             return figure, total_token_usage
 
         caption_result.figure_caption = self._sanitize_caption_html(
@@ -229,7 +229,8 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
 
         figure.caption_title = caption_result.caption_title
         figure.figure_caption = caption_result.figure_caption
-        figure.hallucination_score = 0 if caption_result.is_verbatim else 1
+        # hallucination_score is set centrally by verify_captions_against_manuscript
+        # using rapidfuzz on the normalized manuscript text.
 
         figure.panels = []
         for panel_info in panel_result.panels:

@@ -72,8 +72,14 @@ class MatchPanelCaption(ABC):
                         "operation": "main.match_caption_panel",
                         "figure_label": figure.figure_label,
                         "figure_caption_summary": summarize_text(figure.figure_caption),
+                        "caption_verified": getattr(figure, "caption_verified", True),
                     },
                 )
+
+                if not getattr(figure, "caption_verified", True):
+                    self._handle_unverified_figure(figure)
+                    continue
+
                 # Store original panels in a dictionary for quick lookup by label
                 original_panels = {panel.panel_label: panel for panel in figure.panels}
 
@@ -198,6 +204,79 @@ class MatchPanelCaption(ABC):
                 continue
 
         return zip_structure
+
+    def _handle_unverified_figure(self, figure: Any) -> None:
+        """
+        Honest detection-only path for figures whose caption could not be verified.
+
+        Runs object detection so we still surface the spatial truth (bounding
+        boxes + confidences) but does not call the vision LLM and does not run
+        conflict resolution. Each detected region becomes a Panel with
+        ``panel_label=""`` and ``panel_caption=""``. This avoids inventing
+        labels we cannot back up with caption text.
+        """
+        figure.panels = []
+        figure._conflicting_panels = []
+        if not figure.img_files:
+            logger.warning(
+                "Unverified figure has no image files; nothing to detect",
+                extra={
+                    "operation": "main.match_caption_panel",
+                    "figure_label": figure.figure_label,
+                    "severity": "recoverable",
+                    "reason": "no_image_for_unverified_figure",
+                },
+            )
+            return
+        full_path = self.extract_dir / figure.img_files[0]
+        if not full_path.exists():
+            logger.warning(
+                "Unverified figure image missing; skipping detection",
+                extra={
+                    "operation": "main.match_caption_panel",
+                    "figure_label": figure.figure_label,
+                    "severity": "recoverable",
+                    "reason": "figure_image_missing",
+                },
+            )
+            return
+        try:
+            image, _ = convert_to_pil_image(str(full_path))
+            detections = self.object_detector.detect_panels(image)
+        except Exception as exc:
+            logger.warning(
+                "Object detection failed for unverified figure; skipping",
+                extra={
+                    "operation": "main.match_caption_panel",
+                    "figure_label": figure.figure_label,
+                    "severity": "recoverable",
+                    "reason": "detection_error",
+                    "error": str(exc),
+                },
+            )
+            return
+
+        kept = [d for d in detections if d.get("confidence", 0.0) >= 0.25]
+        figure.panels = [
+            Panel(
+                panel_label="",
+                panel_caption="",
+                panel_bbox=list(detection["bbox"]),
+                confidence=float(detection["confidence"]),
+                sd_files=[],
+                ai_response=None,
+            )
+            for detection in kept
+        ]
+        logger.info(
+            "Emitted bbox-only panels for unverified figure",
+            extra={
+                "operation": "main.match_caption_panel",
+                "figure_label": figure.figure_label,
+                "detection_count": len(detections),
+                "kept_detection_count": len(kept),
+            },
+        )
 
     def _extract_panel_image(
         self, pil_image: Image.Image, bbox: List[float]
@@ -348,9 +427,8 @@ class MatchPanelCaption(ABC):
         conflicts_found = False
         used_detection_indices = set()  # Track which detections have been used
 
-        # Initialize tracking for conflicting panels
-        if not hasattr(figure, "conflicting_panels"):
-            figure.conflicting_panels = []
+        # Pipeline-only conflict log (never serialized; see Figure dataclass).
+        figure._conflicting_panels = []
 
         # Track used labels (case-insensitive)
         matched_labels = set()
@@ -534,7 +612,7 @@ class MatchPanelCaption(ABC):
                             )
                         else:
                             # Standard conflict handling for non-empty labels
-                            figure.conflicting_panels.append(
+                            figure._conflicting_panels.append(
                                 {
                                     "panel_label": original_label,
                                     "detection_idx": conflict_match["detection_idx"],

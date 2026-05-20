@@ -17,6 +17,7 @@ from src.soda_curation.pipeline.openai_utils import (
     extract_first_json_value,
     is_context_length_error,
     prepare_model_params,
+    to_openai_strict_schema,
     validate_model_config,
 )
 
@@ -442,6 +443,168 @@ class TestCallOpenAI:
         mock_client.chat.completions.create.assert_called_once()
         assert out.choices[0].message.parsed.figure_caption == "body"
         assert out.choices[0].message.parsed.figure_label == "Fig"
+
+    def test_lenient_path_uses_openai_strict_schema(self, mock_client):
+        """The lenient `create` fallback must send a strict-mode-compatible schema.
+
+        Without ``additionalProperties: false`` OpenAI 400s the json_schema
+        request and the parser silently falls back to ``json_object`` (no
+        enforcement at all). Verify the request payload carries the strict
+        schema so this regression cannot reappear.
+        """
+        parse_err = None
+        try:
+            CaptionExtraction.model_validate_json(
+                '{"figure_label":"F","caption_title":"","figure_caption":"c","is_verbatim":false}'
+                "\ntrailing"
+            )
+        except ValidationError as exc:
+            parse_err = exc
+        mock_client.beta.chat.completions.parse.side_effect = parse_err
+
+        good = MagicMock()
+        good.choices = [MagicMock()]
+        good.choices[
+            0
+        ].message.content = '{"figure_label":"Fig","caption_title":"","figure_caption":"body","is_verbatim":false}'
+        good.usage = MagicMock()
+        good.usage.prompt_tokens = 1
+        good.usage.completion_tokens = 2
+        good.usage.total_tokens = 3
+        mock_client.chat.completions.create.return_value = good
+
+        call_openai(
+            client=mock_client,
+            model="gpt-4o",
+            messages=[{"role": "user", "content": "test"}],
+            response_format=CaptionExtraction,
+            enable_chunking=False,
+            operation="test.op",
+        )
+
+        sent = mock_client.chat.completions.create.call_args[1]
+        rf = sent["response_format"]
+        assert rf["type"] == "json_schema"
+        assert rf["json_schema"]["strict"] is True
+        schema = rf["json_schema"]["schema"]
+        assert schema["additionalProperties"] is False
+        assert sorted(schema["required"]) == sorted(
+            ["figure_label", "caption_title", "figure_caption", "is_verbatim"]
+        )
+
+    def test_lenient_path_self_heals_when_model_renames_fields(self, mock_client):
+        """When the model returns the wrong field names, a one-shot repair turn fixes it.
+
+        Reproduces the EMBOJ-121677 bug: model emitted ``{"caption": "...",
+        "is_verbatim": false}`` instead of the required ``figure_caption`` etc.
+        The lenient parser must detect the validation failure, send the model
+        its own broken output plus the validator error, and accept the
+        corrected response.
+        """
+        parse_err = None
+        try:
+            CaptionExtraction.model_validate_json('{"caption":"x","is_verbatim":false}')
+        except ValidationError as exc:
+            parse_err = exc
+        mock_client.beta.chat.completions.parse.side_effect = parse_err
+
+        broken = MagicMock()
+        broken.choices = [MagicMock()]
+        broken.choices[
+            0
+        ].message.content = '{"caption":"Figure 5: mt...","is_verbatim":false}'
+        broken.usage = MagicMock()
+        broken.usage.prompt_tokens = 4
+        broken.usage.completion_tokens = 1
+        broken.usage.total_tokens = 5
+
+        repaired = MagicMock()
+        repaired.choices = [MagicMock()]
+        repaired.choices[
+            0
+        ].message.content = '{"figure_label":"Figure 5","caption_title":"mt...","figure_caption":"Figure 5: mt...","is_verbatim":false}'
+        repaired.usage = MagicMock()
+        repaired.usage.prompt_tokens = 10
+        repaired.usage.completion_tokens = 8
+        repaired.usage.total_tokens = 18
+
+        mock_client.chat.completions.create.side_effect = [broken, repaired]
+
+        out = call_openai(
+            client=mock_client,
+            model="gpt-4o",
+            messages=[{"role": "user", "content": "Extract caption"}],
+            response_format=CaptionExtraction,
+            enable_chunking=False,
+            operation="test.op",
+        )
+
+        assert mock_client.chat.completions.create.call_count == 2
+        assert out.choices[0].message.parsed.figure_caption == "Figure 5: mt..."
+        assert out.choices[0].message.parsed.figure_label == "Figure 5"
+
+        # The repair request must include the assistant's broken output AND
+        # a corrective user turn so the model can see what to fix.
+        repair_call = mock_client.chat.completions.create.call_args_list[1]
+        repair_messages = repair_call[1]["messages"]
+        roles = [m["role"] for m in repair_messages]
+        assert roles[-2:] == ["assistant", "user"]
+        assert "caption" in repair_messages[-2]["content"]
+        assert "schema" in repair_messages[-1]["content"].lower()
+
+    def test_lenient_path_raises_when_self_healing_still_fails(self, mock_client):
+        """If the model returns broken JSON twice, the original failure surfaces."""
+        parse_err = None
+        try:
+            CaptionExtraction.model_validate_json('{"caption":"x","is_verbatim":false}')
+        except ValidationError as exc:
+            parse_err = exc
+        mock_client.beta.chat.completions.parse.side_effect = parse_err
+
+        def _broken(*_args, **_kwargs):
+            m = MagicMock()
+            m.choices = [MagicMock()]
+            m.choices[
+                0
+            ].message.content = '{"caption":"still wrong","is_verbatim":false}'
+            m.usage = MagicMock()
+            m.usage.prompt_tokens = 1
+            m.usage.completion_tokens = 1
+            m.usage.total_tokens = 2
+            return m
+
+        mock_client.chat.completions.create.side_effect = _broken
+
+        with pytest.raises(ValidationError):
+            call_openai(
+                client=mock_client,
+                model="gpt-4o",
+                messages=[{"role": "user", "content": "Extract caption"}],
+                response_format=CaptionExtraction,
+                enable_chunking=False,
+                operation="test.op",
+            )
+        # Two calls: initial + one repair attempt
+        assert mock_client.chat.completions.create.call_count == 2
+
+
+class TestStrictSchemaHelper:
+    """`to_openai_strict_schema` produces OpenAI strict-mode-compatible JSON."""
+
+    def test_top_level_object_is_strict(self):
+        schema = to_openai_strict_schema(CaptionExtraction)
+        assert schema["type"] == "object"
+        assert schema["additionalProperties"] is False
+        assert sorted(schema["required"]) == sorted(
+            ["figure_label", "caption_title", "figure_caption", "is_verbatim"]
+        )
+        # Property names match the Pydantic model exactly
+        assert set(schema["properties"].keys()) == {
+            "figure_label",
+            "caption_title",
+            "figure_caption",
+            "is_verbatim",
+        }
 
 
 class TestConstants:

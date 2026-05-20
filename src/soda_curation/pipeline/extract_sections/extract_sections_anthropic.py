@@ -6,6 +6,7 @@ from typing import Dict, Tuple
 
 import anthropic
 
+from ..._main_utils import dedupe_consecutive_paragraphs
 from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
@@ -88,6 +89,11 @@ class SectionExtractorAnthropic(SectionExtractor):
             result = json.loads(response_content)
             figure_legends = result["figure_legends"]
             data_availability = result["data_availability"]
+
+        # Defensive guardrail: collapse repetition-loop output (same paragraph
+        # emitted dozens of times). See dedupe_consecutive_paragraphs docstring.
+        figure_legends = dedupe_consecutive_paragraphs(figure_legends)
+        data_availability = dedupe_consecutive_paragraphs(data_availability)
 
         logger.info(
             "Section extraction completed",

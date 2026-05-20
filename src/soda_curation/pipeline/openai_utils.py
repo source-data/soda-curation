@@ -20,6 +20,20 @@ try:
 except ImportError:
     tiktoken = None
 
+# OpenAI ships a private helper that converts a Pydantic model into a JSON
+# schema compatible with ``response_format={"type": "json_schema", "strict": true}``
+# — i.e. it adds ``additionalProperties: false`` everywhere, marks all properties
+# as required, and inlines enum/union edge cases. ``beta.chat.completions.parse``
+# uses it under the hood; we mirror that behaviour for the lenient ``create``
+# fallback. Falling back to a local minimal transform keeps us robust across
+# SDK reorganisations.
+try:
+    from openai.lib._pydantic import (
+        to_strict_json_schema as _openai_to_strict_json_schema,
+    )
+except ImportError:  # pragma: no cover - depends on SDK internals
+    _openai_to_strict_json_schema = None  # type: ignore[assignment]
+
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
@@ -46,7 +60,7 @@ MODEL_TOKEN_LIMITS = {
 
 # Default token limit for unknown models
 DEFAULT_TOKEN_LIMIT = 120000
-OPENAI_MAX_RETRIES = 3
+OPENAI_MAX_RETRIES = 5
 
 
 def _fallback_encoding_for_model(model: str) -> str:
@@ -733,6 +747,69 @@ def extract_first_json_value(raw: Optional[str], *, operation: str = "") -> Any:
     return obj
 
 
+def _enforce_openai_strict(node: Any) -> None:
+    """
+    Mutate ``node`` so every object subtree satisfies OpenAI's strict-mode rules.
+
+    OpenAI's ``response_format={"type": "json_schema", "strict": true}`` rejects
+    schemas that don't set ``additionalProperties: false`` and list every
+    property as required. Pydantic's ``model_json_schema()`` does neither by
+    default, which causes OpenAI to return a 400; the parser then falls back to
+    ``json_object`` (no enforcement) and the model can rename / drop fields.
+    """
+    if isinstance(node, dict):
+        if node.get("type") == "object":
+            node["additionalProperties"] = False
+            properties = node.get("properties")
+            if isinstance(properties, dict) and properties:
+                node["required"] = list(properties.keys())
+        for value in node.values():
+            _enforce_openai_strict(value)
+    elif isinstance(node, list):
+        for item in node:
+            _enforce_openai_strict(item)
+
+
+def to_openai_strict_schema(model_cls: Type[BaseModel]) -> Dict[str, Any]:
+    """
+    Produce a JSON schema for ``model_cls`` that OpenAI ``strict: true`` accepts.
+
+    Uses the SDK's ``openai.lib._pydantic.to_strict_json_schema`` when available
+    (this is what ``beta.chat.completions.parse`` uses internally). Falls back
+    to a minimal in-process transform that adds ``additionalProperties: false``
+    and marks every property as required across every nested object.
+    """
+    if _openai_to_strict_json_schema is not None:
+        return _openai_to_strict_json_schema(model_cls)
+    schema = model_cls.model_json_schema()
+    _enforce_openai_strict(schema)
+    return schema
+
+
+def _build_schema_repair_messages(
+    original_messages: List[Dict[str, Any]],
+    raw_assistant_content: Optional[str],
+    model_cls: Type[BaseModel],
+    validation_error: ValidationError,
+) -> List[Dict[str, Any]]:
+    """Build a corrective conversation for the one-shot self-healing retry."""
+    schema_text = json.dumps(to_openai_strict_schema(model_cls), indent=2)
+    correction = (
+        "Your previous response did not match the required JSON schema and was "
+        "rejected by the validator.\n\n"
+        f"Validator error:\n{validation_error}\n\n"
+        "Re-emit the response so it matches this schema EXACTLY (same top-level "
+        "field names, same types, no extra fields, no missing fields):\n"
+        f"```json\n{schema_text}\n```\n"
+        "Return ONE valid JSON object that conforms to the schema. No prose, no "
+        "markdown fences, no explanation."
+    )
+    repaired: List[Dict[str, Any]] = list(original_messages)
+    repaired.append({"role": "assistant", "content": raw_assistant_content or ""})
+    repaired.append({"role": "user", "content": correction})
+    return repaired
+
+
 def _chat_completion_create_lenient_pydantic(
     client: openai.OpenAI,
     params: Dict[str, Any],
@@ -742,18 +819,23 @@ def _chat_completion_create_lenient_pydantic(
     """
     Fallback when ``parse()`` fails validation on assistant text.
 
-    Uses ``chat.completions.create`` with JSON-schema structured output when possible,
-    then validates with Pydantic after ``extract_first_json_value``.
+    Uses ``chat.completions.create`` with an OpenAI-strict-compatible JSON
+    schema when possible, then validates with Pydantic after
+    ``extract_first_json_value``. If validation fails, performs ONE self-healing
+    retry that shows the model its own broken output plus the validation error,
+    so common schema-drift glitches (e.g. ``"caption"`` instead of
+    ``"figure_caption"``) can be corrected in-flight.
     """
     p = {k: v for k, v in params.items() if k != "response_format"}
-    p["response_format"] = {
+    strict_response_format = {
         "type": "json_schema",
         "json_schema": {
             "name": model_cls.__name__,
-            "schema": model_cls.model_json_schema(),
+            "schema": to_openai_strict_schema(model_cls),
             "strict": True,
         },
     }
+    p["response_format"] = strict_response_format
     try:
         completion = client.chat.completions.create(**p)
     except OpenAIError as exc:
@@ -766,7 +848,52 @@ def _chat_completion_create_lenient_pydantic(
 
     raw_content = completion.choices[0].message.content
     data = extract_first_json_value(raw_content, operation=operation)
-    validated = model_cls.model_validate(data)
+    try:
+        validated = model_cls.model_validate(data)
+    except ValidationError as exc:
+        logger.warning(
+            "Lenient parse produced JSON that failed Pydantic validation; "
+            "attempting one self-healing retry with explicit schema correction",
+            extra={
+                "operation": operation,
+                "model_cls": model_cls.__name__,
+                "error_summary": str(exc)[:500],
+                "missing_fields": sorted(
+                    {".".join(str(loc) for loc in e["loc"]) for e in exc.errors()}
+                ),
+            },
+        )
+        repair_messages = _build_schema_repair_messages(
+            original_messages=params.get("messages", []),
+            raw_assistant_content=raw_content,
+            model_cls=model_cls,
+            validation_error=exc,
+        )
+        p_retry = {k: v for k, v in p.items()}
+        p_retry["messages"] = repair_messages
+        # Prefer strict schema for the repair attempt too; the SDK helper
+        # already makes the schema OpenAI-strict-compatible.
+        p_retry["response_format"] = strict_response_format
+        try:
+            completion = client.chat.completions.create(**p_retry)
+        except OpenAIError as retry_api_exc:
+            logger.warning(
+                "Repair attempt with json_schema failed; retrying with json_object",
+                extra={
+                    "operation": operation,
+                    "error": str(retry_api_exc)[:500],
+                },
+            )
+            p_retry["response_format"] = {"type": "json_object"}
+            completion = client.chat.completions.create(**p_retry)
+        raw_content = completion.choices[0].message.content
+        data = extract_first_json_value(raw_content, operation=operation)
+        validated = model_cls.model_validate(data)
+        logger.info(
+            "Self-healing retry produced schema-compliant output",
+            extra={"operation": operation, "model_cls": model_cls.__name__},
+        )
+
     msg = completion.choices[0].message
     try:
         object.__setattr__(msg, "parsed", validated)
@@ -836,6 +963,20 @@ def _parse_with_retry(
                     },
                 )
                 time.sleep(wait_seconds)
+                continue
+            raise
+        except ValidationError as schema_exc:
+            if attempt < OPENAI_MAX_RETRIES:
+                logger.warning(
+                    "Schema validation failed after lenient parse; retrying from scratch",
+                    extra={
+                        "operation": operation,
+                        "model": model,
+                        "attempt": attempt,
+                        "max_attempts": OPENAI_MAX_RETRIES,
+                        "error_summary": str(schema_exc)[:500],
+                    },
+                )
                 continue
             raise
 
