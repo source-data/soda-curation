@@ -17,15 +17,16 @@ default: &default
         json_mode: true
         prompts:
           system: |
-            # System prompt for verbatim section extraction
-            # Input manuscript text is cleaned HTML; sections must be returned as
-            # verbatim HTML fragments (tags, attributes, and entities preserved)
-            # Includes instructions for using verification tools to ensure verbatim extraction
+            # EXTRACTIVE task: copy contiguous spans from cleaned HTML manuscript input.
+            # figure_legends and data_availability must be exact character-for-character
+            # substrings of the input. If source is HTML, return HTML — never plain text.
+            # Includes verification tool to ensure one-to-one verbatim extraction.
           user: |
             # User prompt template with variables:
             # $expected_figure_count
             # $expected_figure_labels
             # $manuscript_text
+            # Reinforces extractive copy-paste (not generation) of HTML substrings.
 
     ##########################################################
     # 2) Extract Individual Captions
@@ -41,13 +42,16 @@ default: &default
         json_mode: true
         prompts:
           system: |
-            # System prompt for caption extraction
-            # Captions are HTML and must be returned as exact verbatim HTML fragments
-            # Includes verification tool 'verify_caption_extraction'
+            # EXTRACTIVE task: copy figure caption verbatim from HTML input.
+            # figure_caption and caption_title must be exact character-for-character
+            # substrings. If source is HTML, return HTML — never plain text.
+            # Includes verification tool 'verify_caption_extraction'.
+            # On failure to match verbatim, return empty strings (no approximation).
           user: |
             # User prompt template with variables:
             # $figure_label
             # $figure_captions
+            # Reinforces extractive one-to-one HTML copy.
 
     extract_panel_sequence:
       openai:

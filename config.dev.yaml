@@ -23,18 +23,20 @@ default: &default
         json_mode: true
         prompts:
           system: |
-            You are a scientific text analyzer focused on extracting relevant sections from scientific manuscripts.
+            You are a scientific text analyzer. Your job is EXTRACTIVE COPYING from the manuscript — not summarizing, paraphrasing, rewriting, or generating new text.
+
             You will extract the sections `figure legends` and `data availability` from the manuscript text provided.
             Your task is ONLY to find and return the complete figure-related text content from the manuscript.
-                
-            The text will be encoded as a `HTML` string and you are required to keep all the information available.
+
+            The manuscript is provided as cleaned HTML. You MUST return extracted text exactly as it appears in that HTML — one-to-one, character-for-character.
+
+            EXTRACTIVE TASK (mandatory):
+            - Copy contiguous spans from the input. Every output character must come from the input at the same position relative to the matched span.
+            - If the source uses HTML tags, return HTML — never convert to plain text.
+            - Do NOT strip, add, reformat, re-encode, normalize, or "clean up" any markup or punctuation.
+            - The returned strings must be exact character-for-character substrings of the input HTML.
 
             Please extract the relevant portion(s) VERBATIM, exactly as they appear in the original text.
-
-            CRITICAL HTML REQUIREMENT: The manuscript is HTML. You MUST return the extracted sections as VERBATIM HTML fragments:
-            - Preserve every HTML tag, attribute, and entity exactly as it appears in the input (e.g. <p>, <sup>, <sub>, <em>, <strong>, &amp;).
-            - Do NOT strip, add, reformat, re-encode, or normalize any HTML markup.
-            - The returned strings must be exact character-for-character substrings of the input HTML.
 
             Key Instructions for extracting `Figure Legends` section:
             1. Look for figure captions throughout the entire document - they can appear:
@@ -88,8 +90,9 @@ default: &default
             
             Manuscript_text: $manuscript_text
 
-            Extract the figure legends and data availability sections VERBATIM from the manuscript.
-            Use the verification tool to ensure your extractions are exactly as they appear in the document.
+            EXTRACTIVE TASK: copy the figure legends and data availability sections verbatim from the manuscript HTML above.
+            Return exact character-for-character substrings — if the source is HTML, your output must be HTML.
+            Use the verification tool to ensure your extractions match the input one-to-one before finalizing.
 
     ##########################################################
     # 2) Extract Individual Captions Step
@@ -105,25 +108,24 @@ default: &default
         json_mode: true
         prompts:
           system: |
-            You are an AI assistant specializing in extracting figure captions from scientific manuscripts.
-            
+            You are an AI assistant specializing in EXTRACTIVE copying of figure captions from scientific manuscripts.
+            This is NOT a generative or summarization task: you must copy text exactly as it appears in the input.
+
             Your task is to extract ONLY the following for a specific figure:
             1. The figure label (e.g., "Figure 1")
             2. The caption title (the main descriptive heading of the figure)
             3. The complete caption text including all panel descriptions
-            
-            Guidelines:
-            - Extract EXACTLY as it appears in the text (VERBATIM)
-            - The caption title is typically the text before the first panel label
-            - Maintain ALL formatting, punctuation, and special characters
-            - The input text is HTML: return the caption as the exact HTML fragment from the input,
-              preserving every tag, attribute, and entity character-for-character
-            - Do NOT strip, add, reformat, or re-encode any HTML markup
-            - DO NOT modify or summarize the text
-            
+
+            EXTRACTIVE TASK (mandatory):
+            - Copy contiguous spans from the input HTML. Every output character must come from the input.
+            - `figure_caption` and `caption_title` must each be exact character-for-character substrings of the input HTML.
+            - If the source uses HTML tags (e.g. <p>, <strong>, <em>, <sup>), return those tags exactly — never convert to plain text.
+            - Do NOT strip, add, reformat, re-encode, normalize, paraphrase, or summarize any text or markup.
+            - The caption title is typically the text before the first panel label, copied verbatim including its HTML wrapper.
+
             CRITICAL: You have access to a verification tool called 'verify_caption_extraction' that checks if your extracted text is truly verbatim.
             ALWAYS use this tool to verify your extraction before finalizing your answer.
-            If after 5 tries you can not get the full verbatim, return the most similar caption possible.
+            If you cannot find an exact verbatim match after verification attempts, return empty strings — do NOT approximate or return plain-text paraphrases.
 
             If a figure caption is expected but the exact main figure caption is not present, return "figure_caption": "" and "caption_title": "".
             Do not invent placeholder text such as "caption not present in text".
@@ -142,11 +144,11 @@ default: &default
             ```
             
           user: |
-            Extract the caption title and full text for $figure_label from the following text:
-            
+            EXTRACTIVE TASK: copy the caption for $figure_label verbatim from the HTML below — character-for-character, including all HTML tags.
+
             $figure_captions
-            
-            Remember to verify your extraction is verbatim using the verification tool.
+
+            Verify with the verification tool that `figure_caption` and `caption_title` are exact substrings of the input HTML before returning.
 
     extract_panel_sequence:
       openai:
