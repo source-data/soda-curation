@@ -6,12 +6,10 @@ It includes a class that interacts with the OpenAI API to process figure panels 
 matching them based on the visual content and the full figure caption.
 """
 
-import base64
-import io
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import openai
 
@@ -20,7 +18,6 @@ from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import Panel, ZipStructure
 from ..openai_utils import DEFAULT_OPENAI_MODEL, call_openai, validate_model_config
 from .match_caption_panel_base import MatchPanelCaption, PanelObject
-from .object_detection import convert_to_pil_image  # Import the function directly
 
 logger = logging.getLogger(__name__)
 
@@ -51,74 +48,11 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         # Get OpenAI specific config
         self.openai_config = config["pipeline"]["match_caption_panel"]["openai"]
 
-        # Cache for figure images
-        self.figure_images = {}
-
     def _validate_config(self) -> None:
         """Validate OpenAI configuration parameters."""
         config_ = self.config["pipeline"]["match_caption_panel"]["openai"]
         model = config_.get("model", DEFAULT_OPENAI_MODEL)
         validate_model_config(model, config_)
-
-    def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
-        """Override parent method to cache figure images"""
-        self.figure_images = {}  # Clear previous cache
-        result = super().process_figures(zip_structure)
-
-        # For each figure, store the image in the cache if not already there
-        for figure in zip_structure.figures:
-            if figure.figure_label not in self.figure_images and figure.img_files:
-                try:
-                    full_path = self.extract_dir / figure.img_files[0]
-                    if full_path.exists():
-                        # Use the imported function, not a method
-                        image, _ = convert_to_pil_image(str(full_path))
-                        self.figure_images[figure.figure_label] = image
-                except Exception as e:
-                    logger.error(
-                        f"Error caching figure image {figure.figure_label}: {str(e)}"
-                    )
-
-        return result
-
-    def get_figure_images_and_captions(self) -> List[Tuple[str, str, str]]:
-        """
-        Get base64-encoded figure images and their captions.
-
-        Returns:
-            List of tuples containing (figure_label, base64_encoded_image, figure_caption)
-        """
-        result = []
-
-        if not hasattr(self, "zip_structure") or not self.zip_structure:
-            logger.warning("No zip structure available. Run process_figures first.")
-            return result
-
-        for figure in self.zip_structure.figures:
-            try:
-                if figure.figure_label in self.figure_images:
-                    # Get the PIL image from cache
-                    image = self.figure_images[figure.figure_label]
-
-                    # Convert to base64
-                    buffered = io.BytesIO()
-                    image.save(buffered, format="PNG")
-                    encoded_image = base64.b64encode(buffered.getvalue()).decode(
-                        "utf-8"
-                    )
-
-                    # Add to result list
-                    result.append(
-                        (figure.figure_label, encoded_image, figure.figure_caption)
-                    )
-                else:
-                    logger.warning(
-                        f"Figure image not found in cache: {figure.figure_label}"
-                    )
-            except Exception as e:
-                logger.error(f"Error encoding figure {figure.figure_label}: {str(e)}")
-
-        return result
 
     def _match_panel_caption(
         self,
@@ -172,7 +106,7 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": f"data:image/png;base64,{encoded_image}"
+                                "url": f"data:image/jpeg;base64,{encoded_image}"
                             },
                         },
                     ],

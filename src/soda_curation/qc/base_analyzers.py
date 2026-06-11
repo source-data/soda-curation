@@ -14,7 +14,7 @@ from .model_api import ModelAPI
 from .prompt_registry import registry
 
 logger = logging.getLogger(__name__)
-SUPPORTED_AI_PROVIDERS = {"openai", "anthropic", "gemini"}
+SUPPORTED_AI_PROVIDERS = {"openai", "anthropic"}
 
 
 class BaseQCAnalyzer(ABC):
@@ -52,7 +52,7 @@ class BaseQCAnalyzer(ABC):
                 f"Expected one of {sorted(SUPPORTED_AI_PROVIDERS)}."
             )
 
-        provider_keys = ("openai", "anthropic", "gemini")
+        provider_keys = ("openai", "anthropic")
         configured_provider_blocks = [
             key for key in provider_keys if key in test_config
         ]
@@ -82,12 +82,6 @@ class BaseQCAnalyzer(ABC):
                     "model": "claude-sonnet-4-6",
                     "temperature": 0.1,
                     "max_tokens": 4096,
-                }
-            elif provider == "gemini":
-                provider_config = {
-                    "model": "gemini-2.5-flash",
-                    "temperature": 0.1,
-                    "max_tokens": 2048,
                 }
             else:
                 provider_config = {

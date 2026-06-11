@@ -10,7 +10,6 @@ import pytest
 
 from src.soda_curation._main_utils import (
     calculate_hallucination_score,
-    clean_original_source_data_files,
     cleanup_extract_dir,
     exact_match_check,
     fuzzy_match_score,
@@ -19,12 +18,6 @@ from src.soda_curation._main_utils import (
     setup_extract_dir,
     strip_html_tags,
     validate_paths,
-    write_output,
-)
-from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
-    Figure,
-    Panel,
-    ZipStructure,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
     XMLStructureExtractor,
@@ -114,25 +107,6 @@ def test_setup_extract_dir():
     finally:
         cleanup_extract_dir(extract_dir)
         assert not extract_dir.exists()
-
-
-def test_write_output_success(tmp_path):
-    """Test successful output writing."""
-    output_path = tmp_path / "output.json"
-    test_json = '{"test": "data"}'
-
-    write_output(test_json, str(output_path))
-
-    assert output_path.exists()
-    assert output_path.read_text() == test_json
-
-
-def test_write_output_failure(tmp_path):
-    """Test output writing failure."""
-    invalid_path = tmp_path / "nonexistent" / "output.json"
-
-    with pytest.raises(Exception):
-        write_output('{"test": "data"}', str(invalid_path))
 
 
 def test_cleanup_extract_dir(tmp_path):
@@ -340,20 +314,20 @@ class TestHallucinationDetection(unittest.TestCase):
 
     def test_exact_match_check(self):
         """Test exact matching functionality"""
-        # Should find exact HTML match
+        # Should find exact HTML match (HTML markup is compared by default)
         self.assertTrue(exact_match_check(self.exact_match, self.source_text))
 
         # Plain text against HTML should NOT be an exact match
-        # but should be detected via the hallucination score
+        # but should be detected via the hallucination score when comparing
+        # visible text only (strip_html=True)
         self.assertFalse(exact_match_check(self.plain_text_match, self.source_text))
 
-        # Verify that despite not being an exact match, the hallucination
-        # score correctly identifies that this is not a hallucination
-        self.assertEqual(
-            calculate_hallucination_score(self.plain_text_match, self.source_text),
-            0.0,
-            f"EXACT_MATCH: {self.exact_match}, SOURCE_TEXT: {self.source_text}",
+        # Verify continuous hallucination score (same formula as figure captions)
+        plain_score = calculate_hallucination_score(
+            self.plain_text_match, self.source_text, strip_html=True
         )
+        self.assertGreater(plain_score, 0.0)
+        self.assertLess(plain_score, 0.05)
 
         # Shouldn't find close matches or hallucinations
         self.assertFalse(exact_match_check(self.close_match, self.source_text))
@@ -361,17 +335,27 @@ class TestHallucinationDetection(unittest.TestCase):
 
     def test_fuzzy_match_score(self):
         """Test fuzzy matching functionality"""
-        # Exact match should have very high score (near 100)
+        # Exact HTML match should have very high score (near 100) by default
         exact_score = fuzzy_match_score(self.exact_match, self.source_text)
         self.assertGreaterEqual(exact_score, 95)
 
-        # Plain text match should also have very high score
-        plain_text_score = fuzzy_match_score(self.plain_text_match, self.source_text)
+        # Plain text match scores high when HTML is stripped before comparing
+        plain_text_score = fuzzy_match_score(
+            self.plain_text_match, self.source_text, strip_html=True
+        )
         self.assertGreaterEqual(plain_text_score, 95)
-        print(f"\nDEBUG plain text fuzzy match score: {plain_text_score}")
 
-        # Close match should have decent score
-        close_score = fuzzy_match_score(self.close_match, self.source_text)
+        # By default (HTML compared), a tag-stripped extraction must NOT be
+        # treated as a verbatim match of the HTML source
+        plain_text_score_html = fuzzy_match_score(
+            self.plain_text_match, self.source_text
+        )
+        self.assertLess(plain_text_score_html, plain_text_score)
+
+        # Close match should have decent score (visible-text comparison)
+        close_score = fuzzy_match_score(
+            self.close_match, self.source_text, strip_html=True
+        )
         self.assertGreaterEqual(close_score, 70)
 
         # Hallucination should have lower score
@@ -380,7 +364,7 @@ class TestHallucinationDetection(unittest.TestCase):
 
     def test_hallucination_score(self):
         """Test hallucination score calculation"""
-        # Exact match should have 0 hallucination score
+        # Exact HTML match should have 0 hallucination score by default
         exact_score = calculate_hallucination_score(self.exact_match, self.source_text)
         self.assertEqual(
             exact_score,
@@ -388,14 +372,17 @@ class TestHallucinationDetection(unittest.TestCase):
             f"EXACT_MATCH: {self.exact_match}, SOURCE_TEXT: {self.source_text}",
         )
 
-        # Plain text match should also have 0 hallucination score
+        # Plain text match uses the same continuous score as figure captions
         plain_text_score = calculate_hallucination_score(
-            self.plain_text_match, self.source_text
+            self.plain_text_match, self.source_text, strip_html=True
         )
-        self.assertEqual(plain_text_score, 0.0)
+        self.assertGreater(plain_text_score, 0.0)
+        self.assertLess(plain_text_score, 0.05)
 
-        # Close match should have low hallucination score
-        close_score = calculate_hallucination_score(self.close_match, self.source_text)
+        # Close match should have low hallucination score (visible text)
+        close_score = calculate_hallucination_score(
+            self.close_match, self.source_text, strip_html=True
+        )
         self.assertLess(close_score, 0.3)
 
         # Hallucination should have high hallucination score
@@ -611,14 +598,18 @@ class TestNormalizeCompatibility(unittest.TestCase):
 
         self.assertIn(norm_extracted, norm_source)
 
-        # Verify hallucination score
-        self.assertEqual(calculate_hallucination_score(extracted, source), 0.0)
+        # Verify hallucination score on visible text (extract has no HTML)
+        self.assertEqual(
+            calculate_hallucination_score(extracted, source, strip_html=True), 0.0
+        )
 
         # Test with a hallucinated extract
         hallucinated = (
             "The experiment showed Dyrk4 +/+ mice had reduced viral titers in the lung."
         )
-        self.assertGreater(calculate_hallucination_score(hallucinated, source), 0.2)
+        self.assertGreater(
+            calculate_hallucination_score(hallucinated, source, strip_html=True), 0.2
+        )
 
     def test_fuzzy_matching_integration(self):
         """Test integration with fuzzy matching."""
@@ -629,163 +620,63 @@ class TestNormalizeCompatibility(unittest.TestCase):
         # Should still match with slight variations
         close_extract = "Measurements were done at 24, 48, and 72h after infection."
 
-        # Calculate similarity score using fuzzy matching
-        similarity = fuzzy_match_score(close_extract, source)
+        # Calculate similarity score using fuzzy matching on visible text
+        similarity = fuzzy_match_score(close_extract, source, strip_html=True)
         self.assertGreater(similarity, 75)  # Should have good similarity
 
 
-# Add this test class at the end of the file
-class TestCleanOriginalSourceDataFiles(unittest.TestCase):
-    """Test the clean_original_source_data_files function."""
-
-    def setUp(self):
-        """Set up test fixtures."""
-        # Create some test panels
-        self.panel1 = Panel(panel_label="A", panel_caption="Panel A caption")
-        self.panel2 = Panel(panel_label="B", panel_caption="Panel B caption")
-        self.panel3 = Panel(
-            panel_label="C",
-            panel_caption="Panel C caption",
-            sd_files=["panel_c_source.zip"],
+class TestEnsureSinglePanelFigure(unittest.TestCase):
+    def test_zero_panels_becomes_one(self):
+        from src.soda_curation._main_utils import ensure_single_panel_figure
+        from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+            Figure,
         )
 
-        # Create test figures
-        self.fig1 = Figure(
+        figure = Figure(
             figure_label="Figure 1",
-            img_files=["figure1.tif"],
-            sd_files=["figure1_source.zip"],
-            panels=[self.panel1, self.panel2],  # No panels have sd_files
+            img_files=["fig1.tif"],
+            sd_files=[],
+            figure_caption="<p>Whole figure caption</p>",
+            panels=[],
+        )
+        self.assertTrue(ensure_single_panel_figure(figure))
+        self.assertEqual(len(figure.panels), 1)
+        self.assertEqual(figure.panels[0].panel_label, "A")
+        self.assertEqual(figure.panels[0].panel_caption, "<p>Whole figure caption</p>")
+
+    def test_one_panel_fills_empty_caption(self):
+        from src.soda_curation._main_utils import ensure_single_panel_figure
+        from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+            Figure,
+            Panel,
         )
 
-        self.fig2 = Figure(
+        figure = Figure(
+            figure_label="Figure 7",
+            img_files=["fig7.tif"],
+            sd_files=[],
+            figure_caption="Full caption text",
+            panels=[Panel(panel_label="A", panel_caption="")],
+        )
+        ensure_single_panel_figure(figure)
+        self.assertEqual(len(figure.panels), 1)
+        self.assertEqual(figure.panels[0].panel_caption, "Full caption text")
+
+    def test_multi_panel_unchanged(self):
+        from src.soda_curation._main_utils import ensure_single_panel_figure
+        from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+            Figure,
+            Panel,
+        )
+
+        figure = Figure(
             figure_label="Figure 2",
-            img_files=["figure2.tif"],
-            sd_files=["figure2_source.zip", "figure2_extra.xlsx"],
-            panels=[self.panel3],  # Has panel with sd_files
-        )
-
-        self.fig3 = Figure(
-            figure_label="Figure 3",
-            img_files=["figure3.tif"],
-            sd_files=["figure3_original.zip", "figure3_added_later.zip"],
+            img_files=["fig2.tif"],
+            sd_files=[],
             panels=[
-                Panel(
-                    panel_label="A",
-                    panel_caption="Panel A",
-                    sd_files=["panel_a_source.zip"],
-                )
+                Panel(panel_label="A", panel_caption="A text"),
+                Panel(panel_label="B", panel_caption="B text"),
             ],
         )
-
-        # Create ZipStructure
-        self.zip_structure = ZipStructure(
-            manuscript_id="TEST-123",
-            xml="test.xml",
-            docx="test.docx",
-            pdf="test.pdf",
-            figures=[self.fig1, self.fig2, self.fig3],
-        )
-
-        # Original source data files dictionary (original files extracted at the beginning)
-        self.original_source_data_files = {
-            "Figure 1": ["figure1_source.zip"],
-            "Figure 2": ["figure2_source.zip"],
-            "Figure 3": ["figure3_original.zip"],
-        }
-
-    def test_basic_functionality(self):
-        """Test that original files are removed when panels have sd_files."""
-        result = clean_original_source_data_files(
-            self.zip_structure, self.original_source_data_files
-        )
-
-        # Figure 1: No panel has sd_files, so original sd_files should remain
-        self.assertEqual(len(result.figures[0].sd_files), 1)
-        self.assertIn("figure1_source.zip", result.figures[0].sd_files)
-
-        # Figure 2: Has panel with sd_files, so original sd_files should be removed
-        self.assertEqual(len(result.figures[1].sd_files), 1)
-        self.assertIn("figure2_extra.xlsx", result.figures[1].sd_files)
-        self.assertNotIn("figure2_source.zip", result.figures[1].sd_files)
-
-        # Figure 3: Has panel with sd_files, but non-original files should remain
-        self.assertEqual(len(result.figures[2].sd_files), 1)
-        self.assertIn("figure3_added_later.zip", result.figures[2].sd_files)
-        self.assertNotIn("figure3_original.zip", result.figures[2].sd_files)
-
-    def test_no_panel_source_data(self):
-        """Test that original files are kept when no panels have sd_files."""
-        # Remove sd_files from all panels
-        for fig in self.zip_structure.figures:
-            for panel in fig.panels:
-                panel.sd_files = []
-
-        result = clean_original_source_data_files(
-            self.zip_structure, self.original_source_data_files
-        )
-
-        # All original files should be preserved
-        self.assertIn("figure1_source.zip", result.figures[0].sd_files)
-        self.assertIn("figure2_source.zip", result.figures[1].sd_files)
-        self.assertIn("figure3_original.zip", result.figures[2].sd_files)
-
-    def test_added_files_preserved(self):
-        """Test that files added during processing are preserved."""
-        # Add a new file to Figure 1 that wasn't in original_source_data_files
-        self.zip_structure.figures[0].sd_files.append("added_during_processing.zip")
-
-        # Give panels source data files
-        for fig in self.zip_structure.figures:
-            for panel in fig.panels:
-                panel.sd_files = ["panel_source.zip"]
-
-        result = clean_original_source_data_files(
-            self.zip_structure, self.original_source_data_files
-        )
-
-        # Original files should be removed, but added files should remain
-        self.assertNotIn("figure1_source.zip", result.figures[0].sd_files)
-        self.assertIn("added_during_processing.zip", result.figures[0].sd_files)
-
-    def test_empty_figures(self):
-        """Test handling of empty figure lists."""
-        # Create empty ZipStructure
-        empty_structure = ZipStructure(
-            manuscript_id="TEST-123",
-            xml="test.xml",
-            docx="test.docx",
-            pdf="test.pdf",
-            figures=[],
-        )
-
-        # This should not raise an exception
-        result = clean_original_source_data_files(
-            empty_structure, self.original_source_data_files
-        )
-        self.assertEqual(len(result.figures), 0)
-
-    def test_missing_figure_label(self):
-        """Test handling of figures not in the original_source_data_files dict."""
-        # Create a new figure with a label not in original_source_data_files
-        new_figure = Figure(
-            figure_label="Figure 4",
-            img_files=["figure4.tif"],
-            sd_files=["figure4_source.zip"],
-            panels=[
-                Panel(
-                    panel_label="A",
-                    panel_caption="Panel A",
-                    sd_files=["panel_a_source.zip"],
-                )
-            ],
-        )
-
-        self.zip_structure.figures.append(new_figure)
-
-        result = clean_original_source_data_files(
-            self.zip_structure, self.original_source_data_files
-        )
-
-        # Figure 4's sd_files should remain since it wasn't in original_source_data_files
-        self.assertEqual(len(result.figures[3].sd_files), 1)
-        self.assertIn("figure4_source.zip", result.figures[3].sd_files)
+        self.assertFalse(ensure_single_panel_figure(figure))
+        self.assertEqual(len(figure.panels), 2)

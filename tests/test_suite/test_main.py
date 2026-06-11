@@ -161,19 +161,21 @@ def test_main_creates_output_directory(
     output_path = str(output_dir / "result.json")
 
     # Add patches for pipeline components
-    with patch("src.soda_curation.main.setup_extract_dir") as mock_setup_dir, patch(
-        "src.soda_curation.main.XMLStructureExtractor"
-    ) as mock_extractor, patch(
-        "src.soda_curation.main.SectionExtractorOpenAI"
-    ) as mock_section_extractor, patch(
-        "src.soda_curation.main.FigureCaptionExtractorOpenAI"
-    ) as mock_caption_extractor, patch(
-        "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
-    ) as mock_data_extractor, patch(
-        "src.soda_curation.main.MatchPanelCaptionOpenAI"
-    ) as mock_matcher_cls, patch(
-        "src.soda_curation.main.PanelSourceAssignerOpenAI"
-    ) as mock_assign_cls:
+    with (
+        patch("src.soda_curation.main.setup_extract_dir") as mock_setup_dir,
+        patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor,
+        patch(
+            "src.soda_curation.main.SectionExtractorOpenAI"
+        ) as mock_section_extractor,
+        patch(
+            "src.soda_curation.main.FigureCaptionExtractorOpenAI"
+        ) as mock_caption_extractor,
+        patch(
+            "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
+        ) as mock_data_extractor,
+        patch("src.soda_curation.main.MatchPanelCaptionOpenAI") as mock_matcher_cls,
+        patch("src.soda_curation.main.PanelSourceAssignerOpenAI") as mock_assign_cls,
+    ):
         # Configure mocks
         extract_dir = tmp_path / "extract"
         mock_setup_dir.return_value = extract_dir
@@ -244,17 +246,22 @@ def test_main_successful_run(
         ai_response_extract_individual_captions="",
     )
 
-    with patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor, patch(
-        "src.soda_curation.main.SectionExtractorOpenAI"
-    ) as mock_section_extractor, patch(
-        "src.soda_curation.main.FigureCaptionExtractorOpenAI"
-    ) as mock_caption_extractor, patch(
-        "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
-    ) as mock_data_extractor, patch(
-        "src.soda_curation.main.PanelSourceAssignerOpenAI"
-    ) as mock_panel_assigner, patch(
-        "src.soda_curation.main.MatchPanelCaptionOpenAI"
-    ) as mock_matcher_cls:
+    with (
+        patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor,
+        patch(
+            "src.soda_curation.main.SectionExtractorOpenAI"
+        ) as mock_section_extractor,
+        patch(
+            "src.soda_curation.main.FigureCaptionExtractorOpenAI"
+        ) as mock_caption_extractor,
+        patch(
+            "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
+        ) as mock_data_extractor,
+        patch(
+            "src.soda_curation.main.PanelSourceAssignerOpenAI"
+        ) as mock_panel_assigner,
+        patch("src.soda_curation.main.MatchPanelCaptionOpenAI") as mock_matcher_cls,
+    ):
         # Configure mocks
         mock_instance = MagicMock()
         mock_instance.extract_structure.return_value = test_structure
@@ -323,17 +330,20 @@ def test_main_no_output_path_returns_json(
         ai_response_extract_individual_captions="",
     )
 
-    with patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor, patch(
-        "src.soda_curation.main.SectionExtractorOpenAI"
-    ) as mock_section_extractor, patch(
-        "src.soda_curation.main.FigureCaptionExtractorOpenAI"
-    ) as mock_caption_extractor, patch(
-        "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
-    ) as mock_data_extractor, patch(
-        "src.soda_curation.main.MatchPanelCaptionOpenAI"
-    ) as mock_matcher_cls, patch(
-        "src.soda_curation.main.PanelSourceAssignerOpenAI"
-    ) as mock_assign_cls:
+    with (
+        patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor,
+        patch(
+            "src.soda_curation.main.SectionExtractorOpenAI"
+        ) as mock_section_extractor,
+        patch(
+            "src.soda_curation.main.FigureCaptionExtractorOpenAI"
+        ) as mock_caption_extractor,
+        patch(
+            "src.soda_curation.main.DataAvailabilityExtractorOpenAI"
+        ) as mock_data_extractor,
+        patch("src.soda_curation.main.MatchPanelCaptionOpenAI") as mock_matcher_cls,
+        patch("src.soda_curation.main.PanelSourceAssignerOpenAI") as mock_assign_cls,
+    ):
         # Configure mocks to return the ZipStructure object
         mock_instance = MagicMock()
         mock_instance.extract_structure.return_value = test_structure

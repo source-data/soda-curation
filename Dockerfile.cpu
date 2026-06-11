@@ -1,5 +1,5 @@
 # Use a CPU-only Python image as the base image
-FROM python:3.10-slim-bullseye AS base
+FROM python:3.12-slim-bookworm AS base
 
 # Set work directory
 WORKDIR /app
@@ -52,17 +52,17 @@ RUN if [ -n "$GIT_ACCESS_TOKEN" ]; then \
       git config --list | grep url; \
     fi
 
-# Update ImageMagick policy to allow PDF conversions
-# Configure ImageMagick policy to allow EPS, PDF, and PostScript
-RUN if [ -f /etc/ImageMagick-6/policy.xml ]; then \
-    sed -i 's/rights="none" pattern="EPS"/rights="read|write" pattern="EPS"/' /etc/ImageMagick-6/policy.xml; \
-    sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml; \
-    sed -i 's/rights="none" pattern="PS"/rights="read|write" pattern="PS"/' /etc/ImageMagick-6/policy.xml; \
-    cat /etc/ImageMagick-6/policy.xml | grep -i EPS; \
-    cat /etc/ImageMagick-6/policy.xml | grep -i PDF; \
-    cat /etc/ImageMagick-6/policy.xml | grep -i PS; \
-    echo "ImageMagick policy updated successfully"; \
-    fi
+# Update ImageMagick policy to allow EPS, PDF, and PostScript conversions.
+# Required by the wand-based image conversion in mmqc_utils (EPS/PDF rasterization).
+RUN for policy in /etc/ImageMagick-6/policy.xml /etc/ImageMagick-7/policy.xml; do \
+    if [ -f "$policy" ]; then \
+    sed -i 's/rights="none" pattern="EPS"/rights="read|write" pattern="EPS"/' "$policy"; \
+    sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' "$policy"; \
+    sed -i 's/rights="none" pattern="PS"/rights="read|write" pattern="PS"/' "$policy"; \
+    grep -iE 'EPS|PDF|"PS"' "$policy"; \
+    echo "ImageMagick policy updated successfully: $policy"; \
+    fi; \
+    done
 
 ENV LIBCLANG_PATH=/usr/lib/llvm-11/lib/
 
@@ -84,10 +84,10 @@ COPY ./data/models/panel_detection_model_no_labels.pt /app/data/models/
 # Install dependencies and the package
 RUN poetry install --no-interaction --no-ansi --no-root
 
-# Install PyTorch for ARM/CPU
+# Install PyTorch for ARM/CPU (versions with Python 3.12 wheels)
 RUN poetry run pip install --no-cache-dir \
-    torch==2.0.0 \
-    torchvision==0.15.1 \
+    torch==2.6.0 \
+    torchvision==0.21.0 \
     --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Set environment variables to manage threading and memory
@@ -98,13 +98,9 @@ ENV OMP_NUM_THREADS=1 \
 
 # Install additional packages
 RUN poetry run pip install --upgrade pip \
-    && poetry run pip install opencv-python==4.8.0.74 \
     && poetry run pip install huggingface-hub \
     && poetry run pip install -q git+https://github.com/THU-MIG/yolov10.git \
-    && poetry run pip install opencv-fixer==0.2.5 \
-    && poetry run pip install jupyterlab \
-    && poetry run pip install PyMuPDF pdf2image \
-    && poetry run python -c "from opencv_fixer import AutoFix; AutoFix()"
+    && poetry run pip install jupyterlab
 
 # Create config directory 
 RUN mkdir -p /app/config
@@ -121,10 +117,8 @@ ENV PYTHONPATH=/app/src
 RUN convert --version
 RUN poetry run python -c "import yaml; print(yaml.__file__)"
 RUN poetry run python -c "import openai; print(openai.__file__)"
-RUN poetry run python -c "import cv2; print(cv2.__file__)"
 RUN poetry run python -c "from ultralytics import YOLOv10; print(YOLOv10)"
-RUN poetry run python -c "import fitz; print(fitz.__file__)"
-RUN poetry run python -c "import pdf2image; print(pdf2image.__file__)"
+RUN poetry run python -c "import mmqc_utils; print(mmqc_utils.__file__)"
 RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 
 # Copy environment files (they will be selected at runtime)

@@ -71,12 +71,10 @@ class Figure:
     hallucination_score: float = 0.0
     figure_caption: str = ""
     caption_title: str = ""  # New field for the figure caption title
-    # True when the figure_caption was verified to be present in the manuscript
-    # by ``verify_captions_against_manuscript``. False when the caption is empty,
-    # below the partial_ratio threshold, or has been replaced with the
-    # UNVERIFIED_CAPTION_PLACEHOLDER. Downstream steps (panel matching, source
-    # assignment, empty-panel cleanup) use this flag to avoid fabricating data
-    # for figures whose captions are unknown.
+    # Internal-only flag set by ``verify_captions_against_manuscript``.
+    # False when the caption is empty or below the similarity-ratio threshold.
+    # The caption text itself is still serialized as extracted; downstream
+    # steps use this flag to avoid fabricating panel/source data.
     caption_verified: bool = True
     duplicated_panels: List[Panel] = field(
         default_factory=list
@@ -146,7 +144,6 @@ class ZipStructure:
     _full_docx: str = ""
     _full_pdf: str = ""
     ai_provider: str = ""
-    cost: ProcessingCost = field(default_factory=ProcessingCost)
     manuscript_text: str = ""
 
     def __post_init__(self):
@@ -223,14 +220,6 @@ class CustomJSONEncoder(json.JSONEncoder):
                 if v is not None and (k == "sd_files" or (v != {} and v != []))
             }
 
-        return super().default(obj)
-
-    def serialize_dataclass(self, obj):
-        """Serialize a dataclass object, excluding private fields."""
-        if isinstance(obj, (ZipStructure, Figure)):
-            return {k: v for k, v in obj.__dict__.items() if not k.startswith("_")}
-        elif isinstance(obj, (ProcessingCost, TokenUsage)):
-            return {k: v for k, v in obj.__dict__.items()}
         return super().default(obj)
 
 

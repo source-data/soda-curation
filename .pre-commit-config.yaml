@@ -1,12 +1,9 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 23.1.0  # or the latest version
+    rev: 24.10.0
     hooks:
       - id: black
-        # Example arguments:
         args: [--line-length=88]
-        # If you want Black to automatically fix code, just omit `--check`.
-        # By default, Black *fixes* code. If you only want to check, add `--check`.
 
   - repo: https://github.com/PyCQA/flake8
     rev: 6.0.0  # or the latest version

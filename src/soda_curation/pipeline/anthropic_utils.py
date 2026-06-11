@@ -200,7 +200,7 @@ def _convert_messages(messages: List[Dict[str, Any]]) -> tuple:
                     elif item["type"] == "image_url":
                         url = item["image_url"]["url"]
                         if url.startswith("data:"):
-                            # data:image/png;base64,<data>
+                            # data:image/jpeg;base64,<data>
                             header, base64_data = url.split(",", 1)
                             media_type = header.split(":")[1].split(";")[0]
                             anthropic_content.append(

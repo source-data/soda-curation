@@ -3,7 +3,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 import anthropic
 
@@ -96,24 +96,3 @@ class PanelSourceAssignerAnthropic(PanelSourceAssigner):
             assigned_files=filtered_assigned,
             not_assigned_files=filtered_not_assigned,
         )
-
-    @staticmethod
-    def filter_files(
-        assigned_files: List[AsignedFiles],
-        not_assigned_files: List[str],
-        allowed_files: List[str],
-    ) -> Tuple[List[AsignedFiles], List[str]]:
-        """Remove any files that are not in allowed_files."""
-        filtered_assigned_files = [
-            AsignedFiles(
-                panel_label=af.panel_label,
-                panel_sd_files=[
-                    file for file in af.panel_sd_files if file in allowed_files
-                ],
-            )
-            for af in assigned_files
-        ]
-        filtered_not_assigned_files = [
-            file for file in not_assigned_files if file in allowed_files
-        ]
-        return filtered_assigned_files, filtered_not_assigned_files

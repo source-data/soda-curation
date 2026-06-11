@@ -4,6 +4,7 @@ Test suite specifically for ZIP file validation issues.
 This test suite demonstrates and validates the ZIP file validation
 that was causing the original issue.
 """
+
 import zipfile
 from pathlib import Path
 from unittest.mock import patch

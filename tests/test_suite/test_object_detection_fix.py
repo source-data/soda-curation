@@ -1,7 +1,9 @@
 """
 Test suite to verify the object detection fix for the 'dict' object has no attribute 'shape' error.
 """
-from unittest.mock import MagicMock, Mock, patch
+
+import io
+from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest
@@ -14,6 +16,13 @@ from src.soda_curation.pipeline.match_caption_panel.object_detection import (
 )
 
 
+def _jpeg_bytes(size=(100, 100), color="red") -> bytes:
+    img = Image.new("RGB", size, color=color)
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG")
+    return buf.getvalue()
+
+
 class TestObjectDetectionFix:
     """Test the object detection fix for dictionary vs PIL Image issues."""
 
@@ -24,25 +33,27 @@ class TestObjectDetectionFix:
         test_file = tmp_path / "test.png"
         test_image.save(test_file)
 
-        # Test the function
-        image, file_path = convert_to_pil_image(str(test_file))
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_to_bounded_jpeg",
+            return_value=_jpeg_bytes((100, 100)),
+        ):
+            image, file_path = convert_to_pil_image(str(test_file))
 
         # Verify we get a PIL Image
         assert isinstance(image, Image.Image)
         assert image.mode == "RGB"
         assert image.size == (100, 100)
 
-    def test_convert_to_pil_image_handles_eps_fallback(self, tmp_path):
-        """Test that EPS conversion fallback returns a PIL Image, not a file path."""
+    def test_convert_to_pil_image_handles_conversion_failure(self, tmp_path):
+        """Test that a failing conversion raises ValueError, not a file path return."""
         # Create a mock EPS file that will fail conversion
         eps_file = tmp_path / "test.eps"
         eps_file.write_text("fake eps content")
 
         with patch(
-            "src.soda_curation.pipeline.match_caption_panel.object_detection.create_standard_thumbnail"
-        ) as mock_thumbnail:
-            # Mock the thumbnail creation to fail and return the original file path
-            mock_thumbnail.side_effect = Exception("Conversion failed")
+            "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_to_bounded_jpeg"
+        ) as mock_convert:
+            mock_convert.side_effect = Exception("Conversion failed")
 
             # This should raise an error instead of returning a file path
             with pytest.raises(ValueError, match="Failed to convert or open image"):
@@ -127,7 +138,11 @@ class TestObjectDetectionFix:
         test_image.save(test_file)
 
         # Convert to PIL Image
-        image, file_path = convert_to_pil_image(str(test_file))
+        with patch(
+            "src.soda_curation.pipeline.match_caption_panel.object_detection.convert_to_bounded_jpeg",
+            return_value=_jpeg_bytes((200, 200), color="blue"),
+        ):
+            image, file_path = convert_to_pil_image(str(test_file))
         assert isinstance(image, Image.Image)
 
         # Mock YOLO model for detection

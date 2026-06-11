@@ -4,7 +4,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from PIL import Image
 from pydantic import BaseModel
@@ -31,11 +31,9 @@ class MatchPanelCaption(ABC):
         """Initialize with configuration."""
         self.config = config
         self.prompt_handler = prompt_handler
-        self.extract_dir = Path(
-            extract_dir
-        )  # This is now the manuscript-specific directory
+        self.extract_dir = Path(extract_dir)
+        self.figure_images: Dict = {}
         self._validate_config()
-        # Initialize object detector using the create_object_detection helper
         self.object_detector = create_object_detection(config)
 
     @staticmethod
@@ -64,6 +62,7 @@ class MatchPanelCaption(ABC):
     def process_figures(self, zip_structure: ZipStructure) -> ZipStructure:
         """Process all figures in the manuscript."""
         self.zip_structure = zip_structure
+        self.figure_images = {}
         for figure in zip_structure.figures:
             try:
                 logger.info(
@@ -88,6 +87,7 @@ class MatchPanelCaption(ABC):
                 if not full_path.exists():
                     raise FileNotFoundError(f"File not found: {full_path}")
                 image, _ = convert_to_pil_image(str(full_path))
+                self.figure_images[figure.figure_label] = image
 
                 # Debug: Check what we got from convert_to_pil_image
                 logger.debug(
@@ -205,6 +205,39 @@ class MatchPanelCaption(ABC):
 
         return zip_structure
 
+    def get_figure_images_and_captions(self) -> List[Tuple[str, str, str]]:
+        """Return base64-encoded figure images and their captions.
+
+        Returns:
+            List of (figure_label, base64_encoded_image, figure_caption) tuples.
+            Call ``process_figures`` first to populate the image cache.
+        """
+        result = []
+        if not hasattr(self, "zip_structure") or not self.zip_structure:
+            logger.warning("No zip structure available. Run process_figures first.")
+            return result
+
+        for figure in self.zip_structure.figures:
+            try:
+                if figure.figure_label in self.figure_images:
+                    image = self.figure_images[figure.figure_label]
+                    buffered = io.BytesIO()
+                    image.save(buffered, format="JPEG", quality=80)
+                    encoded_image = base64.b64encode(buffered.getvalue()).decode(
+                        "utf-8"
+                    )
+                    result.append(
+                        (figure.figure_label, encoded_image, figure.figure_caption)
+                    )
+                else:
+                    logger.warning(
+                        f"Figure image not found in cache: {figure.figure_label}"
+                    )
+            except Exception as e:
+                logger.error(f"Error encoding figure {figure.figure_label}: {str(e)}")
+
+        return result
+
     def _handle_unverified_figure(self, figure: Any) -> None:
         """
         Honest detection-only path for figures whose caption could not be verified.
@@ -301,9 +334,11 @@ class MatchPanelCaption(ABC):
                 for i, coord in enumerate(bbox)
             ]
             panel = pil_image.crop((left, top, right, bottom))
+            if panel.mode != "RGB":
+                panel = panel.convert("RGB")
 
             buffered = io.BytesIO()
-            panel.save(buffered, format="PNG")
+            panel.save(buffered, format="JPEG", quality=80)
             return base64.b64encode(buffered.getvalue()).decode("utf-8")
         except Exception as e:
             logger.error(f"Error extracting panel image: {str(e)}")
@@ -360,6 +395,57 @@ class MatchPanelCaption(ABC):
         """Pick which caption-derived panel a crop belongs to (label only in practice)."""
         pass
 
+    @staticmethod
+    def _get_next_available_label(used_labels: Set[str]) -> str:
+        """Return the next unused alphabetical panel label (A, B, …, Z, AA, AB, …)."""
+        label_sequence = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        upper_used = {lbl.upper() for lbl in used_labels}
+        for char in label_sequence:
+            if char not in upper_used:
+                return char
+        for char1 in label_sequence:
+            for char2 in label_sequence:
+                double_char = char1 + char2
+                if double_char not in upper_used:
+                    return double_char
+        return "unknown"
+
+    def _add_unmatched_detections(
+        self,
+        panel_matches: List[Dict],
+        used_detection_indices: Set[int],
+        matched_labels: Set[str],
+        figure_label: str,
+    ) -> List[Panel]:
+        """Create panels for detections that were not claimed by any caption label."""
+        new_panels: List[Panel] = []
+        unmatched = [
+            m for m in panel_matches if m["detection_idx"] not in used_detection_indices
+        ]
+        for match in unmatched:
+            panel_object = match["panel_object"]
+            detection = match["detection"]
+            panel_label = panel_object.panel_label.strip()
+            if not panel_label or panel_label.upper() in {
+                lbl.upper() for lbl in matched_labels
+            }:
+                panel_label = self._self._get_next_available_label(matched_labels)
+            logger.info(
+                f"Adding new panel {panel_label} from unmatched detection in figure {figure_label}"
+            )
+            new_panels.append(
+                Panel(
+                    panel_label=panel_label,
+                    panel_caption=panel_object.panel_caption,
+                    panel_bbox=detection["bbox"],
+                    confidence=detection["confidence"],
+                    sd_files=[],
+                    ai_response=None,
+                )
+            )
+            matched_labels.add(panel_label.upper())
+        return new_panels
+
     def _resolve_panel_conflicts(
         self, figure: Any, panel_matches: List[Dict], original_panels: Dict[str, Panel]
     ) -> List[Panel]:
@@ -367,35 +453,16 @@ class MatchPanelCaption(ABC):
         Resolve conflicts when multiple detected panels are assigned the same label,
         and ensure all detected panels are preserved with sequential labeling.
 
-        This implementation handles case-insensitive matching of panel labels,
-        so that 'A' and 'a' are treated as the same label.
+        Handles case-insensitive panel label matching throughout.
 
         Args:
             figure: The figure containing panels
-            panel_matches: List of dictionaries with panel_object, detection, and detection_idx
-            original_panels: Dictionary mapping panel labels to original Panel objects
+            panel_matches: List of dicts with panel_object, detection, and detection_idx
+            original_panels: Dict mapping panel labels to original Panel objects
 
         Returns:
             List of resolved Panel objects without duplicates
         """
-
-        # Helper function for sequential labeling - define this at the top
-        def get_next_available_label(used_labels: Set[str]) -> str:
-            """Get the next available panel label in alphabetical sequence."""
-            # Standard panel label sequence
-            label_sequence = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            for char in label_sequence:
-                if char.upper() not in [label.upper() for label in used_labels]:
-                    return char
-            # If we use up all letters, start with AA, AB, etc.
-            for char1 in label_sequence:
-                for char2 in label_sequence:
-                    double_char = char1 + char2
-                    if double_char.upper() not in [
-                        label.upper() for label in used_labels
-                    ]:
-                        return double_char
-            return "unknown"  # Fallback
 
         # Create case-insensitive lookup for original panels
         original_panels_ci = {}
@@ -478,7 +545,7 @@ class MatchPanelCaption(ABC):
 
                 # For empty labels, assign the next available letter
                 if is_empty_label:
-                    original_label = get_next_available_label(matched_labels)
+                    original_label = self._get_next_available_label(matched_labels)
                     logger.info(
                         f"Assigning sequential label '{original_label}' to unlabeled panel in figure {figure.figure_label}"
                     )
@@ -492,12 +559,16 @@ class MatchPanelCaption(ABC):
                         panel_bbox=detection["bbox"],
                         confidence=detection["confidence"],
                         # Preserve all other original data
-                        sd_files=original_panel.sd_files
-                        if hasattr(original_panel, "sd_files")
-                        else [],
-                        ai_response=original_panel.ai_response
-                        if hasattr(original_panel, "ai_response")
-                        else None,
+                        sd_files=(
+                            original_panel.sd_files
+                            if hasattr(original_panel, "sd_files")
+                            else []
+                        ),
+                        ai_response=(
+                            original_panel.ai_response
+                            if hasattr(original_panel, "ai_response")
+                            else None
+                        ),
                     )
                 else:
                     # Create a new panel from detection without original data
@@ -551,7 +622,7 @@ class MatchPanelCaption(ABC):
 
                 # For empty labels, assign the next available letter
                 if is_empty_label:
-                    original_label = get_next_available_label(matched_labels)
+                    original_label = self._get_next_available_label(matched_labels)
                     logger.info(
                         f"Assigning sequential label '{original_label}' to conflicting unlabeled panel in figure {figure.figure_label}"
                     )
@@ -564,12 +635,16 @@ class MatchPanelCaption(ABC):
                         panel_bbox=detection["bbox"],
                         confidence=detection["confidence"],
                         # Preserve all other original data
-                        sd_files=original_panel.sd_files
-                        if hasattr(original_panel, "sd_files")
-                        else [],
-                        ai_response=original_panel.ai_response
-                        if hasattr(original_panel, "ai_response")
-                        else None,
+                        sd_files=(
+                            original_panel.sd_files
+                            if hasattr(original_panel, "sd_files")
+                            else []
+                        ),
+                        ai_response=(
+                            original_panel.ai_response
+                            if hasattr(original_panel, "ai_response")
+                            else None
+                        ),
                     )
                 else:
                     # Create a new panel from detection without original data
@@ -592,7 +667,9 @@ class MatchPanelCaption(ABC):
 
                         # For conflicts with empty labels, assign sequential labels right away
                         if is_empty_label:
-                            conflict_label = get_next_available_label(matched_labels)
+                            conflict_label = self._get_next_available_label(
+                                matched_labels
+                            )
                             matched_labels.add(conflict_label.upper())
 
                             # Create a new panel for this detection with sequential label
@@ -636,44 +713,12 @@ class MatchPanelCaption(ABC):
                 processed_panels.append(panel)
                 matched_labels.add(label.upper())  # Update matched labels
 
-        # Add unmatched detections as new panels with sequential labels
-        unmatched_detections = [
-            match
-            for match in panel_matches
-            if match["detection_idx"] not in used_detection_indices
-        ]
-
-        # Process unmatched detections
-        for match in unmatched_detections:
-            panel_object = match["panel_object"]
-            detection = match["detection"]
-
-            # Check if the AI assigned a valid label that isn't already used
-            panel_label = panel_object.panel_label.strip()
-            if panel_label and panel_label.upper() not in [
-                lab.upper() for lab in matched_labels
-            ]:
-                # Use the AI-assigned label (like "D")
-                pass
-            else:
-                # Find the next available label in sequence
-                panel_label = get_next_available_label(matched_labels)
-
-            logger.info(
-                f"Adding new panel {panel_label} from unmatched detection in figure {figure.figure_label}"
+        processed_panels.extend(
+            self._add_unmatched_detections(
+                panel_matches,
+                used_detection_indices,
+                matched_labels,
+                figure.figure_label,
             )
-
-            panel = Panel(
-                panel_label=panel_label,
-                panel_caption=panel_object.panel_caption,
-                panel_bbox=detection["bbox"],
-                confidence=detection["confidence"],
-                sd_files=[],
-                ai_response=None,
-            )
-            processed_panels.append(panel)
-            matched_labels.add(
-                panel_label.upper()
-            )  # Update matched labels (case-insensitive)
-
+        )
         return processed_panels

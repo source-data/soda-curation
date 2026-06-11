@@ -8,6 +8,7 @@ from src.soda_curation._main_utils import (
     caption_hallucination_score,
     caption_partial_ratio,
     caption_present_in_manuscript,
+    caption_similarity_ratio,
     dedupe_consecutive_paragraphs,
     finalize_figure_output,
     repair_empty_panel_markers,
@@ -72,8 +73,26 @@ def test_caption_partial_ratio_zero_for_empty_inputs():
     assert caption_partial_ratio("", "") == 0.0
 
 
+def test_caption_similarity_ratio_penalizes_hallucinated_prefix_suffix():
+    """Use ratio against the best manuscript span, not partial_ratio directly."""
+    real_caption = "Western blot analysis of FLAG-AID-Fzo1 in HEK293 cells."
+    manuscript = (
+        "Methods. We performed "
+        + real_caption
+        + " Additional details are described below. " * 100
+    )
+    hallucinated = (
+        "Invented introductory sentence. "
+        + real_caption
+        + " Invented closing sentence."
+    )
+
+    assert caption_similarity_ratio(real_caption, manuscript) >= 99.0
+    assert caption_similarity_ratio(hallucinated, manuscript) < 90.0
+
+
 def test_caption_hallucination_score_bounds():
-    """Score is always in [0, 1] and inverse to partial_ratio."""
+    """Score is always in [0, 1] and inverse to caption similarity."""
     manuscript = "Methods. Result of experiment described in detail."
     perfect = caption_hallucination_score(
         "Result of experiment described in detail.", manuscript
@@ -123,7 +142,7 @@ def test_verify_keeps_valid_caption_and_sets_low_score():
     assert 0.0 <= kept.hallucination_score <= 0.1
 
 
-def test_verify_replaces_hallucinated_caption_and_clears_dependents():
+def test_verify_marks_hallucinated_caption_and_clears_dependents():
     manuscript = (
         "Figure 1 caption is here.\nFigure 2 describes something concrete.\n"
         "No mention of Figure 8 at all in the manuscript body."
@@ -144,11 +163,9 @@ def test_verify_replaces_hallucinated_caption_and_clears_dependents():
 
     assert replaced == 1
     figure = zs.figures[0]
-    assert figure.figure_caption == UNVERIFIED_CAPTION_PLACEHOLDER
-    assert figure.caption_title == ""
+    assert figure.figure_caption == original_caption
+    assert figure.caption_title == "Figure 8 (made up)"
     assert figure.panels == []
-    # Score is `1 - partial_ratio/100` of the ORIGINAL caption (not forced to
-    # 1.0 by the cascade) so the frontend gets the real similarity signal.
     expected_score = caption_hallucination_score(original_caption, manuscript)
     assert figure.hallucination_score == expected_score
     assert figure.hallucination_score > 0.0  # non-zero proves the EMBOR bug is gone
@@ -192,10 +209,9 @@ def test_verify_mixed_only_alters_hallucinated_one():
     assert [p.panel_label for p in kept.panels] == ["A"]
     assert 0.0 <= kept.hallucination_score <= 0.1
 
-    assert sanitized.figure_caption == UNVERIFIED_CAPTION_PLACEHOLDER
-    assert sanitized.caption_title == ""
+    assert sanitized.figure_caption == bad_original_caption
+    assert sanitized.caption_title == "Quantification"
     assert sanitized.panels == []
-    # Score reflects the ORIGINAL caption similarity, not a forced 1.0.
     assert sanitized.hallucination_score == caption_hallucination_score(
         bad_original_caption, manuscript
     )
@@ -203,13 +219,7 @@ def test_verify_mixed_only_alters_hallucinated_one():
 
 
 def test_verify_empty_caption_scored_as_hallucinated():
-    """An empty caption is "not provided" -> placeholder + score 1.0.
-
-    Unifying the cascade for empty and below-threshold captions matches the
-    original user requirement: any caption that isn't recoverable from the
-    manuscript text should surface in the JSON as the explicit placeholder
-    so consumers don't quietly render an empty string.
-    """
+    """An empty caption stays empty and gets score 1.0."""
     manuscript = "Figure 1 actually exists in the body of the manuscript."
     figure = _make_figure("Figure 1", caption="", caption_title="", panels=[])
     zs = _make_zip_structure([figure])
@@ -217,9 +227,37 @@ def test_verify_empty_caption_scored_as_hallucinated():
     replaced = verify_captions_against_manuscript(zs, manuscript, threshold=90.0)
 
     assert replaced == 1
-    assert zs.figures[0].figure_caption == UNVERIFIED_CAPTION_PLACEHOLDER
+    assert zs.figures[0].figure_caption == ""
     assert zs.figures[0].caption_title == ""
-    # 1 - partial_ratio(empty, anything)/100 = 1.0 naturally.
+    assert zs.figures[0].hallucination_score == 1.0
+    assert zs.figures[0].caption_verified is False
+
+
+def test_verify_clears_ev_caption_returned_for_main_figure():
+    """Figure EV8 must never be accepted as the caption for main Figure 8."""
+    manuscript = (
+        "Extended View Figure Legends\n\n"
+        "Figure EV8: Sensitivity analysis of model parameters. "
+        "A) Histogram with lognormal and gamma distribution fits."
+    )
+    ev_caption = (
+        "Figure EV8: Sensitivity analysis of model parameters. "
+        "A) Histogram with lognormal and gamma distribution fits."
+    )
+    figure = _make_figure(
+        "Figure 8",
+        caption=ev_caption,
+        caption_title="Sensitivity analysis of model parameters.",
+        panels=[_make_panel("A")],
+    )
+    zs = _make_zip_structure([figure])
+
+    unverified = verify_captions_against_manuscript(zs, manuscript, threshold=90.0)
+
+    assert unverified == 1
+    assert zs.figures[0].figure_caption == ""
+    assert zs.figures[0].caption_title == ""
+    assert zs.figures[0].panels == []
     assert zs.figures[0].hallucination_score == 1.0
     assert zs.figures[0].caption_verified is False
 
@@ -261,7 +299,7 @@ def test_finalize_figure_output_writes_formula_and_strips_conflicting_panels():
         "Figure 8 not present in text", manuscript
     )
     assert zs.figures[1].hallucination_score > 0.0
-    assert zs.figures[1].figure_caption == UNVERIFIED_CAPTION_PLACEHOLDER
+    assert zs.figures[1].figure_caption == "Figure 8 not present in text"
     assert getattr(zs.figures[1], "_conflicting_panels", []) == []
     encoded = __import__("json").dumps(
         zs,
@@ -274,25 +312,59 @@ def test_finalize_figure_output_writes_formula_and_strips_conflicting_panels():
     assert "conflicting_panels" not in encoded
 
 
-def test_finalize_rescores_placeholder_from_stored_source_caption():
-    """Placeholder figures use the original caption for scoring, not the placeholder text."""
+def test_finalize_clears_ev_caption_returned_for_main_figure():
+    """Finalization catches EV/main mismatches even if earlier verify was skipped."""
+    manuscript = (
+        "Extended View Figure Legends\n\n"
+        "Figure EV8: Sensitivity analysis of model parameters. "
+        "A) Histogram with lognormal and gamma distribution fits."
+    )
+    figure = _make_figure(
+        "Figure 8",
+        caption=(
+            "Figure EV8: Sensitivity analysis of model parameters. "
+            "A) Histogram with lognormal and gamma distribution fits."
+        ),
+        caption_title="Sensitivity analysis of model parameters.",
+        panels=[_make_panel("A")],
+    )
+    figure.hallucination_score = 0.0
+    zs = _make_zip_structure([figure])
+
+    unverified = finalize_figure_output(zs, manuscript, threshold=90.0)
+
+    assert unverified == 1
+    assert zs.figures[0].figure_caption == ""
+    assert zs.figures[0].caption_title == ""
+    assert len(zs.figures[0].panels) == 1
+    assert zs.figures[0].panels[0].panel_label == "A"
+    assert zs.figures[0].panels[0].panel_caption == ""
+    assert zs.figures[0].hallucination_score == 1.0
+    assert zs.figures[0].caption_verified is False
+
+
+def test_finalize_keeps_empty_caption_empty():
+    """Missing captions remain empty; only the score carries the warning signal."""
     manuscript = (
         "Title here. Figure 8 was mentioned in passing. "
         "Methods. Results. Many other paragraphs follow."
     )
     figure = _make_figure(
         "Figure 8",
-        caption=UNVERIFIED_CAPTION_PLACEHOLDER,
+        caption="",
         panels=[],
     )
-    figure._hallucination_source_caption = "Figure 8 not present in text"  # type: ignore[attr-defined]
     figure.hallucination_score = 0.0
     zs = _make_zip_structure([figure])
 
     finalize_figure_output(zs, manuscript, threshold=90.0)
 
-    assert zs.figures[0].hallucination_score > 0.0
+    assert zs.figures[0].figure_caption == ""
+    assert zs.figures[0].hallucination_score == 1.0
     assert getattr(zs.figures[0], "_conflicting_panels", []) == []
+    assert len(zs.figures[0].panels) == 1
+    assert zs.figures[0].panels[0].panel_label == "A"
+    assert zs.figures[0].panels[0].panel_caption == ""
 
 
 def test_json_output_omits_caption_verified_and_panel_hallucination_score():
@@ -326,8 +398,8 @@ def test_json_output_omits_caption_verified_and_panel_hallucination_score():
     assert "hallucination_score" not in panel_section
 
 
-def test_verify_score_matches_partial_ratio_formula():
-    """Score written into the figure is exactly 1 - partial_ratio/100 (when above threshold)."""
+def test_verify_score_matches_similarity_ratio_formula():
+    """Score written into the figure is exactly 1 - similarity_ratio/100."""
     manuscript = (
         "Time-lapse imaging of mitochondrial dynamics in HEK293 cells expressing "
         "FLAG-AID-Fzo1, with quantification across replicates."
@@ -351,8 +423,8 @@ def test_verify_score_matches_partial_ratio_formula():
     assert zs.figures[0].hallucination_score == expected
 
 
-def test_verify_idempotent_on_placeholder():
-    """Re-running verification on an already-sanitized figure must be a no-op."""
+def test_verify_treats_legacy_placeholder_as_extracted_text():
+    """Legacy placeholder text is no longer special-cased or rewritten."""
     manuscript = "Some manuscript text without that caption."
     figure = _make_figure(
         "Figure 3",
@@ -365,9 +437,11 @@ def test_verify_idempotent_on_placeholder():
 
     replaced = verify_captions_against_manuscript(zs, manuscript, threshold=90.0)
 
-    assert replaced == 0
+    assert replaced == 1
     assert zs.figures[0].figure_caption == UNVERIFIED_CAPTION_PLACEHOLDER
-    assert zs.figures[0].hallucination_score == 1.0
+    assert zs.figures[0].hallucination_score == caption_hallucination_score(
+        UNVERIFIED_CAPTION_PLACEHOLDER, manuscript
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -402,7 +476,9 @@ def test_verify_sets_caption_verified_false_for_hallucinated():
     verify_captions_against_manuscript(zs, manuscript, threshold=90.0)
 
     assert zs.figures[0].caption_verified is False
-    assert zs.figures[0].figure_caption == UNVERIFIED_CAPTION_PLACEHOLDER
+    assert zs.figures[0].figure_caption == (
+        "Totally invented analysis of XYZ123 across replicates."
+    )
 
 
 def test_verify_sets_caption_verified_false_for_empty():
@@ -934,10 +1010,8 @@ def test_unverified_figure_has_no_conflicting_panels_in_serialized_json():
 def test_audit_flags_old_llm_apology_caption_with_int_zero_score():
     """Real bug from EMBOR-2025-62929V1-T.json: stored score=0 for ``"Figure 8
     not present in text"``. The audit must flag this as a discrepancy because
-    1 - partial_ratio/100 of that caption against the manuscript is clearly
-    not zero. Old outputs have no ``caption_verified`` field; the audit
-    defaults that to ``True`` so the bug surfaces instead of being silently
-    excused as unverifiable."""
+    1 - similarity_ratio/100 of that caption against the manuscript is clearly
+    not zero."""
     manuscript = (
         "Title here. We performed experiments on mitochondrial dynamics in HEK293 cells. "
         "Figure 1 shows the western blot analysis. Figure 8 was mentioned in passing. "
@@ -960,7 +1034,6 @@ def test_audit_flags_old_llm_apology_caption_with_int_zero_score():
     row = report[0]
     assert row["figure_label"] == "Figure 8"
     assert row["caption_verified"] is True  # missing field defaults to True
-    assert row["unverifiable"] is False
     assert row["expected_score"] is not None
     assert row["expected_score"] > 0.0
     assert row["stored_score"] == 0.0
@@ -991,19 +1064,15 @@ def test_audit_passes_when_stored_score_matches_recomputed():
 
     assert len(report) == 1
     row = report[0]
-    assert row["partial_ratio"] >= 90.0
+    assert row["similarity_ratio"] >= 90.0
     assert row["caption_verified"] is True
-    assert row["unverifiable"] is False
     assert row["expected_score"] is not None
     assert row["expected_score"] <= 0.1
     assert row["discrepancy"] is False
 
 
-def test_audit_marks_placeholder_caption_as_unverifiable():
-    """For figures the backend already replaced with the placeholder, the
-    stored score reflects the original caption (which we no longer have).
-    The audit cannot recompute it, so it must report ``unverifiable`` with
-    ``expected_score=None`` and ``discrepancy=False``."""
+def test_audit_scores_placeholder_like_any_other_caption():
+    """Legacy placeholder text is now just caption text for audit purposes."""
     serialized = {
         "manuscript_text": "Unrelated manuscript body.",
         "figures": [
@@ -1020,14 +1089,11 @@ def test_audit_marks_placeholder_caption_as_unverifiable():
 
     row = report[0]
     assert row["caption_verified"] is False
-    assert row["unverifiable"] is True
-    assert row["expected_score"] is None
-    assert row["discrepancy"] is False
+    assert row["expected_score"] is not None
 
 
-def test_audit_marks_caption_verified_false_as_unverifiable_even_without_placeholder():
-    """Belt-and-suspenders: caption_verified=False alone is enough to mark
-    the row unverifiable, regardless of the caption text itself."""
+def test_audit_recomputes_even_when_caption_verified_false():
+    """caption_verified is internal state; scores are recomputed from text."""
     serialized = {
         "manuscript_text": "Manuscript body.",
         "figures": [
@@ -1043,9 +1109,8 @@ def test_audit_marks_caption_verified_false_as_unverifiable_even_without_placeho
     report = audit_caption_hallucination_scores(serialized)
 
     row = report[0]
-    assert row["unverifiable"] is True
-    assert row["expected_score"] is None
-    assert row["discrepancy"] is False
+    assert row["caption_verified"] is False
+    assert row["expected_score"] is not None
 
 
 def test_audit_flags_empty_caption_with_zero_stored_score():
@@ -1066,7 +1131,6 @@ def test_audit_flags_empty_caption_with_zero_stored_score():
 
     row = report[0]
     assert row["caption_verified"] is True  # default for old data
-    assert row["unverifiable"] is False
     assert row["expected_score"] == 1.0
     assert row["discrepancy"] is True
 
@@ -1090,8 +1154,7 @@ def test_audit_accepts_explicit_manuscript_override():
 
     report = audit_caption_hallucination_scores(serialized, manuscript_text=override)
 
-    assert report[0]["partial_ratio"] >= 90.0
-    assert report[0]["unverifiable"] is False
+    assert report[0]["similarity_ratio"] >= 90.0
     assert report[0]["discrepancy"] is False
 
 

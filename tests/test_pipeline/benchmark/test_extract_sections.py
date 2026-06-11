@@ -184,9 +184,11 @@ class SectionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                 "data_availability_output": data_availability,
                 "data_availability_expected": ground_truth_data_availability,
                 "results": results,
-                "cost": updated_structure.cost.extract_sections.model_dump()
-                if hasattr(updated_structure.cost.extract_sections, "model_dump")
-                else {},
+                "cost": (
+                    updated_structure.cost.extract_sections.model_dump()
+                    if hasattr(updated_structure.cost.extract_sections, "model_dump")
+                    else {}
+                ),
             }
 
         except Exception as e:

@@ -274,6 +274,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             extra={"run_id": run_id, "ai_provider": ai_provider},
         )
         _validate_ai_provider_config(config_loader.config, ai_provider, run_id)
+        zip_structure.ai_provider = ai_provider
 
         # Extract relevant sections for the pipeline
         if ai_provider == "anthropic":
@@ -317,14 +318,16 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             recoverable_failures=recoverable_failures,
         )
 
-        # Provider-independent guardrail: replace captions that the AI may have
-        # hallucinated (i.e. not actually present in the manuscript text) with a
-        # fixed placeholder before any downstream step consumes them.
+        # Provider-independent guardrail: score captions against manuscript text
+        # and mark suspect captions internally without rewriting caption text.
         caption_verification_cfg = (
             config_loader.config.get("caption_verification", {}) or {}
         )
         caption_verification_threshold = float(
-            caption_verification_cfg.get("partial_ratio_threshold", 90.0)
+            caption_verification_cfg.get(
+                "similarity_ratio_threshold",
+                caption_verification_cfg.get("partial_ratio_threshold", 90.0),
+            )
         )
         _execute_pipeline_step(
             step_name="verify_captions_against_manuscript",
@@ -498,8 +501,8 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 f"Saved QC pipeline data: {figure_data_path} and {zip_structure_path}"
             )
 
-        # Mandatory: rapidfuzz hallucination_score + strip conflicting_panels for
-        # unverified captions (runs even if verify_captions was skipped earlier).
+        # Mandatory: rapidfuzz hallucination_score + strip private conflict
+        # metadata for unverified captions (runs even if verify was skipped).
         finalize_figure_output(
             zip_structure,
             manuscript_content or getattr(zip_structure, "manuscript_text", "") or "",

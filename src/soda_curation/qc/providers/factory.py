@@ -6,7 +6,6 @@ from typing import Any, Dict, Optional
 
 from .anthropic_provider import AnthropicQCProvider
 from .base import BaseQCProvider
-from .gemini_provider import GeminiQCProvider
 from .openai_provider import OpenAIQCProvider
 
 
@@ -21,9 +20,7 @@ def build_qc_provider(
         return OpenAIQCProvider(client=clients.get("openai"))
     if normalized == "anthropic":
         return AnthropicQCProvider(client=clients.get("anthropic"))
-    if normalized == "gemini":
-        return GeminiQCProvider(client=clients.get("gemini"))
     raise ValueError(
         f"Unsupported QC ai_provider '{provider_name}'. "
-        "Expected one of ['openai', 'anthropic', 'gemini']."
+        "Expected one of ['openai', 'anthropic']."
     )

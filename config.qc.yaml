@@ -1,5 +1,5 @@
 qc_version: "3.1.2"
-# AI provider: "openai" (default), "anthropic", or "gemini"
+# AI provider: "openai" (default) or "anthropic"
 ai_provider: "openai"
 # Enforce that QC tests use Langfuse schema-derived models (no generic fallback model).
 enforce_langfuse_schema_equivalence: true
@@ -77,11 +77,6 @@ default: &default
     model: "claude-sonnet-4-6"
     temperature: 0.1
     max_tokens: 4096
-  gemini:
-    model: "gemini-2.5-flash"
-    temperature: 0.1
-    top_p: 1.0
-    max_tokens: 2048
   pipeline: {}
   # Example provider-specific override for an agentic check:
   # pipeline:

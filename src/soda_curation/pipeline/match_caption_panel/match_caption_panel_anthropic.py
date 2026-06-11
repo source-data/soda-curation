@@ -23,64 +23,11 @@ class MatchPanelCaptionAnthropic(MatchPanelCaption):
         super().__init__(config, prompt_handler, extract_dir)
         self.client = anthropic.Anthropic()
         self.anthropic_config = config["pipeline"]["match_caption_panel"]["anthropic"]
-        self.figure_images: Dict = {}
 
     def _validate_config(self) -> None:
         """Validate Anthropic configuration parameters."""
         config_ = self.config["pipeline"]["match_caption_panel"]["anthropic"]
         validate_anthropic_model(config_.get("model", "claude-sonnet-4-6"))
-
-    def process_figures(self, zip_structure):
-        """Override parent to cache figure images."""
-        from .object_detection import convert_to_pil_image
-
-        self.figure_images = {}
-        result = super().process_figures(zip_structure)
-
-        for figure in zip_structure.figures:
-            if figure.figure_label not in self.figure_images and figure.img_files:
-                try:
-                    full_path = self.extract_dir / figure.img_files[0]
-                    if full_path.exists():
-                        image, _ = convert_to_pil_image(str(full_path))
-                        self.figure_images[figure.figure_label] = image
-                except Exception as e:
-                    logger.error(
-                        f"Error caching figure image {figure.figure_label}: {str(e)}"
-                    )
-
-        return result
-
-    def get_figure_images_and_captions(self):
-        """Return base64-encoded figure images and their captions."""
-        import base64
-        import io
-
-        result = []
-        if not hasattr(self, "zip_structure") or not self.zip_structure:
-            logger.warning("No zip structure available. Run process_figures first.")
-            return result
-
-        for figure in self.zip_structure.figures:
-            try:
-                if figure.figure_label in self.figure_images:
-                    image = self.figure_images[figure.figure_label]
-                    buffered = io.BytesIO()
-                    image.save(buffered, format="PNG")
-                    encoded_image = base64.b64encode(buffered.getvalue()).decode(
-                        "utf-8"
-                    )
-                    result.append(
-                        (figure.figure_label, encoded_image, figure.figure_caption)
-                    )
-                else:
-                    logger.warning(
-                        f"Figure image not found in cache: {figure.figure_label}"
-                    )
-            except Exception as e:
-                logger.error(f"Error encoding figure {figure.figure_label}: {str(e)}")
-
-        return result
 
     def _match_panel_caption(
         self,
@@ -135,7 +82,7 @@ class MatchPanelCaptionAnthropic(MatchPanelCaption):
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": f"data:image/png;base64,{encoded_image}"
+                                "url": f"data:image/jpeg;base64,{encoded_image}"
                             },
                         },
                     ],

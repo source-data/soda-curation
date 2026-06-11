@@ -63,7 +63,6 @@ soda-curation is a professional Python package for automated data curation of sc
     ```bash
     OPENAI_API_KEY=your_openai_key
     ANTHROPIC_API_KEY=your_anthropic_key
-    GOOGLE_API_KEY=your_google_ai_studio_key
     LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
     LANGFUSE_SECRET_KEY=your_langfuse_secret_key
     LANGFUSE_HOST=https://cloud.langfuse.com
@@ -108,9 +107,6 @@ default:
     # ...
   anthropic:
     model: "claude-sonnet-4-6"
-    temperature: 0.1
-  gemini:
-    model: "gemini-2.5-flash"
     temperature: 0.1
 ```
 
@@ -556,15 +552,15 @@ poetry run python -m src.soda_curation.qc.main \
 2. **Prompt version numbers are no longer required** in this repository config.
 3. **Prompts can be resolved via Langfuse** using `langfuse_name` where needed.
 4. **Schema-based analyzer detection remains active** (panel/figure/document inferred from response schemas).
-5. **Provider-agnostic QC model calls** support `openai`, `anthropic`, and `gemini`.
-6. **Agentic mode is provider-specific**: OpenAI supports full configured tool mode; Anthropic supports provider-native built-in tools (for example `web_search_*`, `web_fetch_*`) in QC; Gemini currently logs a warning and runs non-agentic.
+5. **Provider-agnostic QC model calls** support `openai` and `anthropic`. (Gemini support was removed.)
+6. **Agentic mode is provider-specific**: OpenAI supports full configured tool mode; Anthropic supports provider-native built-in tools (for example `web_search_*`, `web_fetch_*`) in QC.
 7. **Schema-equivalence enforcement is available**: when enabled, QC fails fast if any test cannot use a Langfuse schema-derived model.
 
 ### What 3.1.1 Adds
 
 - **Provider abstraction layer in QC**: The QC pipeline now uses a normalized provider contract and factory, so analyzers stay provider-agnostic.
-- **Three provider adapters**: OpenAI, Anthropic, and Gemini are available under one API surface.
-- **Agentic mode wiring**: OpenAI supports configured tool mode; Anthropic supports built-in server tools via `model_config.tools`; Gemini currently remains non-agentic.
+- **Provider adapters**: OpenAI and Anthropic are available under one API surface. (Gemini support was removed.)
+- **Agentic mode wiring**: OpenAI supports configured tool mode; Anthropic supports built-in server tools via `model_config.tools`.
 - **Langfuse runtime hint compatibility**: Optional runtime hints (e.g., `agentic`, `model_config`, tool config) can be merged from prompt config while preserving existing prompt/schema behavior.
 - **Stronger documentation + config examples**: Clear support matrix and per-test override examples for rollout.
 
@@ -572,7 +568,6 @@ poetry run python -m src.soda_curation.qc.main \
 
 - `ai_provider: "openai"` requires `OPENAI_API_KEY`.
 - `ai_provider: "anthropic"` requires `ANTHROPIC_API_KEY`.
-- `ai_provider: "gemini"` requires `GOOGLE_API_KEY`.
 - Langfuse-backed prompts/schemas require `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, and `LANGFUSE_HOST`.
 
 #### Agentic Support Matrix
@@ -581,7 +576,6 @@ poetry run python -m src.soda_curation.qc.main \
 |---|---|---|
 | OpenAI | Yes | Yes (`agentic: true` + `model_config.tools`) |
 | Anthropic | Yes | Partial: built-in Anthropic tools via `model_config.tools` (for example `web_search_*`, `web_fetch_*`) |
-| Gemini | Yes | Not yet (logs warning, runs non-agentic) |
 
 Note: Anthropic custom client-executed function tools (manual tool-result loop) are not wired yet in QC. Current Anthropic agentic support is limited to provider-native built-in tools.
 
@@ -667,11 +661,6 @@ default: &default
     model: "claude-sonnet-4-6"
     temperature: 0.1
     max_tokens: 4096
-  gemini:
-    model: "gemini-2.5-flash"
-    temperature: 0.1
-    top_p: 1.0
-    max_tokens: 2048
   pipeline: {}
 
 # Optional: per-test OpenAI agentic override (example)
@@ -798,8 +787,6 @@ To add a new test to the QC pipeline, follow these steps:
          temperature: 0.1
         anthropic:
           model: "claude-sonnet-4-6"
-        gemini:
-          model: "gemini-2.5-flash"
         # Optional agentic override (OpenAI):
         pipeline:
           external_data_url_validation_agentic:
@@ -870,6 +857,15 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 3.3.0 (2026-06-10)
+- **mmqc_utils integration**: Manuscript HTML cleanup and figure image conversion now use `mmqc_utils` (`document_to_html`, `convert_to_bounded_jpeg`) for parity with soda-mmqc; removed legacy HTML normalization and PDF fallback paths.
+- **Python 3.12+**: Raised minimum Python to 3.12; Docker and CI updated accordingly.
+- **Vision pipeline**: Figure/panel images sent to vision APIs as bounded JPEGs (replacing PNG); Pillow 12.2+ required for TIFF handling.
+- **Caption fidelity**: Prompts require verbatim HTML captions/legends; rapidfuzz comparison uses raw HTML by default (`strip_html=False`).
+- **Hallucination scoring**: All scores (figure captions and section-level locate steps) use the same continuous formula `1 - similarity_ratio/100`.
+- **Single-panel figures**: Figures with zero or one panel are normalized to exactly one `Panel` object in final output.
+- **QC providers**: Removed Gemini support; OpenAI and Anthropic remain.
+
 ### 3.1.4 (2026-04-21)
 - **Main branch**: Merged `feature/langfuse-v3` into `main` so the Langfuse 3.x line is the default development line.
 - **QC prompts**: Panel and figure analyzers default the provider `user` prompt to include the figure caption when Langfuse/runtime hints leave it empty (`Figure caption:\n$figure_caption`).
@@ -883,7 +879,7 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 - **QC / Langfuse**: Stricter schema enforcement for QC prompts and outputs (aligns with Langfuse-managed QC expectations).
 
 ### 3.1.1 (2026-03-26)
-- **QC multi-provider architecture**: Added provider abstraction and factory with OpenAI, Anthropic, and Gemini adapters.
+- **QC multi-provider architecture**: Added provider abstraction and factory with OpenAI and Anthropic adapters.
 - **Agentic support in QC**: OpenAI tool mode and Anthropic built-in server-side tools (`web_search_*`, `web_fetch_*`) supported from runtime `model_config`.
 - **Langfuse compatibility improvements**: Prompt/schema sourcing preserved with optional runtime-hint mapping for provider execution.
 - **Docs + config refresh**: README and `config.qc.yaml` updated with provider setup, support matrix, and non-agentic/agentic examples.

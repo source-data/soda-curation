@@ -50,13 +50,11 @@ class ConfigurationLoader:
 
         # Validate required environment variables.
         # If MODEL_PROVIDER is set, require the matching key; otherwise require at
-        # least one supported provider key so standalone QC (Anthropic/Gemini) can run.
+        # least one supported provider key so standalone QC (Anthropic) can run.
         provider = os.getenv("MODEL_PROVIDER", "").strip().lower()
         provider_key_map = {
             "openai": "OPENAI_API_KEY",
             "anthropic": "ANTHROPIC_API_KEY",
-            "gemini": "GOOGLE_API_KEY",
-            "google": "GOOGLE_API_KEY",
         }
         if provider in provider_key_map:
             required = provider_key_map[provider]
@@ -67,13 +65,10 @@ class ConfigurationLoader:
                 )
             return
 
-        if not any(
-            os.getenv(key)
-            for key in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY")
-        ):
+        if not any(os.getenv(key) for key in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY")):
             raise ConfigurationError(
                 "Missing required environment variables: provide at least one of "
-                "OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY"
+                "OPENAI_API_KEY or ANTHROPIC_API_KEY"
             )
 
     def _load_yaml_config(self) -> Dict[str, Any]:

@@ -7,7 +7,7 @@ import openai
 import pytest
 from pydantic import ValidationError
 
-from src.soda_curation.pipeline.extract_captions.extract_captions_openai import (
+from src.soda_curation.pipeline.extract_captions.extract_captions_base import (
     CaptionExtraction,
 )
 from src.soda_curation.pipeline.openai_utils import (
@@ -464,9 +464,9 @@ class TestCallOpenAI:
 
         good = MagicMock()
         good.choices = [MagicMock()]
-        good.choices[
-            0
-        ].message.content = '{"figure_label":"Fig","caption_title":"","figure_caption":"body","is_verbatim":false}'
+        good.choices[0].message.content = (
+            '{"figure_label":"Fig","caption_title":"","figure_caption":"body","is_verbatim":false}'
+        )
         good.usage = MagicMock()
         good.usage.prompt_tokens = 1
         good.usage.completion_tokens = 2
@@ -510,9 +510,9 @@ class TestCallOpenAI:
 
         broken = MagicMock()
         broken.choices = [MagicMock()]
-        broken.choices[
-            0
-        ].message.content = '{"caption":"Figure 5: mt...","is_verbatim":false}'
+        broken.choices[0].message.content = (
+            '{"caption":"Figure 5: mt...","is_verbatim":false}'
+        )
         broken.usage = MagicMock()
         broken.usage.prompt_tokens = 4
         broken.usage.completion_tokens = 1
@@ -520,9 +520,9 @@ class TestCallOpenAI:
 
         repaired = MagicMock()
         repaired.choices = [MagicMock()]
-        repaired.choices[
-            0
-        ].message.content = '{"figure_label":"Figure 5","caption_title":"mt...","figure_caption":"Figure 5: mt...","is_verbatim":false}'
+        repaired.choices[0].message.content = (
+            '{"figure_label":"Figure 5","caption_title":"mt...","figure_caption":"Figure 5: mt...","is_verbatim":false}'
+        )
         repaired.usage = MagicMock()
         repaired.usage.prompt_tokens = 10
         repaired.usage.completion_tokens = 8
@@ -564,9 +564,9 @@ class TestCallOpenAI:
         def _broken(*_args, **_kwargs):
             m = MagicMock()
             m.choices = [MagicMock()]
-            m.choices[
-                0
-            ].message.content = '{"caption":"still wrong","is_verbatim":false}'
+            m.choices[0].message.content = (
+                '{"caption":"still wrong","is_verbatim":false}'
+            )
             m.usage = MagicMock()
             m.usage.prompt_tokens = 1
             m.usage.completion_tokens = 1
@@ -584,8 +584,9 @@ class TestCallOpenAI:
                 enable_chunking=False,
                 operation="test.op",
             )
-        # Two calls: initial + one repair attempt
-        assert mock_client.chat.completions.create.call_count == 2
+        # Each attempt: 1 lenient call + 1 self-healing repair call = 2 per attempt.
+        # With OPENAI_MAX_RETRIES = 5 attempts, total = 5 × 2 = 10.
+        assert mock_client.chat.completions.create.call_count == 10
 
 
 class TestStrictSchemaHelper:

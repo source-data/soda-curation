@@ -16,6 +16,7 @@ from rapidfuzz import fuzz
 
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
     Figure,
+    Panel,
     ZipStructure,
 )
 
@@ -83,23 +84,6 @@ def setup_extract_dir() -> Path:
     extract_dir = Path(temp_dir)
     logger.info(f"Created temporary extraction directory: {extract_dir}")
     return extract_dir
-
-
-def write_output(output_json: str, output_path: str) -> None:
-    """
-    Write JSON output to file.
-
-    Args:
-        output_json: JSON string to write
-        output_path: Path to output file
-    """
-    try:
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(output_json)
-        logger.info(f"Output written to {output_path}")
-    except Exception as e:
-        logger.error(f"Failed to write output: {str(e)}")
-        raise
 
 
 def cleanup_extract_dir(extract_dir: Path) -> None:
@@ -212,10 +196,6 @@ def normalize(s: str, do_not_remove: str = "", do: Optional[List[str]] = None) -
             .decode("utf-8", "ignore")
         )
 
-    if "special_chars" in do:
-        s = s.replace("+/+", "+/+")
-        s = s.replace("-/-", "-/-")
-
     # Remove multiple spaces
     s = re.sub(r"\s+", " ", s).strip()
 
@@ -275,13 +255,20 @@ def normalize_text(
     return normalize(text, do_not_remove=keep_chars, do=operations)
 
 
-def exact_match_check(extracted_text: str, source_text: str) -> bool:
+def exact_match_check(
+    extracted_text: str, source_text: str, strip_html: bool = False
+) -> bool:
     """
     Check if normalized extracted text exists within normalized source text.
+
+    Both texts are HTML by default (manuscript text and AI extractions are
+    verbatim HTML), so HTML markup is part of the comparison unless
+    ``strip_html=True`` is passed.
 
     Args:
         extracted_text: Text to check for hallucination
         source_text: Original source text to compare against
+        strip_html: Whether to strip HTML markup before comparing
 
     Returns:
         bool: True if extract is found in source, False otherwise
@@ -290,20 +277,27 @@ def exact_match_check(extracted_text: str, source_text: str) -> bool:
         return False
 
     # Create normalized versions of both texts
-    norm_extracted = normalize_text(extracted_text, strip_html=True)
-    norm_source = normalize_text(source_text, strip_html=True)
+    norm_extracted = normalize_text(extracted_text, strip_html=strip_html)
+    norm_source = normalize_text(source_text, strip_html=strip_html)
 
     # Check if the normalized extracted text is in the normalized source
     return norm_extracted in norm_source
 
 
-def fuzzy_match_score(extracted_text: str, source_text: str) -> float:
+def fuzzy_match_score(
+    extracted_text: str, source_text: str, strip_html: bool = False
+) -> float:
     """
     Calculate fuzzy match similarity score between extracted text and source text.
+
+    HTML markup is included in the comparison by default so that the score
+    also verifies the AI preserved the input HTML verbatim; pass
+    ``strip_html=True`` to compare visible text only.
 
     Args:
         extracted_text: Text to check for hallucination
         source_text: Original source text to compare against
+        strip_html: Whether to strip HTML markup before comparing
 
     Returns:
         float: Similarity score between 0-100
@@ -312,8 +306,8 @@ def fuzzy_match_score(extracted_text: str, source_text: str) -> float:
         return 0.0
 
     # Create normalized versions for fuzzy matching
-    norm_extracted = normalize_text(extracted_text, strip_html=True)
-    norm_source = normalize_text(source_text, strip_html=True)
+    norm_extracted = normalize_text(extracted_text, strip_html=strip_html)
+    norm_source = normalize_text(source_text, strip_html=strip_html)
 
     # Get the best partial ratio score
     return fuzz.partial_ratio(norm_extracted, norm_source)
@@ -323,43 +317,119 @@ UNVERIFIED_CAPTION_PLACEHOLDER = (
     "FIGURE CAPTION NOT PRESENT OR POSSIBLY HALLUCINATED, PLEASE CHECK."
 )
 
+_LEADING_FIGURE_LABEL_RE = re.compile(
+    r"^\s*(?:extended\s+view\s+)?(?:figure|fig\.?)\s*"
+    r"(?P<label>(?:ev\s*)?\d+[a-z]?|\d+[a-z]?\s*ev)\b",
+    re.IGNORECASE,
+)
 
-def caption_partial_ratio(caption: str, manuscript_text: str) -> float:
+
+def _normalized_figure_label_scope(text: str) -> Optional[tuple[str, bool]]:
     """
-    Normalized ``rapidfuzz.fuzz.partial_ratio`` of ``caption`` inside ``manuscript_text``.
+    Return (figure_number, is_ev) for a leading figure label, if present.
 
-    Returns 0.0 when either side is empty after normalization. Both sides are
-    normalized identically (lowercase, HTML stripped, whitespace collapsed) so
-    pandoc HTML wrappers and LLM cosmetics do not affect the score.
+    Examples:
+    - "Figure 8" -> ("8", False)
+    - "Figure EV8" -> ("8", True)
+    - "Figure 8EV" -> ("8", True)
+
+    Captions without a leading figure label return None; we do not reject those
+    here because many extractor outputs contain only the caption body/panels.
+    """
+    match = _LEADING_FIGURE_LABEL_RE.match(text or "")
+    if not match:
+        return None
+
+    label = re.sub(r"\s+", "", match.group("label")).upper()
+    is_ev = label.startswith("EV") or label.endswith("EV")
+    label = label.replace("EV", "")
+    return label, is_ev
+
+
+def _caption_label_mismatches_figure(figure_label: str, caption: str) -> bool:
+    """True when a caption is clearly for a different figure namespace/number."""
+    target = _normalized_figure_label_scope(figure_label)
+    extracted = _normalized_figure_label_scope(caption)
+    if target is None or extracted is None:
+        return False
+    return target != extracted
+
+
+def caption_similarity_ratio(
+    caption: str, manuscript_text: str, strip_html: bool = False
+) -> float:
+    """
+    Normalized rapidfuzz ratio for ``caption`` against its best manuscript span.
+
+    A direct ``fuzz.ratio(caption, full_manuscript)`` is not useful because a
+    caption is much shorter than the manuscript and would score near zero even
+    when it is present verbatim. Instead, we first locate the best aligned span
+    in the manuscript, then score ``caption`` against that span with
+    ``fuzz.ratio``. This preserves the "caption inside large text" behavior
+    while penalizing hallucinated prefixes/suffixes that ``partial_ratio`` can
+    be too forgiving about.
+
+    Both the manuscript and the AI-extracted caption are HTML, so by default
+    (``strip_html=False``) HTML markup takes part in the comparison: a high
+    score certifies that the AI returned the exact HTML present in the input.
+    Pass ``strip_html=True`` to compare visible text only.
     """
     if not caption or not manuscript_text:
         return 0.0
-    norm_caption = normalize_text(caption, strip_html=True)
-    norm_source = normalize_text(manuscript_text, strip_html=True)
+    norm_caption = normalize_text(caption, strip_html=strip_html)
+    norm_source = normalize_text(manuscript_text, strip_html=strip_html)
     if not norm_caption or not norm_source:
         return 0.0
-    return float(fuzz.partial_ratio(norm_caption, norm_source))
+
+    alignment = fuzz.partial_ratio_alignment(norm_caption, norm_source)
+    matched_span = norm_source[alignment.dest_start : alignment.dest_end]
+    if not matched_span:
+        return 0.0
+    return float(fuzz.ratio(norm_caption, matched_span))
 
 
-def caption_hallucination_score(caption: str, manuscript_text: str) -> float:
+def caption_partial_ratio(
+    caption: str, manuscript_text: str, strip_html: bool = False
+) -> float:
+    """
+    Backwards-compatible name for the caption similarity score.
+
+    Historically this returned ``fuzz.partial_ratio``. It now returns the
+    ratio-against-best-span score used for hallucination scoring.
+    """
+    return caption_similarity_ratio(caption, manuscript_text, strip_html=strip_html)
+
+
+def caption_hallucination_score(
+    caption: str, manuscript_text: str, strip_html: bool = False
+) -> float:
     """
     Hallucination score for one caption in [0, 1].
 
-    Defined as ``1 - partial_ratio/100``: 0 means the caption is present
+    Defined as ``1 - similarity_ratio/100``: 0 means the caption is present
     verbatim (after normalization), 1 means it is fully absent. This is the
     single source of truth for the per-figure hallucination signal exposed to
     the frontend.
     """
     return max(
-        0.0, min(1.0, 1.0 - caption_partial_ratio(caption, manuscript_text) / 100.0)
+        0.0,
+        min(
+            1.0,
+            1.0
+            - caption_similarity_ratio(caption, manuscript_text, strip_html=strip_html)
+            / 100.0,
+        ),
     )
 
 
 def caption_present_in_manuscript(
-    caption: str, manuscript_text: str, threshold: float = 90.0
+    caption: str,
+    manuscript_text: str,
+    threshold: float = 90.0,
+    strip_html: bool = False,
 ) -> tuple[bool, float]:
-    """Convenience: returns (partial_ratio >= threshold, partial_ratio)."""
-    score = caption_partial_ratio(caption, manuscript_text)
+    """Convenience: returns (similarity_ratio >= threshold, similarity_ratio)."""
+    score = caption_similarity_ratio(caption, manuscript_text, strip_html=strip_html)
     return score >= threshold, score
 
 
@@ -367,86 +437,81 @@ def verify_captions_against_manuscript(
     zip_structure: ZipStructure,
     manuscript_text: str,
     threshold: float = 90.0,
+    strip_html: bool = False,
 ) -> int:
     """
-    Score every figure caption with rapidfuzz; replace ones below ``threshold``.
+    Score every figure caption with rapidfuzz and mark suspect captions.
 
     Provider-independent guardrail. For each figure in ``zip_structure.figures``:
 
     - **Score (sent to the frontend):** ``figure.hallucination_score`` is
-      always set to ``1 - partial_ratio/100`` computed against the *original*
+      always set to ``1 - similarity_ratio/100`` computed against the
       LLM-extracted caption (0 = verbatim, 1 = absent). This is the single,
       continuous, deterministic signal the frontend can threshold itself.
-      Empty captions yield score ``1.0`` naturally (``partial_ratio == 0``).
-    - **Cascade (pipeline-internal guard):** when the original caption is
-      empty *or* ``partial_ratio < threshold``, the figure is also marked
-      ``caption_verified = False`` and the suspect data derived from that
-      caption is cleared: ``figure_caption`` is replaced with
-      ``UNVERIFIED_CAPTION_PLACEHOLDER``, ``caption_title`` is cleared, and
-      the LLM-extracted ``panels`` list is emptied. Downstream steps
-      (panel-matching, panel-source assignment) gate on this flag and skip
-      the figure so they cannot fabricate panels for a non-existent caption.
-    - Importantly, the score is **not** mutated by the cascade — it always
-      reflects the rapidfuzz similarity of the *original* caption. This means
-      the audit utility can independently reproduce the score from the
-      original caption text, and the frontend can choose any threshold it
-      wants without having to know about the backend's internal cutoff.
-    - Figures already carrying the placeholder (re-run / idempotent call)
-      are left untouched: their ``caption_verified`` is forced to ``False``
-      but their score is preserved (we no longer have the original caption
-      to re-score against).
+      Empty captions yield score ``1.0`` naturally (``similarity_ratio == 0``).
+    - **Cascade (pipeline-internal guard):** when the caption is empty *or*
+      ``similarity_ratio < threshold``, the figure is marked
+      ``caption_verified = False`` and the caption-derived panel list is
+      cleared so downstream steps cannot fabricate panel metadata. The caption
+      text itself is never modified: empty stays empty, and suspect non-empty
+      captions are returned exactly as extracted.
 
-    Returns the number of figures whose caption was replaced this run.
+    Returns the number of figures marked unverified this run.
     """
-    replaced = 0
+    unverified = 0
     for figure in zip_structure.figures:
-        # Idempotent on already-sanitized figures: preserve the previously
-        # computed score (it reflects the original caption that we no longer
-        # have on the figure).
-        if figure.figure_caption == UNVERIFIED_CAPTION_PLACEHOLDER:
-            figure.caption_verified = False
-            figure._conflicting_panels = []
-            continue
-
-        # Remember the LLM caption for scoring even if we replace it below.
         figure._hallucination_source_caption = figure.figure_caption  # type: ignore[attr-defined]
 
-        # Always compute the rapidfuzz-based hallucination score from the
-        # ORIGINAL caption text. Empty caption -> partial_ratio == 0 -> 1.0.
-        partial_ratio = caption_partial_ratio(figure.figure_caption, manuscript_text)
+        if _caption_label_mismatches_figure(figure.figure_label, figure.figure_caption):
+            logger.warning(
+                "Caption label does not match requested figure; clearing caption",
+                extra={
+                    "figure_label": figure.figure_label,
+                    "caption_preview": figure.figure_caption[:120],
+                    "reason": "caption_label_mismatch",
+                },
+            )
+            figure.figure_caption = ""
+            figure.caption_title = ""
+            figure.panels = []
+            figure._conflicting_panels = []
+            figure.hallucination_score = 1.0
+            figure.caption_verified = False
+            unverified += 1
+            continue
+
+        similarity_ratio = caption_similarity_ratio(
+            figure.figure_caption, manuscript_text, strip_html=strip_html
+        )
         figure.hallucination_score = caption_hallucination_score(
-            figure.figure_caption, manuscript_text
+            figure.figure_caption, manuscript_text, strip_html=strip_html
         )
 
-        if not figure.figure_caption or partial_ratio < threshold:
+        if not figure.figure_caption or similarity_ratio < threshold:
             figure._conflicting_panels = []
             logger.warning(
                 "Caption not found in manuscript; marking as unverified",
                 extra={
                     "figure_label": figure.figure_label,
-                    "partial_ratio": partial_ratio,
+                    "similarity_ratio": similarity_ratio,
                     "threshold": threshold,
                     "hallucination_score": figure.hallucination_score,
                 },
             )
-            figure.figure_caption = UNVERIFIED_CAPTION_PLACEHOLDER
-            figure.caption_title = ""
             figure.panels = []
             figure.caption_verified = False
-            replaced += 1
+            unverified += 1
         else:
             figure.caption_verified = True
 
-    return replaced
+    return unverified
 
 
 def _hallucination_score_source_caption(figure: Figure) -> str:
-    """Caption text used for rapidfuzz scoring (original LLM text, not placeholder)."""
+    """Caption text used for rapidfuzz scoring."""
     stored = getattr(figure, "_hallucination_source_caption", None)
     if stored and str(stored).strip():
         return str(stored)
-    if figure.figure_caption == UNVERIFIED_CAPTION_PLACEHOLDER:
-        return ""
     return figure.figure_caption or ""
 
 
@@ -454,6 +519,7 @@ def finalize_figure_output(
     zip_structure: ZipStructure,
     manuscript_text: str,
     threshold: float = 90.0,
+    strip_html: bool = False,
 ) -> int:
     """
     Mandatory last pass before JSON: rapidfuzz scores + unverified cleanup.
@@ -461,10 +527,10 @@ def finalize_figure_output(
     Even when an earlier pipeline step was skipped (e.g. ``verify_captions`` is
     non-critical and failed), this guarantees:
 
-    - Every figure's ``hallucination_score`` is ``1 - partial_ratio/100`` for
-      the original extracted caption (not the placeholder).
-    - Figures below ``threshold`` get the placeholder, cleared panels, and
-      **no** ``conflicting_panels`` in the serialized output.
+    - Every figure's ``hallucination_score`` is ``1 - similarity_ratio/100``.
+    - Figures with zero or one panel are normalized to exactly one panel object.
+    - Figures below ``threshold`` keep their extracted caption text, but their
+      caption-derived panels and private conflict metadata are cleared.
     """
     if not (manuscript_text or "").strip():
         logger.error(
@@ -473,43 +539,78 @@ def finalize_figure_output(
         )
         return 0
 
-    replaced = 0
+    unverified = 0
     for figure in zip_structure.figures:
-        if figure.figure_caption == UNVERIFIED_CAPTION_PLACEHOLDER:
-            figure.caption_verified = False
-            figure._conflicting_panels = []
-            source = _hallucination_score_source_caption(figure)
-            if source:
-                figure.hallucination_score = caption_hallucination_score(
-                    source, manuscript_text
-                )
-            continue
-
         source_caption = figure.figure_caption or ""
         if source_caption:
             figure._hallucination_source_caption = source_caption  # type: ignore[attr-defined]
 
-        partial_ratio = caption_partial_ratio(source_caption, manuscript_text)
-        figure.hallucination_score = caption_hallucination_score(
-            source_caption, manuscript_text
-        )
-
-        if not source_caption.strip() or partial_ratio < threshold:
-            figure.caption_verified = False
+        if _caption_label_mismatches_figure(figure.figure_label, source_caption):
+            logger.warning(
+                "Caption label does not match requested figure during finalization",
+                extra={
+                    "figure_label": figure.figure_label,
+                    "caption_preview": source_caption[:120],
+                    "reason": "caption_label_mismatch",
+                },
+            )
+            figure.figure_caption = ""
+            figure.caption_title = ""
+            figure.panels = []
             figure._conflicting_panels = []
-            if figure.figure_caption != UNVERIFIED_CAPTION_PLACEHOLDER:
-                figure.figure_caption = UNVERIFIED_CAPTION_PLACEHOLDER
-                figure.caption_title = ""
-                figure.panels = []
-                replaced += 1
+            figure.hallucination_score = 1.0
+            figure.caption_verified = False
+            unverified += 1
         else:
-            figure.caption_verified = True
+            similarity_ratio = caption_similarity_ratio(
+                source_caption, manuscript_text, strip_html=strip_html
+            )
+            figure.hallucination_score = caption_hallucination_score(
+                source_caption, manuscript_text, strip_html=strip_html
+            )
 
-    return replaced
+            if not source_caption.strip() or similarity_ratio < threshold:
+                figure.caption_verified = False
+                figure._conflicting_panels = []
+                figure.panels = []
+                unverified += 1
+            else:
+                figure.caption_verified = True
+
+        ensure_single_panel_figure(figure)
+
+    return unverified
 
 
-# Backwards-compatible alias used in tests / earlier revisions.
-apply_figure_hallucination_scores = finalize_figure_output
+def ensure_single_panel_figure(figure: Figure) -> bool:
+    """
+    Normalize figures with zero or one panel to exactly one panel object.
+
+    A figure with no panel substructure (0 panels) and one with a single panel
+    are treated the same: the output always contains one ``Panel`` with label
+    ``A`` (when unlabeled) and the figure caption as ``panel_caption`` when the
+    panel caption is empty. Figures with two or more panels are unchanged.
+    """
+    if len(figure.panels) > 1:
+        return False
+
+    figure_caption = figure.figure_caption or ""
+
+    if len(figure.panels) == 1:
+        panel = figure.panels[0]
+        if not (panel.panel_label or "").strip():
+            panel.panel_label = "A"
+        if not (panel.panel_caption or "").strip():
+            panel.panel_caption = figure_caption
+        return False
+
+    figure.panels = [
+        Panel(
+            panel_label="A",
+            panel_caption=figure_caption,
+        )
+    ]
+    return True
 
 
 # Match a panel-marker letter at the start of a line, optionally followed by
@@ -655,10 +756,6 @@ def repair_empty_panel_markers(zip_structure: ZipStructure) -> int:
     return total_dropped
 
 
-# Backwards-compatible alias for code/tests that imported the previous name.
-remove_empty_caption_panels = repair_empty_panel_markers
-
-
 def sort_panels_by_label(zip_structure: ZipStructure) -> int:
     """
     Sort each figure's ``panels`` list alphabetically by ``panel_label``.
@@ -696,35 +793,27 @@ def audit_caption_hallucination_scores(
     zip_structure_dict: Dict,
     manuscript_text: Optional[str] = None,
     discrepancy_tolerance: float = 0.05,
+    strip_html: bool = False,
 ) -> List[Dict]:
     """
     Recompute each figure's hallucination score from a serialized pipeline output.
 
     Provides a provider-independent cross-check for the unified
-    ``1 - partial_ratio/100`` scoring on any pipeline JSON. Useful both for
+    ``1 - similarity_ratio/100`` scoring on any pipeline JSON. Useful both for
     auditing historical runs that predate this scoring and for spot-checking
     new runs.
 
     Semantics match :func:`verify_captions_against_manuscript`:
 
-    - For a **verified caption** (``caption_verified == True`` and the caption
-      is not the placeholder), the stored ``hallucination_score`` should equal
-      ``1 - partial_ratio/100`` of the *current* ``figure_caption`` against
-      the manuscript text. Discrepancies above ``discrepancy_tolerance`` are
-      flagged.
-    - For an **unverified caption** (``caption_verified == False`` or the
-      caption equals ``UNVERIFIED_CAPTION_PLACEHOLDER``), the stored score
-      reflects the *original* LLM-extracted caption, which is no longer in
-      the JSON. We cannot recompute it from the JSON alone, so
-      ``expected_score`` is ``None`` and ``discrepancy`` is ``False``
-      (unverifiable rather than wrong). Old outputs that pre-date the
-      ``caption_verified`` field are treated as verified by default — that is
-      exactly what surfaces the EMBOR Figure 8 bug as a real discrepancy.
+    - The stored ``hallucination_score`` should equal
+      ``1 - similarity_ratio/100`` of the current ``figure_caption`` against
+      the manuscript text. This is true even when the caption is marked
+      unverified: the caption text is preserved in JSON, so the score remains
+      fully recomputable.
 
     Returns one dict per figure with ``figure_label``, ``caption_preview``,
-    ``partial_ratio``, ``stored_score``, ``expected_score`` (``None`` when
-    unverifiable), ``caption_verified``, ``unverifiable``, and
-    ``discrepancy``.
+    ``similarity_ratio``, ``stored_score``, ``expected_score``,
+    ``caption_verified``, and ``discrepancy``.
     """
     if manuscript_text is None:
         manuscript_text = str(zip_structure_dict.get("manuscript_text", "") or "")
@@ -738,24 +827,12 @@ def audit_caption_hallucination_scores(
         except (TypeError, ValueError):
             stored = 0.0
 
-        # Older outputs may not carry caption_verified; default to True so
-        # any old "0 for an obviously hallucinated caption" surfaces as a
-        # discrepancy rather than getting silently excused as unverifiable.
         caption_verified = bool(fig.get("caption_verified", True))
-        is_placeholder = caption == UNVERIFIED_CAPTION_PLACEHOLDER
-        unverifiable = is_placeholder or not caption_verified
-
-        partial = caption_partial_ratio(caption, manuscript_text) if caption else 0.0
-
-        expected: Optional[float]
-        discrepancy: bool
-        if unverifiable:
-            # Stored score reflects an original caption we no longer have.
-            expected = None
-            discrepancy = False
-        else:
-            expected = max(0.0, min(1.0, 1.0 - partial / 100.0))
-            discrepancy = abs(stored - expected) > discrepancy_tolerance
+        similarity = caption_similarity_ratio(
+            caption, manuscript_text, strip_html=strip_html
+        )
+        expected = max(0.0, min(1.0, 1.0 - similarity / 100.0))
+        discrepancy = abs(stored - expected) > discrepancy_tolerance
 
         report.append(
             {
@@ -763,13 +840,12 @@ def audit_caption_hallucination_scores(
                 "caption_preview": (
                     (caption[:80] + "...") if len(caption) > 80 else caption
                 ),
-                "partial_ratio": round(partial, 2),
+                "similarity_ratio": round(similarity, 2),
+                # Backwards-compatible key for the current CLI/tests.
+                "partial_ratio": round(similarity, 2),
                 "stored_score": round(stored, 4),
-                "expected_score": (
-                    round(expected, 4) if expected is not None else None
-                ),
+                "expected_score": round(expected, 4),
                 "caption_verified": caption_verified,
-                "unverifiable": unverifiable,
                 "discrepancy": discrepancy,
             }
         )
@@ -810,55 +886,15 @@ def dedupe_consecutive_paragraphs(text: str) -> str:
     return "\n\n".join(deduped)
 
 
-def calculate_hallucination_score(extracted_text: str, source_text: str) -> float:
+def calculate_hallucination_score(
+    extracted_text: str, source_text: str, strip_html: bool = False
+) -> float:
     """
     Calculate a 0-1 hallucination possibility score.
-    0 = definitely not hallucinated, 1 = likely hallucinated
 
-    Args:
-        extracted_text: Text to check for hallucination
-        source_text: Original source text to compare against
-
-    Returns:
-        float: Hallucination possibility score (0-1)
+    Uses the same formula as :func:`caption_hallucination_score`:
+    ``1 - similarity_ratio/100`` against the best matching manuscript span.
     """
-    # Handle empty strings
-    if not extracted_text or not source_text:
-        return 1.0
-
-    # First try exact match
-    if exact_match_check(extracted_text, source_text):
-        return 0.0
-
-    # If not exact match, use fuzzy matching
-    similarity = fuzzy_match_score(extracted_text, source_text)
-
-    # Convert similarity (0-100) to hallucination score (0-1)
-    # Higher similarity = lower hallucination score
-    # If similarity is very high (≥98), treat as not hallucinated
-    if similarity >= 98.0:
-        return 0.0
-
-    return 1.0 - (similarity / 100.0)
-
-
-# Before JSON serialization
-def clean_original_source_data_files(
-    zip_structure: ZipStructure, original_source_data_files: Dict[str, List[str]]
-):
-    """
-    Remove original source data files from figures if they've been assigned to panels.
-    Only removes files that were present at the beginning of the pipeline.
-    """
-    for fig in zip_structure.figures:
-        # Check if there are any panels with assigned source data files
-        has_panel_with_sd_files = any(panel.sd_files for panel in fig.panels)
-
-        if has_panel_with_sd_files and fig.figure_label in original_source_data_files:
-            # Get the list of files that were originally extracted
-            original_files = original_source_data_files[fig.figure_label]
-
-            # Remove only the original files, keeping any that might have been added during processing
-            fig.sd_files = [f for f in fig.sd_files if f not in original_files]
-
-    return zip_structure
+    return caption_hallucination_score(
+        extracted_text, source_text, strip_html=strip_html
+    )

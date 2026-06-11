@@ -13,11 +13,10 @@ import zipfile
 from pathlib import Path
 from typing import List
 
-import pypandoc
 from lxml import etree
+from mmqc_utils import document_to_html
 
 from .exceptions import NoManuscriptFileError, NoXMLFileFoundError
-from .html_normalization import pandoc_html_to_plain_text
 from .manuscript_structure import Figure, ZipStructure
 
 logger = logging.getLogger(__name__)
@@ -89,9 +88,10 @@ class XMLStructureExtractor:
                     target_path.parent.mkdir(parents=True, exist_ok=True)
 
                     # Extract file
-                    with zip_ref.open(item) as source, open(
-                        target_path, "wb"
-                    ) as target:
+                    with (
+                        zip_ref.open(item) as source,
+                        open(target_path, "wb") as target,
+                    ):
                         shutil.copyfileobj(source, target)
 
             logger.info(f"Extracted contents to {self.manuscript_extract_dir}")
@@ -372,7 +372,8 @@ class XMLStructureExtractor:
             docx_path: Path to manuscript file (may be DOCX, PDF, LaTeX, RTF, or ODT)
 
         Returns:
-            str: Plain text extracted from the file (HTML from pandoc is stripped).
+            str: Cleaned HTML extracted from the file. HTML cleanup
+            (mmqc_utils.postprocess_html) is applied before any AI call.
 
         Raises:
             NoManuscriptFileError: If file is not found or extraction fails
@@ -382,25 +383,11 @@ class XMLStructureExtractor:
             if not full_path.exists():
                 raise NoManuscriptFileError(f"Manuscript file not found at {full_path}")
 
-            file_ext = full_path.suffix.lower()
-
-            # Use pypandoc for formats it supports (DOCX, RTF, ODT, LaTeX)
-            if file_ext in [".docx", ".rtf", ".odt", ".tex"]:
-                logger.info(f"Extracting content from {file_ext} file using pypandoc")
-                result = pypandoc.convert_file(str(full_path), "html")
-                html = str(result) if result else ""
-                return pandoc_html_to_plain_text(html)
-
-            # Handle PDF separately
-            elif file_ext == ".pdf":
-                logger.info("Extracting content from PDF file")
-                return self._extract_pdf_content(full_path)
-
-            else:
-                raise NoManuscriptFileError(
-                    f"Unsupported file format: {file_ext}. "
-                    f"Supported formats: DOCX, PDF, LaTeX (.tex), RTF, ODT"
-                )
+            logger.info(
+                f"Extracting content from {full_path.suffix.lower()} file "
+                "using mmqc_utils.document_to_html"
+            )
+            return document_to_html(full_path)
 
         except NoManuscriptFileError:
             raise
@@ -409,50 +396,3 @@ class XMLStructureExtractor:
             raise NoManuscriptFileError(
                 f"Failed to extract content from {docx_path}: {str(e)}"
             )
-
-    def _extract_pdf_content(self, pdf_path: Path) -> str:
-        """
-        Extract text content from PDF file and convert to HTML.
-
-        Args:
-            pdf_path: Path to PDF file
-
-        Returns:
-            str: Plain text extracted from PDF (same normalization as DOCX via pandoc).
-        """
-        try:
-            # Try using pypandoc first (if it supports PDF)
-            try:
-                result = pypandoc.convert_file(str(pdf_path), "html")
-                html = str(result) if result else ""
-                return pandoc_html_to_plain_text(html)
-            except Exception:
-                # Fallback to PyPDF2 if pypandoc doesn't support PDF
-                logger.info("Using PyPDF2 for PDF extraction")
-                import PyPDF2
-
-                html_content = ["<html><body>"]
-                with open(pdf_path, "rb") as file:
-                    pdf_reader = PyPDF2.PdfReader(file)
-                    for page_num, page in enumerate(pdf_reader.pages, 1):
-                        text = page.extract_text()
-                        if text.strip():
-                            html_content.append(
-                                f"<div class='page' data-page='{page_num}'>"
-                            )
-                            # Escape HTML and preserve line breaks
-                            text_html = (
-                                text.replace("&", "&amp;")
-                                .replace("<", "&lt;")
-                                .replace(">", "&gt;")
-                                .replace("\n", "<br/>")
-                            )
-                            html_content.append(f"<p>{text_html}</p>")
-                            html_content.append("</div>")
-
-                html_content.append("</body></html>")
-                return pandoc_html_to_plain_text("\n".join(html_content))
-
-        except Exception as e:
-            logger.error(f"Error extracting PDF content: {str(e)}")
-            raise NoManuscriptFileError(f"Failed to extract content from PDF: {str(e)}")

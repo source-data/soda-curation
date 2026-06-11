@@ -229,14 +229,16 @@ def test_get_pydantic_model():
 
 def test_validate_schema_equivalence_collects_errors_non_strict():
     registry = create_registry()
-    with patch.object(
-        registry, "get_all_test_names", return_value=["test_ok", "test_bad"]
-    ), patch.object(
-        registry,
-        "get_schema",
-        side_effect=[{"type": "object"}, FileNotFoundError("missing")],
-    ), patch.object(
-        registry, "get_pydantic_model", return_value=MagicMock()
+    with (
+        patch.object(
+            registry, "get_all_test_names", return_value=["test_ok", "test_bad"]
+        ),
+        patch.object(
+            registry,
+            "get_schema",
+            side_effect=[{"type": "object"}, FileNotFoundError("missing")],
+        ),
+        patch.object(registry, "get_pydantic_model", return_value=MagicMock()),
     ):
         errors = registry.validate_schema_equivalence(strict=False)
     assert len(errors) == 1
@@ -245,9 +247,10 @@ def test_validate_schema_equivalence_collects_errors_non_strict():
 
 def test_validate_schema_equivalence_raises_in_strict_mode():
     registry = create_registry()
-    with patch.object(
-        registry, "get_all_test_names", return_value=["test_bad"]
-    ), patch.object(registry, "get_schema", side_effect=FileNotFoundError("missing")):
+    with (
+        patch.object(registry, "get_all_test_names", return_value=["test_bad"]),
+        patch.object(registry, "get_schema", side_effect=FileNotFoundError("missing")),
+    ):
         with pytest.raises(RuntimeError):
             registry.validate_schema_equivalence(strict=True)
 

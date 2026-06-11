@@ -11,15 +11,19 @@ from src.soda_curation.qc.providers.openai_provider import OpenAIQCProvider
 
 
 def test_build_qc_provider_supported():
-    clients = {"openai": MagicMock(), "anthropic": MagicMock(), "gemini": MagicMock()}
+    clients = {"openai": MagicMock(), "anthropic": MagicMock()}
     assert build_qc_provider("openai", clients=clients).provider_name == "openai"
     assert build_qc_provider("anthropic", clients=clients).provider_name == "anthropic"
-    assert build_qc_provider("gemini", clients=clients).provider_name == "gemini"
 
 
 def test_build_qc_provider_invalid():
     with pytest.raises(ValueError):
         build_qc_provider("unknown-provider")
+
+
+def test_build_qc_provider_gemini_no_longer_supported():
+    with pytest.raises(ValueError):
+        build_qc_provider("gemini")
 
 
 @patch("src.soda_curation.qc.providers.anthropic_provider.call_anthropic")
@@ -113,36 +117,3 @@ def test_openai_provider_agentic_uses_responses_api():
     kwargs = mock_client.responses.create.call_args.kwargs
     assert "tools" in kwargs
     assert kwargs["tool_choice"] == "auto"
-
-
-def test_gemini_provider_warns_when_agentic_requested(caplog):
-    from src.soda_curation.qc.providers.gemini_provider import GeminiQCProvider
-
-    mock_client = MagicMock()
-    mock_client.models.generate_content.return_value = SimpleNamespace(
-        text='{"ok": true}',
-        usage_metadata=SimpleNamespace(
-            prompt_token_count=5,
-            candidates_token_count=3,
-            total_token_count=8,
-        ),
-        model_version="gemini-2.5-flash",
-        candidates=[],
-    )
-    provider = GeminiQCProvider(client=mock_client)
-    request = QCProviderRequest(
-        model="gemini-2.5-flash",
-        messages=[{"role": "user", "content": "hello"}],
-        prompt_config={},
-        response_type=None,
-        operation="qc.test",
-        context={},
-        agentic_enabled=True,
-        model_config={"tools": [{"name": "lookup"}]},
-    )
-
-    with caplog.at_level("WARNING"):
-        response = provider.generate(request)
-
-    assert response.model == "gemini-2.5-flash"
-    assert "agentic_not_supported" in caplog.text

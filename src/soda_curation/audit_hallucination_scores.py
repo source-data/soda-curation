@@ -1,7 +1,7 @@
 """
 CLI for auditing hallucination scores in an existing pipeline-output JSON.
 
-Re-runs the rapidfuzz-based ``caption_partial_ratio`` against the stored
+Re-runs the rapidfuzz-based caption similarity ratio against the stored
 manuscript text and reports the per-figure score that the current pipeline
 *would* produce, alongside the score that the JSON currently contains.
 
@@ -34,7 +34,7 @@ def _format_table(report: List[dict]) -> str:
     """Pretty-print the audit report as a fixed-width table."""
     header = (
         f"{'figure':<14}"
-        f"{'partial_ratio':>15}"
+        f"{'similarity':>15}"
         f"{'stored':>10}"
         f"{'expected':>10}"
         f"{'verified':>10}"
@@ -44,18 +44,11 @@ def _format_table(report: List[dict]) -> str:
     separator = "-" * len(header)
     rows: List[str] = [header, separator]
     for r in report:
-        expected_cell = (
-            f"{r['expected_score']:>10.4f}"
-            if r["expected_score"] is not None
-            else f"{'n/a':>10}"
-        )
-        if r.get("unverifiable"):
-            discrepancy_cell = f"{'unverifiable':>13}"
-        else:
-            discrepancy_cell = f"{('YES' if r['discrepancy'] else 'no'):>13}"
+        expected_cell = f"{r['expected_score']:>10.4f}"
+        discrepancy_cell = f"{('YES' if r['discrepancy'] else 'no'):>13}"
         rows.append(
             f"{r['figure_label']:<14}"
-            f"{r['partial_ratio']:>15.2f}"
+            f"{r['similarity_ratio']:>15.2f}"
             f"{r['stored_score']:>10.4f}"
             f"{expected_cell}"
             f"{str(r['caption_verified']):>10}"

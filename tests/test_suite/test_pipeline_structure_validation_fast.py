@@ -4,6 +4,7 @@ Fast Pipeline Structure Validation Test
 This test validates that the pipeline output structure matches the expected format
 by testing against a known good output file. This is much faster than running the full pipeline.
 """
+
 import json
 from pathlib import Path
 

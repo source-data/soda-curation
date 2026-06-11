@@ -130,7 +130,7 @@ class ModelAPI:
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": f"data:image/png;base64,{encoded_image}"
+                                "url": f"data:image/jpeg;base64,{encoded_image}"
                             },
                         },
                     ],
@@ -239,6 +239,5 @@ def _default_model_for_provider(provider: str) -> str:
     defaults = {
         "openai": DEFAULT_OPENAI_MODEL,
         "anthropic": "claude-sonnet-4-6",
-        "gemini": "gemini-2.5-flash",
     }
     return defaults.get(provider.lower(), DEFAULT_OPENAI_MODEL)

@@ -23,8 +23,9 @@ from src.soda_curation.qc.prompt_registry import registry  # Add this import
 @pytest.fixture(autouse=True)
 def _patch_qc_model_api():
     """Avoid constructing real ModelAPI (side effects / slow init) in unit tests."""
-    with patch("src.soda_curation.qc.base_analyzers.ModelAPI"), patch(
-        "src.soda_curation.qc.analyzer_factory.ModelAPI"
+    with (
+        patch("src.soda_curation.qc.base_analyzers.ModelAPI"),
+        patch("src.soda_curation.qc.analyzer_factory.ModelAPI"),
     ):
         yield
 
@@ -32,9 +33,10 @@ def _patch_qc_model_api():
 @pytest.fixture(autouse=True)
 def _patch_registry_prompt_lookups():
     """Panel/Figure analyzers call the registry on init; keep lookups cheap."""
-    with patch.object(
-        registry, "get_prompt_metadata", return_value={"name": "Test"}
-    ), patch.object(registry, "get_pydantic_model", return_value=MagicMock()):
+    with (
+        patch.object(registry, "get_prompt_metadata", return_value={"name": "Test"}),
+        patch.object(registry, "get_pydantic_model", return_value=MagicMock()),
+    ):
         yield
 
 
@@ -317,9 +319,10 @@ class TestBaseAnalyzers:
                 return True, {}
 
         # Mock the registry and ModelAPI (TestAnalyzer constructs ModelAPI in __init__)
-        with patch(
-            "src.soda_curation.qc.base_analyzers.registry"
-        ) as mock_registry, patch("src.soda_curation.qc.base_analyzers.ModelAPI"):
+        with (
+            patch("src.soda_curation.qc.base_analyzers.registry") as mock_registry,
+            patch("src.soda_curation.qc.base_analyzers.ModelAPI"),
+        ):
             mock_registry.get_prompt_metadata.return_value = {"name": "Test"}
             mock_registry.get_pydantic_model.return_value = MagicMock()
 

@@ -238,9 +238,13 @@ class DataAvailabilityBenchmarkRunner(BaseBenchmarkRunner):
                 "ground_truth_sources": ground_truth_sources,
                 "scores": scores,
                 "results": results,  # Include the results rows
-                "cost": updated_structure.cost.extract_data_sources.model_dump()
-                if hasattr(updated_structure.cost.extract_data_sources, "model_dump")
-                else {},
+                "cost": (
+                    updated_structure.cost.extract_data_sources.model_dump()
+                    if hasattr(
+                        updated_structure.cost.extract_data_sources, "model_dump"
+                    )
+                    else {}
+                ),
             }
         except Exception as e:
             logger.error(

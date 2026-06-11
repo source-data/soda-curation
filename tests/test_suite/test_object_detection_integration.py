@@ -1,6 +1,7 @@
 """
 Test object detection integration with the pipeline's data structures.
 """
+
 from pathlib import Path
 from unittest.mock import Mock, patch
 

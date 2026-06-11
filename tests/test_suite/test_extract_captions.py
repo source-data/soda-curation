@@ -5,11 +5,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.soda_curation.pipeline.extract_captions.extract_captions_openai import (
+from src.soda_curation.pipeline.extract_captions.extract_captions_base import (
     CaptionExtraction,
-    FigureCaptionExtractorOpenAI,
     PanelExtraction,
     PanelInfo,
+)
+from src.soda_curation.pipeline.extract_captions.extract_captions_openai import (
+    FigureCaptionExtractorOpenAI,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
     Figure,

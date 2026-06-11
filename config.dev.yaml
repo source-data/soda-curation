@@ -5,12 +5,6 @@ include_qc: true
 environment: "dev"
 # AI provider: "openai" (default) or "anthropic"
 ai_provider: "openai"
-# Provider-independent guardrail: any extracted figure caption whose rapidfuzz
-# partial_ratio against the normalized manuscript text is below this threshold
-# is replaced with the UNVERIFIED_CAPTION_PLACEHOLDER. Default is 90.0; the key
-# is optional.
-caption_verification:
-  partial_ratio_threshold: 90.0
 default: &default
   pipeline:
     ##########################################################
@@ -35,7 +29,12 @@ default: &default
                 
             The text will be encoded as a `HTML` string and you are required to keep all the information available.
 
-            Please extract the relevant portion(s) VERBATIM, exactly as they appear in the original text. 
+            Please extract the relevant portion(s) VERBATIM, exactly as they appear in the original text.
+
+            CRITICAL HTML REQUIREMENT: The manuscript is HTML. You MUST return the extracted sections as VERBATIM HTML fragments:
+            - Preserve every HTML tag, attribute, and entity exactly as it appears in the input (e.g. <p>, <sup>, <sub>, <em>, <strong>, &amp;).
+            - Do NOT strip, add, reformat, re-encode, or normalize any HTML markup.
+            - The returned strings must be exact character-for-character substrings of the input HTML.
 
             Key Instructions for extracting `Figure Legends` section:
             1. Look for figure captions throughout the entire document - they can appear:
@@ -117,16 +116,19 @@ default: &default
             - Extract EXACTLY as it appears in the text (VERBATIM)
             - The caption title is typically the text before the first panel label
             - Maintain ALL formatting, punctuation, and special characters
-            - Include HTML formatting if present
+            - The input text is HTML: return the caption as the exact HTML fragment from the input,
+              preserving every tag, attribute, and entity character-for-character
+            - Do NOT strip, add, reformat, or re-encode any HTML markup
             - DO NOT modify or summarize the text
             
             CRITICAL: You have access to a verification tool called 'verify_caption_extraction' that checks if your extracted text is truly verbatim.
             ALWAYS use this tool to verify your extraction before finalizing your answer.
             If after 5 tries you can not get the full verbatim, return the most similar caption possible.
 
-            If a figure caption is expected but it is not present, return "figure_caption": "Figure caption not present in text".
-            If you expect a Figure 8 and it is not present return "figure_caption": "Figure 8 not present in text". Do not return
-            Figure 8EV. EV is not included in this workload.
+            If a figure caption is expected but the exact main figure caption is not present, return "figure_caption": "" and "caption_title": "".
+            Do not invent placeholder text such as "caption not present in text".
+            Extended View / EV figures are OUT OF SCOPE for this task. Never use any "Figure EV..." or "Figure ...EV" caption to answer a main figure request.
+            Example: if asked for Figure 8 and only Figure EV8 / Figure 8EV exists, return empty strings for both "figure_caption" and "caption_title".
 
             Return your result as:
 
@@ -170,6 +172,7 @@ default: &default
 
             panel_caption
             - For each panel, set "panel_caption" to the VERBATIM substring of the caption that describes that panel only, when the caption clearly assigns text to that letter.
+            - The caption is HTML: panel_caption values must be exact HTML substrings of the caption, preserving all tags, attributes, and entities character-for-character. Never strip or reformat HTML markup.
             - If the caption groups multiple letters in one sentence, split the text: assign each phrase/clause to the panel it clearly belongs to; if a letter is only implied by the contiguous run, use an empty string "" for that panel’s "panel_caption".
             - Never invent facts; never paraphrase outside copying contiguous spans from the caption.
 
@@ -315,6 +318,8 @@ default: &default
           system: |
             You are an expert AI assistant for analyzing scientific data organization, particularly for matching source data files to specific panels within scientific figures. Your task is to analyze file lists from source data ZIP files and determine which files correspond to which figure panels.
 
+            Note: any figure or panel caption text present in the inputs is HTML-formatted; treat HTML tags as formatting, not content.
+
             Follow these guidelines carefully:
 
             1. Examine the provided panel labels (A, B, C, etc.) and list of data files.
@@ -387,6 +392,7 @@ default: &default
           system: |
             You match ONE cropped panel image to the correct entry from a fixed catalog of panels.
             Panel labels and panel_caption text were already taken from the figure caption in an earlier step — you must NOT rewrite or improve them.
+            Caption and panel_caption strings are HTML-formatted; copy them exactly as given, including all HTML tags.
 
             Rules:
             1. You will receive JSON "allowed_panel_catalog" listing allowed panel_label values and their exact panel_caption strings. Treat these as the only source of truth for text.

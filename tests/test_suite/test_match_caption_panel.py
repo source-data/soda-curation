@@ -160,11 +160,14 @@ class TestMatchPanelCaptionBase:
                     )
                 ]
 
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+        ):
             # Setup mocks
             mock_convert.return_value = (mock_image, "test.png")
             mock_detector = Mock()
@@ -210,11 +213,14 @@ class TestMatchPanelCaptionBase:
             ):
                 return PanelObject(panel_label="A", panel_caption="New caption A")
 
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+        ):
             mock_convert.return_value = (mock_image, "test.png")
             mock_detector = Mock()
             # Only detect one panel
@@ -285,11 +291,14 @@ class TestMatchPanelCaptionBase:
             sd_files=[],  # Add required sd_files parameter
         )
 
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+        ):
             # Setup mocks
             mock_convert.return_value = (mock_image, "test.png")
             mock_detector = Mock()
@@ -379,11 +388,14 @@ class TestMatchPanelCaptionBase:
         with open(img_path, "wb") as f:
             mock_image.save(f, format="PNG")
 
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+        ):
             # Setup mocks
             mock_convert.return_value = (mock_image, "test.png")
             mock_detector = Mock()
@@ -504,13 +516,17 @@ class TestMatchPanelCaptionBase:
         with open(img_path, "wb") as f:
             mock_image.save(f, format="PNG")
 
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
-        ) as mock_extract_image:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
+            ) as mock_extract_image,
+        ):
             # Setup mocks
             mock_convert.return_value = (mock_image, "test.png")
             mock_detector = Mock()
@@ -556,9 +572,12 @@ class TestMatchPanelCaptionOpenAI:
         manuscript_dir = tmp_path / "TEST-ID"
         manuscript_dir.mkdir(parents=True)
 
-        with patch("openai.OpenAI") as mock_openai, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector:
+        with (
+            patch("openai.OpenAI") as mock_openai,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+        ):
             mock_create_detector.return_value = Mock()
             # Create a PanelObject instance
             panel_obj = PanelObject(
@@ -601,9 +620,12 @@ class TestMatchPanelCaptionOpenAI:
         manuscript_dir = tmp_path / "TEST-ID"
         manuscript_dir.mkdir(parents=True)
 
-        with patch("openai.OpenAI") as mock_openai, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector:
+        with (
+            patch("openai.OpenAI") as mock_openai,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+        ):
             mock_create_detector.return_value = Mock()
             mock_client = Mock()
             mock_client.beta.chat.completions.parse.side_effect = Exception("API Error")
@@ -643,11 +665,14 @@ class TestPanelPreservation:
         zip_structure = ZipStructure(figures=[figure])
 
         # Mock the object detection to only detect panels A, B, C
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+        ):
             mock_convert.return_value = (Mock(), "test.png")
             mock_detector = Mock()
             mock_detector.detect_panels.return_value = [
@@ -724,13 +749,17 @@ class TestPanelPreservation:
         figure_path.touch()
 
         # Mock the object detection to find 5 panels (more than the original 3)
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
-        ) as mock_extract_image:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
+            ) as mock_extract_image,
+        ):
             mock_convert.return_value = (Mock(), "figure1.png")
             mock_detector = Mock()
             mock_detector.detect_panels.return_value = [
@@ -881,13 +910,17 @@ class TestPanelPreservation:
         figure_path.touch()
 
         # Mock the object detection to find 5 panels
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
-        ) as mock_extract_image:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
+            ) as mock_extract_image,
+        ):
             mock_convert.return_value = (Mock(), "figure1.png")
             mock_detector = Mock()
             mock_detector.detect_panels.return_value = [
@@ -1027,13 +1060,17 @@ class TestPanelPreservation:
         figure_path.touch()
 
         # Mock the object detection
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
-        ) as mock_extract_image:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.MatchPanelCaption._extract_panel_image"
+            ) as mock_extract_image,
+        ):
             mock_convert.return_value = (Mock(), "figure1.png")
             mock_detector = Mock()
             mock_detector.detect_panels.return_value = [
@@ -1135,11 +1172,14 @@ class TestUnverifiedCaptionShortCircuit:
                     "Vision LLM must not be invoked for unverified figures"
                 )
 
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+        ):
             mock_convert.return_value = (mock_image, "figure_unverified.png")
             mock_detector = Mock()
             mock_detector.detect_panels.return_value = [
@@ -1191,11 +1231,14 @@ class TestUnverifiedCaptionShortCircuit:
                     "Vision LLM must not be invoked for unverified figures"
                 )
 
-        with patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
-        ) as mock_convert, patch(
-            "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
-        ) as mock_create_detector:
+        with (
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.convert_to_pil_image"
+            ) as mock_convert,
+            patch(
+                "src.soda_curation.pipeline.match_caption_panel.match_caption_panel_base.create_object_detection"
+            ) as mock_create_detector,
+        ):
             mock_convert.return_value = (mock_image, "figure_unverified.png")
             mock_detector = Mock()
             mock_detector.detect_panels.return_value = []

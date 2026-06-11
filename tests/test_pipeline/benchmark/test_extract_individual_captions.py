@@ -264,12 +264,16 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                             "caption_title": fig.caption_title,
                             "panels": [
                                 {
-                                    "panel_label": panel.panel_label
-                                    if not isinstance(panel, dict)
-                                    else panel.get("panel_label"),
-                                    "panel_caption": panel.panel_caption
-                                    if not isinstance(panel, dict)
-                                    else panel.get("panel_caption"),
+                                    "panel_label": (
+                                        panel.panel_label
+                                        if not isinstance(panel, dict)
+                                        else panel.get("panel_label")
+                                    ),
+                                    "panel_caption": (
+                                        panel.panel_caption
+                                        if not isinstance(panel, dict)
+                                        else panel.get("panel_caption")
+                                    ),
                                 }
                                 for panel in fig.panels
                             ],
@@ -277,12 +281,14 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                         for fig in extracted_zip_structure.figures
                     ]
                 },
-                "cost": extracted_zip_structure.cost.extract_individual_captions.model_dump()
-                if hasattr(
-                    extracted_zip_structure.cost.extract_individual_captions,
-                    "model_dump",
-                )
-                else {},
+                "cost": (
+                    extracted_zip_structure.cost.extract_individual_captions.model_dump()
+                    if hasattr(
+                        extracted_zip_structure.cost.extract_individual_captions,
+                        "model_dump",
+                    )
+                    else {}
+                ),
             }
 
         except Exception as e:

@@ -1058,10 +1058,6 @@ def call_openai(
     )
 
 
-# Backward-compatible name
-call_openai_with_fallback = call_openai
-
-
 def _call_openai_single(
     client: openai.OpenAI,
     model: str,

@@ -16,7 +16,6 @@ from typing import Any, Dict
 from ..config import ConfigurationLoader
 from ..data_storage import load_figure_data, load_zip_structure
 from ..logging_config import setup_logging
-from ..pipeline.manuscript_structure.html_normalization import pandoc_html_to_plain_text
 from .prompt_registry import registry
 from .qc_pipeline import QCPipeline
 
@@ -132,7 +131,7 @@ def main():
 
     # Ensure manuscript text is available for document-level QC tests.
     # Try multiple candidate paths for the Word/manuscript file, then extract
-    # text via pypandoc (same method as the main pipeline).
+    # cleaned HTML via mmqc_utils (same method as the main pipeline).
     if not getattr(zip_structure, "manuscript_text", None):
         docx_rel = getattr(zip_structure, "docx", "") or ""
         manuscript_id = getattr(zip_structure, "manuscript_id", "") or ""
@@ -150,14 +149,11 @@ def main():
 
         if docx_found:
             try:
-                import pypandoc
+                from mmqc_utils import document_to_html
 
-                manuscript_html = pypandoc.convert_file(str(docx_found), "html")
-                zip_structure.manuscript_text = pandoc_html_to_plain_text(
-                    str(manuscript_html)
-                )
+                zip_structure.manuscript_text = document_to_html(docx_found)
                 logger.info(
-                    "Extracted manuscript text from: %s (%d chars)",
+                    "Extracted manuscript HTML from: %s (%d chars)",
                     docx_found,
                     len(zip_structure.manuscript_text),
                 )

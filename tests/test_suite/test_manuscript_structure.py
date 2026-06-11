@@ -15,25 +15,12 @@ from src.soda_curation.pipeline.manuscript_structure.exceptions import (
     NoManuscriptFileError,
     NoXMLFileFoundError,
 )
-from src.soda_curation.pipeline.manuscript_structure.html_normalization import (
-    pandoc_html_to_plain_text,
-)
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
     ZipStructure,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
     XMLStructureExtractor,
 )
-
-
-def test_pandoc_html_to_plain_text_strips_tags():
-    assert pandoc_html_to_plain_text("<p>alpha</p><p>beta</p>") == "alpha\nbeta"
-
-
-def test_pandoc_html_to_plain_text_empty():
-    assert pandoc_html_to_plain_text("") == ""
-    assert pandoc_html_to_plain_text(None) == ""
-
 
 # Constants for tests
 MANUSCRIPT_ID = "EMBOJ-DUMMY-ZIP"
@@ -271,7 +258,7 @@ def test_docx_path_mismatch(temp_extract_dir, create_test_zip):
 
 
 def test_extract_docx_content(temp_extract_dir, create_test_zip):
-    """Test DOCX content extraction with manuscript ID directory structure."""
+    """Test DOCX content extraction returns cleaned HTML via mmqc_utils."""
     zip_path = create_test_zip()
     extractor = XMLStructureExtractor(zip_path, str(temp_extract_dir))
     structure = extractor.extract_structure()
@@ -279,10 +266,14 @@ def test_extract_docx_content(temp_extract_dir, create_test_zip):
     # Get the DOCX path from structure
     docx_path = structure.docx
 
-    # Mock pypandoc.convert_file to avoid actual conversion
-    with patch("pypandoc.convert_file", return_value="<html>test content</html>"):
+    # Mock mmqc_utils.document_to_html to avoid actual conversion;
+    # the cleaned HTML must be returned as-is (no tag stripping).
+    with patch(
+        "src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser.document_to_html",
+        return_value="<p>test <em>content</em></p>",
+    ):
         content = extractor.extract_docx_content(docx_path)
-        assert content == "test content"
+        assert content == "<p>test <em>content</em></p>"
 
     # Verify the file exists in the manuscript directory
     full_path = extractor.manuscript_extract_dir / docx_path
@@ -758,19 +749,13 @@ def test_extract_pdf_content(temp_extract_dir):
 
     pdf_path = structure.docx
 
-    # Mock pypandoc and PyPDF2 for PDF extraction
-    with patch("pypandoc.convert_file", side_effect=Exception("pypandoc failed")):
-        with patch("PyPDF2.PdfReader") as mock_pdf_reader:
-            # Mock PDF reader
-            mock_page = MagicMock()
-            mock_page.extract_text.return_value = "Sample PDF text content"
-            mock_reader_instance = MagicMock()
-            mock_reader_instance.pages = [mock_page]
-            mock_pdf_reader.return_value = mock_reader_instance
-
-            content = extractor.extract_docx_content(pdf_path)
-            assert "Sample PDF text content" in content
-            assert "<" not in content
+    # Mock mmqc_utils.document_to_html for PDF extraction (returns cleaned HTML)
+    with patch(
+        "src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser.document_to_html",
+        return_value="<p>Sample PDF text content</p>",
+    ):
+        content = extractor.extract_docx_content(pdf_path)
+        assert content == "<p>Sample PDF text content</p>"
 
 
 def test_extract_latex_content(temp_extract_dir):
@@ -800,12 +785,13 @@ def test_extract_latex_content(temp_extract_dir):
 
     tex_path = structure.docx
 
-    # Mock pypandoc for LaTeX extraction
+    # Mock mmqc_utils.document_to_html for LaTeX extraction
     with patch(
-        "pypandoc.convert_file", return_value="<html>LaTeX converted content</html>"
+        "src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser.document_to_html",
+        return_value="<p>LaTeX converted content</p>",
     ):
         content = extractor.extract_docx_content(tex_path)
-        assert content == "LaTeX converted content"
+        assert content == "<p>LaTeX converted content</p>"
 
 
 def test_extract_rtf_content(temp_extract_dir):
@@ -835,12 +821,13 @@ def test_extract_rtf_content(temp_extract_dir):
 
     rtf_path = structure.docx
 
-    # Mock pypandoc for RTF extraction
+    # Mock mmqc_utils.document_to_html for RTF extraction
     with patch(
-        "pypandoc.convert_file", return_value="<html>RTF converted content</html>"
+        "src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser.document_to_html",
+        return_value="<p>RTF converted content</p>",
     ):
         content = extractor.extract_docx_content(rtf_path)
-        assert content == "RTF converted content"
+        assert content == "<p>RTF converted content</p>"
 
 
 def test_extract_odt_content(temp_extract_dir):
@@ -870,12 +857,13 @@ def test_extract_odt_content(temp_extract_dir):
 
     odt_path = structure.docx
 
-    # Mock pypandoc for ODT extraction
+    # Mock mmqc_utils.document_to_html for ODT extraction
     with patch(
-        "pypandoc.convert_file", return_value="<html>ODT converted content</html>"
+        "src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser.document_to_html",
+        return_value="<p>ODT converted content</p>",
     ):
         content = extractor.extract_docx_content(odt_path)
-        assert content == "ODT converted content"
+        assert content == "<p>ODT converted content</p>"
 
 
 def test_no_manuscript_file_found(temp_extract_dir):

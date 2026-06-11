@@ -1,6 +1,7 @@
 """
 Tools for OpenAI Agent functions in the SODA curation pipeline.
 """
+
 import html
 import re
 import string
@@ -36,9 +37,11 @@ def _verify_caption_extraction_impl(extracted_text: str, original_text: str) -> 
 
     return {
         "is_verbatim": is_verbatim,
-        "details": "The extraction is verbatim"
-        if is_verbatim
-        else "The extraction is NOT verbatim",
+        "details": (
+            "The extraction is verbatim"
+            if is_verbatim
+            else "The extraction is NOT verbatim"
+        ),
     }
 
 
@@ -199,9 +202,11 @@ def _verify_alphabet_sequence(labels: List[str], alphabet: str) -> dict:
     return {
         "is_valid": is_valid,
         "fixed_sequence": expected_sequence,
-        "details": "Sequence is valid"
-        if is_valid
-        else f"Sequence has gaps. Fixed sequence: {', '.join(expected_sequence)}",
+        "details": (
+            "Sequence is valid"
+            if is_valid
+            else f"Sequence has gaps. Fixed sequence: {', '.join(expected_sequence)}"
+        ),
     }
 
 
@@ -306,9 +311,11 @@ def _verify_roman_sequence(labels: List[str]) -> dict:
     return {
         "is_valid": is_valid,
         "fixed_sequence": expected_sequence,
-        "details": "Sequence is valid"
-        if is_valid
-        else f"Sequence has gaps. Fixed sequence: {', '.join(expected_sequence)}",
+        "details": (
+            "Sequence is valid"
+            if is_valid
+            else f"Sequence has gaps. Fixed sequence: {', '.join(expected_sequence)}"
+        ),
     }
 
 
@@ -338,7 +345,9 @@ def _verify_numeric_sequence(labels: List[str]) -> dict:
     return {
         "is_valid": is_valid,
         "fixed_sequence": expected_sequence,
-        "details": "Sequence is valid"
-        if is_valid
-        else f"Sequence has gaps. Fixed sequence: {', '.join(expected_sequence)}",
+        "details": (
+            "Sequence is valid"
+            if is_valid
+            else f"Sequence has gaps. Fixed sequence: {', '.join(expected_sequence)}"
+        ),
     }
