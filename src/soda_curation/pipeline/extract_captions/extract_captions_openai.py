@@ -10,7 +10,8 @@ import openai
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import TokenUsage, ZipStructure
-from ..openai_utils import DEFAULT_OPENAI_MODEL, call_openai, validate_model_config
+from ..openai_utils import call_openai
+from ..step_config import resolve_step_config
 from .extract_captions_base import (
     CaptionExtraction,
     FigureCaptionExtractor,
@@ -32,14 +33,14 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             raise ValueError("OPENAI_API_KEY environment variable is not set")
 
         self.client = openai.OpenAI(api_key=api_key)
-        self.caption_config = config["pipeline"]["extract_caption_title"]["openai"]
-        self.panel_config = config["pipeline"]["extract_panel_sequence"]["openai"]
 
     def _validate_config(self) -> None:
-        for step in ["extract_caption_title", "extract_panel_sequence"]:
-            config_ = self.config["pipeline"][step]["openai"]
-            model = config_.get("model", DEFAULT_OPENAI_MODEL)
-            validate_model_config(model, config_)
+        for step in ("extract_caption_title", "extract_panel_sequence"):
+            resolved = resolve_step_config(self.config["pipeline"][step])
+            if resolved["provider"] != "openai":
+                raise ValueError(
+                    f"{step} model '{resolved['model']}' requires the Anthropic extractor."
+                )
 
     def extract_figure_caption(
         self, figure_label: str, all_captions: str, zip_structure: ZipStructure
@@ -71,18 +72,15 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             {"role": "user", "content": prompts["user"]},
         ]
 
-        config_ = self.caption_config
-        model_ = config_.get("model", DEFAULT_OPENAI_MODEL)
+        model_ = resolve_step_config(self.config["pipeline"]["extract_caption_title"])[
+            "model"
+        ]
 
         response = call_openai(
             client=self.client,
             model=model_,
             messages=messages,
             response_format=CaptionExtraction,
-            temperature=config_.get("temperature", 0.1),
-            top_p=config_.get("top_p", 1.0),
-            frequency_penalty=config_.get("frequency_penalty", 0),
-            presence_penalty=config_.get("presence_penalty", 0),
             operation="main.extract_caption_title",
             request_metadata={"figure_label": figure_label},
         )
@@ -142,18 +140,15 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             {"role": "user", "content": prompts["user"]},
         ]
 
-        config_ = self.panel_config
-        model_ = config_.get("model", DEFAULT_OPENAI_MODEL)
+        model_ = resolve_step_config(self.config["pipeline"]["extract_panel_sequence"])[
+            "model"
+        ]
 
         response = call_openai(
             client=self.client,
             model=model_,
             messages=messages,
             response_format=PanelExtraction,
-            temperature=config_.get("temperature", 0.1),
-            top_p=config_.get("top_p", 1.0),
-            frequency_penalty=config_.get("frequency_penalty", 0),
-            presence_penalty=config_.get("presence_penalty", 0),
             operation="main.extract_panel_sequence",
             request_metadata={"figure_label": figure_label},
         )

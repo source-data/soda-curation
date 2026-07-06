@@ -10,6 +10,7 @@ from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import TokenUsage, ZipStructure
+from ..step_config import resolve_step_config
 from .extract_captions_base import (
     CaptionExtraction,
     FigureCaptionExtractor,
@@ -26,13 +27,15 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
     def __init__(self, config: Dict[str, Any], prompt_handler):
         super().__init__(config, prompt_handler)
         self.client = anthropic.Anthropic()
-        self.caption_config = config["pipeline"]["extract_caption_title"]["anthropic"]
-        self.panel_config = config["pipeline"]["extract_panel_sequence"]["anthropic"]
 
     def _validate_config(self) -> None:
-        for step in ["extract_caption_title", "extract_panel_sequence"]:
-            config_ = self.config["pipeline"][step]["anthropic"]
-            validate_anthropic_model(config_.get("model", "claude-sonnet-4-6"))
+        for step in ("extract_caption_title", "extract_panel_sequence"):
+            resolved = resolve_step_config(self.config["pipeline"][step])
+            if resolved["provider"] != "anthropic":
+                raise ValueError(
+                    f"{step} model '{resolved['model']}' requires the OpenAI extractor."
+                )
+            validate_anthropic_model(resolved["model"])
 
     def extract_figure_caption(
         self, figure_label: str, all_captions: str, zip_structure: ZipStructure
@@ -65,16 +68,15 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
             {"role": "user", "content": prompts["user"]},
         ]
 
-        config_ = self.caption_config
-        model_ = config_.get("model", "claude-sonnet-4-6")
+        model_ = resolve_step_config(self.config["pipeline"]["extract_caption_title"])[
+            "model"
+        ]
 
         response = call_anthropic(
             client=self.client,
             model=model_,
             messages=messages,
             response_format=CaptionExtraction,
-            temperature=config_.get("temperature", 0.1),
-            max_tokens=config_.get("max_tokens", 4096),
             operation="main.extract_caption_title",
             request_metadata={"figure_label": figure_label},
         )
@@ -122,16 +124,15 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
             {"role": "user", "content": prompts["user"]},
         ]
 
-        config_ = self.panel_config
-        model_ = config_.get("model", "claude-sonnet-4-6")
+        model_ = resolve_step_config(self.config["pipeline"]["extract_panel_sequence"])[
+            "model"
+        ]
 
         response = call_anthropic(
             client=self.client,
             model=model_,
             messages=messages,
             response_format=PanelExtraction,
-            temperature=config_.get("temperature", 0.1),
-            max_tokens=config_.get("max_tokens", 4096),
             operation="main.extract_panel_sequence",
             request_metadata={"figure_label": figure_label},
         )

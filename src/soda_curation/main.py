@@ -56,6 +56,7 @@ from .pipeline.match_caption_panel.match_caption_panel_openai import (
     MatchPanelCaptionOpenAI,
 )
 from .pipeline.prompt_handler import PromptHandler
+from .pipeline.step_config import AI_PIPELINE_STEPS, resolve_pipeline_provider
 
 # Import QC module (to be implemented)
 from .qc.qc_pipeline import QCPipeline
@@ -140,51 +141,39 @@ def _execute_pipeline_step(
         return None
 
 
-def _validate_ai_provider_config(config: dict, ai_provider: str, run_id: str) -> None:
-    """Ensure runtime provider selection is explicit and configuration is consistent."""
-    if ai_provider not in SUPPORTED_AI_PROVIDERS:
-        raise ValueError(
-            f"Unsupported ai_provider '{ai_provider}'. Expected one of {sorted(SUPPORTED_AI_PROVIDERS)}."
-        )
+def _resolve_ai_provider(config: dict, run_id: str) -> str:
+    """
+    Infer the runtime AI provider from pipeline step model names.
 
+    Optional top-level ``ai_provider`` must match the inferred value when set.
+    """
     pipeline_config = config.get("pipeline", {})
     if not isinstance(pipeline_config, dict):
         raise ValueError("Invalid configuration: missing `pipeline` section.")
 
-    ignored_provider = "anthropic" if ai_provider == "openai" else "openai"
-    for step_name in AI_PROVIDER_STEPS:
-        step_config = pipeline_config.get(step_name, {})
-        if not isinstance(step_config, dict):
+    inferred = resolve_pipeline_provider(pipeline_config, steps=AI_PIPELINE_STEPS)
+    configured = config.get("ai_provider")
+    if configured is not None:
+        configured = str(configured).lower()
+        if configured not in SUPPORTED_AI_PROVIDERS:
             raise ValueError(
-                f"Invalid configuration for step '{step_name}': expected mapping."
+                f"Unsupported ai_provider '{configured}'. "
+                f"Expected one of {sorted(SUPPORTED_AI_PROVIDERS)}."
             )
-
-        has_openai = "openai" in step_config
-        has_anthropic = "anthropic" in step_config
-        assert has_openai or has_anthropic, (
-            f"Configuration error in step '{step_name}': no provider block found. "
-            "Define exactly one of 'openai' or 'anthropic'."
-        )
-        assert not (has_openai and has_anthropic), (
-            f"Configuration error in step '{step_name}': both 'openai' and 'anthropic' "
-            "are defined. Define only one provider per step."
-        )
-
-        configured_provider = "openai" if has_openai else "anthropic"
-        if configured_provider != ai_provider:
+        if configured != inferred:
             raise ValueError(
-                "Selected provider does not match step configuration. "
-                f"step={step_name}, configured_provider={configured_provider}, "
-                f"ai_provider={ai_provider}, ignored_provider={ignored_provider}"
+                "Configured ai_provider does not match models in pipeline steps. "
+                f"ai_provider={configured}, inferred_from_models={inferred}"
             )
 
     logger.info(
-        "AI provider configuration validated",
+        "AI provider inferred from pipeline models",
         extra={
             "run_id": run_id,
-            "ai_provider": ai_provider,
+            "ai_provider": inferred,
         },
     )
+    return inferred
 
 
 def run_qc_pipeline_async(
@@ -267,13 +256,11 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
         zip_structure.manuscript_text = manuscript_content
         prompt_handler = PromptHandler(config_loader.config["pipeline"])
 
-        # Select AI provider (default: openai)
-        ai_provider = config_loader.config.get("ai_provider", "openai").lower()
+        ai_provider = _resolve_ai_provider(config_loader.config, run_id)
         logger.info(
             f"Using AI provider: {ai_provider}",
             extra={"run_id": run_id, "ai_provider": ai_provider},
         )
-        _validate_ai_provider_config(config_loader.config, ai_provider, run_id)
         zip_structure.ai_provider = ai_provider
 
         # Extract relevant sections for the pipeline

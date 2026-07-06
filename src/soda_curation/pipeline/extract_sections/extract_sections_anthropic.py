@@ -11,6 +11,7 @@ from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
+from ..step_config import resolve_step_config
 from .extract_sections_base import ExtractedSections, SectionExtractor
 
 logger = logging.getLogger(__name__)
@@ -24,9 +25,13 @@ class SectionExtractorAnthropic(SectionExtractor):
         self.client = anthropic.Anthropic()
 
     def _validate_config(self) -> None:
-        """Validate Anthropic configuration parameters."""
-        config_ = self.config["pipeline"]["extract_sections"]["anthropic"]
-        validate_anthropic_model(config_.get("model", "claude-sonnet-4-6"))
+        """Validate step has a model configured for Anthropic."""
+        resolved = resolve_step_config(self.config["pipeline"]["extract_sections"])
+        if resolved["provider"] != "anthropic":
+            raise ValueError(
+                f"extract_sections model '{resolved['model']}' requires the OpenAI extractor."
+            )
+        validate_anthropic_model(resolved["model"])
 
     def extract_sections(
         self,
@@ -59,16 +64,15 @@ class SectionExtractorAnthropic(SectionExtractor):
             {"role": "user", "content": prompts["user"]},
         ]
 
-        config_ = self.config["pipeline"]["extract_sections"]["anthropic"]
-        model_ = config_.get("model", "claude-sonnet-4-6")
+        model_ = resolve_step_config(self.config["pipeline"]["extract_sections"])[
+            "model"
+        ]
 
         response = call_anthropic(
             client=self.client,
             model=model_,
             messages=messages,
             response_format=ExtractedSections,
-            temperature=config_.get("temperature", 0.1),
-            max_tokens=config_.get("max_tokens", 2048),
             operation="main.extract_sections",
             request_metadata={"figure_count": len(zip_structure.figures)},
         )
