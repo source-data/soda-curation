@@ -14,6 +14,7 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import
     ZipStructure,
 )
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
+from src.soda_curation.pipeline.step_config import resolve_step_config
 
 from .base_runner import BaseBenchmarkRunner
 
@@ -56,67 +57,23 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
             if not pipeline_config:
                 raise ValueError("No pipeline configuration found in default profile")
 
-            # Provider-specific configuration
             provider = test_case["provider"]
+            caption_prompts = resolve_step_config(
+                pipeline_config["extract_caption_title"]
+            )["prompts"]
+            panel_prompts = resolve_step_config(
+                pipeline_config["extract_panel_sequence"]
+            )["prompts"]
 
-            # Create extractor configuration - Updated for new structure with split extraction steps
             extractor_config = {
                 "pipeline": {
-                    # Extract caption title configuration
                     "extract_caption_title": {
-                        provider: {
-                            "model": test_case["model"],
-                            "temperature": test_case["temperature"],
-                            "top_p": test_case["top_p"],
-                            "max_tokens": pipeline_config["extract_caption_title"][
-                                provider
-                            ].get("max_tokens", 2048),
-                            "frequency_penalty": pipeline_config[
-                                "extract_caption_title"
-                            ][provider].get("frequency_penalty", 0.0),
-                            "presence_penalty": pipeline_config[
-                                "extract_caption_title"
-                            ][provider].get("presence_penalty", 0.0),
-                            "json_mode": pipeline_config["extract_caption_title"][
-                                provider
-                            ].get("json_mode", True),
-                            "prompts": {
-                                "system": pipeline_config["extract_caption_title"][
-                                    provider
-                                ]["prompts"]["system"],
-                                "user": pipeline_config["extract_caption_title"][
-                                    provider
-                                ]["prompts"]["user"],
-                            },
-                        }
+                        "model": test_case["model"],
+                        "prompts": caption_prompts,
                     },
-                    # Extract panel sequence configuration
                     "extract_panel_sequence": {
-                        provider: {
-                            "model": test_case["model"],
-                            "temperature": test_case["temperature"],
-                            "top_p": test_case["top_p"],
-                            "max_tokens": pipeline_config["extract_panel_sequence"][
-                                provider
-                            ].get("max_tokens", 2048),
-                            "frequency_penalty": pipeline_config[
-                                "extract_panel_sequence"
-                            ][provider].get("frequency_penalty", 0.0),
-                            "presence_penalty": pipeline_config[
-                                "extract_panel_sequence"
-                            ][provider].get("presence_penalty", 0.0),
-                            "json_mode": pipeline_config["extract_panel_sequence"][
-                                provider
-                            ].get("json_mode", True),
-                            "prompts": {
-                                "system": pipeline_config["extract_panel_sequence"][
-                                    provider
-                                ]["prompts"]["system"],
-                                "user": pipeline_config["extract_panel_sequence"][
-                                    provider
-                                ]["prompts"]["user"],
-                            },
-                        }
+                        "model": test_case["model"],
+                        "prompts": panel_prompts,
                     },
                 },
             }

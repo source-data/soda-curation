@@ -11,6 +11,7 @@ from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
 from ..prompt_handler import PromptHandler
+from ..step_config import resolve_step_config
 from .assign_panel_source_base import (
     AsignedFiles,
     AsignedFilesList,
@@ -30,9 +31,12 @@ class PanelSourceAssignerAnthropic(PanelSourceAssigner):
         self.client = anthropic.Anthropic()
 
     def _validate_config(self) -> None:
-        """Validate Anthropic configuration parameters."""
-        config_ = self.config["pipeline"]["assign_panel_source"]["anthropic"]
-        validate_anthropic_model(config_.get("model", "claude-sonnet-4-6"))
+        resolved = resolve_step_config(self.config["pipeline"]["assign_panel_source"])
+        if resolved["provider"] != "anthropic":
+            raise ValueError(
+                f"assign_panel_source model '{resolved['model']}' requires OpenAI."
+            )
+        validate_anthropic_model(resolved["model"])
 
     def call_ai_service(self, prompt: str, allowed_files: List) -> AsignedFilesList:
         """Call Claude with the given prompt and return assigned files."""
@@ -52,16 +56,15 @@ class PanelSourceAssignerAnthropic(PanelSourceAssigner):
             {"role": "user", "content": prompt},
         ]
 
-        config_ = self.config["pipeline"]["assign_panel_source"]["anthropic"]
-        model_ = config_.get("model", "claude-sonnet-4-6")
+        model_ = resolve_step_config(self.config["pipeline"]["assign_panel_source"])[
+            "model"
+        ]
 
         response = call_anthropic(
             client=self.client,
             model=model_,
             messages=messages,
             response_format=AsignedFilesList,
-            temperature=config_.get("temperature", 0.3),
-            max_tokens=config_.get("max_tokens", 2048),
             operation="main.assign_panel_source",
             request_metadata={
                 "provider": "anthropic",

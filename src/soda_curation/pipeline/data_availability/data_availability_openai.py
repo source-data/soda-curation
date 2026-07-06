@@ -11,7 +11,8 @@ import openai
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
-from ..openai_utils import DEFAULT_OPENAI_MODEL, call_openai, validate_model_config
+from ..openai_utils import call_openai
+from ..step_config import resolve_step_config
 from .data_availability_base import DataAvailabilityExtractor, ExtractDataSources
 
 logger = logging.getLogger(__name__)
@@ -53,10 +54,11 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             return {"databases": []}
 
     def _validate_config(self) -> None:
-        """Validate OpenAI configuration parameters."""
-        config_ = self.config["pipeline"]["extract_data_sources"]["openai"]
-        model = config_.get("model", DEFAULT_OPENAI_MODEL)
-        validate_model_config(model, config_)
+        resolved = resolve_step_config(self.config["pipeline"]["extract_data_sources"])
+        if resolved["provider"] != "openai":
+            raise ValueError(
+                f"extract_data_sources model '{resolved['model']}' requires Anthropic."
+            )
 
     def extract_data_sources(
         self, section_text: str, zip_structure: ZipStructure
@@ -92,18 +94,15 @@ class DataAvailabilityExtractorOpenAI(DataAvailabilityExtractor):
             {"role": "user", "content": prompts["user"]},
         ]
 
-        config_ = self.config["pipeline"]["extract_data_sources"]["openai"]
-        model_ = config_.get("model", "gpt-4o")
+        model_ = resolve_step_config(self.config["pipeline"]["extract_data_sources"])[
+            "model"
+        ]
 
         response = call_openai(
             client=self.client,
             model=model_,
             messages=messages,
             response_format=ExtractDataSources,
-            temperature=config_.get("temperature", 0.1),
-            top_p=config_.get("top_p", 1.0),
-            frequency_penalty=config_.get("frequency_penalty", 0),
-            presence_penalty=config_.get("presence_penalty", 0),
             operation="main.extract_data_sources",
             request_metadata={
                 "registry_database_count": len(

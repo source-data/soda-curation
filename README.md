@@ -79,8 +79,8 @@ The configuration system uses a flexible, hierarchical approach supporting diffe
 
 ### Configuration Files Structure
 
-- **Main pipeline config**: Controls manuscript processing, AI model selection, and pipeline steps.
-- **QC config (`config.qc.yaml`)**: Controls all quality control tests, test metadata, and versioning. Example:
+- **Main pipeline config** (`config.dev.yaml`, `config.sample.yaml`): Controls manuscript processing and pipeline step prompts. Each AI step uses a **flat** block with only `model` and shared `prompts` — no per-provider nesting and no sampling parameters in YAML (API defaults apply at runtime).
+- **QC config (`config.qc.yaml`)**: Separate schema for quality control tests (still uses provider-specific blocks under `default.openai` / `default.anthropic`). Example:
 
 ```yaml
 qc_version: "2"
@@ -230,10 +230,9 @@ test_runs:
    - Panel source assignment
    - Data availability extraction
 
-2. **Model Configuration**: Configure different models and parameters:
-   - Multiple providers (OpenAI, Anthropic)
-   - Various models per provider
-   - Temperature and top_p parameter combinations
+2. **Model Configuration**: Configure models to benchmark (provider inferred from model name):
+   - OpenAI models (`gpt-*`, `o*-mini`, etc.)
+   - Anthropic models (`claude-*`) when supported by the benchmark runner
    - Multiple runs per configuration
 
 3. **Output and Metrics**:
@@ -262,6 +261,73 @@ The benchmark system generates several output files:
    - Expected outputs
    - Scoring details
    - Error information
+
+### Main pipeline YAML shape (v3.3+)
+
+Each AI step declares a **model** and shared **prompts** only. The runtime provider is inferred from the model name (`gpt*` / `o1*` / `o3*` / `o4*` → OpenAI, `claude*` → Anthropic). Top-level `ai_provider` is optional and, when set, must match the inferred provider.
+
+```yaml
+# Optional cross-check (inferred from models when omitted)
+ai_provider: "openai"
+
+default:
+  pipeline:
+    extract_sections:
+      model: "gpt-5.4-mini"
+      prompts:
+        system: |
+          ...
+        user: |
+          ...
+
+    extract_caption_title:
+      model: "gpt-5.4-mini"
+      prompts:
+        system: |
+          ...
+        user: |
+          ...
+
+    extract_panel_sequence:
+      model: "gpt-5.4-mini"
+      prompts:
+        system: |
+          ...
+        user: |
+          ...
+
+    extract_data_sources:
+      model: "gpt-5.4-mini"
+      prompts:
+        system: |
+          ...
+        user: |
+          ...
+
+    assign_panel_source:
+      model: "gpt-5.4-mini"
+      prompts:
+        system: |
+          ...
+        user: |
+          ...
+
+    match_caption_panel:
+      model: "gpt-5.4-mini"
+      prompts:
+        system: |
+          ...
+        user: |
+          ...
+
+    object_detection:  # non-AI; unchanged
+      model_path: "data/models/panel_detection_model_no_labels.pt"
+      confidence_threshold: 0.25
+```
+
+See `config.sample.yaml` for a minimal template and `config.dev.yaml` for the full development prompts.
+
+**Note:** `config.qc.yaml` keeps its own provider-specific layout; only the main curation pipeline uses the flat step schema above.
 
 ## Pipeline Steps
 
@@ -856,6 +922,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 3.4.1 (2026-07-06)
+- **mmqc-utils from PyPI**: Depend on published `mmqc-utils ^0.3.3` instead of a local wheel path so CI and Docker builds resolve the package without a sibling checkout.
+
+### 3.4.0 (2026-07-06)
+- **Unified pipeline config**: Main pipeline steps use flat `model` + `prompts` blocks; provider is inferred from the model name. Per-step `openai`/`anthropic` nesting and YAML sampling fields are removed from the main config (QC config unchanged).
 
 ### 3.3.0 (2026-06-10)
 - **mmqc_utils integration**: Manuscript HTML cleanup and figure image conversion now use `mmqc_utils` (`document_to_html`, `convert_to_bounded_jpeg`) for parity with soda-mmqc; removed legacy HTML normalization and PDF fallback paths.

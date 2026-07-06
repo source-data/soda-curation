@@ -3,7 +3,8 @@
 ##########################################################
 include_qc: true
 environment: "dev"
-# AI provider: "openai" (default) or "anthropic"
+# Optional: cross-check runtime provider against models in pipeline steps.
+# When omitted, provider is inferred from each step's model name (gpt* → openai, claude* → anthropic).
 ai_provider: "openai"
 default: &default
   pipeline:
@@ -12,16 +13,8 @@ default: &default
     ##########################################################
     # Updated extract_sections prompts for smolagents implementation
     extract_sections:
-      openai:
-        # OpenAI-specific parameters remain the same
-        model: "gpt-5.4-mini"  # Can be "gpt-4o", "gpt-4o-mini", or "gpt-5"
-        temperature: 0.1
-        top_p: 1.0
-        max_tokens: 2048
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
-        json_mode: true
-        prompts:
+      model: "gpt-5.4-mini"
+      prompts:
           system: |
             You are a scientific text analyzer. Your job is EXTRACTIVE COPYING from the manuscript — not summarizing, paraphrasing, rewriting, or generating new text.
 
@@ -98,15 +91,8 @@ default: &default
     # 2) Extract Individual Captions Step
     ##########################################################
     extract_caption_title:
-      openai:
-        model: "gpt-5.4-mini"
-        temperature: 0.1
-        top_p: 1.0
-        max_tokens: 4096
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
-        json_mode: true
-        prompts:
+      model: "gpt-5.4-mini"
+      prompts:
           system: |
             You are an AI assistant specializing in EXTRACTIVE copying of figure captions from scientific manuscripts.
             This is NOT a generative or summarization task: you must copy text exactly as it appears in the input.
@@ -151,15 +137,8 @@ default: &default
             Verify with the verification tool that `figure_caption` and `caption_title` are exact substrings of the input HTML before returning.
 
     extract_panel_sequence:
-      openai:
-        model: "gpt-5.4-mini"
-        temperature: 0.1
-        top_p: 1.0
-        max_tokens: 4096
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
-        json_mode: true
-        prompts:
+      model: "gpt-5.4-mini"
+      prompts:
           system: |
             You extract figure panel structure from the figure caption text ONLY
             Output JSON with one object per panel, in strict left-to-right reading order of the caption.
@@ -197,15 +176,8 @@ default: &default
 
     ##########################################################
     extract_data_sources:
-      openai:
-        model: "gpt-5.4-mini"
-        temperature: 0.5
-        top_p: 0.5
-        max_tokens: 2048
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
-        json_mode: true
-        prompts:
+      model: "gpt-5.4-mini"
+      prompts:
           system: |
             You are an expert at extracting structured data source information from scientific Data Availability sections.
             Your task is to identify and extract information about databases, accession numbers, and URLs into a specific JSON format.
@@ -308,15 +280,8 @@ default: &default
     # 4) Assign Panel Source Step
     ##########################################################
     assign_panel_source:
-      openai:
-        model: "gpt-5.4-mini"
-        temperature: 0.3
-        top_p: 1.0
-        max_tokens: 2048
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
-        json_mode: true
-        prompts:
+      model: "gpt-5.4-mini"
+      prompts:
           system: |
             You are an expert AI assistant for analyzing scientific data organization, particularly for matching source data files to specific panels within scientific figures. Your task is to analyze file lists from source data ZIP files and determine which files correspond to which figure panels.
 
@@ -382,15 +347,8 @@ default: &default
     # 5) Match Caption Panel Step
     ##########################################################
     match_caption_panel:
-      openai:
-        model: "gpt-5.4-mini"
-        temperature: 0.3
-        top_p: 1.0
-        max_tokens: 2048
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
-        json_mode: true
-        prompts:
+      model: "gpt-5.4-mini"
+      prompts:
           system: |
             You match ONE cropped panel image to the correct entry from a fixed catalog of panels.
             Panel labels and panel_caption text were already taken from the figure caption in an earlier step — you must NOT rewrite or improve them.

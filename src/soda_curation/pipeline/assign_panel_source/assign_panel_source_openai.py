@@ -8,8 +8,9 @@ from pydantic import ValidationError
 
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
-from ..openai_utils import DEFAULT_OPENAI_MODEL, call_openai, validate_model_config
+from ..openai_utils import call_openai
 from ..prompt_handler import PromptHandler
+from ..step_config import resolve_step_config
 from .assign_panel_source_base import (
     AsignedFiles,
     AsignedFilesList,
@@ -28,10 +29,11 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
         self.client = openai.OpenAI()
 
     def _validate_config(self) -> None:
-        """Validate OpenAI configuration parameters."""
-        config_ = self.config["pipeline"]["assign_panel_source"]["openai"]
-        model = config_.get("model", DEFAULT_OPENAI_MODEL)
-        validate_model_config(model, config_)
+        resolved = resolve_step_config(self.config["pipeline"]["assign_panel_source"])
+        if resolved["provider"] != "openai":
+            raise ValueError(
+                f"assign_panel_source model '{resolved['model']}' requires Anthropic."
+            )
 
     def call_ai_service(self, prompt: str, allowed_files: List) -> AsignedFilesList:
         """Call OpenAI service with the given prompt."""
@@ -53,18 +55,15 @@ class PanelSourceAssignerOpenAI(PanelSourceAssigner):
             {"role": "user", "content": prompt},
         ]
 
-        config_ = self.config["pipeline"]["assign_panel_source"]["openai"]
-        model_ = config_.get("model", "gpt-4o")
+        model_ = resolve_step_config(self.config["pipeline"]["assign_panel_source"])[
+            "model"
+        ]
 
         response = call_openai(
             client=self.client,
             model=model_,
             messages=messages,
             response_format=AsignedFilesList,  # Ensure the response is in JSON format
-            temperature=config_.get("temperature", 0.3),
-            top_p=config_.get("top_p", 1.0),
-            frequency_penalty=config_.get("frequency_penalty", 0),
-            presence_penalty=config_.get("presence_penalty", 0),
             operation="main.assign_panel_source",
             request_metadata={
                 "provider": "openai",

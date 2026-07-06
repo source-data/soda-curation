@@ -116,17 +116,12 @@ class ConfigurationLoader:
         if step == PipelineStep.OBJECT_DETECTION:
             return cast(Dict[str, Any], self.config["pipeline"]["object_detection"])
 
-        # Get provider-specific configuration for AI steps
-        provider = os.getenv("MODEL_PROVIDER", "openai")
+        from .pipeline.step_config import resolve_step_config
+
         step_config = self.config["pipeline"][step.value]
-
-        if provider not in step_config:
-            raise ConfigurationError(
-                f"Provider {provider} not configured for step {step.value}"
-            )
-
-        # Merge provider configuration with API key
-        config = step_config[provider].copy()
+        resolved = resolve_step_config(step_config)
+        provider = resolved["provider"]
+        config = {"model": resolved["model"], "prompts": resolved["prompts"]}
         config["api_key"] = os.getenv(f"{provider.upper()}_API_KEY")
 
         return cast(Dict[str, Any], config)

@@ -16,7 +16,8 @@ import openai
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import Panel, ZipStructure
-from ..openai_utils import DEFAULT_OPENAI_MODEL, call_openai, validate_model_config
+from ..openai_utils import call_openai
+from ..step_config import resolve_step_config
 from .match_caption_panel_base import MatchPanelCaption, PanelObject
 
 logger = logging.getLogger(__name__)
@@ -45,14 +46,12 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
         # Initialize OpenAI client
         self.client = openai.OpenAI()
 
-        # Get OpenAI specific config
-        self.openai_config = config["pipeline"]["match_caption_panel"]["openai"]
-
     def _validate_config(self) -> None:
-        """Validate OpenAI configuration parameters."""
-        config_ = self.config["pipeline"]["match_caption_panel"]["openai"]
-        model = config_.get("model", DEFAULT_OPENAI_MODEL)
-        validate_model_config(model, config_)
+        resolved = resolve_step_config(self.config["pipeline"]["match_caption_panel"])
+        if resolved["provider"] != "openai":
+            raise ValueError(
+                f"match_caption_panel model '{resolved['model']}' requires Anthropic."
+            )
 
     def _match_panel_caption(
         self,
@@ -82,7 +81,9 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
             "allowed_panel_catalog_json": json.dumps(catalog, ensure_ascii=False),
         }
         prompts = self.prompt_handler.get_prompt("match_caption_panel", variables)
-        model = self.openai_config.get("model", DEFAULT_OPENAI_MODEL)
+        model = resolve_step_config(self.config["pipeline"]["match_caption_panel"])[
+            "model"
+        ]
         logger.info(
             "Preparing panel-caption vision request",
             extra={
@@ -113,11 +114,6 @@ class MatchPanelCaptionOpenAI(MatchPanelCaption):
                 },
             ],
             response_format=PanelObject,
-            temperature=self.openai_config.get("temperature", 0.1),
-            top_p=self.openai_config.get("top_p", 1.0),
-            frequency_penalty=self.openai_config.get("frequency_penalty", 0),
-            presence_penalty=self.openai_config.get("presence_penalty", 0),
-            max_tokens=self.openai_config.get("max_tokens", 512),
             operation="main.match_caption_panel",
             request_metadata={
                 "provider": "openai",

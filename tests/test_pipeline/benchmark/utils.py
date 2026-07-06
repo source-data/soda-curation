@@ -14,6 +14,7 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser impor
     XMLStructureExtractor,
 )
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
+from src.soda_curation.pipeline.step_config import resolve_step_config
 
 from .base_runner import BaseBenchmarkRunner
 
@@ -73,27 +74,17 @@ class DataAvailabilityBenchmarkRunner(BaseBenchmarkRunner):
             if not pipeline_config:
                 raise ValueError("No pipeline configuration found in default profile")
 
-            # Provider-specific configuration
             provider = test_case["provider"]
+            data_prompts = resolve_step_config(pipeline_config["extract_data_sources"])[
+                "prompts"
+            ]
 
-            # Create extractor configuration
             extractor_config = {
-                "api_key": None,  # We don't need to pass the API key here
+                "api_key": None,
                 "pipeline": {
                     "extract_data_sources": {
-                        provider: {
-                            "model": test_case["model"],
-                            "temperature": test_case["temperature"],
-                            "top_p": test_case["top_p"],
-                            "prompts": {
-                                "system": pipeline_config["extract_data_sources"][
-                                    provider
-                                ]["prompts"]["system"],
-                                "user": pipeline_config["extract_data_sources"][
-                                    provider
-                                ]["prompts"]["user"],
-                            },
-                        }
+                        "model": test_case["model"],
+                        "prompts": data_prompts,
                     }
                 },
             }

@@ -53,12 +53,11 @@ def mock_config():
         "extraction_dir": "/tmp",
         "pipeline": {
             "match_caption_panel": {
-                "openai": {
-                    "model": "gpt-4o",
-                    "temperature": 0.3,
-                    "top_p": 1.0,
-                    "max_tokens": 512,
-                }
+                "model": "gpt-4o",
+                "prompts": {
+                    "system": "Match panel",
+                    "user": "Caption: $figure_caption",
+                },
             }
         },
     }

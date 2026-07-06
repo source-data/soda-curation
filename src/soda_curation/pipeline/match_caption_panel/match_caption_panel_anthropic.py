@@ -11,6 +11,7 @@ from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import Panel
+from ..step_config import resolve_step_config
 from .match_caption_panel_base import MatchPanelCaption, PanelObject
 
 logger = logging.getLogger(__name__)
@@ -22,12 +23,14 @@ class MatchPanelCaptionAnthropic(MatchPanelCaption):
     def __init__(self, config: Dict[str, Any], prompt_handler: Any, extract_dir: Path):
         super().__init__(config, prompt_handler, extract_dir)
         self.client = anthropic.Anthropic()
-        self.anthropic_config = config["pipeline"]["match_caption_panel"]["anthropic"]
 
     def _validate_config(self) -> None:
-        """Validate Anthropic configuration parameters."""
-        config_ = self.config["pipeline"]["match_caption_panel"]["anthropic"]
-        validate_anthropic_model(config_.get("model", "claude-sonnet-4-6"))
+        resolved = resolve_step_config(self.config["pipeline"]["match_caption_panel"])
+        if resolved["provider"] != "anthropic":
+            raise ValueError(
+                f"match_caption_panel model '{resolved['model']}' requires OpenAI."
+            )
+        validate_anthropic_model(resolved["model"])
 
     def _match_panel_caption(
         self,
@@ -58,7 +61,9 @@ class MatchPanelCaptionAnthropic(MatchPanelCaption):
         }
         prompts = self.prompt_handler.get_prompt("match_caption_panel", variables)
 
-        model = self.anthropic_config.get("model", "claude-sonnet-4-6")
+        model = resolve_step_config(self.config["pipeline"]["match_caption_panel"])[
+            "model"
+        ]
         logger.info(
             "Preparing panel-caption vision request",
             extra={
@@ -89,8 +94,6 @@ class MatchPanelCaptionAnthropic(MatchPanelCaption):
                 },
             ],
             response_format=PanelObject,
-            temperature=self.anthropic_config.get("temperature", 0.1),
-            max_tokens=self.anthropic_config.get("max_tokens", 512),
             operation="main.match_caption_panel",
             request_metadata={
                 "provider": "anthropic",

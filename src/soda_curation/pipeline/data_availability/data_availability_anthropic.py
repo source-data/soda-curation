@@ -11,6 +11,7 @@ from ..ai_observability import summarize_text
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
+from ..step_config import resolve_step_config
 from .data_availability_base import DataAvailabilityExtractor, ExtractDataSources
 
 logger = logging.getLogger(__name__)
@@ -37,9 +38,12 @@ class DataAvailabilityExtractorAnthropic(DataAvailabilityExtractor):
             return {"databases": []}
 
     def _validate_config(self) -> None:
-        """Validate Anthropic configuration parameters."""
-        config_ = self.config["pipeline"]["extract_data_sources"]["anthropic"]
-        validate_anthropic_model(config_.get("model", "claude-sonnet-4-6"))
+        resolved = resolve_step_config(self.config["pipeline"]["extract_data_sources"])
+        if resolved["provider"] != "anthropic":
+            raise ValueError(
+                f"extract_data_sources model '{resolved['model']}' requires OpenAI."
+            )
+        validate_anthropic_model(resolved["model"])
 
     def extract_data_sources(
         self, section_text: str, zip_structure: ZipStructure
@@ -71,16 +75,15 @@ class DataAvailabilityExtractorAnthropic(DataAvailabilityExtractor):
             {"role": "user", "content": prompts["user"]},
         ]
 
-        config_ = self.config["pipeline"]["extract_data_sources"]["anthropic"]
-        model_ = config_.get("model", "claude-sonnet-4-6")
+        model_ = resolve_step_config(self.config["pipeline"]["extract_data_sources"])[
+            "model"
+        ]
 
         response = call_anthropic(
             client=self.client,
             model=model_,
             messages=messages,
             response_format=ExtractDataSources,
-            temperature=config_.get("temperature", 0.1),
-            max_tokens=config_.get("max_tokens", 2048),
             operation="main.extract_data_sources",
             request_metadata={
                 "registry_database_count": len(
