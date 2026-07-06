@@ -923,6 +923,9 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 3.4.1 (2026-07-06)
+- **mmqc-utils from PyPI**: Depend on published `mmqc-utils ^0.3.3` instead of a local wheel path so CI and Docker builds resolve the package without a sibling checkout.
+
 ### 3.4.0 (2026-07-06)
 - **Unified pipeline config**: Main pipeline steps use flat `model` + `prompts` blocks; provider is inferred from the model name. Per-step `openai`/`anthropic` nesting and YAML sampling fields are removed from the main config (QC config unchanged).
 

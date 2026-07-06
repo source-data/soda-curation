@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "soda-curation"
-version = "3.4.0"
+version = "3.4.1"
 description = "A professional Python package for data curation with AI capabilities"
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
@@ -25,8 +25,7 @@ packages = [{include = "soda_curation", from = "src"}]
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.14"
-# TODO: switch to the PyPI release of mmqc-utils once it is published.
-mmqc-utils = {path = "/Users/jabreu/PycharmProjects/soda-mmQC/mmqc_utils/dist/mmqc_utils-0.3.5-py3-none-any.whl"}
+mmqc-utils = "^0.3.3"
 openai = "^1.43.0"
 pyyaml = "^6.0.2"
 python-docx = "^0.8.11"
