@@ -117,7 +117,8 @@ ENV PYTHONPATH=/app/src
 RUN convert --version
 RUN poetry run python -c "import yaml; print(yaml.__file__)"
 RUN poetry run python -c "import openai; print(openai.__file__)"
-RUN poetry run python -c "from ultralytics import YOLOv10; print(YOLOv10)"
+# Fail the image build if panel-detection weights cannot be loaded (same path as runtime).
+RUN poetry run python -c "from soda_curation.pipeline.match_caption_panel.object_detection import create_object_detection; create_object_detection({'object_detection': {'model_path': 'data/models/panel_detection_model_no_labels.pt'}}); print('YOLO panel detection weights loaded OK')"
 RUN poetry run python -c "import mmqc_utils; print(mmqc_utils.__file__)"
 RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 
