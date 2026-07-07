@@ -6,7 +6,8 @@ WORKDIR /app
 
 # Define deployment environment ARG early (before ENV declarations)
 ARG DEPLOYMENT_ENV=dev
-ARG GIT_ACCESS_TOKEN
+# Optional: GitHub Actions passes this for private git deps. Local builds omit it.
+ARG GIT_ACCESS_TOKEN=
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -46,10 +47,9 @@ RUN apt-get update && apt-get install -y \
     && which convert \
     && rm -rf /var/lib/apt/lists/*
 
-# NOW configure git with token (after git is installed)
-RUN if [ -n "$GIT_ACCESS_TOKEN" ]; then \
+# Configure authenticated GitHub access only when a build token is provided (e.g. CI).
+RUN if [ -n "${GIT_ACCESS_TOKEN}" ]; then \
       git config --global url."https://${GIT_ACCESS_TOKEN}@github.com/".insteadOf "https://github.com/"; \
-      git config --list | grep url; \
     fi
 
 # Update ImageMagick policy to allow EPS, PDF, and PostScript conversions.
@@ -100,7 +100,8 @@ ENV OMP_NUM_THREADS=1 \
 RUN poetry run pip install --upgrade pip \
     && poetry run pip install huggingface-hub \
     && poetry run pip install -q git+https://github.com/THU-MIG/yolov10.git \
-    && poetry run pip install jupyterlab
+    && poetry run pip install jupyterlab \
+    && (git config --global --remove-section url 2>/dev/null || true)
 
 # Create config directory 
 RUN mkdir -p /app/config
@@ -117,7 +118,8 @@ ENV PYTHONPATH=/app/src
 RUN convert --version
 RUN poetry run python -c "import yaml; print(yaml.__file__)"
 RUN poetry run python -c "import openai; print(openai.__file__)"
-RUN poetry run python -c "from ultralytics import YOLOv10; print(YOLOv10)"
+# Fail the image build if panel-detection weights cannot be loaded (same path as runtime).
+RUN poetry run python -c "from soda_curation.pipeline.match_caption_panel.object_detection import create_object_detection; create_object_detection({'object_detection': {'model_path': 'data/models/panel_detection_model_no_labels.pt'}}); print('YOLO panel detection weights loaded OK')"
 RUN poetry run python -c "import mmqc_utils; print(mmqc_utils.__file__)"
 RUN poetry run python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 
@@ -153,6 +155,3 @@ RUN poetry install --with dev
 
 # Run tests
 CMD ["poetry", "run", "pytest", "-v", "--cov=soda_curation", "--cov-report=term-missing"]
-
-# Add this at the end to clean up credentials for security
-RUN git config --global --unset url."https://${GIT_ACCESS_TOKEN}:@github.com/".insteadOf || true

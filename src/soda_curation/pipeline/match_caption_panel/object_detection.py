@@ -7,6 +7,7 @@ produces bounded JPEGs for all supported formats (EPS, AI, PDF, TIFF, PNG, JPG).
 Panel detection is performed with the YOLOv10 model.
 """
 
+import contextlib
 import logging
 import os
 from io import BytesIO
@@ -29,6 +30,34 @@ logger = logging.getLogger(__name__)
 
 MAX_IMAGE_DIMENSION = 2048
 """Maximum width/height (in pixels) for converted figure images."""
+
+
+@contextlib.contextmanager
+def _trusted_yolo_checkpoint_load():
+    """Load trusted in-house YOLO weights under PyTorch >=2.6.
+
+    Ultralytics calls ``torch.load(path, map_location="cpu")`` without
+    ``weights_only=False``. Our panel-detection checkpoint pickles full model
+    objects (ultralytics classes, dill helpers, etc.), which fails under
+    PyTorch 2.6's secure default. The weights file is an internal EMBO asset.
+    """
+    try:
+        import torch
+    except ImportError:
+        yield
+        return
+
+    original_load = torch.load
+
+    def trusted_load(*args: Any, **kwargs: Any):
+        kwargs.setdefault("weights_only", False)
+        return original_load(*args, **kwargs)
+
+    torch.load = trusted_load  # type: ignore[method-assign]
+    try:
+        yield
+    finally:
+        torch.load = original_load  # type: ignore[method-assign]
 
 
 def convert_to_pil_image(file_path: str, dpi: int = 300) -> Tuple[Image.Image, str]:
@@ -98,7 +127,8 @@ class ObjectDetection:
             model_path (str): Path to the YOLOv10 model file.
         """
         self.model_path = model_path
-        self.model = YOLOv10(self.model_path)
+        with _trusted_yolo_checkpoint_load():
+            self.model = YOLOv10(self.model_path)
         logger.info(f"Initialized ObjectDetection with model: {self.model_path}")
 
     def detect_panels(
