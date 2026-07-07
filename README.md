@@ -923,6 +923,11 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 3.4.2 (2026-07-07)
+- **YOLO / PyTorch 2.6**: Panel-detection checkpoints load under torch 2.6+ via trusted `weights_only=False` during model init (fixes Airflow/Docker unpickling errors).
+- **Docker build gate**: Image build fails early if `panel_detection_model_no_labels.pt` cannot be loaded (same code path as runtime).
+- **Docker git auth**: `GIT_ACCESS_TOKEN` is optional — GitHub Actions CI passes it; local and production builds use public PyPI/GitHub deps without it.
+
 ### 3.4.1 (2026-07-06)
 - **mmqc-utils from PyPI**: Depend on published `mmqc-utils ^0.3.3` instead of a local wheel path so CI and Docker builds resolve the package without a sibling checkout.
 
