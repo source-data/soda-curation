@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile.cpu
       args:
         DEPLOYMENT_ENV: dev
+        # Optional: set GIT_ACCESS_TOKEN in CI; local builds use public deps without it.
+        GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN:-}
       target: development
     environment:
       - DEPLOYMENT_ENV=dev

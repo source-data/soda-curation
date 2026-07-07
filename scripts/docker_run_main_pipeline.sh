@@ -21,7 +21,7 @@ if [[ ! -f "$ROOT/data/archives/$ZIP_NAME" ]]; then
   exit 1
 fi
 
-echo "Building $IMAGE ..."
+echo "Building $IMAGE (no GIT_ACCESS_TOKEN; public deps only) ..."
 docker build -t "$IMAGE" -f Dockerfile.cpu --target development \
   --build-arg DEPLOYMENT_ENV=dev .
 

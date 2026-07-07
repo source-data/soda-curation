@@ -6,6 +6,8 @@ WORKDIR /app
 
 # Define deployment environment ARG early (before ENV declarations)
 ARG DEPLOYMENT_ENV=dev
+# Optional: GitHub Actions passes this for private git deps. Local builds omit it.
+ARG GIT_ACCESS_TOKEN=
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -44,6 +46,11 @@ RUN apt-get update && apt-get install -y \
     && convert --version \
     && which convert \
     && rm -rf /var/lib/apt/lists/*
+
+# Configure authenticated GitHub access only when a build token is provided (e.g. CI).
+RUN if [ -n "${GIT_ACCESS_TOKEN}" ]; then \
+      git config --global url."https://${GIT_ACCESS_TOKEN}@github.com/".insteadOf "https://github.com/"; \
+    fi
 
 # Update ImageMagick policy to allow EPS, PDF, and PostScript conversions.
 # Required by the wand-based image conversion in mmqc_utils (EPS/PDF rasterization).
@@ -93,7 +100,8 @@ ENV OMP_NUM_THREADS=1 \
 RUN poetry run pip install --upgrade pip \
     && poetry run pip install huggingface-hub \
     && poetry run pip install -q git+https://github.com/THU-MIG/yolov10.git \
-    && poetry run pip install jupyterlab
+    && poetry run pip install jupyterlab \
+    && (git config --global --remove-section url 2>/dev/null || true)
 
 # Create config directory 
 RUN mkdir -p /app/config
