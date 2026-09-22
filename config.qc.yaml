@@ -8,15 +8,17 @@ qc_check_metadata:
     error_bars_defined:
       name: "Error Bars Defined"
       checklist_type: "fig-checklist"
+    image_annotation_defined:
+      name: "Image Annotations Defined"
+      checklist_type: "fig-checklist"
     individual_data_points:
       name: "Individual Data Points Displayed"
       checklist_type: "fig-checklist"
-      langfuse_name: "checklists/fig-checklist/individual-data-points-copy"
     micrograph_scale_bar:
       name: "Micrograph Scale Bar Defined"
       checklist_type: "fig-checklist"
-    micrograph_symbols_defined:
-      name: "Micrograph Symbols Defined"
+    panel_image_matches_caption:
+      name: "Panel Image Matches Caption"
       checklist_type: "fig-checklist"
     plot_axis_units:
       name: "Plot Axis Units"
@@ -24,36 +26,39 @@ qc_check_metadata:
     plot_gap_labeling:
       name: "Plot Gap Labeling"
       checklist_type: "fig-checklist"
-      langfuse_name: "checklists/fig-checklist/plot-gap-labling"
-    replicates_defined:
-      name: "Replicates Defined"
+    replication_reporting:
+      name: "Replication Reporting"
+      checklist_type: "fig-checklist"
+    single_channel_for_overlay:
+      name: "Single Channels Shown for Overlay"
       checklist_type: "fig-checklist"
     stat_significance_level:
       name: "Statistical Significance Level Defined"
       checklist_type: "fig-checklist"
-      langfuse_name: "checklists/fig-checklist/stat-significant-level"
     stat_test:
       name: "Statistical Test Mentioned"
       checklist_type: "fig-checklist"
   figure:
     # Figure-level tests go here
   document:
+    AB_target_reagent_consistency:
+      name: "Antibody Target and Reagent Consistency"
+      checklist_type: "doc-checklist"
+    DAS_present_and_correct:
+      name: "Data Availability Section Present and Correct"
+      checklist_type: "doc-checklist"
     author_contribution_in_ms:
       name: "Author micro-contributions listed"
       checklist_type: "doc-checklist"
     biorender_protocol.io_mentions:
       name: "Protocol mentions in the manuscript"
       checklist_type: "doc-checklist"
-    DAS_present_and_correct:
-      name: "Data Availability Section Present and Correct"
-      checklist_type: "doc-checklist"
     data_not_shown:
       name: "Detection of missing or omitted data"
       checklist_type: "doc-checklist"
-    external_data_url_validation_agentic:
+    external_data_url_validation:
       name: "Validation of external URLs"
       checklist_type: "doc-checklist"
-      langfuse_name: "checklists/doc-checklist/external-data-url-validation"
     no_overclaim_in_abstract:
       name: "Abstract Does not Show Overclaims"
       checklist_type: "doc-checklist"
@@ -62,6 +67,9 @@ qc_check_metadata:
       checklist_type: "doc-checklist"
     section_order:
       name: "Manuscript Structure Check"
+      checklist_type: "doc-checklist"
+    section_order_alt:
+      name: "Manuscript Structure Check (alternative)"
       checklist_type: "doc-checklist"
 
 default: &default
