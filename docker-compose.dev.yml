@@ -13,7 +13,6 @@ services:
     environment:
       - DEPLOYMENT_ENV=dev
       - ENVIRONMENT=dev
-      - SODA_MMQC_PATH=/app/.venv/src/soda-mmQC
     env_file:
       - .env.dev
     volumes:
