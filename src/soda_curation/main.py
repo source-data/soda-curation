@@ -48,7 +48,7 @@ from .pipeline.manuscript_structure.manuscript_structure import (
     CustomJSONEncoder,
     ZipStructure,
 )
-from .pipeline.manuscript_structure.manuscript_xml_parser import XMLStructureExtractor
+from .pipeline.manuscript_structure.extractor_factory import create_structure_extractor
 from .pipeline.match_caption_panel.match_caption_panel_anthropic import (
     MatchPanelCaptionAnthropic,
 )
@@ -236,7 +236,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
 
     try:
         # Extract manuscript structure (first pipeline step)
-        extractor = XMLStructureExtractor(zip_path, str(extract_dir))
+        extractor = create_structure_extractor(zip_path, str(extract_dir))
         zip_structure = _execute_pipeline_step(
             step_name="extract_structure",
             runner=extractor.extract_structure,

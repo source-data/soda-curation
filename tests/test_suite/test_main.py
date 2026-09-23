@@ -163,7 +163,7 @@ def test_main_creates_output_directory(
     # Add patches for pipeline components
     with (
         patch("src.soda_curation.main.setup_extract_dir") as mock_setup_dir,
-        patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor,
+        patch("src.soda_curation.main.create_structure_extractor") as mock_extractor,
         patch(
             "src.soda_curation.main.SectionExtractorOpenAI"
         ) as mock_section_extractor,
@@ -247,7 +247,7 @@ def test_main_successful_run(
     )
 
     with (
-        patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor,
+        patch("src.soda_curation.main.create_structure_extractor") as mock_extractor,
         patch(
             "src.soda_curation.main.SectionExtractorOpenAI"
         ) as mock_section_extractor,
@@ -331,7 +331,7 @@ def test_main_no_output_path_returns_json(
     )
 
     with (
-        patch("src.soda_curation.main.XMLStructureExtractor") as mock_extractor,
+        patch("src.soda_curation.main.create_structure_extractor") as mock_extractor,
         patch(
             "src.soda_curation.main.SectionExtractorOpenAI"
         ) as mock_section_extractor,
