@@ -1017,3 +1017,47 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
             ]
 
             assert sorted(normalized_paths) == sorted(expected_paths)
+
+    @patch("zipfile.ZipFile")
+    def test_get_zip_contents_emits_relative_paths_for_absolute_input(
+        self, mock_zipfile
+    ):
+        """Absolute inputs come back archive-relative, for zip and non-zip alike.
+
+        `_process_figure` builds absolute paths before calling this, and the results
+        can reach `panel.sd_files`, which data4rev-flow validates against the file
+        names it stored. An absolute path there fails that validation.
+        """
+        zip_dir = self.extract_dir / "suppl_data"
+        zip_dir.mkdir(parents=True, exist_ok=True)
+        (zip_dir / "figure_1.zip").touch()
+        (zip_dir / "Dataset EV1.xlsx").touch()
+
+        mock_zip = MagicMock()
+        mock_zip.__enter__.return_value = mock_zip
+        mock_zip.infolist.return_value = [MagicMock(filename="A/A_1.csv")]
+        mock_zipfile.return_value = mock_zip
+
+        # Absolute, exactly as `_process_figure` builds them.
+        sd_files = [
+            str(self.extract_dir / "suppl_data/figure_1.zip"),
+            str(self.extract_dir / "suppl_data/Dataset EV1.xlsx"),
+        ]
+
+        output = self.assigner._get_zip_contents(sd_files)
+
+        assert output == [
+            "suppl_data/figure_1.zip:A/A_1.csv",
+            "suppl_data/Dataset EV1.xlsx",
+        ]
+        assert not any(path.startswith("/") for path in output)
+
+    def test_get_zip_contents_flat_non_zip_source_data(self):
+        """Flat archives yield bare file names, which MECA needs for its RAR files."""
+        (self.extract_dir / "Source Data Fig. 1.rar").touch()
+
+        output = self.assigner._get_zip_contents(
+            [str(self.extract_dir / "Source Data Fig. 1.rar")]
+        )
+
+        assert output == ["Source Data Fig. 1.rar"]

@@ -247,7 +247,10 @@ class PanelSourceAssigner(ABC):
                         )
                         extracted_files.append(f"{relative_path}:{normalized_filename}")
             else:
-                extracted_files.append(file_path)
+                # Emit archive-relative path
+                extracted_files.append(
+                    Path(full_path).relative_to(self.extraction_dir).as_posix()
+                )
 
         return extracted_files
 
