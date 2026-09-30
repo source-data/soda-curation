@@ -18,10 +18,7 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import
 )
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
 
-SAMPLE_XML = (
-    Path(__file__).resolve().parents[2]
-    / "data/archives/EMBOR-2025-62929V1-T/EMBOR-2025-62929V1-T.xml"
-)
+SAMPLE_XML = Path(__file__).parent / "test_data" / "EMBOJ-DUMMY-ZIP.xml"
 
 
 def _pipeline_config() -> dict:
@@ -78,9 +75,9 @@ def test_sample_xml_journal_title():
     root = etree.parse(str(SAMPLE_XML)).getroot()
     nodes = root.xpath("//journal-title")
     title = nodes[0].text.strip()
-    journal, matched_from = resolve_journal(title, "EMBOR-2025-62929V1-T")
-    assert title == "EMBO Reports"
-    assert journal.key == "embo_reports"
+    journal, matched_from = resolve_journal(title, "EMBOJ-DUMMY-ZIP")
+    assert title == "The EMBO Journal"
+    assert journal.key == "the_embo_journal"
     assert matched_from == "journal_title"
 
 
