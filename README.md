@@ -977,7 +977,7 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
-### 3.5.0 (2026-09-30)
+### 3.6.0 (2026-09-30)
 - **Acceptance guidelines**: Main pipeline writes a Markdown report of whether the manuscript follows journal acceptance guidelines. Shared rules are in `guidelines/common.md`; journal differences are in the matching file under `src/soda_curation/pipeline/acceptance_guidelines/guidelines/`.
 
 ### 3.4.2 (2026-07-07)
