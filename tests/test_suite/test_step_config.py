@@ -77,6 +77,10 @@ class TestResolvePipelineProvider(unittest.TestCase):
                 "model": "gpt-4o",
                 "prompts": {"system": "s", "user": "u"},
             },
+            "check_acceptance_guidelines": {
+                "model": "gpt-4o",
+                "prompts": {"system": "s", "user": "u"},
+            },
         }
         self.assertEqual(resolve_pipeline_provider(pipeline), "openai")
 
@@ -103,6 +107,10 @@ class TestResolvePipelineProvider(unittest.TestCase):
                 "prompts": {"system": "s", "user": "u"},
             },
             "assign_panel_source": {
+                "model": "claude-sonnet-4-6",
+                "prompts": {"system": "s", "user": "u"},
+            },
+            "check_acceptance_guidelines": {
                 "model": "claude-sonnet-4-6",
                 "prompts": {"system": "s", "user": "u"},
             },

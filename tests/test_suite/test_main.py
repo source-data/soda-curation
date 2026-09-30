@@ -74,6 +74,14 @@ MOCK_CONFIG = {
                 "prompts": {"system": "System prompt", "user": "User prompt"},
             }
         },
+        "check_acceptance_guidelines": {
+            "openai": {
+                "model": "gpt-4o",
+                "temperature": 0.1,
+                "top_p": 1.0,
+                "prompts": {"system": "System prompt", "user": "User prompt"},
+            }
+        },
     }
 }
 
@@ -175,6 +183,10 @@ def test_main_creates_output_directory(
         ) as mock_data_extractor,
         patch("src.soda_curation.main.MatchPanelCaptionOpenAI") as mock_matcher_cls,
         patch("src.soda_curation.main.PanelSourceAssignerOpenAI") as mock_assign_cls,
+        patch(
+            "src.soda_curation.main.check_acceptance_guidelines",
+            side_effect=lambda **kwargs: kwargs["zip_structure"],
+        ),
     ):
         # Configure mocks
         extract_dir = tmp_path / "extract"
@@ -261,6 +273,10 @@ def test_main_successful_run(
             "src.soda_curation.main.PanelSourceAssignerOpenAI"
         ) as mock_panel_assigner,
         patch("src.soda_curation.main.MatchPanelCaptionOpenAI") as mock_matcher_cls,
+        patch(
+            "src.soda_curation.main.check_acceptance_guidelines",
+            side_effect=lambda **kwargs: kwargs["zip_structure"],
+        ),
     ):
         # Configure mocks
         mock_instance = MagicMock()
@@ -343,6 +359,10 @@ def test_main_no_output_path_returns_json(
         ) as mock_data_extractor,
         patch("src.soda_curation.main.MatchPanelCaptionOpenAI") as mock_matcher_cls,
         patch("src.soda_curation.main.PanelSourceAssignerOpenAI") as mock_assign_cls,
+        patch(
+            "src.soda_curation.main.check_acceptance_guidelines",
+            side_effect=lambda **kwargs: kwargs["zip_structure"],
+        ),
     ):
         # Configure mocks to return the ZipStructure object
         mock_instance = MagicMock()

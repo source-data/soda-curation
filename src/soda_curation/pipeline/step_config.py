@@ -14,6 +14,7 @@ AI_PIPELINE_STEPS = (
     "extract_data_sources",
     "match_caption_panel",
     "assign_panel_source",
+    "check_acceptance_guidelines",
 )
 
 

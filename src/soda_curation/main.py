@@ -22,6 +22,7 @@ from ._main_utils import (
 from .config import ConfigurationLoader
 from .data_storage import save_figure_data, save_zip_structure
 from .logging_config import setup_logging
+from .pipeline.acceptance_guidelines.check_acceptance import check_acceptance_guidelines
 from .pipeline.assign_panel_source.assign_panel_source_anthropic import (
     PanelSourceAssignerAnthropic,
 )
@@ -44,11 +45,11 @@ from .pipeline.extract_sections.extract_sections_anthropic import (
     SectionExtractorAnthropic,
 )
 from .pipeline.extract_sections.extract_sections_openai import SectionExtractorOpenAI
+from .pipeline.manuscript_structure.extractor_factory import create_structure_extractor
 from .pipeline.manuscript_structure.manuscript_structure import (
     CustomJSONEncoder,
     ZipStructure,
 )
-from .pipeline.manuscript_structure.extractor_factory import create_structure_extractor
 from .pipeline.match_caption_panel.match_caption_panel_anthropic import (
     MatchPanelCaptionAnthropic,
 )
@@ -75,6 +76,7 @@ AI_PROVIDER_STEPS = (
     "extract_data_sources",
     "match_caption_panel",
     "assign_panel_source",
+    "check_acceptance_guidelines",
 )
 
 
@@ -183,7 +185,8 @@ def run_qc_pipeline_async(
     try:
         logger.info("*** QC PIPELINE TRIGGERED - include_qc=true IS WORKING! ***")
         logger.info(
-            f"Received {len(figure_data) if figure_data else 0} figures for QC processing"
+            "Received "
+            f"{len(figure_data) if figure_data else 0} figures for QC processing"
         )
 
         qc_pipeline = QCPipeline(config, extract_dir)
@@ -262,6 +265,22 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             extra={"run_id": run_id, "ai_provider": ai_provider},
         )
         zip_structure.ai_provider = ai_provider
+
+        # Journal comes from the XML title (set during extract_structure), with
+        # the manuscript id prefix as fallback inside the checker.
+        _execute_pipeline_step(
+            step_name="check_acceptance_guidelines",
+            runner=lambda: check_acceptance_guidelines(
+                config=config_loader.config,
+                prompt_handler=prompt_handler,
+                zip_structure=zip_structure,
+                manuscript_text=manuscript_content,
+                output_path=output_path,
+            ),
+            run_id=run_id,
+            critical=False,
+            recoverable_failures=recoverable_failures,
+        )
 
         # Extract relevant sections for the pipeline
         if ai_provider == "anthropic":
@@ -423,7 +442,8 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
             zip_structure.figures = processed_figures
         else:
             logger.warning(
-                "Proceeding without panel source assignments due to recoverable failure",
+                "Proceeding without panel source assignments due to "
+                "recoverable failure",
                 extra={"run_id": run_id, "step": "assign_panel_source"},
             )
 

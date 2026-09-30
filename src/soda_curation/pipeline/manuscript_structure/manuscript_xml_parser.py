@@ -114,6 +114,13 @@ class XMLStructureExtractor:
         )
         return manuscript_id[0].text if manuscript_id else ""
 
+    def _get_journal_title(self) -> str:
+        """Extract the journal title from XML."""
+        nodes = self.xml_content.xpath("//journal-title")
+        if nodes and nodes[0].text:
+            return nodes[0].text.strip()
+        return ""
+
     def _get_docx_file(self) -> str:
         """
         Get the manuscript file path from XML with fallback support for multiple formats.
@@ -290,6 +297,7 @@ class XMLStructureExtractor:
 
         structure = ZipStructure(
             manuscript_id=self.manuscript_id,
+            journal_title=self._get_journal_title(),
             xml=xml_file,
             docx=docx_file or "",
             pdf=pdf_file or "",

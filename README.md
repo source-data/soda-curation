@@ -10,13 +10,14 @@ soda-curation is a professional Python package for automated data curation of sc
 4. [Docker](#docker)
 5. [Testing](#testing)
 6. [Pipeline Steps](#pipeline-steps)
-7. [Verbatim Extraction Verification](#verbatim-extraction-verification)
-8. [Output Schema](#output-schema)
-9. [Model benchmarking](#model-benchmarking)
-10. [Quality Control (QC) Pipeline](#quality-control-qc-pipeline)
-11. [Contributing](#contributing)
-12. [License](#license)
-13. [Changelog](#changelog)
+7. [Acceptance guidelines](#acceptance-guidelines)
+8. [Verbatim Extraction Verification](#verbatim-extraction-verification)
+9. [Output Schema](#output-schema)
+10. [Model benchmarking](#model-benchmarking)
+11. [Quality Control (QC) Pipeline](#quality-control-qc-pipeline)
+12. [Contributing](#contributing)
+13. [License](#license)
+14. [Changelog](#changelog)
 
 ## Features
 
@@ -149,6 +150,8 @@ docker run --rm \
     --config /app/config.yaml \
     --output /app/data/output/EMBOR-2025-62929V1-T.json
 ```
+
+The same run also writes `EMBOR-2025-62929V1-T_acceptance_guidelines.md` next to that JSON.
 
 #### QC pipeline (single `docker run`)
 
@@ -396,7 +399,15 @@ The soda-curation pipeline processes scientific manuscripts through the followin
     - Assigns sequential labels (A, B, C...) to any additional detected panels
     - Preserves original caption information while adding visual context
 
-### 7. Output Generation & Verification
+### 7. Acceptance guidelines
+- **Purpose**: Report whether the manuscript follows the acceptance guidelines for its journal
+- **Process**:
+  - Reads the journal from the XML `<journal-title>` (already parsed in step 1). If that title does not match, falls back to the manuscript id prefix (`EMBOR`, `EMBOJ`, `EMM`, `MSB`, `LSA`)
+  - Sends the model the shared guidelines plus only that journal's guidelines
+  - Writes a Markdown report beside the JSON output
+- **Failure**: Recoverable. The rest of the pipeline still runs
+
+### 8. Output Generation & Verification
 - **Purpose**: Compile all processed information and verify quality
 - **Process**:
   - Assembles the complete manuscript structure with all enriched information
@@ -404,6 +415,36 @@ The soda-curation pipeline processes scientific manuscripts through the followin
   - Cleans up source data file references
   - Computes token usage and cost metrics for AI operations
   - Generates structured JSON output according to the defined schema
+  - The acceptance-guidelines Markdown path is included as `acceptance_guidelines.report_path`
+
+## Acceptance guidelines
+
+This check is a normal pipeline step (`check_acceptance_guidelines` in `src/soda_curation/main.py`). It is not a Cursor agent skill. Skills are loaded by the IDE and are not available when the pipeline runs in the container.
+
+Journal policy is split so the model only sees the shared rules and the one journal that matched:
+
+| File | When it is sent |
+| --- | --- |
+| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/common.md` | Every manuscript. Shared EMBO Press checklist |
+| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/embo_reports.md` | XML title `EMBO Reports`, or manuscript id prefix `EMBOR` |
+| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/the_embo_journal.md` | XML title `The EMBO Journal`, or prefix `EMBOJ` |
+| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/embo_molecular_medicine.md` | XML title `EMBO Molecular Medicine`, or prefix `EMM` |
+| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/molecular_systems_biology.md` | XML title `Molecular Systems Biology`, or prefix `MSB` |
+| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/life_science_alliance.md` | XML title `Life Science Alliance`, or prefix `LSA` |
+
+`common.md` is the shared EMBO Press checklist. The EMBO Journal, EMBO Reports and Molecular Systems Biology add no further checks. EMBO Molecular Medicine adds check C8. Life Science Alliance overrides the checks listed in its own file. If a journal file conflicts with `common.md`, the journal file wins.
+
+The instruction wrapper (how the report should be written) is the `check_acceptance_guidelines` prompt in `config.dev.yaml` and `config.sample.yaml`. It receives:
+
+- `$journal_title`
+- `$journal_key`
+- `$common_guidelines` — contents of `common.md`
+- `$journal_guidelines` — contents of the matched journal file
+- `$manuscript_text`
+
+Do not paste the four policies into that prompt. The step loads the files itself.
+
+The Markdown report is written next to the JSON output as `{output_stem}_acceptance_guidelines.md`. If you omit `--output`, it is written to `data/output/{manuscript_id}_acceptance_guidelines.md`. The JSON field `acceptance_guidelines` records `journal_key`, `journal_title`, `matched_from` (`journal_title`, `manuscript_id`, or `unmatched`), and `report_path`. An unmatched journal still gets a report, using only `common.md`.
 
 Throughout these steps, the pipeline leverages AI capabilities to enhance the accuracy of caption extraction and panel matching. The process is configurable through the `config.yaml` file, allowing for adjustments in AI models, detection parameters, and debug options.
 
@@ -481,6 +522,13 @@ Three main verification tools have been implemented:
   "non_associated_sd_files": ["string"],
   "locate_captions_hallucination_score": number,
   "locate_data_section_hallucination_score": number,
+  "journal_title": "string",
+  "acceptance_guidelines": {
+    "journal_key": "string",
+    "journal_title": "string",
+    "matched_from": "journal_title | manuscript_id | unmatched",
+    "report_path": "string"
+  },
   "ai_provider": "string",
   "cost": {
     "extract_sections": {
@@ -508,6 +556,12 @@ Three main verification tools have been implemented:
       "cost": number
     },
     "extract_data_sources": {
+      "prompt_tokens": number,
+      "completion_tokens": number,
+      "total_tokens": number,
+      "cost": number
+    },
+    "check_acceptance_guidelines": {
       "prompt_tokens": number,
       "completion_tokens": number,
       "total_tokens": number,
@@ -922,6 +976,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 3.5.0 (2026-09-30)
+- **Acceptance guidelines**: Main pipeline writes a Markdown report of whether the manuscript follows journal acceptance guidelines. Shared rules are in `guidelines/common.md`; journal differences are in the matching file under `src/soda_curation/pipeline/acceptance_guidelines/guidelines/`.
 
 ### 3.4.2 (2026-07-07)
 - **YOLO / PyTorch 2.6**: Panel-detection checkpoints load under torch 2.6+ via trusted `weights_only=False` during model init (fixes Airflow/Docker unpickling errors).

@@ -375,7 +375,35 @@ default: &default
             The next message part is the panel crop image. Return only the JSON object described in the system message.
 
     ##########################################################
-    # 6) Object Detection Step (non-AI)
+    # 6) Acceptance guidelines
+    #    Policy text lives in
+    #    src/soda_curation/pipeline/acceptance_guidelines/guidelines/
+    #    This prompt is the instruction wrapper. The step inserts
+    #    common.md plus one journal file.
+    ##########################################################
+    check_acceptance_guidelines:
+      model: "gpt-5.4-mini"
+      prompts:
+          system: |
+            You assess whether a scientific manuscript follows the acceptance guidelines in the user message.
+            The common guidelines are the shared EMBO Press rules. The journal-specific guidelines add to them and override them where they conflict.
+            Use only those guidelines. Do not invent extra journal policy, and do not apply another journal's rules.
+            Write the report in the format specified in the guidelines.
+          user: |
+            Journal: $journal_title
+            Journal key: $journal_key
+
+            Common acceptance guidelines:
+            $common_guidelines
+
+            Journal-specific acceptance guidelines:
+            $journal_guidelines
+
+            Manuscript text:
+            $manuscript_text
+
+    ##########################################################
+    # 7) Object Detection Step (non-AI)
     ##########################################################
     object_detection:
       model_path: "data/models/panel_detection_model_no_labels.pt"

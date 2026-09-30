@@ -86,6 +86,7 @@ class MecaStructureExtractor:
 
             self.manifest = etree.fromstring(zip_ref.read(MANIFEST_FILE_NAME))
             self.manuscript_id = self._get_manuscript_id(zip_ref)
+            self.journal_title = self._get_journal_title(zip_ref)
 
             self.manuscript_extract_dir = self.extract_dir / self.manuscript_id
             self.manuscript_extract_dir.mkdir(parents=True, exist_ok=True)
@@ -118,6 +119,19 @@ class MecaStructureExtractor:
             fallback,
         )
         return fallback
+
+    def _get_journal_title(self, zip_ref: zipfile.ZipFile) -> str:
+        """Read ``journal-title`` from article.xml when it is present."""
+        if ARTICLE_FILE_NAME not in self._names:
+            return ""
+        try:
+            article = etree.fromstring(zip_ref.read(ARTICLE_FILE_NAME))
+        except etree.XMLSyntaxError:
+            return ""
+        nodes = article.xpath("//journal-title")
+        if nodes and nodes[0].text:
+            return nodes[0].text.strip()
+        return ""
 
     def _resolve(self, href: Optional[str]) -> Optional[str]:
         """Map a manifest href onto an actual archive member, or None if it is absent.
@@ -173,6 +187,7 @@ class MecaStructureExtractor:
 
         return ZipStructure(
             manuscript_id=self.manuscript_id,
+            journal_title=self.journal_title,
             xml=ARTICLE_FILE_NAME,
             docx=docx,
             pdf=pdf or "",

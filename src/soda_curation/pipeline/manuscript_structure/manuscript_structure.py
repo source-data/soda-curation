@@ -100,6 +100,7 @@ class ProcessingCost:
     assign_panel_source: TokenUsage = field(default_factory=TokenUsage)
     match_caption_panel: TokenUsage = field(default_factory=TokenUsage)
     extract_data_sources: TokenUsage = field(default_factory=TokenUsage)
+    check_acceptance_guidelines: TokenUsage = field(default_factory=TokenUsage)
     total: TokenUsage = field(default_factory=TokenUsage)
 
 
@@ -135,6 +136,8 @@ class ZipStructure:
     locate_captions_hallucination_score: float = 0.0
     locate_data_section_hallucination_score: float = 0.0
     manuscript_id: str = ""
+    journal_title: str = ""
+    acceptance_guidelines: Dict = field(default_factory=dict)
     xml: str = ""
     docx: str = ""
     pdf: str = ""
@@ -168,6 +171,7 @@ class ZipStructure:
             self.cost.assign_panel_source,
             self.cost.match_caption_panel,
             self.cost.extract_data_sources,
+            self.cost.check_acceptance_guidelines,
         ]:
             total.prompt_tokens += component.prompt_tokens
             total.completion_tokens += component.completion_tokens

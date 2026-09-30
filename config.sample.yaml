@@ -96,7 +96,31 @@ default: &default
             # $allowed_panel_catalog_json
 
     ##########################################################
-    # 6) Object Detection (non-AI)
+    # 6) Acceptance guidelines
+    # Policy files (edit these, not this YAML block, for journal rules):
+    #   src/soda_curation/pipeline/acceptance_guidelines/guidelines/common.md
+    #   src/soda_curation/pipeline/acceptance_guidelines/guidelines/embo_reports.md
+    #   src/soda_curation/pipeline/acceptance_guidelines/guidelines/the_embo_journal.md
+    #   src/soda_curation/pipeline/acceptance_guidelines/guidelines/embo_molecular_medicine.md
+    #   src/soda_curation/pipeline/acceptance_guidelines/guidelines/molecular_systems_biology.md
+    #   src/soda_curation/pipeline/acceptance_guidelines/guidelines/life_science_alliance.md
+    # Variables: $journal_title $journal_key $common_guidelines $journal_guidelines $manuscript_text
+    ##########################################################
+    check_acceptance_guidelines:
+      model: "gpt-4o"
+      prompts:
+          system: |
+            # PLACEHOLDER: instruction wrapper for the acceptance-guidelines report.
+            # Journal policy belongs in the guidelines/*.md files, not here.
+          user: |
+            # $journal_title
+            # $journal_key
+            # $common_guidelines
+            # $journal_guidelines
+            # $manuscript_text
+
+    ##########################################################
+    # 7) Object Detection (non-AI)
     ##########################################################
     object_detection:
       model_path: "data/models/panel_detection_model_no_labels.pt"
