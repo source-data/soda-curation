@@ -3,14 +3,19 @@
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import pytest
 from lxml import etree
 
 from src.soda_curation.pipeline.acceptance_guidelines.check_acceptance import (
-    GUIDELINES_DIR,
     acceptance_report_path,
     check_acceptance_guidelines,
     load_guidelines,
     resolve_journal,
+)
+from src.soda_curation.pipeline.acceptance_guidelines.langfuse_prompts import (
+    FetchedPrompt,
+    get_production_prompt,
+    reset_client,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
     ProcessingCost,
@@ -81,15 +86,40 @@ def test_sample_xml_journal_title():
     assert matched_from == "journal_title"
 
 
-def test_load_guidelines_sends_only_the_matched_journal():
+def _prompt(name: str, text: str, version: str = "1") -> FetchedPrompt:
+    return FetchedPrompt(name=name, label="production", version=version, text=text)
+
+
+def test_load_guidelines_fetches_common_and_the_matched_journal():
     journal, _ = resolve_journal("EMBO Reports", "")
-    common, specific = load_guidelines(journal)
-    assert "shared embo press rules" in common.lower()
-    assert "EMBO Reports" in specific
-    assert "The Paper Explained" in specific
-    assert "Molecular Systems Biology" not in specific
-    assert "Life Science Alliance rules are not in this file" in common
-    assert (GUIDELINES_DIR / "common.md").is_file()
+    fetched = {
+        "common": _prompt(
+            "common",
+            "shared embo press rules\n"
+            "Life Science Alliance rules are not in this file",
+            "2",
+        ),
+        "embo_reports": _prompt(
+            "embo_reports",
+            "EMBO Reports\nThe Paper Explained\nno additional checklist items",
+        ),
+    }
+    with patch(
+        "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
+        ".get_production_prompt",
+        side_effect=lambda name: fetched[name],
+    ) as get_prompt:
+        common, specific = load_guidelines(journal)
+
+    assert [item.args[0] for item in get_prompt.call_args_list] == [
+        "common",
+        "embo_reports",
+    ]
+    assert specific is not None
+    assert "shared embo press rules" in common.text.lower()
+    assert "The Paper Explained" in specific.text
+    assert "Molecular Systems Biology" not in specific.text
+    assert common.version == "2"
 
 
 def test_check_acceptance_guidelines_writes_markdown(tmp_path):
@@ -105,10 +135,26 @@ def test_check_acceptance_guidelines_writes_markdown(tmp_path):
     response.usage.completion_tokens = 5
     response.usage.total_tokens = 15
 
-    with patch(
-        "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance._complete",
-        return_value=response,
-    ) as complete:
+    prompts = {
+        "common": _prompt("common", "shared embo press rules", "3"),
+        "embo_reports": _prompt(
+            "embo_reports",
+            "no additional checklist items",
+            "5",
+        ),
+    }
+    with (
+        patch(
+            "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
+            "._complete",
+            return_value=response,
+        ) as complete,
+        patch(
+            "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
+            ".get_production_prompt",
+            side_effect=lambda name: prompts[name],
+        ),
+    ):
         result = check_acceptance_guidelines(
             config={"pipeline": _pipeline_config()},
             prompt_handler=PromptHandler(_pipeline_config()),
@@ -129,4 +175,48 @@ def test_check_acceptance_guidelines_writes_markdown(tmp_path):
     assert result.acceptance_guidelines["journal_key"] == "embo_reports"
     assert result.acceptance_guidelines["matched_from"] == "journal_title"
     assert result.acceptance_guidelines["report_path"] == str(report_path)
+    assert result.acceptance_guidelines["prompt_label"] == "production"
+    assert result.acceptance_guidelines["common_prompt_version"] == "3"
+    assert result.acceptance_guidelines["journal_prompt_version"] == "5"
     assert result.cost.check_acceptance_guidelines.total_tokens == 15
+
+
+def test_get_production_prompt_requires_acceptance_project_keys(monkeypatch):
+    reset_client()
+    monkeypatch.delenv("LANGFUSE_ACCEPTANCE_PUBLIC_KEY", raising=False)
+    monkeypatch.delenv("LANGFUSE_ACCEPTANCE_SECRET_KEY", raising=False)
+    monkeypatch.setenv("LANGFUSE_PUBLIC_KEY", "qc-public")
+    monkeypatch.setenv("LANGFUSE_SECRET_KEY", "qc-secret")
+    try:
+        with pytest.raises(RuntimeError, match="AIP-guidelines"):
+            get_production_prompt("common")
+    finally:
+        reset_client()
+
+
+def test_get_production_prompt_reads_production_label(monkeypatch):
+    reset_client()
+    monkeypatch.setenv("LANGFUSE_ACCEPTANCE_PUBLIC_KEY", "pk-acceptance")
+    monkeypatch.setenv("LANGFUSE_ACCEPTANCE_SECRET_KEY", "sk-acceptance")
+    monkeypatch.setenv("LANGFUSE_HOST", "https://cloud.langfuse.com")
+    prompt = MagicMock()
+    prompt.prompt = "shared rules"
+    prompt.version = 4
+    prompt.name = "common"
+    client = MagicMock()
+    client.get_prompt.return_value = prompt
+
+    try:
+        with patch("langfuse.Langfuse", return_value=client) as langfuse_cls:
+            fetched = get_production_prompt("common")
+            again = get_production_prompt("common")
+
+        assert langfuse_cls.call_args.kwargs["public_key"] == "pk-acceptance"
+        assert langfuse_cls.call_args.kwargs["secret_key"] == "sk-acceptance"
+        assert langfuse_cls.call_args.kwargs["host"] == "https://cloud.langfuse.com"
+        client.get_prompt.assert_called_once_with("common", label="production")
+        assert fetched.text == "shared rules"
+        assert fetched.version == "4"
+        assert again is fetched
+    finally:
+        reset_client()

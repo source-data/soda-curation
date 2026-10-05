@@ -376,10 +376,11 @@ default: &default
 
     ##########################################################
     # 6) Acceptance guidelines
-    #    Policy text lives in
-    #    src/soda_curation/pipeline/acceptance_guidelines/guidelines/
-    #    This prompt is the instruction wrapper. The step inserts
-    #    common.md plus one journal file.
+    #    Policy text is the production label in the Langfuse project
+    #    AIP-guidelines. Prompts: common, plus the journal key
+    #    (embo_reports, the_embo_journal, embo_molecular_medicine,
+    #    molecular_systems_biology, life_science_alliance).
+    #    This prompt is the instruction wrapper.
     ##########################################################
     check_acceptance_guidelines:
       model: "gpt-5.4-mini"

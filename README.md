@@ -67,6 +67,8 @@ soda-curation is a professional Python package for automated data curation of sc
     LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
     LANGFUSE_SECRET_KEY=your_langfuse_secret_key
     LANGFUSE_HOST=https://cloud.langfuse.com
+    LANGFUSE_ACCEPTANCE_PUBLIC_KEY=your_acceptance_guidelines_public_key
+    LANGFUSE_ACCEPTANCE_SECRET_KEY=your_acceptance_guidelines_secret_key
     ENVIRONMENT=test  # or dev or prod
     ```
 
@@ -403,7 +405,7 @@ The soda-curation pipeline processes scientific manuscripts through the followin
 - **Purpose**: Report whether the manuscript follows the acceptance guidelines for its journal
 - **Process**:
   - Reads the journal from the XML `<journal-title>` (already parsed in step 1). If that title does not match, falls back to the manuscript id prefix (`EMBOR`, `EMBOJ`, `EMM`, `MSB`, `LSA`)
-  - Sends the model the shared guidelines plus only that journal's guidelines
+  - Fetches the shared prompt and that journal's prompt from Langfuse (`production`)
   - Writes a Markdown report beside the JSON output
 - **Failure**: Recoverable. The rest of the pipeline still runs
 
@@ -421,30 +423,32 @@ The soda-curation pipeline processes scientific manuscripts through the followin
 
 This check is a normal pipeline step (`check_acceptance_guidelines` in `src/soda_curation/main.py`). It is not a Cursor agent skill. Skills are loaded by the IDE and are not available when the pipeline runs in the container.
 
-Journal policy is split so the model only sees the shared rules and the one journal that matched:
+Journal policy lives in the Langfuse project `AIP-guidelines`, as text prompts on the `production` label. The step reads that label only. Create the project in Langfuse and set its keys as `LANGFUSE_ACCEPTANCE_PUBLIC_KEY` and `LANGFUSE_ACCEPTANCE_SECRET_KEY`. Those keys are not the QC project's `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY`. The host falls back to `LANGFUSE_HOST` unless `LANGFUSE_ACCEPTANCE_HOST` is set.
 
-| File | When it is sent |
+Keep one shared prompt and five difference prompts. The pipeline combines `common` with exactly one journal prompt on every run. A journal prompt wins where it conflicts with `common`. Leave the journal prompt as a short note when that journal has no extra checks. Journal prompts are plain text: the step inserts `common` itself, so a Langfuse prompt link inside a journal prompt would be sent to the model as raw text.
+
+| Prompt name | What to put in it | When it is sent |
+| --- | --- | --- |
+| `common` | Shared EMBO Press checklist | Every manuscript |
+| `embo_reports` | Differences only | XML title `EMBO Reports`, or manuscript id prefix `EMBOR` |
+| `the_embo_journal` | Differences only | XML title `The EMBO Journal`, or prefix `EMBOJ` |
+| `embo_molecular_medicine` | Differences only | XML title `EMBO Molecular Medicine`, or prefix `EMM` |
+| `molecular_systems_biology` | Differences only | XML title `Molecular Systems Biology`, or prefix `MSB` |
+| `life_science_alliance` | Differences only | XML title `Life Science Alliance`, or prefix `LSA` |
+
+The paper is not stored in Langfuse. `config.dev.yaml` holds the instruction wrapper (`check_acceptance_guidelines`) and the step fills it from the manuscript:
+
+| Variable | Set by |
 | --- | --- |
-| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/common.md` | Every manuscript. Shared EMBO Press checklist |
-| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/embo_reports.md` | XML title `EMBO Reports`, or manuscript id prefix `EMBOR` |
-| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/the_embo_journal.md` | XML title `The EMBO Journal`, or prefix `EMBOJ` |
-| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/embo_molecular_medicine.md` | XML title `EMBO Molecular Medicine`, or prefix `EMM` |
-| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/molecular_systems_biology.md` | XML title `Molecular Systems Biology`, or prefix `MSB` |
-| `src/soda_curation/pipeline/acceptance_guidelines/guidelines/life_science_alliance.md` | XML title `Life Science Alliance`, or prefix `LSA` |
+| `$journal_title` | XML `<journal-title>`, or the matched journal name |
+| `$journal_key` | Matched prompt name, or `unknown` |
+| `$common_guidelines` | Production text of the `common` prompt |
+| `$journal_guidelines` | Production text of the matched journal prompt |
+| `$manuscript_text` | Manuscript HTML already extracted by the pipeline |
 
-`common.md` is the shared EMBO Press checklist. The EMBO Journal, EMBO Reports and Molecular Systems Biology add no further checks. EMBO Molecular Medicine adds check C8. Life Science Alliance overrides the checks listed in its own file. If a journal file conflicts with `common.md`, the journal file wins.
+An unmatched journal still gets a report, using only `common`.
 
-The instruction wrapper (how the report should be written) is the `check_acceptance_guidelines` prompt in `config.dev.yaml` and `config.sample.yaml`. It receives:
-
-- `$journal_title`
-- `$journal_key`
-- `$common_guidelines` — contents of `common.md`
-- `$journal_guidelines` — contents of the matched journal file
-- `$manuscript_text`
-
-Do not paste the four policies into that prompt. The step loads the files itself.
-
-The Markdown report is written next to the JSON output as `{output_stem}_acceptance_guidelines.md`. If you omit `--output`, it is written to `data/output/{manuscript_id}_acceptance_guidelines.md`. The JSON field `acceptance_guidelines` records `journal_key`, `journal_title`, `matched_from` (`journal_title`, `manuscript_id`, or `unmatched`), and `report_path`. An unmatched journal still gets a report, using only `common.md`.
+The Markdown report is written next to the JSON output as `{output_stem}_acceptance_guidelines.md`. If you omit `--output`, it is written to `data/output/{manuscript_id}_acceptance_guidelines.md`. The JSON field `acceptance_guidelines` records `journal_key`, `journal_title`, `matched_from` (`journal_title`, `manuscript_id`, or `unmatched`), `report_path`, `prompt_label`, `common_prompt_version`, and `journal_prompt_version`.
 
 Throughout these steps, the pipeline leverages AI capabilities to enhance the accuracy of caption extraction and panel matching. The process is configurable through the `config.yaml` file, allowing for adjustments in AI models, detection parameters, and debug options.
 
@@ -527,7 +531,10 @@ Three main verification tools have been implemented:
     "journal_key": "string",
     "journal_title": "string",
     "matched_from": "journal_title | manuscript_id | unmatched",
-    "report_path": "string"
+    "report_path": "string",
+    "prompt_label": "production",
+    "common_prompt_version": "string",
+    "journal_prompt_version": "string"
   },
   "ai_provider": "string",
   "cost": {
@@ -976,6 +983,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 3.7.0 (2026-10-05)
+- **Acceptance guidelines from Langfuse**: The step reads the `production` label from the Langfuse project `AIP-guidelines` (`common` plus the matched journal prompt). Keys are `LANGFUSE_ACCEPTANCE_PUBLIC_KEY` and `LANGFUSE_ACCEPTANCE_SECRET_KEY`.
 
 ### 3.6.0 (2026-09-30)
 - **Acceptance guidelines**: Main pipeline writes a Markdown report of whether the manuscript follows journal acceptance guidelines. Shared rules are in `guidelines/common.md`; journal differences are in the matching file under `src/soda_curation/pipeline/acceptance_guidelines/guidelines/`.

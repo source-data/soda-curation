@@ -16,49 +16,39 @@ from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import ZipStructure
 from ..openai_utils import call_openai
 from ..step_config import resolve_step_config
+from .langfuse_prompts import (
+    COMMON_PROMPT_NAME,
+    PROMPT_LABEL,
+    FetchedPrompt,
+    get_production_prompt,
+)
 
 logger = logging.getLogger(__name__)
 
 STEP_NAME = "check_acceptance_guidelines"
-GUIDELINES_DIR = Path(__file__).parent / "guidelines"
 UNKNOWN_JOURNAL_GUIDELINES = (
-    "PLACEHOLDER: No journal-specific guidelines file matched this manuscript. "
+    "No journal-specific guidelines prompt matched this manuscript. "
     "Apply only the common guidelines."
 )
 
 
 @dataclass(frozen=True)
 class Journal:
-    """A journal this pipeline can match to a guidelines file."""
+    """A journal this pipeline can match to a Langfuse prompt."""
 
     key: str
     title: str
     prefixes: Tuple[str, ...]
-    guidelines_file: str
 
 
 # Longest manuscript-id prefix is matched first (EMBOR before any shorter EMBO* token).
+# ``key`` is the Langfuse prompt name in the AIP-guidelines project.
 JOURNALS: Tuple[Journal, ...] = (
-    Journal("embo_reports", "EMBO Reports", ("EMBOR",), "embo_reports.md"),
-    Journal("the_embo_journal", "The EMBO Journal", ("EMBOJ",), "the_embo_journal.md"),
-    Journal(
-        "embo_molecular_medicine",
-        "EMBO Molecular Medicine",
-        ("EMM",),
-        "embo_molecular_medicine.md",
-    ),
-    Journal(
-        "molecular_systems_biology",
-        "Molecular Systems Biology",
-        ("MSB",),
-        "molecular_systems_biology.md",
-    ),
-    Journal(
-        "life_science_alliance",
-        "Life Science Alliance",
-        ("LSA",),
-        "life_science_alliance.md",
-    ),
+    Journal("embo_reports", "EMBO Reports", ("EMBOR",)),
+    Journal("the_embo_journal", "The EMBO Journal", ("EMBOJ",)),
+    Journal("embo_molecular_medicine", "EMBO Molecular Medicine", ("EMM",)),
+    Journal("molecular_systems_biology", "Molecular Systems Biology", ("MSB",)),
+    Journal("life_science_alliance", "Life Science Alliance", ("LSA",)),
 )
 
 
@@ -95,14 +85,14 @@ def resolve_journal(
     return None, "unmatched"
 
 
-def load_guidelines(journal: Optional[Journal]) -> Tuple[str, str]:
-    """Load the shared guidelines and, when known, the matching journal file."""
-    common_path = GUIDELINES_DIR / "common.md"
-    common = common_path.read_text(encoding="utf-8")
+def load_guidelines(
+    journal: Optional[Journal],
+) -> Tuple[FetchedPrompt, Optional[FetchedPrompt]]:
+    """Fetch the shared prompt and, when known, the matching journal prompt."""
+    common = get_production_prompt(COMMON_PROMPT_NAME)
     if journal is None:
-        return common, UNKNOWN_JOURNAL_GUIDELINES
-    journal_path = GUIDELINES_DIR / journal.guidelines_file
-    return common, journal_path.read_text(encoding="utf-8")
+        return common, None
+    return common, get_production_prompt(journal.key)
 
 
 def acceptance_report_path(output_path: Optional[str], manuscript_id: str) -> Path:
@@ -151,14 +141,21 @@ def check_acceptance_guidelines(
 
     Writes a Markdown file and stores its path on
     ``zip_structure.acceptance_guidelines``.
-    Only the common guidelines and the matched journal file are sent.
+    Only the common prompt and the matched journal prompt are sent.
+    Both are the Langfuse ``production`` label.
     """
     resolved = resolve_step_config(config["pipeline"][STEP_NAME])
     journal, matched_from = resolve_journal(
         getattr(zip_structure, "journal_title", "") or "",
         zip_structure.manuscript_id,
     )
-    common_guidelines, journal_guidelines = load_guidelines(journal)
+    common_prompt, journal_prompt = load_guidelines(journal)
+    common_guidelines = common_prompt.text
+    journal_guidelines = (
+        journal_prompt.text
+        if journal_prompt is not None
+        else UNKNOWN_JOURNAL_GUIDELINES
+    )
     journal_title = (
         journal.title
         if journal is not None
@@ -199,6 +196,11 @@ def check_acceptance_guidelines(
         "journal_title": journal_title,
         "matched_from": matched_from,
         "report_path": str(report_path),
+        "prompt_label": PROMPT_LABEL,
+        "common_prompt_version": common_prompt.version,
+        "journal_prompt_version": (
+            journal_prompt.version if journal_prompt is not None else ""
+        ),
     }
     logger.info(
         "Acceptance guidelines report written",
