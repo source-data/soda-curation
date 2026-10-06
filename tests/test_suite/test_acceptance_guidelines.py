@@ -7,7 +7,6 @@ import pytest
 from lxml import etree
 
 from src.soda_curation.pipeline.acceptance_guidelines.check_acceptance import (
-    acceptance_report_path,
     check_acceptance_guidelines,
     load_guidelines,
     resolve_journal,
@@ -122,13 +121,12 @@ def test_load_guidelines_fetches_common_and_the_matched_journal():
     assert common.version == "2"
 
 
-def test_check_acceptance_guidelines_writes_markdown(tmp_path):
+def test_check_acceptance_guidelines_stores_report_on_the_json():
     structure = ZipStructure(
         manuscript_id="EMBOR-2025-62929V1-T",
         journal_title="EMBO Reports",
         cost=ProcessingCost(),
     )
-    output_json = tmp_path / "EMBOR-2025-62929V1-T.json"
     response = MagicMock()
     response.choices[0].message.content = "# Report\n\nOverall: unclear."
     response.usage.prompt_tokens = 10
@@ -160,7 +158,6 @@ def test_check_acceptance_guidelines_writes_markdown(tmp_path):
             prompt_handler=PromptHandler(_pipeline_config()),
             zip_structure=structure,
             manuscript_text="<p>Manuscript body</p>",
-            output_path=str(output_json),
         )
 
     messages = complete.call_args.args[2]
@@ -170,11 +167,9 @@ def test_check_acceptance_guidelines_writes_markdown(tmp_path):
     assert "Please upload the graphical abstract" not in user_prompt
     assert "<p>Manuscript body</p>" in user_prompt
 
-    report_path = acceptance_report_path(str(output_json), structure.manuscript_id)
-    assert report_path.read_text(encoding="utf-8").startswith("# Report")
     assert result.acceptance_guidelines["journal_key"] == "embo_reports"
     assert result.acceptance_guidelines["matched_from"] == "journal_title"
-    assert result.acceptance_guidelines["report_path"] == str(report_path)
+    assert result.acceptance_guidelines["report"] == "# Report\n\nOverall: unclear."
     assert result.acceptance_guidelines["prompt_label"] == "production"
     assert result.acceptance_guidelines["common_prompt_version"] == "3"
     assert result.acceptance_guidelines["journal_prompt_version"] == "5"

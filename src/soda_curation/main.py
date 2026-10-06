@@ -275,7 +275,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 prompt_handler=prompt_handler,
                 zip_structure=zip_structure,
                 manuscript_text=manuscript_content,
-                output_path=output_path,
             ),
             run_id=run_id,
             critical=False,

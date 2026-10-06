@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Dict, Optional, Tuple
 
 import anthropic
@@ -95,15 +94,6 @@ def load_guidelines(
     return common, get_production_prompt(journal.key)
 
 
-def acceptance_report_path(output_path: Optional[str], manuscript_id: str) -> Path:
-    """Markdown report path beside the pipeline JSON, or under ``data/output``."""
-    if output_path:
-        out = Path(output_path)
-        return out.with_name(f"{out.stem}_acceptance_guidelines.md")
-    manuscript_id = manuscript_id or "manuscript"
-    return Path("data/output") / f"{manuscript_id}_acceptance_guidelines.md"
-
-
 def _complete(provider: str, model: str, messages: list) -> object:
     if provider == "anthropic":
         validate_anthropic_model(model)
@@ -134,13 +124,12 @@ def check_acceptance_guidelines(
     prompt_handler,
     zip_structure: ZipStructure,
     manuscript_text: str,
-    output_path: Optional[str] = None,
 ) -> ZipStructure:
     """
     Ask the configured model whether the manuscript follows the journal guidelines.
 
-    Writes a Markdown file and stores its path on
-    ``zip_structure.acceptance_guidelines``.
+    Stores the Markdown report on ``zip_structure.acceptance_guidelines``
+    so it is part of the main pipeline JSON.
     Only the common prompt and the matched journal prompt are sent.
     Both are the Langfuse ``production`` label.
     """
@@ -186,29 +175,28 @@ def check_acceptance_guidelines(
     if not report:
         raise ValueError("Acceptance guidelines model returned an empty report")
 
-    report_path = acceptance_report_path(output_path, zip_structure.manuscript_id)
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(report + "\n", encoding="utf-8")
-
     zip_structure.journal_title = journal_title
     zip_structure.acceptance_guidelines = {
         "journal_key": journal_key,
         "journal_title": journal_title,
         "matched_from": matched_from,
-        "report_path": str(report_path),
         "prompt_label": PROMPT_LABEL,
         "common_prompt_version": common_prompt.version,
         "journal_prompt_version": (
             journal_prompt.version if journal_prompt is not None else ""
         ),
+        "report": report,
     }
     logger.info(
-        "Acceptance guidelines report written",
+        "Acceptance guidelines report stored on the pipeline JSON",
         extra={
             "operation": "main.check_acceptance_guidelines",
             "journal_key": journal_key,
             "matched_from": matched_from,
-            "report_path": str(report_path),
+            "common_prompt_version": common_prompt.version,
+            "journal_prompt_version": (
+                journal_prompt.version if journal_prompt is not None else ""
+            ),
         },
     )
     return zip_structure

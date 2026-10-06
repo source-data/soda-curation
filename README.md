@@ -153,7 +153,7 @@ docker run --rm \
     --output /app/data/output/EMBOR-2025-62929V1-T.json
 ```
 
-The same run also writes `EMBOR-2025-62929V1-T_acceptance_guidelines.md` next to that JSON.
+The same run stores the acceptance-guidelines Markdown on `acceptance_guidelines.report` inside that JSON.
 
 #### QC pipeline (single `docker run`)
 
@@ -406,7 +406,7 @@ The soda-curation pipeline processes scientific manuscripts through the followin
 - **Process**:
   - Reads the journal from the XML `<journal-title>` (already parsed in step 1). If that title does not match, falls back to the manuscript id prefix (`EMBOR`, `EMBOJ`, `EMM`, `MSB`, `LSA`)
   - Fetches the shared prompt and that journal's prompt from Langfuse (`production`)
-  - Writes a Markdown report beside the JSON output
+  - Stores the Markdown report on `acceptance_guidelines.report` in the main JSON
 - **Failure**: Recoverable. The rest of the pipeline still runs
 
 ### 8. Output Generation & Verification
@@ -417,7 +417,7 @@ The soda-curation pipeline processes scientific manuscripts through the followin
   - Cleans up source data file references
   - Computes token usage and cost metrics for AI operations
   - Generates structured JSON output according to the defined schema
-  - The acceptance-guidelines Markdown path is included as `acceptance_guidelines.report_path`
+  - The acceptance-guidelines Markdown is included as `acceptance_guidelines.report`
 
 ## Acceptance guidelines
 
@@ -448,7 +448,7 @@ The paper is not stored in Langfuse. `config.dev.yaml` holds the instruction wra
 
 An unmatched journal still gets a report, using only `common`.
 
-The Markdown report is written next to the JSON output as `{output_stem}_acceptance_guidelines.md`. If you omit `--output`, it is written to `data/output/{manuscript_id}_acceptance_guidelines.md`. The JSON field `acceptance_guidelines` records `journal_key`, `journal_title`, `matched_from` (`journal_title`, `manuscript_id`, or `unmatched`), `report_path`, `prompt_label`, `common_prompt_version`, and `journal_prompt_version`.
+The Markdown report is stored on the main pipeline JSON as `acceptance_guidelines.report`. That object also records `journal_key`, `journal_title`, `matched_from` (`journal_title`, `manuscript_id`, or `unmatched`), `prompt_label`, `common_prompt_version`, and `journal_prompt_version`. The two version fields are the version numbers Langfuse returns for the production prompts used in that run.
 
 Throughout these steps, the pipeline leverages AI capabilities to enhance the accuracy of caption extraction and panel matching. The process is configurable through the `config.yaml` file, allowing for adjustments in AI models, detection parameters, and debug options.
 
@@ -531,10 +531,10 @@ Three main verification tools have been implemented:
     "journal_key": "string",
     "journal_title": "string",
     "matched_from": "journal_title | manuscript_id | unmatched",
-    "report_path": "string",
     "prompt_label": "production",
     "common_prompt_version": "string",
-    "journal_prompt_version": "string"
+    "journal_prompt_version": "string",
+    "report": "string"
   },
   "ai_provider": "string",
   "cost": {
@@ -983,6 +983,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 3.7.1 (2026-10-06)
+- **Acceptance guidelines report**: The Markdown report is stored on the main pipeline JSON as `acceptance_guidelines.report`. Prompt versions are the numbers Langfuse returns for the production prompts used in that run.
 
 ### 3.7.0 (2026-10-05)
 - **Acceptance guidelines from Langfuse**: The step reads the `production` label from the Langfuse project `AIP-guidelines` (`common` plus the matched journal prompt). Keys are `LANGFUSE_ACCEPTANCE_PUBLIC_KEY` and `LANGFUSE_ACCEPTANCE_SECRET_KEY`.
