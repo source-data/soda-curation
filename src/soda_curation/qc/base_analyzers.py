@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from pydantic import BaseModel
 
 from ..pipeline.ai_observability import safe_excerpt, summarize_text
+from ..pipeline.anthropic_utils import DEFAULT_ANTHROPIC_MODEL
 from ..pipeline.openai_utils import DEFAULT_OPENAI_MODEL
 from .model_api import ModelAPI
 from .prompt_registry import registry
@@ -79,7 +80,7 @@ class BaseQCAnalyzer(ABC):
             # Safe baseline defaults when no provider block exists.
             if provider == "anthropic":
                 provider_config = {
-                    "model": "claude-sonnet-4-6",
+                    "model": DEFAULT_ANTHROPIC_MODEL,
                     "temperature": 0.1,
                     "max_tokens": 4096,
                 }

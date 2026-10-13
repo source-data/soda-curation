@@ -10,7 +10,10 @@ import openai
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 from ..pipeline.ai_observability import summarize_messages, summarize_text
-from ..pipeline.anthropic_utils import is_retryable_anthropic_error
+from ..pipeline.anthropic_utils import (
+    DEFAULT_ANTHROPIC_MODEL,
+    is_retryable_anthropic_error,
+)
 from ..pipeline.cost_tracking import update_token_usage
 from ..pipeline.manuscript_structure.manuscript_structure import TokenUsage
 from ..pipeline.openai_utils import DEFAULT_OPENAI_MODEL, is_retryable_openai_error
@@ -238,6 +241,6 @@ class ModelAPI:
 def _default_model_for_provider(provider: str) -> str:
     defaults = {
         "openai": DEFAULT_OPENAI_MODEL,
-        "anthropic": "claude-sonnet-4-6",
+        "anthropic": DEFAULT_ANTHROPIC_MODEL,
     }
     return defaults.get(provider.lower(), DEFAULT_OPENAI_MODEL)

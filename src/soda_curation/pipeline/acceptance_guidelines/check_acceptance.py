@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, Optional, Tuple
 
 import anthropic
@@ -29,6 +31,8 @@ UNKNOWN_JOURNAL_GUIDELINES = (
     "No journal-specific guidelines prompt matched this manuscript. "
     "Apply only the common guidelines."
 )
+# call_anthropic streams large requests; a longer report raises instead of truncating.
+ANTHROPIC_MAX_OUTPUT_TOKENS = 64000
 
 
 @dataclass(frozen=True)
@@ -94,6 +98,76 @@ def load_guidelines(
     return common, get_production_prompt(journal.key)
 
 
+def _existing(path: Path) -> Optional[Path]:
+    return path if path.is_file() else None
+
+
+def resolve_manuscript_xml(extract_dir: Path, zip_structure: ZipStructure) -> Path:
+    """Return the extracted manuscript XML.
+
+    The archive XML is stored beside the manuscript directory or inside it.
+    """
+    root = Path(extract_dir)
+    manuscript_id = zip_structure.manuscript_id or ""
+    named = (zip_structure.xml or "").strip()
+    candidates = []
+    if named:
+        candidates.extend([root / named, root.parent / named])
+    if manuscript_id:
+        candidates.extend(
+            [
+                root / f"{manuscript_id}.xml",
+                root.parent / f"{manuscript_id}.xml",
+            ]
+        )
+    for path in candidates:
+        found = _existing(path)
+        if found is not None:
+            return found
+    raise FileNotFoundError(
+        f"Manuscript XML not found for {manuscript_id or 'unknown manuscript'} "
+        f"under {root}"
+    )
+
+
+def resolve_merged_pdf(extract_dir: Path, zip_structure: ZipStructure) -> Path:
+    """Return the merged PDF from the archive ``pdf`` folder."""
+    root = Path(extract_dir)
+    manuscript_id = zip_structure.manuscript_id or ""
+    pdf_dir = root / "pdf"
+    named = pdf_dir / f"{manuscript_id}.pdf" if manuscript_id else None
+    if named is not None:
+        found = _existing(named)
+        if found is not None:
+            return found
+
+    relative = (zip_structure.pdf or "").strip()
+    if relative:
+        found = _existing(root / relative)
+        if found is not None:
+            return found
+
+    if pdf_dir.is_dir():
+        pdfs = sorted(path for path in pdf_dir.glob("*.pdf") if path.is_file())
+        if len(pdfs) == 1:
+            return pdfs[0]
+    raise FileNotFoundError(
+        f"Merged PDF not found in {pdf_dir} for "
+        f"{manuscript_id or 'unknown manuscript'}"
+    )
+
+
+def _pdf_file_part(pdf_path: Path) -> dict:
+    encoded = base64.b64encode(pdf_path.read_bytes()).decode("ascii")
+    return {
+        "type": "file",
+        "file": {
+            "filename": pdf_path.name,
+            "file_data": f"data:application/pdf;base64,{encoded}",
+        },
+    }
+
+
 def _complete(provider: str, model: str, messages: list) -> object:
     if provider == "anthropic":
         validate_anthropic_model(model)
@@ -101,7 +175,7 @@ def _complete(provider: str, model: str, messages: list) -> object:
             client=anthropic.Anthropic(),
             model=model,
             messages=messages,
-            max_tokens=8192,
+            max_tokens=ANTHROPIC_MAX_OUTPUT_TOKENS,
             operation="main.check_acceptance_guidelines",
         )
         return response
@@ -115,6 +189,7 @@ def _complete(provider: str, model: str, messages: list) -> object:
         messages=messages,
         json_mode=False,
         max_tokens=8192,
+        enable_chunking=False,
         operation="main.check_acceptance_guidelines",
     )
 
@@ -123,11 +198,12 @@ def check_acceptance_guidelines(
     config: Dict,
     prompt_handler,
     zip_structure: ZipStructure,
-    manuscript_text: str,
+    extract_dir: Path,
 ) -> ZipStructure:
     """
     Ask the configured model whether the manuscript follows the journal guidelines.
 
+    The manuscript input is the extracted XML plus the merged PDF from ``pdf/``.
     Stores the Markdown report on ``zip_structure.acceptance_guidelines``
     so it is part of the main pipeline JSON.
     Only the common prompt and the matched journal prompt are sent.
@@ -152,6 +228,9 @@ def check_acceptance_guidelines(
     )
     journal_key = journal.key if journal is not None else "unknown"
 
+    xml_path = resolve_manuscript_xml(extract_dir, zip_structure)
+    pdf_path = resolve_merged_pdf(extract_dir, zip_structure)
+    xml_text = xml_path.read_text(encoding="utf-8")
     prompts = prompt_handler.get_prompt(
         step=STEP_NAME,
         variables={
@@ -159,18 +238,31 @@ def check_acceptance_guidelines(
             "journal_key": journal_key,
             "common_guidelines": common_guidelines,
             "journal_guidelines": journal_guidelines,
-            "manuscript_text": manuscript_text or "",
         },
     )
     messages = [
         {"role": "system", "content": prompts["system"]},
-        {"role": "user", "content": prompts["user"]},
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": prompts["user"]},
+                {
+                    "type": "text",
+                    "text": f"Manuscript XML ({xml_path.name}):\n{xml_text}",
+                },
+                _pdf_file_part(pdf_path),
+            ],
+        },
     ]
     response = _complete(resolved["provider"], resolved["model"], messages)
     update_token_usage(
         zip_structure.cost.check_acceptance_guidelines, response, resolved["model"]
     )
 
+    if response.choices[0].finish_reason == "length":
+        raise ValueError(
+            "Acceptance guidelines report was cut off at the output token limit"
+        )
     report = (response.choices[0].message.content or "").strip()
     if not report:
         raise ValueError("Acceptance guidelines model returned an empty report")
@@ -185,6 +277,8 @@ def check_acceptance_guidelines(
         "journal_prompt_version": (
             journal_prompt.version if journal_prompt is not None else ""
         ),
+        "source_xml": xml_path.name,
+        "source_pdf": str(pdf_path.relative_to(extract_dir)),
         "report": report,
     }
     logger.info(

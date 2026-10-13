@@ -10,11 +10,19 @@ from src.soda_curation.pipeline.acceptance_guidelines.check_acceptance import (
     check_acceptance_guidelines,
     load_guidelines,
     resolve_journal,
+    resolve_manuscript_xml,
+    resolve_merged_pdf,
 )
 from src.soda_curation.pipeline.acceptance_guidelines.langfuse_prompts import (
     FetchedPrompt,
     get_production_prompt,
     reset_client,
+)
+from src.soda_curation.pipeline.anthropic_utils import (
+    DEFAULT_ANTHROPIC_MODEL,
+    AnthropicResponseWrapper,
+    AnthropicUsage,
+    validate_anthropic_model,
 )
 from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
     ProcessingCost,
@@ -28,7 +36,7 @@ SAMPLE_XML = Path(__file__).parent / "test_data" / "EMBOJ-DUMMY-ZIP.xml"
 def _pipeline_config() -> dict:
     return {
         "check_acceptance_guidelines": {
-            "model": "gpt-5.4-mini",
+            "model": "gpt-6-astra",
             "prompts": {
                 "system": "Review the manuscript. Return Markdown.",
                 "user": (
@@ -36,7 +44,6 @@ def _pipeline_config() -> dict:
                     "Key: $journal_key\n"
                     "Common:\n$common_guidelines\n"
                     "Journal-specific:\n$journal_guidelines\n"
-                    "Manuscript:\n$manuscript_text\n"
                 ),
             },
         }
@@ -121,10 +128,43 @@ def test_load_guidelines_fetches_common_and_the_matched_journal():
     assert common.version == "2"
 
 
-def test_check_acceptance_guidelines_stores_report_on_the_json():
+def test_resolve_merged_pdf_uses_the_pdf_folder(tmp_path):
+    manuscript_id = "EMBOR-2025-62929V1-T"
+    pdf_dir = tmp_path / "pdf"
+    pdf_dir.mkdir()
+    merged = pdf_dir / f"{manuscript_id}.pdf"
+    merged.write_bytes(b"%PDF-1.4")
+    (pdf_dir / "other.pdf").write_bytes(b"%PDF-other")
+    structure = ZipStructure(manuscript_id=manuscript_id, pdf="pdf/other.pdf")
+
+    assert resolve_merged_pdf(tmp_path, structure) == merged
+
+
+def test_resolve_manuscript_xml_finds_sibling_of_the_extract_dir(tmp_path):
+    manuscript_id = "EMBOR-2025-62929V1-T"
+    extract_dir = tmp_path / manuscript_id
+    extract_dir.mkdir()
+    xml_path = tmp_path / f"{manuscript_id}.xml"
+    xml_path.write_text(
+        "<article><journal-title>EMBO Reports</journal-title></article>",
+        encoding="utf-8",
+    )
+    structure = ZipStructure(manuscript_id=manuscript_id, xml=f"{manuscript_id}.xml")
+
+    assert resolve_manuscript_xml(extract_dir, structure) == xml_path
+
+
+def test_check_acceptance_guidelines_stores_report_on_the_json(tmp_path):
+    manuscript_id = "EMBOR-2025-62929V1-T"
+    xml_path = tmp_path / f"{manuscript_id}.xml"
+    xml_path.write_text("<article><title>Example</title></article>", encoding="utf-8")
+    pdf_dir = tmp_path / "pdf"
+    pdf_dir.mkdir()
+    (pdf_dir / f"{manuscript_id}.pdf").write_bytes(b"%PDF-1.4 merged")
     structure = ZipStructure(
-        manuscript_id="EMBOR-2025-62929V1-T",
+        manuscript_id=manuscript_id,
         journal_title="EMBO Reports",
+        xml=xml_path.name,
         cost=ProcessingCost(),
     )
     response = MagicMock()
@@ -157,15 +197,21 @@ def test_check_acceptance_guidelines_stores_report_on_the_json():
             config={"pipeline": _pipeline_config()},
             prompt_handler=PromptHandler(_pipeline_config()),
             zip_structure=structure,
-            manuscript_text="<p>Manuscript body</p>",
+            extract_dir=tmp_path,
         )
 
     messages = complete.call_args.args[2]
-    user_prompt = messages[1]["content"]
-    assert "EMBO Reports" in user_prompt
-    assert "no additional checklist items" in user_prompt
-    assert "Please upload the graphical abstract" not in user_prompt
-    assert "<p>Manuscript body</p>" in user_prompt
+    user_content = messages[1]["content"]
+    user_text = user_content[0]["text"]
+    assert "EMBO Reports" in user_text
+    assert "no additional checklist items" in user_text
+    assert "Please upload the graphical abstract" not in user_text
+    assert "<article><title>Example</title></article>" in user_content[1]["text"]
+    assert user_content[2]["type"] == "file"
+    assert user_content[2]["file"]["filename"] == f"{manuscript_id}.pdf"
+    assert user_content[2]["file"]["file_data"].startswith(
+        "data:application/pdf;base64,"
+    )
 
     assert result.acceptance_guidelines["journal_key"] == "embo_reports"
     assert result.acceptance_guidelines["matched_from"] == "journal_title"
@@ -173,7 +219,60 @@ def test_check_acceptance_guidelines_stores_report_on_the_json():
     assert result.acceptance_guidelines["prompt_label"] == "production"
     assert result.acceptance_guidelines["common_prompt_version"] == "3"
     assert result.acceptance_guidelines["journal_prompt_version"] == "5"
+    assert result.acceptance_guidelines["source_xml"] == f"{manuscript_id}.xml"
+    assert result.acceptance_guidelines["source_pdf"] == f"pdf/{manuscript_id}.pdf"
     assert result.cost.check_acceptance_guidelines.total_tokens == 15
+
+
+def test_check_acceptance_guidelines_rejects_a_truncated_report(tmp_path):
+    manuscript_id = "EMBOR-2025-62929V1-T"
+    (tmp_path / f"{manuscript_id}.xml").write_text("<article/>", encoding="utf-8")
+    (tmp_path / "pdf").mkdir()
+    (tmp_path / "pdf" / f"{manuscript_id}.pdf").write_bytes(b"%PDF-1.4 merged")
+    structure = ZipStructure(
+        manuscript_id=manuscript_id,
+        journal_title="EMBO Reports",
+        cost=ProcessingCost(),
+    )
+    response = MagicMock()
+    response.choices[0].finish_reason = "length"
+    response.choices[0].message.content = "# Report\n\n1. Figures: pass\n2."
+    response.usage.prompt_tokens = 10
+    response.usage.completion_tokens = 5
+    response.usage.total_tokens = 15
+
+    with (
+        patch(
+            "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
+            "._complete",
+            return_value=response,
+        ),
+        patch(
+            "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
+            ".get_production_prompt",
+            side_effect=lambda name: _prompt(name, "rules", "1"),
+        ),
+        pytest.raises(ValueError, match="cut off"),
+    ):
+        check_acceptance_guidelines(
+            config={"pipeline": _pipeline_config()},
+            prompt_handler=PromptHandler(_pipeline_config()),
+            zip_structure=structure,
+            extract_dir=tmp_path,
+        )
+    assert structure.acceptance_guidelines == {}
+
+
+def test_anthropic_max_tokens_stop_reads_as_openai_length():
+    wrapper = AnthropicResponseWrapper(
+        content="partial",
+        parsed=None,
+        usage=AnthropicUsage(1, 1),
+        model=DEFAULT_ANTHROPIC_MODEL,
+        stop_reason="max_tokens",
+    )
+    assert wrapper.choices[0].finish_reason == "length"
+    validate_anthropic_model(DEFAULT_ANTHROPIC_MODEL)
 
 
 def test_get_production_prompt_requires_acceptance_project_keys(monkeypatch):

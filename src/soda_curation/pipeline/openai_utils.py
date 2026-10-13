@@ -39,12 +39,12 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 _TIKTOKEN_FALLBACK_WARNED_MODELS: set[str] = set()
 
-# Default production model (GPT-5 family)
 GPT5_MODEL = "gpt-5"
-DEFAULT_OPENAI_MODEL = GPT5_MODEL
+# Default production model
+DEFAULT_OPENAI_MODEL = "gpt-5.6-sol"
 
 # Model name prefixes that don't support additional parameters (temperature, top_p, etc.)
-MODELS_WITHOUT_PARAMETERS_PREFIXES = {"gpt-5"}
+MODELS_WITHOUT_PARAMETERS_PREFIXES = ("gpt-5", "gpt-6")
 # Backward-compatible symbol expected by existing tests/importers.
 MODELS_WITHOUT_PARAMETERS = {GPT5_MODEL}
 
@@ -66,6 +66,7 @@ OPENAI_MAX_RETRIES = 5
 def _fallback_encoding_for_model(model: str) -> str:
     """Return best-effort encoding fallback when tiktoken has no model mapping."""
     modern_o200k_prefixes = (
+        "gpt-6",
         "gpt-5",
         "gpt-4o",
         "gpt-4.1",
@@ -88,19 +89,16 @@ def _fallback_encoding_for_model(model: str) -> str:
 def _is_model_without_parameters(model: str) -> bool:
     """Return True if the API accepts only model/messages/response_format (no sampling or max_tokens).
 
-    Matches ``gpt-5``, ``gpt-5-mini``, ``gpt-5.4-mini``, ``gpt-5-turbo``, etc.
+    Matches ``gpt-5``, ``gpt-5.6-sol``, ``gpt-6-astra``, ``gpt-5-mini``, etc.
     """
     if not model:
         return False
     lower = model.lower()
-    if lower == "gpt-5":
-        return True
     # Dot or hyphen after major id (OpenAI uses both naming styles)
-    if lower.startswith("gpt-5.") or lower.startswith("gpt-5-"):
-        return True
-    if lower.startswith("gpt-5/"):
-        return True
-    return False
+    return any(
+        lower == prefix or lower.startswith((f"{prefix}.", f"{prefix}-", f"{prefix}/"))
+        for prefix in MODELS_WITHOUT_PARAMETERS_PREFIXES
+    )
 
 
 def is_context_length_error(error: Exception) -> bool:
@@ -330,7 +328,8 @@ def get_token_limit(model: str) -> int:
     if model in MODEL_TOKEN_LIMITS:
         return MODEL_TOKEN_LIMITS[model]
     lower = model.lower()
-    if lower.startswith("gpt-5"):
+    # ponytail: gpt-6 reuses the gpt-5 limit; add its own entry once confirmed
+    if lower.startswith(MODELS_WITHOUT_PARAMETERS_PREFIXES):
         return MODEL_TOKEN_LIMITS.get(GPT5_MODEL, DEFAULT_TOKEN_LIMIT)
     return DEFAULT_TOKEN_LIMIT
 

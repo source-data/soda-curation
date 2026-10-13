@@ -10,7 +10,7 @@ default: &default
     # 1) Extract Figure Legends and Data Availability Sections
     ##########################################################
     extract_sections:
-      model: "gpt-4o"
+      model: "gpt-5.6-sol"
       prompts:
           system: |
             # EXTRACTIVE task: copy contiguous spans from cleaned HTML manuscript input.
@@ -28,7 +28,7 @@ default: &default
     # 2) Extract Individual Captions
     ##########################################################
     extract_caption_title:
-      model: "gpt-4o"
+      model: "gpt-5.6-sol"
       prompts:
           system: |
             # EXTRACTIVE task: copy figure caption verbatim from HTML input.
@@ -43,7 +43,7 @@ default: &default
             # Reinforces extractive one-to-one HTML copy.
 
     extract_panel_sequence:
-      model: "gpt-4o"
+      model: "gpt-5.6-sol"
       prompts:
           system: |
             # System prompt for panel sequence extraction
@@ -58,7 +58,7 @@ default: &default
     # 3) Extract Data Sources
     ##########################################################
     extract_data_sources:
-      model: "gpt-4o-mini"
+      model: "gpt-5.6-sol"
       prompts:
           system: |
             # System prompt for data source extraction
@@ -70,7 +70,7 @@ default: &default
     # 4) Assign Panel Source
     ##########################################################
     assign_panel_source:
-      model: "gpt-4o"
+      model: "gpt-5.6-sol"
       prompts:
           system: |
             # System prompt for panel source assignment
@@ -84,7 +84,7 @@ default: &default
     # 5) Match Caption Panel
     ##########################################################
     match_caption_panel:
-      model: "gpt-4o"
+      model: "gpt-5.6-sol"
       prompts:
           system: |
             # System prompt for matching panel images to captions
@@ -101,10 +101,11 @@ default: &default
     # AIP-guidelines, not this YAML block.
     # Prompts: common, embo_reports, the_embo_journal,
     # embo_molecular_medicine, molecular_systems_biology, life_science_alliance.
-    # Variables: $journal_title $journal_key $common_guidelines $journal_guidelines $manuscript_text
+    # Variables: $journal_title $journal_key $common_guidelines $journal_guidelines
+    # The step attaches the manuscript XML and the merged PDF after this prompt.
     ##########################################################
     check_acceptance_guidelines:
-      model: "gpt-4o"
+      model: "gpt-6-astra"
       prompts:
           system: |
             # PLACEHOLDER: instruction wrapper for the acceptance-guidelines report.
@@ -114,7 +115,7 @@ default: &default
             # $journal_key
             # $common_guidelines
             # $journal_guidelines
-            # $manuscript_text
+            # The manuscript XML and merged PDF are attached after this prompt.
 
     ##########################################################
     # 7) Object Detection (non-AI)

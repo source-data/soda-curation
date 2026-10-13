@@ -109,7 +109,7 @@ default:
     temperature: 0.1
     # ...
   anthropic:
-    model: "claude-sonnet-4-6"
+    model: "claude-sonnet-5-5"
     temperature: 0.1
 ```
 
@@ -278,7 +278,7 @@ ai_provider: "openai"
 default:
   pipeline:
     extract_sections:
-      model: "gpt-5.4-mini"
+      model: "gpt-5.6-sol"
       prompts:
         system: |
           ...
@@ -286,7 +286,7 @@ default:
           ...
 
     extract_caption_title:
-      model: "gpt-5.4-mini"
+      model: "gpt-5.6-sol"
       prompts:
         system: |
           ...
@@ -294,7 +294,7 @@ default:
           ...
 
     extract_panel_sequence:
-      model: "gpt-5.4-mini"
+      model: "gpt-5.6-sol"
       prompts:
         system: |
           ...
@@ -302,7 +302,7 @@ default:
           ...
 
     extract_data_sources:
-      model: "gpt-5.4-mini"
+      model: "gpt-5.6-sol"
       prompts:
         system: |
           ...
@@ -310,7 +310,7 @@ default:
           ...
 
     assign_panel_source:
-      model: "gpt-5.4-mini"
+      model: "gpt-5.6-sol"
       prompts:
         system: |
           ...
@@ -318,7 +318,7 @@ default:
           ...
 
     match_caption_panel:
-      model: "gpt-5.4-mini"
+      model: "gpt-5.6-sol"
       prompts:
         system: |
           ...
@@ -405,6 +405,7 @@ The soda-curation pipeline processes scientific manuscripts through the followin
 - **Purpose**: Report whether the manuscript follows the acceptance guidelines for its journal
 - **Process**:
   - Reads the journal from the XML `<journal-title>` (already parsed in step 1). If that title does not match, falls back to the manuscript id prefix (`EMBOR`, `EMBOJ`, `EMM`, `MSB`, `LSA`)
+  - Sends the extracted manuscript XML and the merged PDF from the archive `pdf` folder
   - Fetches the shared prompt and that journal's prompt from Langfuse (`production`)
   - Stores the Markdown report on `acceptance_guidelines.report` in the main JSON
 - **Failure**: Recoverable. The rest of the pipeline still runs
@@ -444,7 +445,8 @@ The paper is not stored in Langfuse. `config.dev.yaml` holds the instruction wra
 | `$journal_key` | Matched prompt name, or `unknown` |
 | `$common_guidelines` | Production text of the `common` prompt |
 | `$journal_guidelines` | Production text of the matched journal prompt |
-| `$manuscript_text` | Manuscript HTML already extracted by the pipeline |
+
+The manuscript itself is not a template variable. After the prompt, the step attaches the extracted XML and the merged PDF (`pdf/{manuscript_id}.pdf`). The PDF is the figure and page source. The XML is the structure and metadata.
 
 An unmatched journal still gets a report, using only `common`.
 
@@ -456,23 +458,7 @@ In debug mode, the pipeline can be configured to process only the first figure, 
 
 ## Verbatim Extraction Verification
 
-The pipeline now uses an integrated verification approach to ensure text extractions are verbatim rather than hallucinated or modified by the AI.
-
-### How It Works
-
-Instead of post-processing comparison with fuzzy matching, the system now:
-
-1. **Uses AI Agent Tools**: Specialized verification tools check if extractions are verbatim during the AI processing, not afterward.
-2. **Multi-Attempt Verification**: If verification fails, the AI tries up to 5 times to produce a verbatim extraction.
-3. **Explicit Verbatim Flagging**: Each extraction includes an `is_verbatim` field indicating verification success.
-
-### Implemented Verification Tools
-
-Three main verification tools have been implemented:
-
-1. **verify_caption_extraction**: Ensures figure captions are extracted verbatim from the manuscript text.
-2. **verify_panel_sequence**: Confirms panel labels follow a complete sequence without gaps (A, B, C... not A, C, D...).
-3. **General verification tool**: For sections like figure legends and data availability.
+After extraction, each figure caption is checked against the manuscript text (`verify_captions_against_manuscript` in `_main_utils.py`). Both texts are normalized (HTML stripped, whitespace and entities unified) and compared with a fuzzy similarity ratio. A caption below the threshold (default 90) is kept but marked unverified, and gets a `hallucination_score` between 0.0 (found verbatim) and 1.0 (not found). Source data is not assigned to figures with an unverified caption.
 
 ## Output Schema
 
@@ -713,7 +699,7 @@ default:
   pipeline:
     external_data_url_validation_agentic:
       anthropic:
-        model: "claude-sonnet-4-6"
+        model: "claude-sonnet-5-5"
         agentic: true
         model_config:
           tools:
@@ -777,7 +763,7 @@ qc_check_metadata:
 # OpenAI configuration
 default: &default
   openai:
-    model: "gpt-5-mini"
+    model: "gpt-5.6-sol"
     temperature: 0.1
     top_p: 1.0
     max_tokens: 2048
@@ -785,7 +771,7 @@ default: &default
     presence_penalty: 0.0
     json_mode: true
   anthropic:
-    model: "claude-sonnet-4-6"
+    model: "claude-sonnet-5-5"
     temperature: 0.1
     max_tokens: 4096
   pipeline: {}
@@ -913,7 +899,7 @@ To add a new test to the QC pipeline, follow these steps:
          model: "gpt-4o"
          temperature: 0.1
         anthropic:
-          model: "claude-sonnet-4-6"
+          model: "claude-sonnet-5-5"
         # Optional agentic override (OpenAI):
         pipeline:
           external_data_url_validation_agentic:

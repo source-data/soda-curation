@@ -153,6 +153,19 @@ class TestModelParameters:
         )
         assert params == {"model": "gpt-5.4-mini", "messages": messages}
 
+    @pytest.mark.parametrize("model", ["gpt-5.6-sol", "gpt-6-astra"])
+    def test_prepare_model_params_production_models_no_sampling(self, model):
+        """Production defaults reject sampling params and max_tokens."""
+        messages = [{"role": "user", "content": "test"}]
+        params = prepare_model_params(
+            model=model,
+            messages=messages,
+            temperature=0.1,
+            max_tokens=4096,
+            json_mode=False,
+        )
+        assert params == {"model": model, "messages": messages}
+
     def test_prepare_model_params_with_response_format(self):
         """Test parameter preparation with response format."""
         messages = [{"role": "user", "content": "test"}]

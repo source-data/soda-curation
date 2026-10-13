@@ -8,8 +8,12 @@ pricing = {
     # OpenAI models (USD per 1M tokens)
     "gpt-4o": {"input_tokens": 5.00, "output_tokens": 10.00},
     "gpt-4o-mini": {"input_tokens": 0.15, "output_tokens": 0.60},
+    "gpt-6-astra": {"input_tokens": 10.00, "output_tokens": 50.00},
+    # Before "gpt-5": prefix matching takes the first key that fits.
+    "gpt-5.6-sol": {"input_tokens": 4.00, "output_tokens": 20.00},
     "gpt-5": {"input_tokens": 5.00, "output_tokens": 15.00},
     # Anthropic Claude models (USD per 1M tokens)
+    "claude-sonnet-5-5": {"input_tokens": 2.00, "output_tokens": 10.00},
     "claude-opus-4-6": {"input_tokens": 15.00, "output_tokens": 75.00},
     "claude-sonnet-4-6": {"input_tokens": 3.00, "output_tokens": 15.00},
     "claude-haiku-4-5": {"input_tokens": 0.25, "output_tokens": 1.25},

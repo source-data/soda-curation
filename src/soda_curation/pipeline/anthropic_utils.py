@@ -14,18 +14,27 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 # Valid Anthropic Claude models
+DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5-5"
 VALID_ANTHROPIC_MODELS = {
+    DEFAULT_ANTHROPIC_MODEL,
     "claude-opus-4-6",
     "claude-sonnet-4-6",
     "claude-haiku-4-5",
     "claude-haiku-4-5-20251001",
 }
+# These models think by default, and thinking counts toward max_tokens. They also
+# return 400 for non-default sampling params and for a forced tool_choice
+# ("any"/"tool"), so structured output uses "auto" plus an instruction.
+ADAPTIVE_THINKING_MODELS = {DEFAULT_ANTHROPIC_MODEL}
+ADAPTIVE_THINKING_MAX_TOKENS = 64000
+# Above this the SDK refuses non-streaming requests, so they are streamed.
+NON_STREAMING_MAX_TOKENS = 16000
 ANTHROPIC_MAX_RETRIES = 3
 _SUPPORTED_ANTHROPIC_TOOL_TYPE_PREFIXES = ("web_search", "web_fetch")
 
 
 class AnthropicUsage:
-    """Usage statistics wrapper with both Anthropic and OpenAI-compatible attribute names."""
+    """Usage wrapper with Anthropic and OpenAI-compatible attribute names."""
 
     def __init__(self, input_tokens: int, output_tokens: int):
         self.input_tokens = input_tokens
@@ -47,8 +56,9 @@ class AnthropicMessage:
 class AnthropicChoice:
     """Choice wrapper compatible with OpenAI's response.choices[0]."""
 
-    def __init__(self, message: AnthropicMessage):
+    def __init__(self, message: AnthropicMessage, finish_reason: str = "stop"):
         self.message = message
+        self.finish_reason = finish_reason
 
 
 class AnthropicResponseWrapper:
@@ -57,9 +67,20 @@ class AnthropicResponseWrapper:
     update_token_usage() and response-parsing logic works for both providers.
     """
 
-    def __init__(self, content: str, parsed: Any, usage: AnthropicUsage, model: str):
+    def __init__(
+        self,
+        content: str,
+        parsed: Any,
+        usage: AnthropicUsage,
+        model: str,
+        stop_reason: Optional[str] = None,
+    ):
+        # OpenAI reports a max_tokens cut-off as finish_reason "length".
+        finish_reason = "length" if stop_reason == "max_tokens" else "stop"
         self.choices = [
-            AnthropicChoice(AnthropicMessage(content=content, parsed=parsed))
+            AnthropicChoice(
+                AnthropicMessage(content=content, parsed=parsed), finish_reason
+            )
         ]
         self.usage = usage
         self.model = model
@@ -135,6 +156,9 @@ def _create_with_retry(
                         "max_attempts": ANTHROPIC_MAX_RETRIES,
                     },
                 )
+            if params["max_tokens"] > NON_STREAMING_MAX_TOKENS:
+                with client.messages.stream(**params) as stream:
+                    return stream.get_final_message()
             return client.messages.create(**params)
         except Exception as error:
             classification = _classify_anthropic_error(error)
@@ -197,6 +221,21 @@ def _convert_messages(messages: List[Dict[str, Any]]) -> tuple:
                 for item in content:
                     if item["type"] == "text":
                         anthropic_content.append({"type": "text", "text": item["text"]})
+                    elif item["type"] == "file":
+                        file_data = item.get("file", {}).get("file_data", "")
+                        if isinstance(file_data, str) and file_data.startswith("data:"):
+                            header, base64_data = file_data.split(",", 1)
+                            media_type = header.split(":", 1)[1].split(";", 1)[0]
+                            anthropic_content.append(
+                                {
+                                    "type": "document",
+                                    "source": {
+                                        "type": "base64",
+                                        "media_type": media_type,
+                                        "data": base64_data,
+                                    },
+                                }
+                            )
                     elif item["type"] == "image_url":
                         url = item["image_url"]["url"]
                         if url.startswith("data:"):
@@ -276,7 +315,8 @@ def _resolve_anthropic_tool_choice(
         if normalized in {"none", "off", "disabled"}:
             return {"type": "tool", "name": structured_tool_name}
         logger.warning(
-            "Unsupported Anthropic tool_choice string '%s'; falling back to structured tool",
+            "Unsupported Anthropic tool_choice string '%s'; "
+            "falling back to structured tool",
             configured_choice,
         )
         return {"type": "tool", "name": structured_tool_name}
@@ -289,7 +329,8 @@ def _resolve_anthropic_tool_choice(
             return {"type": "tool", "name": str(configured_choice["name"])}
 
     logger.warning(
-        "Unsupported Anthropic tool_choice config '%s'; falling back to structured tool",
+        "Unsupported Anthropic tool_choice config '%s'; "
+        "falling back to structured tool",
         configured_choice,
     )
     return {"type": "tool", "name": structured_tool_name}
@@ -319,19 +360,24 @@ def call_anthropic(
         max_tokens: Maximum tokens in the response.
         operation: Operation name for structured logs.
         request_metadata: Additional metadata for structured logs.
-        model_config: Optional provider-specific runtime config (e.g. tools/tool_choice).
+        model_config: Optional provider config (for example tools/tool_choice).
 
     Returns:
         AnthropicResponseWrapper compatible with OpenAI response format.
     """
     system_prompt, anthropic_messages = _convert_messages(messages)
 
+    no_forced_tools = model in ADAPTIVE_THINKING_MODELS
+    if no_forced_tools:
+        max_tokens = max(max_tokens, ADAPTIVE_THINKING_MAX_TOKENS)
     params: Dict[str, Any] = {
         "model": model,
         "max_tokens": max_tokens,
         "messages": anthropic_messages,
-        "temperature": temperature,
     }
+    if not no_forced_tools:
+        # SDK 1.x dropped sampling kwargs; older models still accept them in the body.
+        params["extra_body"] = {"temperature": temperature}
     if system_prompt:
         params["system"] = system_prompt
 
@@ -361,10 +407,16 @@ def call_anthropic(
             has_external_tools=bool(external_tools),
             structured_tool_name=tool_name,
         )
+        if no_forced_tools and params["tool_choice"]["type"] in ("any", "tool"):
+            params["tool_choice"] = {"type": "auto"}
+            params["system"] = (
+                f"{system_prompt}\n\n" if system_prompt else ""
+            ) + f"Return your final answer by calling the {tool_name} tool."
 
         logger.info(
-            f"Calling Anthropic API with structured output ({response_format.__name__}) "
-            f"using model: {model} (external_tool_count={len(external_tools)})"
+            f"Calling Anthropic API with structured output "
+            f"({response_format.__name__}) using model: {model} "
+            f"(external_tool_count={len(external_tools)})"
         )
         response = _create_with_retry(client, params, model, operation)
 
@@ -381,12 +433,18 @@ def call_anthropic(
                     parsed = response_format(**block.input)
                 except Exception as e:
                     logger.error(
-                        f"Failed to instantiate {response_format.__name__} from tool input: {e}"
+                        "Failed to instantiate "
+                        f"{response_format.__name__} from tool input: {e}"
                     )
             elif block.type == "text":
                 raw_text_parts.append(block.text)
         raw_text = "\n".join(part for part in raw_text_parts if part).strip()
 
+        if parsed is None and response.stop_reason == "max_tokens":
+            raise ValueError(
+                f"Anthropic response hit max_tokens={max_tokens} before the "
+                f"{response_format.__name__} output was complete"
+            )
         if parsed is None and raw_text:
             logger.warning(
                 "Tool use result not found; attempting JSON parse from text response"
@@ -403,6 +461,7 @@ def call_anthropic(
             parsed=parsed,
             usage=usage,
             model=response.model,
+            stop_reason=getattr(response, "stop_reason", None),
         )
 
     else:
@@ -425,6 +484,7 @@ def call_anthropic(
             parsed=None,
             usage=usage,
             model=response.model,
+            stop_reason=getattr(response, "stop_reason", None),
         )
 
 

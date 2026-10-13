@@ -117,3 +117,101 @@ def test_openai_provider_agentic_uses_responses_api():
     kwargs = mock_client.responses.create.call_args.kwargs
     assert "tools" in kwargs
     assert kwargs["tool_choice"] == "auto"
+
+
+def test_call_anthropic_sonnet_5_5_omits_sampling_and_forced_tool_choice():
+    from pydantic import BaseModel
+
+    from src.soda_curation.pipeline.anthropic_utils import (
+        DEFAULT_ANTHROPIC_MODEL,
+        call_anthropic,
+    )
+
+    class Answer(BaseModel):
+        value: str
+
+    client = MagicMock()
+    stream = client.messages.stream.return_value.__enter__.return_value
+    stream.get_final_message.return_value = SimpleNamespace(
+        content=[
+            SimpleNamespace(
+                type="tool_use", name="structured_output", input={"value": "ok"}
+            )
+        ],
+        usage=SimpleNamespace(input_tokens=1, output_tokens=1),
+        model=DEFAULT_ANTHROPIC_MODEL,
+        stop_reason="tool_use",
+    )
+
+    response = call_anthropic(
+        client=client,
+        model=DEFAULT_ANTHROPIC_MODEL,
+        messages=[{"role": "user", "content": "test"}],
+        response_format=Answer,
+        temperature=0.1,
+    )
+
+    params = client.messages.stream.call_args.kwargs
+    client.messages.create.assert_not_called()
+    assert params["max_tokens"] == 64000
+    assert "temperature" not in params
+    assert "extra_body" not in params
+    assert params["tool_choice"] == {"type": "auto"}
+    assert "structured_output" in params["system"]
+    assert response.choices[0].message.parsed == Answer(value="ok")
+
+
+def test_production_models_have_their_own_price():
+    from src.soda_curation.pipeline.cost_tracking import calculate_cost
+
+    assert calculate_cost("gpt-5.6-sol", 1_000_000, 1_000_000) == 24.0
+    assert calculate_cost("gpt-6-astra", 1_000_000, 1_000_000) == 60.0
+    assert calculate_cost("claude-sonnet-5-5", 1_000_000, 1_000_000) == 12.0
+
+
+def test_call_anthropic_older_model_sends_temperature_in_body():
+    from src.soda_curation.pipeline.anthropic_utils import call_anthropic
+
+    client = MagicMock()
+    client.messages.create.return_value = SimpleNamespace(
+        content=[SimpleNamespace(type="text", text="hi")],
+        usage=SimpleNamespace(input_tokens=1, output_tokens=1),
+        model="claude-sonnet-4-6",
+        stop_reason="end_turn",
+    )
+
+    call_anthropic(
+        client=client,
+        model="claude-sonnet-4-6",
+        messages=[{"role": "user", "content": "test"}],
+        temperature=0.2,
+    )
+
+    params = client.messages.create.call_args.kwargs
+    assert "temperature" not in params
+    assert params["extra_body"] == {"temperature": 0.2}
+
+
+def test_call_anthropic_raises_when_structured_output_is_cut_off():
+    from pydantic import BaseModel
+
+    from src.soda_curation.pipeline.anthropic_utils import call_anthropic
+
+    class Answer(BaseModel):
+        value: str
+
+    client = MagicMock()
+    client.messages.create.return_value = SimpleNamespace(
+        content=[SimpleNamespace(type="tool_use", name="structured_output", input={})],
+        usage=SimpleNamespace(input_tokens=1, output_tokens=2048),
+        model="claude-sonnet-4-6",
+        stop_reason="max_tokens",
+    )
+
+    with pytest.raises(ValueError, match="hit max_tokens"):
+        call_anthropic(
+            client=client,
+            model="claude-sonnet-4-6",
+            messages=[{"role": "user", "content": "test"}],
+            response_format=Answer,
+        )

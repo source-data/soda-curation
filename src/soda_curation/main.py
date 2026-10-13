@@ -274,7 +274,7 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 config=config_loader.config,
                 prompt_handler=prompt_handler,
                 zip_structure=zip_structure,
-                manuscript_text=manuscript_content,
+                extract_dir=extractor.manuscript_extract_dir,
             ),
             run_id=run_id,
             critical=False,
