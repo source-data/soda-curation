@@ -970,6 +970,12 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 3.8.0 (2026-10-13)
+- **Production models**: `gpt-5.6-sol` for the main pipeline steps and QC, `gpt-6-astra` for the acceptance-guidelines check, and `claude-sonnet-5-5` as the Anthropic default. Prices for all three are in `cost_tracking.py`.
+- **Acceptance guidelines input**: The step sends the manuscript XML and the merged PDF (`pdf/{manuscript_id}.pdf`) instead of the extracted manuscript text. A report cut off at the output token limit raises instead of being stored.
+- **SDK upgrade**: `openai` 3.x and `anthropic` 1.x. `openai-agents` and the unused `agentic_tools.py` are removed.
+- **Claude requests**: Sonnet 5.5 gets a 64k output budget (thinking counts toward it), no sampling parameters, and `tool_choice: auto` for structured output. Requests above 16k output tokens are streamed. Older Claude models get `temperature` through the request body. A structured response cut off at `max_tokens` raises instead of returning empty data.
+
 ### 3.7.1 (2026-10-06)
 - **Acceptance guidelines report**: The Markdown report is stored on the main pipeline JSON as `acceptance_guidelines.report`. Prompt versions are the numbers Langfuse returns for the production prompts used in that run.
 
