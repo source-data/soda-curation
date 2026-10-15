@@ -406,7 +406,7 @@ The soda-curation pipeline processes scientific manuscripts through the followin
 - **Process**:
   - Reads the journal from the XML `<journal-title>` (already parsed in step 1). If that title does not match, falls back to the manuscript id prefix (`EMBOR`, `EMBOJ`, `EMM`, `MSB`, `LSA`)
   - Sends the extracted manuscript XML and the merged PDF from the archive `pdf` folder
-  - Fetches the shared prompt and that journal's prompt from Langfuse (`production`)
+  - Fetches the `aip_guidelines` prompt from Langfuse (`production`), which holds the rules for every journal
   - Stores the Markdown report on `acceptance_guidelines.report` in the main JSON
 - **Failure**: Recoverable. The rest of the pipeline still runs
 
@@ -426,31 +426,23 @@ This check is a normal pipeline step (`check_acceptance_guidelines` in `src/soda
 
 Journal policy lives in the Langfuse project `AIP-guidelines`, as text prompts on the `production` label. The step reads that label only. Create the project in Langfuse and set its keys as `LANGFUSE_ACCEPTANCE_PUBLIC_KEY` and `LANGFUSE_ACCEPTANCE_SECRET_KEY`. Those keys are not the QC project's `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY`. The host falls back to `LANGFUSE_HOST` unless `LANGFUSE_ACCEPTANCE_HOST` is set.
 
-Keep one shared prompt and five difference prompts. The pipeline combines `common` with exactly one journal prompt on every run. A journal prompt wins where it conflicts with `common`. Leave the journal prompt as a short note when that journal has no extra checks. Journal prompts are plain text: the step inserts `common` itself, so a Langfuse prompt link inside a journal prompt would be sent to the model as raw text.
+All guidelines live in one prompt, `aip_guidelines`: the shared EMBO Press checklist plus the rules for each journal. The step sends it on every run and names the matched journal in the user message, so the model applies that journal's rules.
 
-| Prompt name | What to put in it | When it is sent |
-| --- | --- | --- |
-| `common` | Shared EMBO Press checklist | Every manuscript |
-| `embo_reports` | Differences only | XML title `EMBO Reports`, or manuscript id prefix `EMBOR` |
-| `the_embo_journal` | Differences only | XML title `The EMBO Journal`, or prefix `EMBOJ` |
-| `embo_molecular_medicine` | Differences only | XML title `EMBO Molecular Medicine`, or prefix `EMM` |
-| `molecular_systems_biology` | Differences only | XML title `Molecular Systems Biology`, or prefix `MSB` |
-| `life_science_alliance` | Differences only | XML title `Life Science Alliance`, or prefix `LSA` |
+The journal is matched from the XML title (`EMBO Reports`, `The EMBO Journal`, `EMBO Molecular Medicine`, `Molecular Systems Biology`, `Life Science Alliance`), or from the manuscript id prefix (`EMBOR`, `EMBOJ`, `EMM`, `MSB`, `LSA`).
 
 The paper is not stored in Langfuse. `config.dev.yaml` holds the instruction wrapper (`check_acceptance_guidelines`) and the step fills it from the manuscript:
 
 | Variable | Set by |
 | --- | --- |
 | `$journal_title` | XML `<journal-title>`, or the matched journal name |
-| `$journal_key` | Matched prompt name, or `unknown` |
-| `$common_guidelines` | Production text of the `common` prompt |
-| `$journal_guidelines` | Production text of the matched journal prompt |
+| `$journal_key` | Matched journal key (for example `embo_reports`), or `unknown` |
+| `$guidelines` | Production text of the `aip_guidelines` prompt |
 
 The manuscript itself is not a template variable. After the prompt, the step attaches the extracted XML and the merged PDF (`pdf/{manuscript_id}.pdf`). The PDF is the figure and page source. The XML is the structure and metadata.
 
-An unmatched journal still gets a report, using only `common`.
+An unmatched journal still gets a report. The prompt then names the XML journal title, or `Unknown journal`.
 
-The Markdown report is stored on the main pipeline JSON as `acceptance_guidelines.report`. That object also records `journal_key`, `journal_title`, `matched_from` (`journal_title`, `manuscript_id`, or `unmatched`), `prompt_label`, `common_prompt_version`, and `journal_prompt_version`. The two version fields are the version numbers Langfuse returns for the production prompts used in that run.
+The Markdown report is stored on the main pipeline JSON as `acceptance_guidelines.report`. That object also records `journal_key`, `journal_title`, `matched_from` (`journal_title`, `manuscript_id`, or `unmatched`), `prompt_name`, `prompt_label`, and `prompt_version`. `prompt_version` is the version number Langfuse returns for the production prompt used in that run.
 
 Throughout these steps, the pipeline leverages AI capabilities to enhance the accuracy of caption extraction and panel matching. The process is configurable through the `config.yaml` file, allowing for adjustments in AI models, detection parameters, and debug options.
 
@@ -517,9 +509,9 @@ After extraction, each figure caption is checked against the manuscript text (`v
     "journal_key": "string",
     "journal_title": "string",
     "matched_from": "journal_title | manuscript_id | unmatched",
+    "prompt_name": "aip_guidelines",
     "prompt_label": "production",
-    "common_prompt_version": "string",
-    "journal_prompt_version": "string",
+    "prompt_version": "string",
     "report": "string"
   },
   "ai_provider": "string",
@@ -969,6 +961,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 3.8.1 (2026-10-15)
+- **Single guidelines prompt**: The acceptance check reads one Langfuse prompt, `aip_guidelines`, which holds the shared rules and every journal's rules. The journal is still matched and named in the user message. The prompt variables are now `$journal_title`, `$journal_key` and `$guidelines`.
+- **JSON output**: `acceptance_guidelines` records `prompt_name` and `prompt_version` instead of `common_prompt_version` and `journal_prompt_version`.
 
 ### 3.8.0 (2026-10-13)
 - **Production models**: `gpt-5.6-sol` for the main pipeline steps and QC, `gpt-6-astra` for the acceptance-guidelines check, and `claude-sonnet-5-5` as the Anthropic default. Prices for all three are in `cost_tracking.py`.

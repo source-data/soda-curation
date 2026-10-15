@@ -99,9 +99,8 @@ default: &default
     # 6) Acceptance guidelines
     # Journal policy is the production label in the Langfuse project
     # AIP-guidelines, not this YAML block.
-    # Prompts: common, embo_reports, the_embo_journal,
-    # embo_molecular_medicine, molecular_systems_biology, life_science_alliance.
-    # Variables: $journal_title $journal_key $common_guidelines $journal_guidelines
+    # Prompt: aip_guidelines (shared rules plus every journal's rules).
+    # Variables: $journal_title $journal_key $guidelines
     # The step attaches the manuscript XML and the merged PDF after this prompt.
     ##########################################################
     check_acceptance_guidelines:
@@ -113,8 +112,7 @@ default: &default
           user: |
             # $journal_title
             # $journal_key
-            # $common_guidelines
-            # $journal_guidelines
+            # $guidelines
             # The manuscript XML and merged PDF are attached after this prompt.
 
     ##########################################################

@@ -18,19 +18,14 @@ from ..manuscript_structure.manuscript_structure import ZipStructure
 from ..openai_utils import call_openai
 from ..step_config import resolve_step_config
 from .langfuse_prompts import (
-    COMMON_PROMPT_NAME,
+    GUIDELINES_PROMPT_NAME,
     PROMPT_LABEL,
-    FetchedPrompt,
     get_production_prompt,
 )
 
 logger = logging.getLogger(__name__)
 
 STEP_NAME = "check_acceptance_guidelines"
-UNKNOWN_JOURNAL_GUIDELINES = (
-    "No journal-specific guidelines prompt matched this manuscript. "
-    "Apply only the common guidelines."
-)
 # call_anthropic streams large requests; a longer report raises instead of truncating.
 ANTHROPIC_MAX_OUTPUT_TOKENS = 64000
 
@@ -45,7 +40,7 @@ class Journal:
 
 
 # Longest manuscript-id prefix is matched first (EMBOR before any shorter EMBO* token).
-# ``key`` is the Langfuse prompt name in the AIP-guidelines project.
+# ``key`` identifies the journal in the prompt and the JSON output.
 JOURNALS: Tuple[Journal, ...] = (
     Journal("embo_reports", "EMBO Reports", ("EMBOR",)),
     Journal("the_embo_journal", "The EMBO Journal", ("EMBOJ",)),
@@ -86,16 +81,6 @@ def resolve_journal(
         if prefix in journal.prefixes:
             return journal, "manuscript_id"
     return None, "unmatched"
-
-
-def load_guidelines(
-    journal: Optional[Journal],
-) -> Tuple[FetchedPrompt, Optional[FetchedPrompt]]:
-    """Fetch the shared prompt and, when known, the matching journal prompt."""
-    common = get_production_prompt(COMMON_PROMPT_NAME)
-    if journal is None:
-        return common, None
-    return common, get_production_prompt(journal.key)
 
 
 def _existing(path: Path) -> Optional[Path]:
@@ -206,21 +191,15 @@ def check_acceptance_guidelines(
     The manuscript input is the extracted XML plus the merged PDF from ``pdf/``.
     Stores the Markdown report on ``zip_structure.acceptance_guidelines``
     so it is part of the main pipeline JSON.
-    Only the common prompt and the matched journal prompt are sent.
-    Both are the Langfuse ``production`` label.
+    The guidelines are the Langfuse ``aip_guidelines`` prompt, ``production`` label.
+    It covers every journal; the matched journal is named in the user prompt.
     """
     resolved = resolve_step_config(config["pipeline"][STEP_NAME])
     journal, matched_from = resolve_journal(
         getattr(zip_structure, "journal_title", "") or "",
         zip_structure.manuscript_id,
     )
-    common_prompt, journal_prompt = load_guidelines(journal)
-    common_guidelines = common_prompt.text
-    journal_guidelines = (
-        journal_prompt.text
-        if journal_prompt is not None
-        else UNKNOWN_JOURNAL_GUIDELINES
-    )
+    guidelines = get_production_prompt(GUIDELINES_PROMPT_NAME)
     journal_title = (
         journal.title
         if journal is not None
@@ -236,8 +215,7 @@ def check_acceptance_guidelines(
         variables={
             "journal_title": journal_title,
             "journal_key": journal_key,
-            "common_guidelines": common_guidelines,
-            "journal_guidelines": journal_guidelines,
+            "guidelines": guidelines.text,
         },
     )
     messages = [
@@ -272,11 +250,9 @@ def check_acceptance_guidelines(
         "journal_key": journal_key,
         "journal_title": journal_title,
         "matched_from": matched_from,
+        "prompt_name": guidelines.name,
         "prompt_label": PROMPT_LABEL,
-        "common_prompt_version": common_prompt.version,
-        "journal_prompt_version": (
-            journal_prompt.version if journal_prompt is not None else ""
-        ),
+        "prompt_version": guidelines.version,
         "source_xml": xml_path.name,
         "source_pdf": str(pdf_path.relative_to(extract_dir)),
         "report": report,
@@ -287,10 +263,7 @@ def check_acceptance_guidelines(
             "operation": "main.check_acceptance_guidelines",
             "journal_key": journal_key,
             "matched_from": matched_from,
-            "common_prompt_version": common_prompt.version,
-            "journal_prompt_version": (
-                journal_prompt.version if journal_prompt is not None else ""
-            ),
+            "prompt_version": guidelines.version,
         },
     )
     return zip_structure

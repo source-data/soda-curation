@@ -387,18 +387,15 @@ default: &default
       prompts:
           system: |
             You assess whether a scientific manuscript follows the acceptance guidelines in the user message.
-            The common guidelines are the shared EMBO Press rules. The journal-specific guidelines add to them and override them where they conflict.
+            The guidelines hold the shared EMBO Press rules and the rules for each journal. Apply the shared rules and the rules for the journal named in the user message. Where they conflict, the journal rules win.
             Use only those guidelines. Do not invent extra journal policy, and do not apply another journal's rules.
             Write the report in the format specified in the guidelines.
           user: |
             Journal: $journal_title
             Journal key: $journal_key
 
-            Common acceptance guidelines:
-            $common_guidelines
-
-            Journal-specific acceptance guidelines:
-            $journal_guidelines
+            Acceptance guidelines:
+            $guidelines
 
             The manuscript follows this message: first the XML, then the merged PDF.
             Use the PDF for figures, layout, and page content. Use the XML for structure and metadata.

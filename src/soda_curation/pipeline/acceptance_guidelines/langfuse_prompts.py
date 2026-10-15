@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 PROJECT_NAME = "AIP-guidelines"
 PROMPT_LABEL = "production"
-COMMON_PROMPT_NAME = "common"
+# One prompt holds the shared rules and every journal's rules.
+GUIDELINES_PROMPT_NAME = "aip_guidelines"
 PUBLIC_KEY_ENV = "LANGFUSE_ACCEPTANCE_PUBLIC_KEY"
 SECRET_KEY_ENV = "LANGFUSE_ACCEPTANCE_SECRET_KEY"
 HOST_ENV = "LANGFUSE_ACCEPTANCE_HOST"

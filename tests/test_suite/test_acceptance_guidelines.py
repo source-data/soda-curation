@@ -8,7 +8,6 @@ from lxml import etree
 
 from src.soda_curation.pipeline.acceptance_guidelines.check_acceptance import (
     check_acceptance_guidelines,
-    load_guidelines,
     resolve_journal,
     resolve_manuscript_xml,
     resolve_merged_pdf,
@@ -42,8 +41,7 @@ def _pipeline_config() -> dict:
                 "user": (
                     "Journal: $journal_title\n"
                     "Key: $journal_key\n"
-                    "Common:\n$common_guidelines\n"
-                    "Journal-specific:\n$journal_guidelines\n"
+                    "Guidelines:\n$guidelines\n"
                 ),
             },
         }
@@ -96,38 +94,6 @@ def _prompt(name: str, text: str, version: str = "1") -> FetchedPrompt:
     return FetchedPrompt(name=name, label="production", version=version, text=text)
 
 
-def test_load_guidelines_fetches_common_and_the_matched_journal():
-    journal, _ = resolve_journal("EMBO Reports", "")
-    fetched = {
-        "common": _prompt(
-            "common",
-            "shared embo press rules\n"
-            "Life Science Alliance rules are not in this file",
-            "2",
-        ),
-        "embo_reports": _prompt(
-            "embo_reports",
-            "EMBO Reports\nThe Paper Explained\nno additional checklist items",
-        ),
-    }
-    with patch(
-        "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
-        ".get_production_prompt",
-        side_effect=lambda name: fetched[name],
-    ) as get_prompt:
-        common, specific = load_guidelines(journal)
-
-    assert [item.args[0] for item in get_prompt.call_args_list] == [
-        "common",
-        "embo_reports",
-    ]
-    assert specific is not None
-    assert "shared embo press rules" in common.text.lower()
-    assert "The Paper Explained" in specific.text
-    assert "Molecular Systems Biology" not in specific.text
-    assert common.version == "2"
-
-
 def test_resolve_merged_pdf_uses_the_pdf_folder(tmp_path):
     manuscript_id = "EMBOR-2025-62929V1-T"
     pdf_dir = tmp_path / "pdf"
@@ -173,14 +139,9 @@ def test_check_acceptance_guidelines_stores_report_on_the_json(tmp_path):
     response.usage.completion_tokens = 5
     response.usage.total_tokens = 15
 
-    prompts = {
-        "common": _prompt("common", "shared embo press rules", "3"),
-        "embo_reports": _prompt(
-            "embo_reports",
-            "no additional checklist items",
-            "5",
-        ),
-    }
+    guidelines = _prompt(
+        "aip_guidelines", "shared embo press rules\nEMBO Reports: no extra items", "3"
+    )
     with (
         patch(
             "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
@@ -190,8 +151,8 @@ def test_check_acceptance_guidelines_stores_report_on_the_json(tmp_path):
         patch(
             "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
             ".get_production_prompt",
-            side_effect=lambda name: prompts[name],
-        ),
+            return_value=guidelines,
+        ) as get_prompt,
     ):
         result = check_acceptance_guidelines(
             config={"pipeline": _pipeline_config()},
@@ -203,9 +164,9 @@ def test_check_acceptance_guidelines_stores_report_on_the_json(tmp_path):
     messages = complete.call_args.args[2]
     user_content = messages[1]["content"]
     user_text = user_content[0]["text"]
-    assert "EMBO Reports" in user_text
-    assert "no additional checklist items" in user_text
-    assert "Please upload the graphical abstract" not in user_text
+    get_prompt.assert_called_once_with("aip_guidelines")
+    assert "Journal: EMBO Reports" in user_text
+    assert "EMBO Reports: no extra items" in user_text
     assert "<article><title>Example</title></article>" in user_content[1]["text"]
     assert user_content[2]["type"] == "file"
     assert user_content[2]["file"]["filename"] == f"{manuscript_id}.pdf"
@@ -217,8 +178,8 @@ def test_check_acceptance_guidelines_stores_report_on_the_json(tmp_path):
     assert result.acceptance_guidelines["matched_from"] == "journal_title"
     assert result.acceptance_guidelines["report"] == "# Report\n\nOverall: unclear."
     assert result.acceptance_guidelines["prompt_label"] == "production"
-    assert result.acceptance_guidelines["common_prompt_version"] == "3"
-    assert result.acceptance_guidelines["journal_prompt_version"] == "5"
+    assert result.acceptance_guidelines["prompt_name"] == "aip_guidelines"
+    assert result.acceptance_guidelines["prompt_version"] == "3"
     assert result.acceptance_guidelines["source_xml"] == f"{manuscript_id}.xml"
     assert result.acceptance_guidelines["source_pdf"] == f"pdf/{manuscript_id}.pdf"
     assert result.cost.check_acceptance_guidelines.total_tokens == 15
@@ -283,7 +244,7 @@ def test_get_production_prompt_requires_acceptance_project_keys(monkeypatch):
     monkeypatch.setenv("LANGFUSE_SECRET_KEY", "qc-secret")
     try:
         with pytest.raises(RuntimeError, match="AIP-guidelines"):
-            get_production_prompt("common")
+            get_production_prompt("aip_guidelines")
     finally:
         reset_client()
 
@@ -296,19 +257,19 @@ def test_get_production_prompt_reads_production_label(monkeypatch):
     prompt = MagicMock()
     prompt.prompt = "shared rules"
     prompt.version = 4
-    prompt.name = "common"
+    prompt.name = "aip_guidelines"
     client = MagicMock()
     client.get_prompt.return_value = prompt
 
     try:
         with patch("langfuse.Langfuse", return_value=client) as langfuse_cls:
-            fetched = get_production_prompt("common")
-            again = get_production_prompt("common")
+            fetched = get_production_prompt("aip_guidelines")
+            again = get_production_prompt("aip_guidelines")
 
         assert langfuse_cls.call_args.kwargs["public_key"] == "pk-acceptance"
         assert langfuse_cls.call_args.kwargs["secret_key"] == "sk-acceptance"
         assert langfuse_cls.call_args.kwargs["host"] == "https://cloud.langfuse.com"
-        client.get_prompt.assert_called_once_with("common", label="production")
+        client.get_prompt.assert_called_once_with("aip_guidelines", label="production")
         assert fetched.text == "shared rules"
         assert fetched.version == "4"
         assert again is fetched
