@@ -405,7 +405,7 @@ The soda-curation pipeline processes scientific manuscripts through the followin
 - **Purpose**: Report whether the manuscript follows the acceptance guidelines for its journal
 - **Process**:
   - Reads the journal from the XML `<journal-title>` (already parsed in step 1). If that title does not match, falls back to the manuscript id prefix (`EMBOR`, `EMBOJ`, `EMM`, `MSB`, `LSA`)
-  - Sends the extracted manuscript XML and the merged PDF from the archive `pdf` folder
+  - Sends the extracted manuscript XML and the merged PDF from the archive `pdf` folder. For MECA packages (before acceptance) it sends `article.xml`, `manifest.xml` and the merged PDF named in the manifest
   - Fetches the `aip_guidelines` prompt from Langfuse (`production`), which holds the rules for every journal
   - Stores the Markdown report on `acceptance_guidelines.report` in the main JSON
 - **Failure**: Recoverable. The rest of the pipeline still runs
@@ -440,9 +440,11 @@ The paper is not stored in Langfuse. `config.dev.yaml` holds the instruction wra
 
 The manuscript itself is not a template variable. After the prompt, the step attaches the extracted XML and the merged PDF (`pdf/{manuscript_id}.pdf`). The PDF is the figure and page source. The XML is the structure and metadata.
 
+Manuscripts checked before acceptance arrive as MECA packages. For those, the step attaches `article.xml`, then `manifest.xml` (the list of submitted files with their types and titles), then the merged PDF named by the manifest `merged_pdf` item.
+
 An unmatched journal still gets a report. The prompt then names the XML journal title, or `Unknown journal`.
 
-The Markdown report is stored on the main pipeline JSON as `acceptance_guidelines.report`. That object also records `journal_key`, `journal_title`, `matched_from` (`journal_title`, `manuscript_id`, or `unmatched`), `prompt_name`, `prompt_label`, and `prompt_version`. `prompt_version` is the version number Langfuse returns for the production prompt used in that run.
+The Markdown report is stored on the main pipeline JSON as `acceptance_guidelines.report`. That object also records `journal_key`, `journal_title`, `matched_from` (`journal_title`, `manuscript_id`, or `unmatched`), `prompt_name`, `prompt_label`, `prompt_version`, `source_xml`, `source_manifest` (`manifest.xml` for MECA packages, otherwise `null`), and `source_pdf`. `prompt_version` is the version number Langfuse returns for the production prompt used in that run.
 
 Throughout these steps, the pipeline leverages AI capabilities to enhance the accuracy of caption extraction and panel matching. The process is configurable through the `config.yaml` file, allowing for adjustments in AI models, detection parameters, and debug options.
 
@@ -512,6 +514,9 @@ After extraction, each figure caption is checked against the manuscript text (`v
     "prompt_name": "aip_guidelines",
     "prompt_label": "production",
     "prompt_version": "string",
+    "source_xml": "string",
+    "source_manifest": "manifest.xml | null",
+    "source_pdf": "string",
     "report": "string"
   },
   "ai_provider": "string",
@@ -961,6 +966,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 3.8.2 (2026-10-16)
+- **Acceptance guidelines before acceptance**: For MECA packages the step sends `article.xml`, `manifest.xml` and the merged PDF named in the manifest. Accepted (legacy eJP) packages are unchanged.
+- **JSON output**: `acceptance_guidelines.source_manifest` is `manifest.xml` for MECA packages and `null` otherwise.
 
 ### 3.8.1 (2026-10-15)
 - **Single guidelines prompt**: The acceptance check reads one Langfuse prompt, `aip_guidelines`, which holds the shared rules and every journal's rules. The journal is still matched and named in the user message. The prompt variables are now `$journal_title`, `$journal_key` and `$guidelines`.

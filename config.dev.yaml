@@ -398,7 +398,8 @@ default: &default
             $guidelines
 
             The manuscript follows this message: first the XML, then the merged PDF.
-            Use the PDF for figures, layout, and page content. Use the XML for structure and metadata.
+            For manuscripts not yet accepted, the XML is article.xml and the MECA manifest.xml follows it; the manifest lists every file in the submission package with its type and title.
+            Use the PDF for figures, layout, and page content. Use the XML for structure and metadata, and the manifest, when present, for which files were submitted.
 
     ##########################################################
     # 7) Object Detection Step (non-AI)

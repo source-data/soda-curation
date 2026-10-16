@@ -182,7 +182,56 @@ def test_check_acceptance_guidelines_stores_report_on_the_json(tmp_path):
     assert result.acceptance_guidelines["prompt_version"] == "3"
     assert result.acceptance_guidelines["source_xml"] == f"{manuscript_id}.xml"
     assert result.acceptance_guidelines["source_pdf"] == f"pdf/{manuscript_id}.pdf"
+    assert result.acceptance_guidelines["source_manifest"] is None
+    assert len(user_content) == 3
     assert result.cost.check_acceptance_guidelines.total_tokens == 15
+
+
+def test_check_acceptance_guidelines_sends_meca_article_and_manifest(tmp_path):
+    (tmp_path / "article.xml").write_text("<article>meca</article>", encoding="utf-8")
+    (tmp_path / "manifest.xml").write_text(
+        "<manifest>files</manifest>", encoding="utf-8"
+    )
+    (tmp_path / "167196_1_merged.pdf").write_bytes(b"%PDF-1.4 merged")
+    structure = ZipStructure(
+        manuscript_id="EMBOR-2025-99999V1",
+        journal_title="EMBO Reports",
+        xml="article.xml",
+        pdf="167196_1_merged.pdf",
+        cost=ProcessingCost(),
+    )
+    response = MagicMock()
+    response.choices[0].message.content = "# Report"
+    response.usage.prompt_tokens = 1
+    response.usage.completion_tokens = 1
+    response.usage.total_tokens = 2
+
+    with (
+        patch(
+            "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
+            "._complete",
+            return_value=response,
+        ) as complete,
+        patch(
+            "src.soda_curation.pipeline.acceptance_guidelines.check_acceptance"
+            ".get_production_prompt",
+            side_effect=lambda name: _prompt(name, "rules", "1"),
+        ),
+    ):
+        result = check_acceptance_guidelines(
+            config={"pipeline": _pipeline_config()},
+            prompt_handler=PromptHandler(_pipeline_config()),
+            zip_structure=structure,
+            extract_dir=tmp_path,
+        )
+
+    user_content = complete.call_args.args[2][1]["content"]
+    assert "<article>meca</article>" in user_content[1]["text"]
+    assert "<manifest>files</manifest>" in user_content[2]["text"]
+    assert user_content[3]["file"]["filename"] == "167196_1_merged.pdf"
+    assert result.acceptance_guidelines["source_xml"] == "article.xml"
+    assert result.acceptance_guidelines["source_manifest"] == "manifest.xml"
+    assert result.acceptance_guidelines["source_pdf"] == "167196_1_merged.pdf"
 
 
 def test_check_acceptance_guidelines_rejects_a_truncated_report(tmp_path):

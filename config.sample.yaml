@@ -101,7 +101,7 @@ default: &default
     # AIP-guidelines, not this YAML block.
     # Prompt: aip_guidelines (shared rules plus every journal's rules).
     # Variables: $journal_title $journal_key $guidelines
-    # The step attaches the manuscript XML and the merged PDF after this prompt.
+    # The step attaches the manuscript XML (plus manifest.xml for MECA packages) and the merged PDF after this prompt.
     ##########################################################
     check_acceptance_guidelines:
       model: "gpt-6-astra"
@@ -113,7 +113,7 @@ default: &default
             # $journal_title
             # $journal_key
             # $guidelines
-            # The manuscript XML and merged PDF are attached after this prompt.
+            # The manuscript XML (plus manifest.xml for MECA packages) and merged PDF are attached after this prompt.
 
     ##########################################################
     # 7) Object Detection (non-AI)

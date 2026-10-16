@@ -14,6 +14,7 @@ import openai
 
 from ..anthropic_utils import call_anthropic, validate_anthropic_model
 from ..cost_tracking import update_token_usage
+from ..manuscript_structure.manuscript_meca_parser import MANIFEST_FILE_NAME
 from ..manuscript_structure.manuscript_structure import ZipStructure
 from ..openai_utils import call_openai
 from ..step_config import resolve_step_config
@@ -188,7 +189,9 @@ def check_acceptance_guidelines(
     """
     Ask the configured model whether the manuscript follows the journal guidelines.
 
-    The manuscript input is the extracted XML plus the merged PDF from ``pdf/``.
+    The manuscript input is the extracted XML plus the merged PDF. Accepted (legacy
+    eJP) packages give ``<id>.xml`` and ``pdf/<id>.pdf``; pre-acceptance (MECA)
+    packages give ``article.xml``, ``manifest.xml`` and the manifest's merged PDF.
     Stores the Markdown report on ``zip_structure.acceptance_guidelines``
     so it is part of the main pipeline JSON.
     The guidelines are the Langfuse ``aip_guidelines`` prompt, ``production`` label.
@@ -210,6 +213,7 @@ def check_acceptance_guidelines(
     xml_path = resolve_manuscript_xml(extract_dir, zip_structure)
     pdf_path = resolve_merged_pdf(extract_dir, zip_structure)
     xml_text = xml_path.read_text(encoding="utf-8")
+    manifest_path = _existing(xml_path.parent / MANIFEST_FILE_NAME)
     prompts = prompt_handler.get_prompt(
         step=STEP_NAME,
         variables={
@@ -228,10 +232,18 @@ def check_acceptance_guidelines(
                     "type": "text",
                     "text": f"Manuscript XML ({xml_path.name}):\n{xml_text}",
                 },
-                _pdf_file_part(pdf_path),
             ],
         },
     ]
+    if manifest_path is not None:
+        manifest_text = manifest_path.read_text(encoding="utf-8")
+        messages[1]["content"].append(
+            {
+                "type": "text",
+                "text": f"MECA manifest ({manifest_path.name}):\n{manifest_text}",
+            }
+        )
+    messages[1]["content"].append(_pdf_file_part(pdf_path))
     response = _complete(resolved["provider"], resolved["model"], messages)
     update_token_usage(
         zip_structure.cost.check_acceptance_guidelines, response, resolved["model"]
@@ -254,6 +266,7 @@ def check_acceptance_guidelines(
         "prompt_label": PROMPT_LABEL,
         "prompt_version": guidelines.version,
         "source_xml": xml_path.name,
+        "source_manifest": manifest_path.name if manifest_path else None,
         "source_pdf": str(pdf_path.relative_to(extract_dir)),
         "report": report,
     }
