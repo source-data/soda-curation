@@ -14,7 +14,7 @@ from typing import Dict, List, Optional
 from bs4 import BeautifulSoup
 from rapidfuzz import fuzz
 
-from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+from .pipeline.manuscript_structure.manuscript_structure import (
     Figure,
     Panel,
     ZipStructure,
