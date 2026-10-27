@@ -32,13 +32,6 @@ logger = logging.getLogger(__name__)
 class PanelSourceAssigner(ABC):
     """Base class for assigning source data files to panels."""
 
-    # Add character replacement dictionary
-    CHAR_REPLACEMENTS = {
-        "ª┬": "β",
-        "í≈": "△",
-        # Add more replacements as needed
-    }
-
     def __init__(
         self, config: Dict[str, Any], prompt_handler: PromptHandler, extract_dir: Path
     ):
@@ -56,13 +49,6 @@ class PanelSourceAssigner(ABC):
         if match:
             return match.group(0).rstrip("0123456789")
         return label.upper()
-
-    def _normalize_filename(self, filename: str) -> str:
-        """Normalize filename by replacing non-standard characters."""
-        normalized = filename
-        for old_char, new_char in self.CHAR_REPLACEMENTS.items():
-            normalized = normalized.replace(old_char, new_char)
-        return normalized
 
     @abstractmethod
     def _validate_config(self) -> None:
@@ -240,12 +226,10 @@ class PanelSourceAssigner(ABC):
                         ):  # Hidden files
                             continue
 
-                        # Normalize the filename
-                        normalized_filename = self._normalize_filename(filename)
                         relative_path = (
                             Path(full_path).relative_to(self.extraction_dir).as_posix()
                         )
-                        extracted_files.append(f"{relative_path}:{normalized_filename}")
+                        extracted_files.append(f"{relative_path}:{filename}")
             else:
                 # Emit archive-relative path
                 extracted_files.append(

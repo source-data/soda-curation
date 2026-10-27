@@ -983,41 +983,6 @@ class TestPanelSourceAssignerValidation(unittest.TestCase):
         assert figure.panels[0].panel_caption == ""
         assert figure.unassigned_sd_files == ["source_data8.zip"]
 
-    def test_character_replacements(self):
-        """Test replacement of non-standard characters in filenames."""
-        zip_dir = self.extract_dir / "suppl_data"
-        zip_dir.mkdir(parents=True, exist_ok=True)
-        zip_path = zip_dir / "figure_1.zip"
-        zip_path.touch()
-
-        test_paths = [
-            "Figure 1/data_ª┬.xlsx",
-            "Figure 1/data_í≈.csv",
-            "Figure 1/normal_file.txt",
-            "Figure 1/data_ª┬_í≈.xlsx",
-        ]
-
-        with patch("zipfile.ZipFile") as mock_zipfile:
-            mock_zip = MagicMock()
-            mock_zip.__enter__.return_value = mock_zip
-            mock_zip.infolist.return_value = [
-                MagicMock(filename=path) for path in test_paths
-            ]
-            mock_zipfile.return_value = mock_zip
-
-            normalized_paths = self.assigner._get_zip_contents(
-                ["suppl_data/figure_1.zip"]
-            )
-
-            expected_paths = [
-                "suppl_data/figure_1.zip:Figure 1/data_β.xlsx",
-                "suppl_data/figure_1.zip:Figure 1/data_△.csv",
-                "suppl_data/figure_1.zip:Figure 1/normal_file.txt",
-                "suppl_data/figure_1.zip:Figure 1/data_β_△.xlsx",
-            ]
-
-            assert sorted(normalized_paths) == sorted(expected_paths)
-
     @patch("zipfile.ZipFile")
     def test_get_zip_contents_emits_relative_paths_for_absolute_input(
         self, mock_zipfile
