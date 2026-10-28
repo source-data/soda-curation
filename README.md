@@ -967,6 +967,10 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 
 ## Changelog
 
+### 3.8.3 (2026-10-28)
+- **Remove hardcoded char fixes**: no longer necessary after upgrade from Python 3.9 (did not read correct filenames from nested .zip) to Python 3.12 in soda-curation 3.4.0.
+- **Bugfix**: importing the same class definition `from src.soda_curation...` and `from soda_curation...` gives two distinct classes, which fail an `isinstance` check and subsequently cause a JSON serialization TypeError in some cases.
+
 ### 3.8.2 (2026-10-16)
 - **Acceptance guidelines before acceptance**: For MECA packages the step sends `article.xml`, `manifest.xml` and the merged PDF named in the manifest. Accepted (legacy eJP) packages are unchanged.
 - **JSON output**: `acceptance_guidelines.source_manifest` is `manifest.xml` for MECA packages and `null` otherwise.
