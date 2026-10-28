@@ -1,0 +1,687 @@
+{
+  "manuscript_id": "EMM-2025-22733",
+  "xml": "",
+  "docx": "",
+  "pdf": "",
+  "appendix": [],
+  "figures": [
+    {
+      "figure_label": "Figure 1",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 1.</strong> <strong>Rare WFS1 variants in CHH: genetic\nidentification and structural-dynamical modeling</strong></p>\n<p><strong>(A)</strong> Family tree of <em>WFS1</em> affected probands\nin family I and family II. Black square and a black circle represent\naffected individuals. <strong>(B-C)</strong> PolyPhen2 prediction of the\neffect of Cys426Tyr <strong>(B)</strong> and Leu432Val\n<strong>(C)</strong> on WFS1. Cys426Tyr is predicted to be benign, while\nLeu432Val is predicted to be damaging. <strong>(D-E)</strong> 3D models\nobtained by AlphaFold of WFS1 in monomeric <strong>(D)</strong> and\ntetrameric <strong>(E)</strong> form.</p>\n<p><strong>(F-G)</strong> Delta stability caused by the introduction of\nthe Cys426Tyr and Leu432Val mutations in frames extracted from MD\nsimulations of the monomer <strong>(F)</strong> and tetramer\n<strong>(G)</strong> of WFS1. <strong>(H)</strong> PC1 vs PC2 plots of\neach chain of wild-type (top) and Cys426Tyr (bottom) tetrameric WFS1.\nEach dot represents a residue. <strong>(I-J)</strong> DCCM plot for\ntetrameric WFS1 wild-type <strong>(I)</strong> and Cys426Tyr\n<strong>(J)</strong>.</p>",
+      "caption_title": "<strong>Figure 1.</strong> <strong>Rare WFS1 variants in CHH: genetic\nidentification and structural-dynamical modeling</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 2",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 2. WFS1 variants induce ER stress and\nUPR.</strong></p>\n<p>Confocal images of COS7 cell line stained with Anti-Wfs1 antibody\n(green), concanavalin A (red) and merge in NT <strong>(A-A’’)</strong>,\n<em>WFS1</em> WT <strong>(B-B’’)</strong>, <em>WFS1</em> C426Y (p.\nCys426Tyr) <strong>(C-C’’)</strong>, <em>WFS1</em> L432V (p.Leu432Val)\n<strong>(D-D’’)</strong> and <em>WFS1</em> P724L (p. Pro724Leu)\n<strong>(E-E’’)</strong>. Scale bar: 20 μm. Representative images from\nthree independent biological experiments are shown. <strong>(F)</strong>\nWestern blotting representative image of WFS1 and ACTB in COS7 cell line\ntransfected with WT vector, <em>WFS1</em> variants (C426Y and L432V),\nP724L internal control and NT (not transfected). <strong>(F’)</strong>\nWestern blotting quantification and normalization with actin. ONE Way\nANOVA with Dunnett post hoc correction. *p&lt;0.05; ***p&lt;0.001;\n****p&lt;0.0001; exact p values are provided in Appendix Table S1.\nResults are expressed as means ± standard error of the mean (SEM) from\nthree independent biological experiments. <strong>(G)</strong> qPCR of\n<em>WFS1</em> in COS7 cell line transfected with WT, C426Y, L432V and\nP724L. ONE Way ANOVA with Dunnett post hoc correction. ns\n(non-significant). Results are expressed as means ± standard error of\nthe mean (SEM) from three independent biological experiments, with three\ntechnical replicates per biological replicate. <strong>(H)</strong>\nLuciferase reporter assay reveals ER stress in COS7 cell line\ntransfected with WT, C426Y, L432V and P724L and NT. ONE Way ANOVA with\nDunnett post hoc correction. *p&lt;0.05; ****p&lt;0.0001; exact p values\nare provided in Appendix Table S1. Results are expressed as means ±\nstandard error of the mean (SEM) from three independent biological\nexperiments, with six technical replicates per biological replicate.\n<strong>(I-O)</strong> qPCR analyses of unfolded protein response\nmarkers in COS7 cell line transfected with WT vector, <em>WFS1</em>\nmutations (C426Y and L432V), P724L and NT. ONE Way ANOVA with Dunnet\npost hoc correction. *p&lt;0.05; **p&lt;0.01; ***p&lt;0.001;\n****p&lt;0.0001; ns (non-significant); exact p values are provided in\nAppendix Table S1. Results are expressed as means ± standard error of\nthe mean (SEM) from three independent biological experiments, with three\ntechnical replicates per biological replicate.</p>",
+      "caption_title": "<strong>Figure 2. WFS1 variants induce ER stress and\nUPR.</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "M",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "N",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "O",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 3",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 3. WFS1 expression in GnRH-related\nregions.</strong></p>\n<p><strong>(A)</strong> Schematic representation of gnrh3 (green) and\nwfs1 (red) expression in zebrafish embryos at 48 hpf. Colocalization of\ngnrh3 and wfs1 is highlighted in yellow. The dotted square indicates the\narea shown at higher magnification in panels (B–D).</p>\n<p><strong>(B–D)</strong> Immunostaining of wfs1 in wild-type Tg\n(<em>GnRH3</em>: EGFP) embryos at 48hpf. Images were acquired in ventral\nview. Scale bar: 100 μm. Abbreviations: olfactory bulbs (OBs), anterior\ncommissure (AC), preoptic area (POA), hypothalamus (Hy). Representative\nimages from three independent biological experiments are shown.\n<strong>(E-N)</strong> Fluorescent <em>in situ</em> hybridization (FISH)\nfor <em>Wfs1</em> transcript (red) followed by immunostaining for nTubb3\n(green) on coronal section from mouse embryonic head at E14.5 at the\nlevel of the nose. White dotted boxes indicate area shown at higher\nmagnification in <strong>(I-K)</strong> and <strong>(L-N)</strong>.\nWhite arrows indicate expression of <em>Wfs1</em> in neurogenic\nepithelia of the nose (VNO and OE). Single or combination of channel\nimages are shown beside corresponding panels. Sections were\ncounterstained with DAPI. Scale bars: 300 μm <strong>(E-H)</strong>, 150\nμm <strong>(I-N)</strong>. <strong>(O-X)</strong> FISH for <em>Wfs1</em>\ntranscript (red) followed by double immunostaining for Gnrh1 (white) and\nnTubb3 (green) from mouse embryonic heads at E14.5 at the level of the\nnose. White dotted boxes indicate area shown at higher magnification in\nadjacent panels; single or combination of channel images are shown\nbeside corresponding panels. Full white arrowheads in\n<strong>(P)</strong> and <strong>(U)</strong> indicate examples of GnRH\nneurons expressing <em>Wfs1</em> mRNA. Full white arrows in\n<strong>(R)</strong> and <strong>(W)</strong> point at <em>Wsf1</em>\nsignal in Gnrh1<sup>+</sup> neurons. Sections were counterstained with\nDAPI. Scale bars: 60 μm <strong>(O, P,T,U)</strong>, 20 μm <strong>(Q-S,\nV-X)</strong>. Abbreviations: VNO, vomeronasal organ; OE, olfactory\nepithelium. Representative images from three independent biological\nexperiments are shown.",
+      "caption_title": "<strong>Figure 3. WFS1 expression in GnRH-related\nregions.</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "M",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "N",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "O",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "P",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "Q",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "R",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "S",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "T",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "U",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "V",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "W",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "X",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 4",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 4. <em>Wfs1b</em> knockdown impairs GnRH3 neurons and reduces i<em>sl1a</em> expression.</strong></p>\n<p><strong>(A)</strong> Schematic representation of GnRH3 neurons development at 48hpf in ventral view. Abbreviations: AC: anterior commissure, OBs: olfactory bulbs, POA: preoptic area, Re: retina Hy: hypothalamus. <strong>(B-C)</strong> Confocal images of Tg (<em>GnRH3</em>: EGFP) embryos at 48hpf, ventral view in <em>std</em>MO embryos <strong>(B)</strong> and <em>wfs1b</em>MOs <strong>(C)</strong>. Scale bar: 100µm. Representative images from three independent biological experiments are shown. <strong>(D-E)</strong> Quantification of GnRH3 positive fibers in two separated districts: OBs and AC <strong>(D)</strong> and POA, Re and Hy <strong>(E)</strong> in <em>wfs1b</em>MOs and control embryos. Unpaired T-test with Welch correction. ** p&lt;0.01; exact p values are provided in Appendix Table S1. Quantification was performed with ImageJ software on the same area (ROI) for each embryo. Results are expressed as means ± standard error of the mean (SEM), with n=33 <em>std</em>MO control embryos and n=45 <wfs1b> MOs embryos from three independent biological experiments.\n<strong>(F)</strong> Schematic representation of gnrh3 progenitors. <strong>(G-J)</strong> Whole mount in situ hybridization of <em>pax6a</em> at 14hpf and <em>ngn1</em> at 24hpf in <em>std</em>MO <strong>(G, I)</strong> and <em>wfs1b</em>MOs <strong>(H, J)</strong>. Embryos were acquired in lateral view. Scale bar 500μm. Representative images of n = 24 embryos per condition from three independent biological experiments are shown. Abbreviations: Hb: hindbrain, sc: spinal cord, tel: telencephalon, die: diencephalon.\n<p><strong>(K-N’)</strong> Whole mount <em>in situ</em> hybridization of <em>isl1a</em> in <em>std</em>MO and <em>wfs1b</em>MOs embryos at 28hpf <strong>(K-L’)</strong> and 48hpf <strong>(M-N’)</strong>, acquired in lateral and dorsal view. Scale bar: 500µm. Representative images of n = 24 embryos per condition from three independent biological experiments are shown. Abbreviations: cnIII-X: cranial nerves, fb: forebrain, hb: hindbrain nuclei; lp: liver primordium, icl: inner cell layer, ot: optic tectum, po: preoptic area, ptv: posterior tuberculum ventral, rgc: retinal ganglion cells, sc: spinal cord tg: trigeminal ganglion.",
+      "caption_title": "<p><strong>Figure 4. <em>Wfs1b</em> knockdown impairs GnRH3 neurons and reduces i<em>sl1a</em> expression.</strong></p>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "M",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "N",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 5",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 5.</strong> <strong>GnRH3 neuronal architecture is\nsensitive to changes in <em>isl1a</em> expression.</strong></p>\n<p><strong>(A-L’’)</strong> Confocal images of Tg (<em>GnRH3</em>: EGFP)\nembryos at 26hpf, 33hpf, 40hpf, 48hpf, 54hpf, 72hpf stained with\n<em>isl1</em> antibody, ventral view in <em>std</em>MO\n<strong>(A-F’’)</strong> and <em>wfs1b</em>MOs <strong>(G-L’’)</strong>.\nImages were acquired in single channel (green), (red) and merge\nchannels. Olfactory bulbs in Tg (<em>GnRH3</em>: EGFP) embryos (arrows)\nand the corresponding isl1-positive regions (arrowheads) are indicated.\nScale bar: 100µm. Representative images of n = 30 embryos per condition\nfrom three independent biological experiments are shown.\n<strong>(M-Q)</strong> Confocal images of Tg (<em>GnRH3</em>: EGFP)\nembryos at 48hpf stained with isl1 antibody, ventral view in\n<em>std</em>MO <strong>(M)</strong> <em>wfs1b</em>MOs\n<strong>(N)</strong>, <em>isl1a</em>MO <strong>(O)</strong>,\n<em>isl1a</em>mRNA WT <strong>(P)</strong> and <em>isl1a</em>mRNA MUT\n<strong>(Q)</strong>. Scale bar: 100µm. Representative images of n = 30\nembryos per condition from three independent biological experiments are\nshown.",
+      "caption_title": "<strong>GnRH3 neuronal architecture is\nsensitive to changes in <em>isl1a</em> expression.</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "M",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "N",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "O",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "P",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "Q",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 6",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 6. VPA and dantrolene reduce UPR activation and\nameliorate GnRH3 neuronal defects in <em>wfs1b</em>\nmorphants.</strong></p>\n<p><strong>(A-G)</strong> qPCR of markers involved in UPR pathway in\n<em>std</em>MO, <em>std</em>MO VPA, <em>wfs1b</em>MOs and\n<em>wfs1b</em>MOs VPA at 48hpf: <em>bip</em> <strong>(A)</strong>,\n<em>atf6</em> <strong>(B)</strong>, <em>ire1a</em> <strong>(C)</strong>,\n<em>perk</em> <strong>(D)</strong>, <em>atf4</em> <strong>(E)</strong>,\n<em>xbp1</em> <strong>(F),</strong> <em>chop</em> <strong>(G)</strong>.\nONE Way ANOVA with Tukey post hoc correction. ns (non-significant)\n*p&lt;0.05; **p&lt;0.01; ***p&lt;0.001. ****p&lt;0.0001; exact p values\nare provided in Appendix Table S1. Results are expressed as means ±\nstandard error of the mean (SEM) from three independent biological\nexperiments, with three technical replicates per biological replicate.\nRNA was extracted from pools of 25 embryos for each biological\nreplicate. <strong>(H-K)</strong> Confocal images of Tg (<em>GnRH3</em>:\nEGFP) embryos at 48hpf, ventral view in <em>std</em>MO embryos\n<strong>(H)</strong>, <em>std</em>MO VPA <strong>(I)</strong>,\n<wfs1b>MOs <strong>(J)</strong> and <em>wfs1b</em>MOs VPA\n<strong>(K)</strong>. Scale bar: 100µm. Representative images of n = 30\nembryos per condition from three independent biological experiments are\nshown. <strong>(H’-K’)</strong> Whole mount <em>in situ</em>\nhybridization of <em>isl1a</em> in <em>std</em>MO embryos\n<strong>(H’)</strong>, <em>std</em>MO VPA <strong>(I’)</strong>\n<wfs1b>MOs <strong>(J’)</strong>, and <em>wfs1b</em>MOs VPA\n<strong>(K’)</strong> at 48hpf acquired in dorsal view. Scale bar: 500\nμm. Representative images of n = 24 embryos per condition from three\nindependent biological experiments are shown.</p>\n<p><strong>(L-R)</strong> qPCR of markers involved in UPR pathway in\n<em>std</em>MO, <em>std</em>MO DAN, <em>wfs1b</em>MOs and\n<em>wfs1b</em>MOs DAN at 48hpf: <em>bip</em> <strong>(L)</strong>,\n<em>atf6</em> <strong>(M)</strong>, <em>ire1a</em> <strong>(N)</strong>,\n<em>perk</em> <strong>(O)</strong>, <em>atf4</em> <strong>(P)</strong>,\n<em>xbp1</em> <strong>(Q),</strong> <em>chop</em> <strong>(R)</strong>.\nONE Way ANOVA with Tukey post hoc correction. ns (non-significant)\n*p&lt;0.05; **p&lt;0.01; exact p values are provided in Appendix Table\nS1. Results are expressed as means ± standard error of the mean (SEM)\nfrom three independent biological experiments, with three technical\nreplicates per biological replicate. RNA was extracted from pools of 25\nembryos for each biological replicate. <strong>(S-V)</strong> Confocal\nimages of Tg (<em>GnRH3</em>: EGFP) embryos at 48hpf, ventral view in\n<em>std</em>MO embryos <strong>(S)</strong>, <em>std</em>MO DAN\n<strong>(T)</strong>, <em>wfs1b</em>MOs <strong>(U)</strong> and\n<em>wfs1b</em>MOs DAN <strong>(V)</strong>. Scale bar: 100µm.\nRepresentative images of n = 25 embryos per condition from three\nindependent biological experiments are shown.</p>",
+      "caption_title": "<strong>Figure 6. VPA and dantrolene reduce UPR activation and\nameliorate GnRH3 neuronal defects in <em>wfs1b</em>\nmorphants.</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "M",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "N",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "O",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "P",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "Q",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "R",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "S",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "T",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "U",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "V",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 7",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 7. ER stress–dependent <em>Isl1</em> downregulation\nimpairs GnRH neuronal axonal outgrowth and motility</strong></p>\n<p><strong>(A-C)</strong> Confocal images of Tg (<em>GnRH3</em>: EGFP)\nembryos <em>std</em>MO <strong>(A)</strong>, <em>wfs1b</em>MOs\n<strong>(B)</strong>, <em>isl1a</em>MO <strong>(C)</strong> at 48hpf\nacquired in lateral view. The dashed outline marks the region selected\nfor quantification. Scale bar: 100 μm. Representative images of n = 6\nembryos per condition from three independent biological experiments are\nshown. <strong>(D)</strong> Schematic representation of axons\ndevelopment of GnRH3 neurons and length analyses at 48hpf in\n<em>std</em>MO, <em>wfs1b</em>MOs and <em>isl1a</em>MO.\n<strong>(E)</strong> Quantification of GnRH3 neurons axon length in\n<em>std</em>MO<strong>,</strong> <em>wfs1b</em>MOs and <em>isl1a</em>MO.\nONE Way ANOVA with Dunnet post hoc correction. *p&lt;0.05; **p&lt;0.01;\nexact p values are provided in Appendix Table S1. Axon length was\nmeasured with ImageJ software by SNT (Simple Neurite Tracer) plugin.\nResults are expressed as means ± standard error of the mean (SEM) from\nthree independent biological experiments; at least n = 10 axons were\nquantified per experimental condition in each biological replicate. Each\ndot represents an individual axon.\n<p><strong>(F–M’)</strong> WISH for axon guidance cues <em>slit2</em>,\n<em>robo3</em>, <em>sema3e</em>, and <em>plxnb3</em> in <em>std</em>MO\n<strong>(F-F’, G-G’, H-H’, I-I’)</strong> and <em>wfs1b</em>MOs\n<strong>(J-J’, K-K’, L-L’, M-M’)</strong> embryos at 48 hpf. Lateral\nviews (left panels) and corresponding dorsal views (right panels) are\nshown. Arrowheads indicate expression domains in the olfactory regions\nand asterisks mark preoptic or midline-associated areas. Scale bar: 500\nμm. Representative images of n = 15 embryos per condition from three\nindependent biological experiments are shown.</p>\n<p><strong>(N-Q)</strong> Representative images of the wound-healing\nassay: vehicle-treated cells at t0 <strong>(N),</strong> TM-treated\ncells at t0 <strong>(O),</strong> vehicle-treated cells at 16 h\n<strong>(P)</strong> and TM-treated cells at 16 h <strong>(Q)</strong>.\nScale bar: 100 μm. <strong>(R)</strong> Quantification of wound closure,\nexpressed as the percentage of the initial wound area. Unpaired t-test.\n****p &lt; 0.0001; exact p values are provided in Appendix Table S1.\nResults are expressed as means ± standard error of the mean (SEM) from\nfive independent biological experiments.</p>\n<p><strong>(S)</strong> Cellular metabolic activity assessed by MTT\nassay and expressed as a percentage of vehicle-treated cells. Unpaired\nt-test. ns, not significant; exact p values are provided in Appendix\nTable S1. Results are expressed as means ± standard error of the mean\n(SEM) from three independent biological experiments, with five technical\nreplicates per biological replicate. <strong>(T)</strong> qPCR\n<em>Isl1</em> in DMSO and TM treated GN11 cells. Unpaired t-test. ***p\n&lt; 0.001; exact p values are provided in Appendix Table S1. Results\nare expressed as means ± standard error of the mean (SEM) from four\nindependent biological experiments, with three technical replicates per\nbiological replicate.</p>",
+      "caption_title": "<strong>Figure 7. ER stress–dependent <em>Isl1</em> downregulation\nimpairs GnRH neuronal axonal outgrowth and motility</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "M",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "N",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "O",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "P",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "Q",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "R",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "S",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "T",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    }
+  ],
+  "data_availability": {
+    "section_text": "",
+    "data_sources": []
+  },
+  "all_captions": "<p><strong>Figure Legends</strong></p>\n<p><strong>Figure 1.</strong> <strong>Rare WFS1 variants in CHH: genetic\nidentification and structural-dynamical modeling</strong></p>\n<p><strong>(A)</strong> Family tree of <em>WFS1</em> affected probands\nin family I and family II. Black square and a black circle represent\naffected individuals. <strong>(B-C)</strong> PolyPhen2 prediction of the\neffect of Cys426Tyr <strong>(B)</strong> and Leu432Val\n<strong>(C)</strong> on WFS1. Cys426Tyr is predicted to be benign, while\nLeu432Val is predicted to be damaging. <strong>(D-E)</strong> 3D models\nobtained by AlphaFold of WFS1 in monomeric <strong>(D)</strong> and\ntetrameric <strong>(E)</strong> form.</p>\n<p><strong>(F-G)</strong> Delta stability caused by the introduction of\nthe Cys426Tyr and Leu432Val mutations in frames extracted from MD\nsimulations of the monomer <strong>(F)</strong> and tetramer\n<strong>(G)</strong> of WFS1. <strong>(H)</strong> PC1 vs PC2 plots of\neach chain of wild-type (top) and Cys426Tyr (bottom) tetrameric WFS1.\nEach dot represents a residue. <strong>(I-J)</strong> DCCM plot for\ntetrameric WFS1 wild-type <strong>(I)</strong> and Cys426Tyr\n<strong>(J)</strong>.</p>\n<p><strong>Figure 2. WFS1 variants induce ER stress and\nUPR.</strong></p>\n<p>Confocal images of COS7 cell line stained with Anti-Wfs1 antibody\n(green), concanavalin A (red) and merge in NT <strong>(A-A’’)</strong>,\n<em>WFS1</em> WT <strong>(B-B’’)</strong>, <em>WFS1</em> C426Y (p.\nCys426Tyr) <strong>(C-C’’)</strong>, <em>WFS1</em> L432V (p.Leu432Val)\n<strong>(D-D’’)</strong> and <em>WFS1</em> P724L (p. Pro724Leu)\n<strong>(E-E’’)</strong>. Scale bar: 20 μm. Representative images from\nthree independent biological experiments are shown. <strong>(F)</strong>\nWestern blotting representative image of WFS1 and ACTB in COS7 cell line\ntransfected with WT vector, <em>WFS1</em> variants (C426Y and L432V),\nP724L internal control and NT (not transfected). <strong>(F’)</strong>\nWestern blotting quantification and normalization with actin. ONE Way\nANOVA with Dunnett post hoc correction. *p&lt;0.05; ***p&lt;0.001;\n****p&lt;0.0001; exact p values are provided in Appendix Table S1.\nResults are expressed as means ± standard error of the mean (SEM) from\nthree independent biological experiments. <strong>(G)</strong> qPCR of\n<em>WFS1</em> in COS7 cell line transfected with WT, C426Y, L432V and\nP724L. ONE Way ANOVA with Dunnett post hoc correction. ns\n(non-significant). Results are expressed as means ± standard error of\nthe mean (SEM) from three independent biological experiments, with three\ntechnical replicates per biological replicate. <strong>(H)</strong>\nLuciferase reporter assay reveals ER stress in COS7 cell line\ntransfected with WT, C426Y, L432V and P724L and NT. ONE Way ANOVA with\nDunnett post hoc correction. *p&lt;0.05; ****p&lt;0.0001; exact p values\nare provided in Appendix Table S1. Results are expressed as means ±\nstandard error of the mean (SEM) from three independent biological\nexperiments, with six technical replicates per biological replicate.\n<strong>(I-O)</strong> qPCR analyses of unfolded protein response\nmarkers in COS7 cell line transfected with WT vector, <em>WFS1</em>\nmutations (C426Y and L432V), P724L and NT. ONE Way ANOVA with Dunnet\npost hoc correction. *p&lt;0.05; **p&lt;0.01; ***p&lt;0.001;\n****p&lt;0.0001; ns (non-significant); exact p values are provided in\nAppendix Table S1. Results are expressed as means ± standard error of\nthe mean (SEM) from three independent biological experiments, with three\ntechnical replicates per biological replicate.</p>\n<p><strong>Figure 3. WFS1 expression in GnRH-related\nregions.</strong></p>\n<p><strong>(A)</strong> Schematic representation of gnrh3 (green) and\nwfs1 (red) expression in zebrafish embryos at 48 hpf. Colocalization of\ngnrh3 and wfs1 is highlighted in yellow. The dotted square indicates the\narea shown at higher magnification in panels (B–D).</p>\n<p><strong>(B–D)</strong> Immunostaining of wfs1 in wild-type Tg\n(<em>GnRH3</em>: EGFP) embryos at 48hpf. Images were acquired in ventral\nview. Scale bar: 100 μm. Abbreviations: olfactory bulbs (OBs), anterior\ncommissure (AC), preoptic area (POA), hypothalamus (Hy). Representative\nimages from three independent biological experiments are shown.\n<strong>(E-N)</strong> Fluorescent <em>in situ</em> hybridization (FISH)\nfor <em>Wfs1</em> transcript (red) followed by immunostaining for nTubb3\n(green) on coronal section from mouse embryonic head at E14.5 at the\nlevel of the nose. White dotted boxes indicate area shown at higher\nmagnification in <strong>(I-K)</strong> and <strong>(L-N)</strong>.\nWhite arrows indicate expression of <em>Wfs1</em> in neurogenic\nepithelia of the nose (VNO and OE). Single or combination of channel\nimages are shown beside corresponding panels. Sections were\ncounterstained with DAPI. Scale bars: 300 μm <strong>(E-H)</strong>, 150\nμm <strong>(I-N)</strong>. <strong>(O-X)</strong> FISH for <em>Wfs1</em>\ntranscript (red) followed by double immunostaining for Gnrh1 (white) and\nnTubb3 (green) from mouse embryonic heads at E14.5 at the level of the\nnose. White dotted boxes indicate area shown at higher magnification in\nadjacent panels; single or combination of channel images are shown\nbeside corresponding panels. Full white arrowheads in\n<strong>(P)</strong> and <strong>(U)</strong> indicate examples of GnRH\nneurons expressing <em>Wfs1</em> mRNA. Full white arrows in\n<strong>(R)</strong> and <strong>(W)</strong> point at <em>Wsf1</em>\nsignal in Gnrh1<sup>+</sup> neurons. Sections were counterstained with\nDAPI. Scale bars: 60 μm <strong>(O, P,T,U)</strong>, 20 μm <strong>(Q-S,\nV-X)</strong>. Abbreviations: VNO, vomeronasal organ; OE, olfactory\nepithelium. Representative images from three independent biological\nexperiments are shown.</p>\n<p><strong>Figure 4. <em>Wfs1b</em> knockdown impairs GnRH3 neurons and\nreduces i<em>sl1a</em> expression.</strong></p>\n<p><strong>(A)</strong> Schematic representation of GnRH3 neurons\ndevelopment at 48hpf in ventral view. Abbreviations: AC: anterior\ncommissure, OBs: olfactory bulbs, POA: preoptic area, Re: retina Hy:\nhypothalamus. <strong>(B-C)</strong> Confocal images of Tg\n(<em>GnRH3</em>: EGFP) embryos at 48hpf, ventral view in <em>std</em>MO\nembryos <strong>(B)</strong> and <em>wfs1b</em>MOs <strong>(C)</strong>.\nScale bar: 100µm. Representative images from three independent\nbiological experiments are shown. <strong>(D-E)</strong> Quantification\nof GnRH3 positive fibers in two separated districts: OBs and AC\n<strong>(D)</strong> and POA, Re and Hy <strong>(E)</strong> in\n<em>wfs1b</em>MOs and control embryos. Unpaired T-test with Welch\ncorrection. ** p&lt;0.01; exact p values are provided in Appendix Table\nS1. Quantification was performed with ImageJ software on the same area\n(ROI) for each embryo. Results are expressed as means ± standard error\nof the mean (SEM), with n=33 <em>std</em>MO control embryos and n=45\n<wfs1b> MOs embryos from three independent biological experiments.\n<strong>(F)</strong> Schematic representation of gnrh3 progenitors.\n<strong>(G-J)</strong> Whole mount in situ hybridization of\n<em>pax6a</em> at 14hpf and <em>ngn1</em> at 24hpf in <em>std</em>MO\n<strong>(G, I)</strong> and <em>wfs1b</em>MOs <strong>(H, J)</strong>.\nEmbryos were acquired in lateral view. Scale bar 500μm. Representative\nimages of n = 24 embryos per condition from three independent\nbiological experiments are shown. Abbreviations: Hb: hindbrain, sc:\nspinal cord, tel: telencephalon, die: diencephalon.</p>\n<p><strong>(K-N’)</strong> Whole mount <em>in situ</em> hybridization of\n<em>isl1a</em> in <em>std</em>MO and <em>wfs1b</em>MOs embryos at 28hpf\n<strong>(K-L’)</strong> and 48hpf <strong>(M-N’)</strong>, acquired in\nlateral and dorsal view. Scale bar: 500µm. Representative images of n =\n24 embryos per condition from three independent biological experiments\nare shown. Abbreviations: cnIII-X: cranial nerves, fb: forebrain, hb:\nhindbrain nuclei; lp: liver primordium, icl: inner cell layer, ot: optic\ntectum, po: preoptic area, ptv: posterior tuberculum ventral, rgc:\nretinal ganglion cells, sc: spinal cord tg: trigeminal ganglion.</p>\n<p><strong>Figure 5.</strong> <strong>GnRH3 neuronal architecture is\nsensitive to changes in <em>isl1a</em> expression.</strong></p>\n<p><strong>(A-L’’)</strong> Confocal images of Tg (<em>GnRH3</em>: EGFP)\nembryos at 26hpf, 33hpf, 40hpf, 48hpf, 54hpf, 72hpf stained with\n<em>isl1</em> antibody, ventral view in <em>std</em>MO\n<strong>(A-F’’)</strong> and <em>wfs1b</em>MOs <strong>(G-L’’)</strong>.\nImages were acquired in single channel (green), (red) and merge\nchannels. Olfactory bulbs in Tg (<em>GnRH3</em>: EGFP) embryos (arrows)\nand the corresponding isl1-positive regions (arrowheads) are indicated.\nScale bar: 100µm. Representative images of n = 30 embryos per condition\nfrom three independent biological experiments are shown.\n<strong>(M-Q)</strong> Confocal images of Tg (<em>GnRH3</em>: EGFP)\nembryos at 48hpf stained with isl1 antibody, ventral view in\n<em>std</em>MO <strong>(M)</strong> <em>wfs1b</em>MOs\n<strong>(N)</strong>, <em>isl1a</em>MO <strong>(O)</strong>,\n<em>isl1a</em>mRNA WT <strong>(P)</strong> and <em>isl1a</em>mRNA MUT\n<strong>(Q)</strong>. Scale bar: 100µm. Representative images of n = 30\nembryos per condition from three independent biological experiments are\nshown.</p>\n<p><strong>Figure 6. VPA and dantrolene reduce UPR activation and\nameliorate GnRH3 neuronal defects in <em>wfs1b</em>\nmorphants.</strong></p>\n<p><strong>(A-G)</strong> qPCR of markers involved in UPR pathway in\n<em>std</em>MO, <em>std</em>MO VPA, <em>wfs1b</em>MOs and\n<em>wfs1b</em>MOs VPA at 48hpf: <em>bip</em> <strong>(A)</strong>,\n<em>atf6</em> <strong>(B)</strong>, <em>ire1a</em> <strong>(C)</strong>,\n<em>perk</em> <strong>(D)</strong>, <em>atf4</em> <strong>(E)</strong>,\n<em>xbp1</em> <strong>(F),</strong> <em>chop</em> <strong>(G)</strong>.\nONE Way ANOVA with Tukey post hoc correction. ns (non-significant)\n*p&lt;0.05; **p&lt;0.01; ***p&lt;0.001. ****p&lt;0.0001; exact p values\nare provided in Appendix Table S1. Results are expressed as means ±\nstandard error of the mean (SEM) from three independent biological\nexperiments, with three technical replicates per biological replicate.\nRNA was extracted from pools of 25 embryos for each biological\nreplicate. <strong>(H-K)</strong> Confocal images of Tg (<em>GnRH3</em>:\nEGFP) embryos at 48hpf, ventral view in <em>std</em>MO embryos\n<strong>(H)</strong>, <em>std</em>MO VPA <strong>(I)</strong>,\n<wfs1b>MOs <strong>(J)</strong> and <em>wfs1b</em>MOs VPA\n<strong>(K)</strong>. Scale bar: 100µm. Representative images of n = 30\nembryos per condition from three independent biological experiments are\nshown. <strong>(H’-K’)</strong> Whole mount <em>in situ</em>\nhybridization of <em>isl1a</em> in <em>std</em>MO embryos\n<strong>(H’)</strong>, <em>std</em>MO VPA <strong>(I’)</strong>\n<wfs1b>MOs <strong>(J’)</strong>, and <em>wfs1b</em>MOs VPA\n<strong>(K’)</strong> at 48hpf acquired in dorsal view. Scale bar: 500\nμm. Representative images of n = 24 embryos per condition from three\nindependent biological experiments are shown.</p>\n<p><strong>(L-R)</strong> qPCR of markers involved in UPR pathway in\n<em>std</em>MO, <em>std</em>MO DAN, <em>wfs1b</em>MOs and\n<em>wfs1b</em>MOs DAN at 48hpf: <em>bip</em> <strong>(L)</strong>,\n<em>atf6</em> <strong>(M)</strong>, <em>ire1a</em> <strong>(N)</strong>,\n<em>perk</em> <strong>(O)</strong>, <em>atf4</em> <strong>(P)</strong>,\n<em>xbp1</em> <strong>(Q),</strong> <em>chop</em> <strong>(R)</strong>.\nONE Way ANOVA with Tukey post hoc correction. ns (non-significant)\n*p&lt;0.05; **p&lt;0.01; exact p values are provided in Appendix Table\nS1. Results are expressed as means ± standard error of the mean (SEM)\nfrom three independent biological experiments, with three technical\nreplicates per biological replicate. RNA was extracted from pools of 25\nembryos for each biological replicate. <strong>(S-V)</strong> Confocal\nimages of Tg (<em>GnRH3</em>: EGFP) embryos at 48hpf, ventral view in\n<em>std</em>MO embryos <strong>(S)</strong>, <em>std</em>MO DAN\n<strong>(T)</strong>, <em>wfs1b</em>MOs <strong>(U)</strong> and\n<em>wfs1b</em>MOs DAN <strong>(V)</strong>. Scale bar: 100µm.\nRepresentative images of n = 25 embryos per condition from three\nindependent biological experiments are shown.</p>\n<p><strong>Figure 7. ER stress–dependent <em>Isl1</em> downregulation\nimpairs GnRH neuronal axonal outgrowth and motility</strong></p>\n<p><strong>(A-C)</strong> Confocal images of Tg (<em>GnRH3</em>: EGFP)\nembryos <em>std</em>MO <strong>(A)</strong>, <em>wfs1b</em>MOs\n<strong>(B)</strong>, <em>isl1a</em>MO <strong>(C)</strong> at 48hpf\nacquired in lateral view. The dashed outline marks the region selected\nfor quantification. Scale bar: 100 μm. Representative images of n = 6\nembryos per condition from three independent biological experiments are\nshown. <strong>(D)</strong> Schematic representation of axons\ndevelopment of GnRH3 neurons and length analyses at 48hpf in\n<em>std</em>MO, <em>wfs1b</em>MOs and <em>isl1a</em>MO.\n<strong>(E)</strong> Quantification of GnRH3 neurons axon length in\n<em>std</em>MO<strong>,</strong> <em>wfs1b</em>MOs and <em>isl1a</em>MO.\nONE Way ANOVA with Dunnet post hoc correction. *p&lt;0.05; **p&lt;0.01;\nexact p values are provided in Appendix Table S1. Axon length was\nmeasured with ImageJ software by SNT (Simple Neurite Tracer) plugin.\nResults are expressed as means ± standard error of the mean (SEM) from\nthree independent biological experiments; at least n = 10 axons were\nquantified per experimental condition in each biological replicate. Each\ndot represents an individual axon.</p>\n<p><strong>(F–M’)</strong> WISH for axon guidance cues <em>slit2</em>,\n<em>robo3</em>, <em>sema3e</em>, and <em>plxnb3</em> in <em>std</em>MO\n<strong>(F-F’, G-G’, H-H’, I-I’)</strong> and <em>wfs1b</em>MOs\n<strong>(J-J’, K-K’, L-L’, M-M’)</strong> embryos at 48 hpf. Lateral\nviews (left panels) and corresponding dorsal views (right panels) are\nshown. Arrowheads indicate expression domains in the olfactory regions\nand asterisks mark preoptic or midline-associated areas. Scale bar: 500\nμm. Representative images of n = 15 embryos per condition from three\nindependent biological experiments are shown.</p>\n<p><strong>(N-Q)</strong> Representative images of the wound-healing\nassay: vehicle-treated cells at t0 <strong>(N),</strong> TM-treated\ncells at t0 <strong>(O),</strong> vehicle-treated cells at 16 h\n<strong>(P)</strong> and TM-treated cells at 16 h <strong>(Q)</strong>.\nScale bar: 100 μm. <strong>(R)</strong> Quantification of wound closure,\nexpressed as the percentage of the initial wound area. Unpaired t-test.\n****p &lt; 0.0001; exact p values are provided in Appendix Table S1.\nResults are expressed as means ± standard error of the mean (SEM) from\nfive independent biological experiments.</p>\n<p><strong>(S)</strong> Cellular metabolic activity assessed by MTT\nassay and expressed as a percentage of vehicle-treated cells. Unpaired\nt-test. ns, not significant; exact p values are provided in Appendix\nTable S1. Results are expressed as means ± standard error of the mean\n(SEM) from three independent biological experiments, with five technical\nreplicates per biological replicate. <strong>(T)</strong> qPCR\n<em>Isl1</em> in DMSO and TM treated GN11 cells. Unpaired t-test. ***p\n&lt; 0.001; exact p values are provided in Appendix Table S1. Results\nare expressed as means ± standard error of the mean (SEM) from four\nindependent biological experiments, with three technical replicates per\nbiological replicate.</p>\n<p><strong>Expanded View</strong></p>\n<p><strong>Figure EV1. Clinical, genetic and structural data supporting\nthe identification of WFS1 variants in CHH</strong></p>\n<p><strong>(A)</strong> Clinical characteristics of the patients,\nincluding sex, age, BMI, basal LH and FSH levels, and testicular size.\n<strong>(B)</strong> Genetic, clinical data and bioinformatic\npredictions of <em>WFS1</em> variants of affected patients.\nAbbreviations: B: benign, U: uncertain, P: pathogenic.\n<strong>(C)</strong> Synteny maps comparing <em>WFS1</em> genes in\nHuman, Mouse and zebrafish (two paralogs) performed by Genomicus tool.\n<strong>(D)</strong> Partial protein sequence alignment of mammalian\n<em>WFS1</em> orthologs shows conservation in gorilla, mouse and rat.\n<strong>(E)</strong> RMSF plots of WFS1 in both monomeric and tetrameric\nform. <strong>(F)</strong> RMSF of the 350-500 region. <strong>(G)</strong>\nPC1 vs PC2 plots of each chain of wild-type (top) and Cys426Tyr (bottom)\ntetrameric WFS1. Each dot represents a frame.</p>\n<p><strong>Figure EV2. Validation of ER stress induction in an\nindependent cellular model</strong></p>\n<p><strong>(GN11)</strong></p>\n<p>Confocal images of GN11 cell line stained with Anti-WFS1 antibody\n(green), concanavalin A (red) and merge in NT <strong>(A-A’’)</strong>,\n<em>WFS1</em> WT <strong>(B-B’’)</strong>, <em>WFS1</em> C426Y (p.\nCys426Tyr) <strong>(C-C’’)</strong>, <em>WFS1</em> L432V (p.Leu432Val)\n<strong>(D-D’’)</strong> and <em>WFS1</em> P724L (p. Pro724Leu)\n<strong>(E-E’’)</strong>. Scale bar: 20 μm. Representative images from\nthree independent biological experiments are shown. <strong>(F)</strong>\nWestern blotting representative image of WFS1 and ACTB in GN11 cell line\ntransfected with WT vector, <em>WFS1</em> variants (C426Y and L432V),\nP724L internal control and NT (not transfected). <strong>(F’)</strong>\nWestern blotting quantification and normalization with actin. ONE Way\nANOVA with Dunnet post hoc correction. *p&lt;0.05; **p&lt;0.01;\n***p&lt;0.001; exact p values are provided in Appendix Table S1. Results\nare expressed as means ± standard error of the mean (SEM) from three\nindependent biological experiments. <strong>(G)</strong> qPCR of\n<em>WFS1</em> in GN11 cell line transfected with WT, C426Y, L432V and\nP724L and NT. ONE Way ANOVA with Dunnet post hoc correction, ns (not\nsignificant); exact p values are provided in Appendix Table S1. Results\nare expressed as means ± standard error of the mean (SEM) from three\nindependent biological experiments, with three technical replicates per\nbiological replicate. <strong>(G’)</strong> Luciferase reporter assay\nreveals ER stress in GN11 cell line transfected with WT, C426Y, L432V\nand P724L. ONE Way ANOVA with Dunnet post hoc correction. ns: not\nsignificant; ****p &lt; 0.0001; exact p values are provided in Appendix\nTable S1. Results are expressed as means ± standard error of the mean\n(SEM) from three independent biological experiments, with five technical\nreplicates per biological replicate.</p>\n<p>Confocal images of COS7 cell line stained with Anti Flag antibody\n(green), concanavalin A (red) and merge in <em>WFS1</em> WT\n<strong>(H-H’’)</strong>, <em>WFS1</em> C426Y (p. Cys426Tyr)\n<strong>(I-I’’)</strong>, <em>WFS1</em> L432V (p.Leu432Val)\n<strong>(J-J’’)</strong> and <em>WFS1</em> P724L (p. Pro724Leu)\n<strong>(K-K’’)</strong>. Scale bar: 20 μm. Representative images from\nthree independent biological experiments are shown. <strong>(L)</strong>\nWestern blotting representative image of WFS1 and ACTB in COS7 cell line\ntransfected with WT vector, <em>WFS1</em> variants (C426Y and L432V),\nP724L internal control and NT (not transfected). <strong>(L’)</strong>\nWestern blotting quantification and normalization with actin. ONE Way\nANOVA with Dunnet post hoc correction. **p&lt;0.01; ***p&lt;0.001; exact\np values are provided in Appendix Table S1. Results are expressed as\nmeans ± standard error of the mean (SEM) from three independent\nbiological experiments.</p>\n<p><strong>Figure EV3. Extended validation of WFS1 expression in\nzebrafish and mouse models.</strong></p>\n<p><strong>(A-B)</strong> RT-PCR of <em>wfs1b</em> expression in\nzebrafish embryos at different developmental stages (1hpf-120hpf)\n<strong>(A)</strong> and in different organs <strong>(B)</strong>.\n<strong>(C- K)</strong> Whole mount in situ hybridization of\n<em>wfs1b</em> at different developmental stages (1hpf-120hpf). Embryos\nwere acquired in lateral and dorsal view. ey: eye; hb: hindbrain; b:\nbrain; c: cartilages; sb: swim bladder. Scale bars: 250 and 500µm.\nRepresentative images of n = 30 embryos from three independent\nbiological experiments are shown. <strong>(L)</strong> RT-PCR for\n<em>Wfs1</em> expression in embryonic nose and brain tissues extracted\nfrom indicated embryonic stages of wild type mouse embryos (624 bp).\n<em>Gapdh</em> expression serves as positive control (188 bp). ntc, no\ntemplate control. <strong>(M-P’’’)</strong> Positive (<em>Polr2a</em>\nand <em>Ppib</em>) and negative (<em>dapB</em>) control probes.\n<strong>(Q-R’)</strong> Immunostaining for Isl1/2 (green), Gnrh1 (red)\nand OMP (white) on coronal section from mouse embryonic heads at E14.5\nat the level of the nose and the nasal-forebrain junction (NFJ). Full\narrowheads indicate examples of GnRH neurons expressing Isl1/2. GnRH\nneurons migrating out of the VNO and at nasal-forebrain junction (NFJ)\nexpress Isl1/2, whilst OMP+ olfactory axons do not show any detectable\nIsl1/2 expression. Sections were counterstained with DAPI. Scale bars:\n300 μm <strong>(Q, R)</strong>, 50 μm <strong>(Q’, R’)</strong>.\nAbbreviations: FB, forebrain; VNO, vomeronasal organ; OE, olfactory\nepithelium; NFJ, nasal-forebrain junction. Representative images from\nthree independent biological experiments are shown.</p>\n<p><strong>Figure EV4. Evaluation of morpholinos efficacy and\ncharacterization of double <em>wfs1b</em> morphants. (A)</strong>\nSchematic representation of morpholinos design. <strong>(B)</strong> PCR\nof wild type and alterative fragments amplified using different sets of\nprimers (I,II,III) used for validate <em>wfs1b</em> morpholinos efficacy\nand knockdown. Morpholinos efficacy was validated by PCR and confirmed\nthat both morpholinos effectively disrupted mRNA splicing, causing\npartial retention of introns 2 and 7, respectively. <strong>(C)</strong>\nHistogram shows the percentage of <em>wfs1b</em> morphants embryos\ncharacterized by respectively normal, moderate and severe phenotype.\nResults are expressed as means ± standard error of the mean (SEM) from\nfive independent biological experiments with n = 100 embryos per\nexperimental condition.</p>\n<p>To assess the dose-dependent effects of morpholinos, three different\ndoses (0.2, 0.4 e 0.6 pmol/e) were injected alone followed by\nmorphological evaluation of embryos at 48 hpf. To reduce possible\noff-target effects, sub-phenotypic doses (0.4 pmol/e) of each MO were\nco-injected; these doses were defined as concentrations that do not\ninduce overt morphological defects when injected individually. Embryos\nwere classified in three categories: normal phenotype (comparable to\ncontrols), moderate (shorter body length, smaller head size, abnormal\nyolk sac shape, and pericardial/cerebral edema) and severe\n(morphological defects, mainly affecting head, pericardium, and\nnotochord development). Only embryos exhibiting a moderate phenotype\nwere chosen for the subsequent analysis. <strong>(D-G)</strong> Confocal\nimages of Tg (<em>GnRH3</em>: EGFP) embryos stained with wfs1 antibody\nin <em>std</em>MO <strong>(D-F)</strong> and <em>wfs1b</em>MOs\n<strong>(E-G)</strong> at 36 and 48hpf acquired in ventral view.\nRepresentative images from three independent biological experiments are\nshown.</p>\n<p><strong>(H-K)</strong> Embryonic morphology of <em>std</em>MO and\n<wfs1b>MOs with normal, moderate and severe phenotype at 48hpf.\nImages were acquired in lateral view. Scale bar: 250 μm. Representative\nimages of n = 60 embryos per condition from three independent biological\nexperiments are shown. <strong>(L-O)</strong> Hematoxylin/eosin-stained\nhistological sections at the level of the head of 48 hpf embryos.\nTransverse sections of controls <strong>(L, M)</strong> and\n<wfs1b>MOs injected embryos <strong>(N, O)</strong> at the level\nof midbrain <strong>(L-N)</strong> and hindbrain <strong>(M-O)</strong>.\nhd: hindbrain, md: midbrain, ot: otic vescicle, die diencephalon, nc:\nnotochord. Scale bar: 50 μm. Representative images of n = 15 embryos per\ncondition from three independent biological experiments are shown.</p>\n<p><strong>Figure EV5. Complementary functional and stress-response\ncontrols.</strong></p>\n<p><strong>(A-B)</strong> Confocal images of Tg (<em>GnRH3</em>: EGFP)\nembryos at 48hpf, ventral view in <em>CAS9</em> embryos\n<strong>(A)</strong> and <em>wfs1b</em>sgRNAs <strong>(B)</strong>.\nGnRH3 positive fibers are reduced neurons in POA, Re and Hy and appeared\nmislocalized at the level of OBs and AC compared to controls, fully\nrecapitulating <em>wfs1b</em>MOs phenotype. Scale bar: 100µm.\nRepresentative images of n = 15 embryos per condition from three\nindependent biological experiments are shown. <strong>(C)</strong> PCR\nof genomic DNA in CAS9 and <em>wfs1b</em>-sgRNAs injected embryos.\nResults of the T7 endonuclease I assay revealing multiple bands obtained\nafter T7 digestion and due to indels contained in the PCR amplification\nproducts of <em>wfs1b</em>- sgRNAs injected embryos. Marker: 1kb\nPlus.</p>\n<p><strong>(D-E)</strong> Tunel assay and <strong>(F-G)</strong>\nimmunofluorescence analysis of caspase3, in <em>std</em>MO and\n<wfs1b>MOs embryos at 48 hpf. No evidence of increased cell death\nwas detected in\u0000a0<wfs1b>\u0000a0MO embryos compared to controls. Images\nwere acquired in ventral view. Scale bar: 100 \u0003bcm. Representative images\nof n = 15 embryos per condition from three independent biological\nexperiments are shown.</p>\n<p><strong>(H-I’)</strong> Confocal images of Tg (<em>GnRH3</em>: EGFP)\nembryos in <em>std</em>MO and <wfs1b>MOs at 48hpf in basal\nconditions or treated with 3 µM tunicamycin (TM).TM treatment\nexacerbated the reduction and disorganization of GnRH3 neurons\nin\u0000a0<wfs1b>\u0000a0MO embryos. Scale bar:100 \u0003bcm. Representative images of\nn = 15 embryos per condition from three independent biological\nexperiments are shown.</p>\n<p><strong>(J-Q)</strong> qPCR analyses of unfolded protein response\nmarkers in COS7 cell line NT (not treated) and treated with tunicamycin\nshowing a significant upregulation of canonical UPR genes upon ER stress\ninduction. Unpaired T test, ns (not significant); *p&lt;0.05;\n**p&lt;0.01; **** p&lt;0.0001; exact p values are provided in Appendix\nTable S1. Results are expressed as means ± standard error of the mean\n(SEM) from three independent biological experiments, with three\ntechnical replicates per biological replicate.</p>\n<p><strong>(R-X)</strong> qPCR of markers involved in UPR pathway in\nDMSO and TM treated GN11 cells. Unpaired T test, ns (non-significant),\n*p&lt;0.05; **p&lt;0.01; ***p&lt;0.001. ****p&lt;0.0001; exact p values\nare provided in Appendix Table S1. Results are expressed as means ±\nstandard error of the mean (SEM) from four independent biological\nexperiments, with three technical replicates per biological\nreplicate.</p>\n<p><strong>Figure EV6. <em>gnrh3</em> expression is not altered in\n<wfs1b> morphants</strong></p>\n<p><strong>(A-B)</strong> Whole mount <em>in situ</em> hybridization of\n<em>gnrh3</em> at 48hpf in <em>std</em>MO <strong>(A)</strong> and\n<wfs1b>MOs <strong>(B)</strong>. Scale bar: 500µm. Representative\nimages of n = 6 embryos per condition from three independent biological\nexperiments are shown. <strong>(C)</strong> Quantification of\n<em>gnrh3</em> pixel area, Unpaired T-test with Welch correction, ns:\nnot significant; exact p values are provided in Appendix Table S1.\nResults are expressed as means ± standard error of the mean (SEM) from\nthree independent biological experiments.</p>"
+}

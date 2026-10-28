@@ -1,0 +1,406 @@
+{
+  "manuscript_id": "EMBOR-2026-64272-T",
+  "xml": "",
+  "docx": "",
+  "pdf": "",
+  "appendix": [],
+  "figures": [
+    {
+      "figure_label": "Figure 1",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 1. Identification of two internalin-like proteins\nin <em>P. gingivalis</em>. (A)</strong> Schematic diagrams illustrating\nthe domain architecture of PG0350 (InlA) and PG1374 (InlB). SP,\nSec-dependent signal peptide; β-s: β-strands; LRRs, leucine-rich\nrepeats; Ln, linker; CTD, C-terminal domain.\n<strong>(B)</strong> AlphaFold structural models of InlA (UniProt:\nQ7MX64) and InlB (UniProt: F5HDB6). N, N-terminus; C, C-terminus.\n<strong>(C)</strong> InlA and InlB are toxic to yeast cells. Yeast\nstrains expressing InlA (residues 26-484) or InlB (residues 24-428)\nunder a galactose-inducible promoter (PGAL1; pYES2/NTA2 plasmid) were\nserially diluted and spotted onto plates containing glucose or\ngalactose. Plates were incubated at 30 °C for 48 h prior to imaging.\nCtrl, empty vector control. <strong>(D, E)</strong> InlA and InlB are\ntoxic to mammalian cells. Codon-optimized InlA and InlB sequences were\ncloned into the pcDNA6.2 C-EmGFP-GW TOPO expression vector (Invitrogen)\nand transiently transfected into HEK293T cells. The expression of\nGFP-tagged InlA/InlB was confirmed by immunoblotting using anti-GFP\nantibody (D) and by fluorescence microscopy (E). Images were acquired 72\nh post-transfection. Arrows highlight round and shrinking cells. Scale\nbars, 20 μm. These experiments were repeated independently at least\nthree times and representative results from one experiment are\nshown.</p>",
+      "caption_title": "<strong>Figure 1. Identification of two internalin-like proteins\nin <em>P. gingivalis</em>. (A)</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 2",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 2. InlA and InlB bind TIGK cells through E-cadherin. (A, B)</strong> Co-immunoprecipitation (co-IP) assays. TIGK cell lysates were incubated with His-tagged recombinant InlA (rInlA) or InlB (rInlB; 20 μg/ml) for 3 hours at 4 °C, followed by incubation with Ni-NTA resin overnight. After washing (PBS, 0.05% Tween 20), bound proteins were eluted in Laemmli buffer and analyzed by immunoblotting with anti-His and anti-E-cadherin antibodies. <strong>(C)</strong> Co-IP assays using rInlB and recombinant Fc-E-cadherin (rE-cad).\n<strong>(D)</strong> Co-localization of InlA/InlB with E-cadherin. TIGK cells were incubated with FITC-labeled InlA or InlB (20 μg/ml, 2 h), followed by immunostaining with anti-E-cadherin and Alexa Fluor 594-conjugated secondary antibodies. Nuclei were counterstained with DAPI. Images were acquired using a Zeiss fluorescence microscope with a 63× oil-immersion objective. Scale bars: 20 μm.\n<strong>(E)</strong> E-cadherin knockdown efficiency in siRNA-transfected TIGK cells was confirmed by immunoblotting.\n<strong>(F)</strong> Binding of FITC-InlB to TIGK cells following E-cadherin knockdown was assessed by immuno-fluorescence microscopy.\nScale bars: 20 μm. <strong>(G)</strong> Quantification of FITC-InlB-positive cells was performed using ImageJ.\n<strong>(H)</strong> Binding and internalization of FITC-labeled InlA or InlB in RKO and MOC1 cells were analyzed by immunofluorescence staining.\nScale bars: 20 μm. All experiments were repeated independently at least three times and representative results from one experiment are shown.</p>",
+      "caption_title": "<strong>Figure 2. InlA and InlB bind TIGK cells through E-cadherin. (A, B)</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 3",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 3. InlB binds the extracellular domains of E-cadherin\nwith high affinity. (A)</strong> Schematic of E-cadherin showing five\nextracellular cadherin repeats (Ec1-5), transmembrane domain (TM), and\ncytoplasmic domain (CD). <strong>(B)</strong> SDS-PAGE of purified\nGST-tagged E-cadherin constructs: Ec1-5, Ec1, Ec1* (Ec1<sup>P16E</sup>),\nand Ec2-5. <strong>(C, D)</strong> SPR analysis of InlB and Ec1-5.\n<strong>(E, F)</strong> SPR analysis of InlB and Ec1. <strong>(G,\nH)</strong> SPR analysis of InlB and Ec2-5. <strong>(I, J)</strong> SPR\nanalysis of InlB and Ec1<sup>P16E</sup>. For this study, SPR was\nconducted using multiple concentrations (0.5, 1.0, 2.0, 4.0 and 5.0 μM)\nof recombinant InlB. The same experiment was conducted using recombinant\nInlA (Appendix Fig. S7, 8). Detail association (<em>K<sub>a</sub></em>)\nand dissociation (<em>K<sub>d</sub></em>) kinetics for InlA and InlB and\nE-cadherin proteins are summarized in Appendix Table S1. The equilibrium\ndissociation constant (<em>K<sub>D</sub></em>) was calculated for each\nbinding experiment. The unit for <em>K<sub>D</sub></em> is Molar (M).\nDetail <em>K<sub>D </sub></em>values for InlA and InlB are summarized in\nAppendix Table S1. SPR experiments were repeated independently at least\nfive times and representative results from one experiment are shown.\n<strong>(K)</strong> Structural modeling shows that Ec1 (cyan) interacts\nin the internal grove of InlB (tan, F5HDB6). <strong>(L)</strong>\nClose-up of the InlB-Ec1 interface highlights key residues and hydrogen\nbonds/salt bridges. Models of protein complexes between human E-cadherin\nEc1 domain and InlA/InlB were generated using AlphaFold3. Structures\nwere visualized, analyzed and figures were prepared using PyMol.</p>",
+      "caption_title": "<p><strong>Figure 3. InlB binds the extracellular domains of E-cadherin\nwith high affinity. (A)</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 4",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 4. InlB promotes migration and invasion of head and\nneck cancer cells. (A, B)</strong> Wound-healing assay assessing HN30\ncell migration following InlB treatment (20 μg/ml); representative\nimages at 0 and 24 h (A) and ImageJ quantification of wound area\nrelative to 0 h (B). Ctrl: PBS. Scale bars: 100 μm. <strong>(C,\nD)</strong> Transwell assays evaluating the effects of InlA or InlB on\nHN30 cell invasion after overnight treatment; invaded and migrated cells\nper field were quantified. Ctrl: PBS. Scale bars: 100 μm. <strong>(E,\nF)</strong> Transwell assays assessing HN30 cell migration following\nInlB or InlA treatment; wound area quantified using ImageJ. Ctrl: PBS.\nScale bars: 100 μm. <strong>(G, H)</strong> qRT-PCR analysis of ZEB1 and\nMMP9 expression in HN30 cells treated with InlB or InlA for 24 h. Ctrl:\nPBS. <strong>(I)</strong> Immunoblot analysis of ZEB1 and MMP9 protein\nlevels in HN30 cells following InlB or InlA treatment (24 h). Ctrl: PBS.\n<strong>(J)</strong> Immunoblot analysis of ZEB1 and MMP9 in HN30 cells\ntransfected with E-cadherin siRNA and treated with or without InlB or\nInlA. <strong>(K, L)</strong> qRT-PCR analysis of ZEB1 and MMP9\nexpression in HN30 cells transfected with E-cadherin siRNA and treated\nwith InlB. These experiments were repeated independently three times and\nrepresentative results from one experiment are shown.</p>",
+      "caption_title": "<p><strong>Figure 4. InlB promotes migration and invasion of head and\nneck cancer cells. (A, B)</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "J",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "K",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "L",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 5",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 5. JNK/p38 signaling mediates InlA/InlB-induced MMP9\nexpression. (A, B)</strong> InlB-induced MMP9 mRNA and protein\nexpression was suppressed by the JNK inhibitor SP600125. Ctrl: DMSO.\n<strong>(C, D)</strong> InlA/InlB-induced MMP9 protein levels were\ninhibited by NF-κB and p38 inhibitors. Ctrl: DMSO.\n<strong>(E)</strong> Activation of JNK/p38 signaling by InlA and InlB\nwas assessed by immunoblotting for phosphorylated JNK, p38, p65/NF-κB,\nand c-Jun. Ctrl: PBS. These experiments were repeated independently\nthree times and representative results from one experiment are\nshown.</p>",
+      "caption_title": "Figure 5. JNK/p38 signaling mediates InlA/InlB-induced MMP9\nexpression. (A, B)",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 6",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 6. InlA and InlB induce β-catenin phosphorylation and nuclear translocation. (A, B)</strong> β-catenin localization in TIGK cells treated with InlB (A) or InlA (B) for 2 h or overnight was assessed by immunofluorescence microscopy. Arrows highlight β-catenin in nuclear. Ctrl: PBS. Scale bars: 20 μm. <strong>(C)</strong> Immunoblot analysis of cytoplasmic and nuclear β-catenin levels in TIGK cells following overnight InlB treatment. Ctrl: PBS.\n<strong>(D)</strong> Immunoblot analysis of β-catenin phosphorylation in TIGK cells treated with InlB for 2 h or overnight. Ctrl: PBS. These experiments were repeated independently three times and representative results from one experiment are shown.</p>",
+      "caption_title": "<strong>Figure 6. InlA and InlB induce β-catenin phosphorylation and nuclear translocation. (A, B)</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 7",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 7. InlA and InlB enhance HNSCC cells resistance to\ncisplatin by inhibiting apoptosis. (A, B, C)</strong> CCK-8 assays\ndetermining the viability of TIGK (A), HN30 (B) and HSC3 (C) cells in\ncisplatin pretreated with or without InlA/InlB (2 h). Ctrl: PBS.\n<strong>(D)</strong> Crystal violet staining assessing cell viability\nfollowing cisplatin treatment in TIGK (top panel) and HN30 (lower panel)\ncells pretreated with or without InlA/InlB. Ctrl: PBS.\n<strong>(E)</strong> CCK-8 assays determining cisplatin IC₅₀ in TIGK\ncells pretreated with or without InlA/InlB (2 h). Ctrl: PBS. <strong>(F,\nG, H)</strong> Annexin V staining detecting cisplatin-induced apoptotic\ncells of TIGK and HN30 pretreated with or without InlA/InlB (2 h). Ctrl:\nPBS. <strong>(I)</strong> Immunoblot analysis of apoptosis-related\nproteins (cleaved caspase-3, cleaved caspase-9, cleaved PARP, Bcl-2, and\nBax) in cells treated with cisplatin with or without InlA/InlB\npretreatment. Ctrl: PBS. All experiments were repeated independently\nfive times and representative results from one experiment are shown.</p>",
+      "caption_title": "<strong>Figure 7. InlA and InlB enhance HNSCC cells resistance to\ncisplatin by inhibiting apoptosis. (A, B, C)</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    },
+    {
+      "figure_label": "Figure 8",
+      "img_files": [],
+      "sd_files": [],
+      "figure_caption": "<p><strong>Figure 8. InlA and InlB promote tumor metastasis in vivo. (A,\nB)</strong> Whole-body bioluminescence of mice was imaged using the IVIS\nsystem, and luciferase flux was quantified. Ctrl: PBS. <strong>(C,\nD)</strong> Bioluminescence in the lungs of each group was measured by\nIVIS, and total luciferase flux was quantified. Ctrl: PBS. <strong>(E,\nF)</strong> Lungs were collected, and average lung weight per group was\nmeasured and quantified. Ctrl: PBS. <strong>(G)</strong> Hematoxylin and\neosin (H&amp;E) staining showing lung tumor nodules. Ctrl: PBS.\n<strong>(H)</strong> Quantification of tumor nodule number per lung\nsection across groups. Ctrl: PBS. <strong>(I)</strong> Tumor nodule area\nrelative to total lung area was measured using ImageJ. Ctrl: PBS. This\nexperiment was repeated independently three times and representative\nresults from one experiment are shown.</p>",
+      "caption_title": "<strong>Figure 8. InlA and InlB promote tumor metastasis in vivo. (A,\nB)</strong>",
+      "panels": [
+        {
+          "panel_label": "A",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "B",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "C",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "D",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "E",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "F",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "G",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "H",
+          "panel_caption": "",
+          "sd_files": []
+        },
+        {
+          "panel_label": "I",
+          "panel_caption": "",
+          "sd_files": []
+        }
+      ]
+    }
+  ],
+  "data_availability": {
+    "section_text": "",
+    "data_sources": []
+  },
+  "all_captions": "<p><strong>Figure legends</strong></p>\n<p><strong>Figure 1. Identification of two internalin-like proteins\nin <em>P. gingivalis</em>. (A)</strong> Schematic diagrams illustrating\nthe domain architecture of PG0350 (InlA) and PG1374 (InlB). SP,\nSec-dependent signal peptide; β-s: β-strands; LRRs, leucine-rich\nrepeats; Ln, linker; CTD, C-terminal domain.\n<strong>(B)</strong> AlphaFold structural models of InlA (UniProt:\nQ7MX64) and InlB (UniProt: F5HDB6). N, N-terminus; C, C-terminus.\n<strong>(C)</strong> InlA and InlB are toxic to yeast cells. Yeast\nstrains expressing InlA (residues 26-484) or InlB (residues 24-428)\nunder a galactose-inducible promoter (PGAL1; pYES2/NTA2 plasmid) were\nserially diluted and spotted onto plates containing glucose or\ngalactose. Plates were incubated at 30 °C for 48 h prior to imaging.\nCtrl, empty vector control. <strong>(D, E)</strong> InlA and InlB are\ntoxic to mammalian cells. Codon-optimized InlA and InlB sequences were\ncloned into the pcDNA6.2 C-EmGFP-GW TOPO expression vector (Invitrogen)\nand transiently transfected into HEK293T cells. The expression of\nGFP-tagged InlA/InlB was confirmed by immunoblotting using anti-GFP\nantibody (D) and by fluorescence microscopy (E). Images were acquired 72\nh post-transfection. Arrows highlight round and shrinking cells. Scale\nbars, 20 μm. These experiments were repeated independently at least\nthree times and representative results from one experiment are\nshown.</p>\n<p><strong>Figure 2. InlA and InlB bind TIGK cells through E-cadherin.\n(A, B)</strong> Co-immunoprecipitation (co-IP) assays. TIGK cell lysates\nwere incubated with His-tagged recombinant InlA (rInlA) or InlB (rInlB;\n20 μg/ml) for 3 hours at 4 °C, followed by incubation with Ni-NTA resin\novernight. After washing (PBS, 0.05% Tween 20), bound proteins were\neluted in Laemmli buffer and analyzed by immunoblotting with anti-His\nand anti-E-cadherin antibodies. <strong>(C)</strong> Co-IP assays using\nrInlB and recombinant Fc-E-cadherin (rE-cad).\n<strong>(D)</strong> Co-localization of InlA/InlB with E-cadherin. TIGK\ncells were incubated with FITC-labeled InlA or InlB (20 μg/ml, 2 h),\nfollowed by immunostaining with anti-E-cadherin and Alexa Fluor\n594-conjugated secondary antibodies. Nuclei were counterstained with\nDAPI. Images were acquired using a Zeiss fluorescence microscope with a\n63× oil-immersion objective. Scale bars: 20 μm.\n<strong>(E)</strong> E-cadherin knockdown efficiency in\nsiRNA-transfected TIGK cells was confirmed by immunoblotting.\n<strong>(F)</strong> Binding of FITC-InlB to TIGK cells following\nE-cadherin knockdown was assessed by immuno-fluorescence microscopy.\nScale bars: 20 μm. <strong>(G)</strong> Quantification of\nFITC-InlB-positive cells was performed using ImageJ.\n<strong>(H)</strong> Binding and internalization of FITC-labeled InlA or\nInlB in RKO and MOC1 cells were analyzed by immunofluorescence staining.\nScale bars: 20 μm. All experiments were repeated independently at least\nthree times and representative results from one experiment are\nshown.</p>\n<p><strong>Figure 3. InlB binds the extracellular domains of E-cadherin\nwith high affinity. (A)</strong> Schematic of E-cadherin showing five\nextracellular cadherin repeats (Ec1-5), transmembrane domain (TM), and\ncytoplasmic domain (CD). <strong>(B)</strong> SDS-PAGE of purified\nGST-tagged E-cadherin constructs: Ec1-5, Ec1, Ec1* (Ec1<sup>P16E</sup>),\nand Ec2-5. <strong>(C, D)</strong> SPR analysis of InlB and Ec1-5.\n<strong>(E, F)</strong> SPR analysis of InlB and Ec1. <strong>(G,\nH)</strong> SPR analysis of InlB and Ec2-5. <strong>(I, J)</strong> SPR\nanalysis of InlB and Ec1<sup>P16E</sup>. For this study, SPR was\nconducted using multiple concentrations (0.5, 1.0, 2.0, 4.0 and 5.0 μM)\nof recombinant InlB. The same experiment was conducted using recombinant\nInlA (Appendix Fig. S7, 8). Detail association (<em>K<sub>a</sub></em>)\nand dissociation (<em>K<sub>d</sub></em>) kinetics for InlA and InlB and\nE-cadherin proteins are summarized in Appendix Table S1. The equilibrium\ndissociation constant (<em>K<sub>D</sub></em>) was calculated for each\nbinding experiment. The unit for <em>K<sub>D</sub></em> is Molar (M).\nDetail <em>K<sub>D </sub></em>values for InlA and InlB are summarized in\nAppendix Table S1. SPR experiments were repeated independently at least\nfive times and representative results from one experiment are shown.\n<strong>(K)</strong> Structural modeling shows that Ec1 (cyan) interacts\nin the internal grove of InlB (tan, F5HDB6). <strong>(L)</strong>\nClose-up of the InlB-Ec1 interface highlights key residues and hydrogen\nbonds/salt bridges. Models of protein complexes between human E-cadherin\nEc1 domain and InlA/InlB were generated using AlphaFold3. Structures\nwere visualized, analyzed and figures were prepared using PyMol.</p>\n<p><strong>Figure 4. InlB promotes migration and invasion of head and\nneck cancer cells. (A, B)</strong> Wound-healing assay assessing HN30\ncell migration following InlB treatment (20 μg/ml); representative\nimages at 0 and 24 h (A) and ImageJ quantification of wound area\nrelative to 0 h (B). Ctrl: PBS. Scale bars: 100 μm. <strong>(C,\nD)</strong> Transwell assays evaluating the effects of InlA or InlB on\nHN30 cell invasion after overnight treatment; invaded and migrated cells\nper field were quantified. Ctrl: PBS. Scale bars: 100 μm. <strong>(E,\nF)</strong> Transwell assays assessing HN30 cell migration following\nInlB or InlA treatment; wound area quantified using ImageJ. Ctrl: PBS.\nScale bars: 100 μm. <strong>(G, H)</strong> qRT-PCR analysis of ZEB1 and\nMMP9 expression in HN30 cells treated with InlB or InlA for 24 h. Ctrl:\nPBS. <strong>(I)</strong> Immunoblot analysis of ZEB1 and MMP9 protein\nlevels in HN30 cells following InlB or InlA treatment (24 h). Ctrl: PBS.\n<strong>(J)</strong> Immunoblot analysis of ZEB1 and MMP9 in HN30 cells\ntransfected with E-cadherin siRNA and treated with or without InlB or\nInlA. <strong>(K, L)</strong> qRT-PCR analysis of ZEB1 and MMP9\nexpression in HN30 cells transfected with E-cadherin siRNA and treated\nwith InlB. These experiments were repeated independently three times and\nrepresentative results from one experiment are shown.</p>\n<p><strong>Figure 5. JNK/p38 signaling mediates InlA/InlB-induced MMP9\nexpression. (A, B)</strong> InlB-induced MMP9 mRNA and protein\nexpression was suppressed by the JNK inhibitor SP600125. Ctrl: DMSO.\n<strong>(C, D)</strong> InlA/InlB-induced MMP9 protein levels were\ninhibited by NF-κB and p38 inhibitors. Ctrl: DMSO.\n<strong>(E)</strong> Activation of JNK/p38 signaling by InlA and InlB\nwas assessed by immunoblotting for phosphorylated JNK, p38, p65/NF-κB,\nand c-Jun. Ctrl: PBS. These experiments were repeated independently\nthree times and representative results from one experiment are\nshown.</p>\n<p><strong>Figure 6. InlA and InlB induce β-catenin phosphorylation and\nnuclear translocation. (A, B)</strong> β-catenin localization in TIGK\ncells treated with InlB (A) or InlA (B) for 2 h or overnight was\nassessed by immunofluorescence microscopy. Arrows highlight β-catenin in\nnuclear. Ctrl: PBS. Scale bars: 20 μm. <strong>(C)</strong> Immunoblot\nanalysis of cytoplasmic and nuclear β-catenin levels in TIGK cells\nfollowing overnight InlB treatment. Ctrl: PBS.\n<strong>(D)</strong> Immunoblot analysis of β-catenin phosphorylation in\nTIGK cells treated with InlB for 2 h or overnight. Ctrl: PBS. These\nexperiments were repeated independently three times and representative\nresults from one experiment are shown.</p>\n<p><strong>Figure 7. InlA and InlB enhance HNSCC cells resistance to\ncisplatin by inhibiting apoptosis. (A, B, C)</strong> CCK-8 assays\ndetermining the viability of TIGK (A), HN30 (B) and HSC3 (C) cells in\ncisplatin pretreated with or without InlA/InlB (2 h). Ctrl: PBS.\n<strong>(D)</strong> Crystal violet staining assessing cell viability\nfollowing cisplatin treatment in TIGK (top panel) and HN30 (lower panel)\ncells pretreated with or without InlA/InlB. Ctrl: PBS.\n<strong>(E)</strong> CCK-8 assays determining cisplatin IC₅₀ in TIGK\ncells pretreated with or without InlA/InlB (2 h). Ctrl: PBS. <strong>(F,\nG, H)</strong> Annexin V staining detecting cisplatin-induced apoptotic\ncells of TIGK and HN30 pretreated with or without InlA/InlB (2 h). Ctrl:\nPBS. <strong>(I)</strong> Immunoblot analysis of apoptosis-related\nproteins (cleaved caspase-3, cleaved caspase-9, cleaved PARP, Bcl-2, and\nBax) in cells treated with cisplatin with or without InlA/InlB\npretreatment. Ctrl: PBS. All experiments were repeated independently\nfive times and representative results from one experiment are shown.</p>\n<p><strong>Figure 8. InlA and InlB promote tumor metastasis in vivo. (A,\nB)</strong> Whole-body bioluminescence of mice was imaged using the IVIS\nsystem, and luciferase flux was quantified. Ctrl: PBS. <strong>(C,\nD)</strong> Bioluminescence in the lungs of each group was measured by\nIVIS, and total luciferase flux was quantified. Ctrl: PBS. <strong>(E,\nF)</strong> Lungs were collected, and average lung weight per group was\nmeasured and quantified. Ctrl: PBS. <strong>(G)</strong> Hematoxylin and\neosin (H&amp;E) staining showing lung tumor nodules. Ctrl: PBS.\n<strong>(H)</strong> Quantification of tumor nodule number per lung\nsection across groups. Ctrl: PBS. <strong>(I)</strong> Tumor nodule area\nrelative to total lung area was measured using ImageJ. Ctrl: PBS. This\nexperiment was repeated independently three times and representative\nresults from one experiment are shown.</p>\n<p><strong>Expanded View Figure Legends</strong></p>\n<p><strong>Figure EV1. InlA and InlB are secreted via the T9SS and\ncontribute to <em>P. gingivalis</em> invasion. (A)</strong> Immunoblot\ndetection of InlA in whole-cell lysates (top) and culture supernatants\n(bottom) from WT W83, Δ<em>inlA</em>, complemented (cΔ<em>inlA</em>),\nand Δ<em>porT</em> strains using anti-InlA antibody (αInlA).\n<strong>(B)</strong> Immunoblot detection of InlB in whole-cell lysates\n(top) and culture supernatants (bottom) from WT, Δ<em>inlB</em>,\ncomplemented (cΔ<em>inlB</em>), and Δ<em>porT</em> strains using\nanti-InlB antibody (αInlB). <strong>(C)</strong> <em>P. gingivalis</em>\ninvades TIGK cells in a dose-dependent manner. TIGK cells were infected\nwith BCECF-AM-labeled or unlabeled <em>P. gingivalis</em> W83 at MOI\n100, 200 for 1 and 2 h at 37°C under anaerobic conditions. After trypan\nblue quenching of extracellular fluorescence, bacterial internalization\nwas quantified by flow cytometry. Percent invasion represents the\nproportion of cells containing internalized bacteria among 10,000\nevents. <strong>(D, E)</strong> InlA and InlB contribute to <em>P.\ngingivalis</em> invasion of host cells. TIGK cells were infected with\nBCECF-AM-labeled <em>P. gingivalis</em> W83, <em>ΔinlA</em>\n<strong>(D)</strong> or <em>ΔinlB</em> <strong>(E)</strong> mutants, and\ntheir respective complemented strains (<em>cΔinlA, cΔinlB</em>) at MOI\n100 for 1 h at 37°C under anaerobic conditions. Percent invasion was\nmeasured as described in <strong>(C)</strong>. Data are presented as the\nmean ± SD from three independent experiments performed in duplicate.\nStatistical analysis was performed using one-way ANOVA with Tukey's post\nhoc test.</p>\n<p><strong>Figure EV2. InlA and InlB bind epithelial cells and promote\nmigration and invasion. (A)</strong> TIGK cells were incubated with\nFITC-labeled InlA (20 μg/ml, 2 h), and binding was assessed by\nimmunofluorescence microscopy. PBS (Control, Ctrl). Scale bars: 20 μm.\n<strong>(B, C)</strong> Wound-healing assay evaluating the effects of\nInlA on TIGK cell migration; wound closure was quantified using ImageJ.\nCtrl: PBS. Scale bars: 100 μm. <strong>(D)</strong> TIGK cells were\nincubated with FITC-labeled InlB (20 μg/ml, 2 h), and binding was\nanalyzed by immunofluorescence. Ctrl: PBS. Scale bars: 20 μm.\n<strong>(E, F)</strong> Wound-healing assay assessing the effects of\nInlB on TIGK cell migration; wound closure quantified by ImageJ. Ctrl:\nPBS. Scale bars: 100 μm. <strong>(G)</strong> Dose-dependent effects of\nInlB on TIGK cell migration measured by wound-healing assay. <strong>(H,\nI)</strong> Transwell assays assessing the effects of InlA on TIGK cell\nmigration and invasion; invaded and migrated cells per field were\nquantified. Ctrl: PBS. Scale bars: 100 μm. <strong>(J,\nK)</strong> Transwell assays evaluating the effects of InlB on TIGK cell\nmigration and invasion; invaded and migrated cells per field were\nquantified. Ctrl: PBS. Scale bars: 100 μm. All experiments were repeated\nindependently at least three times and representative results from one\nexperiment are shown.</p>\n<p><strong>Figure EV3. Detection of InlA in HNSCC patient tissues using\nimmunohistochemistry (IHC). (A)</strong> Diagram illustrating the tissue\nmicroarray containing different tissues from HNSCC patients. Arrows are\ntwo representative IHC positive specimens (B5 and E6) which are shown in\n(B). <strong>(B)</strong> Representative IHC positive images stained\nwith anti-InlA antibody. <strong>(C)</strong> Representative IHC\nnegative images stained with anti-PLA2, an antibody against <em>P.\ngingivalis</em> phospholipase A2 (PLA2, PG1809). Sections were incubated\novernight at 4 °C with anti-InlB or anti-PLA2 (generated in-house; 1:300\ndilution). Signals were detected using a biotinylated secondary antibody\nand streptavidin-HRP, followed by visualization with DAB\n(3,3′-diaminobenzidine) and counterstained with Mayer’s hematoxylin.\nBrown DAB chromogen indicates bacterial antigen positivity. +++ H-score\n≥150; ++ H-score ≥80; and + H-score ≥ 50. This experiment was repeated\nindependently twice and representative results from one experiment are\nshown.</p>\n<p><strong>Figure EV4. Mechanistic model of <em>P. gingivalis</em> InlA\nand InlB in metastasis and drug resistance.</strong> InlA and InlB bind\nE-cadherin, triggering β-catenin stabilization and nuclear\ntranslocation, which induces EMT transcription factors (Slug, Twist,\nZEB1) and MMP9, promoting metastasis. Concurrently,\ninternalin-E-cadherin engagement activates downstream ROCK, p38 and JNK\nMAPK signaling, attenuating cisplatin-induced apoptosis through\nupregulation of Bcl-2 and suppression of Bax, ultimately conferring\nchemoresistance. These coordinated pathways mechanistically link <em>P.\ngingivalis</em> infection to cancer progression and therapeutic\nresistance. Green arrows denote activation; red blocked arrows denote\ninhibition.</p>"
+}
