@@ -72,6 +72,11 @@
                     "panel_caption": "",
                     "panel_label": "J",
                     "sd_files":[]
+                  },
+                  {
+                    "panel_caption": "",
+                    "panel_label": "K",
+                    "sd_files":[]
                   }
             ]
           },
@@ -389,6 +394,36 @@
               {
                 "panel_caption": "",
                 "panel_label": "B",
+                "sd_files":[
+                ]
+              },
+              {
+                "panel_caption": "",
+                "panel_label": "C",
+                "sd_files":[
+                ]
+              },
+              {
+                "panel_caption": "",
+                "panel_label": "D",
+                "sd_files":[
+                ]
+              },
+              {
+                "panel_caption": "",
+                "panel_label": "E",
+                "sd_files":[
+                ]
+              },
+              {
+                "panel_caption": "",
+                "panel_label": "F",
+                "sd_files":[
+                ]
+              },
+              {
+                "panel_caption": "",
+                "panel_label": "G",
                 "sd_files":[
                 ]
               }
