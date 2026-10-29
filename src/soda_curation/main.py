@@ -13,7 +13,6 @@ from ._main_utils import (
     calculate_hallucination_score,
     cleanup_extract_dir,
     finalize_figure_output,
-    repair_empty_panel_markers,
     setup_extract_dir,
     sort_panels_by_label,
     validate_paths,
@@ -341,19 +340,6 @@ def main(zip_path: str, config_path: str, output_path: Optional[str] = None) -> 
                 manuscript_content,
                 threshold=caption_verification_threshold,
             ),
-            run_id=run_id,
-            critical=False,
-            recoverable_failures=recoverable_failures,
-        )
-
-        # Repair phantom panel markers (e.g. stray "A." / "G." lines): drop
-        # empty-caption panels, relabel survivors sequentially A,B,C,... and
-        # rewrite the leading markers inside figure_caption to match. Runs
-        # BEFORE match_caption_panel so the panel-label catalog used by
-        # object-detection alignment is already in its corrected form.
-        _execute_pipeline_step(
-            step_name="repair_empty_panel_markers",
-            runner=lambda: repair_empty_panel_markers(zip_structure),
             run_id=run_id,
             critical=False,
             recoverable_failures=recoverable_failures,
