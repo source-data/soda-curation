@@ -28,7 +28,7 @@ default: &default
     # 2) Extract Individual Captions
     ##########################################################
     extract_caption_title:
-      model: "gpt-5.6-sol"
+      model: "gpt-6-luna"
       prompts:
           system: |
             # EXTRACTIVE task: copy figure caption verbatim from HTML input.
@@ -43,7 +43,7 @@ default: &default
             # Reinforces extractive one-to-one HTML copy.
 
     extract_panel_sequence:
-      model: "gpt-5.6-sol"
+      model: "gpt-6-luna"
       prompts:
           system: |
             # System prompt for panel sequence extraction

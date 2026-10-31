@@ -9,6 +9,7 @@ pricing = {
     "gpt-4o": {"input_tokens": 5.00, "output_tokens": 10.00},
     "gpt-4o-mini": {"input_tokens": 0.15, "output_tokens": 0.60},
     "gpt-6-astra": {"input_tokens": 10.00, "output_tokens": 50.00},
+    "gpt-6-luna": {"input_tokens": 0.10, "output_tokens": 0.50},
     # Before "gpt-5": prefix matching takes the first key that fits.
     "gpt-5.6-sol": {"input_tokens": 4.00, "output_tokens": 20.00},
     "gpt-5": {"input_tokens": 5.00, "output_tokens": 15.00},

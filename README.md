@@ -286,7 +286,7 @@ default:
           ...
 
     extract_caption_title:
-      model: "gpt-5.6-sol"
+      model: "gpt-6-luna"
       prompts:
         system: |
           ...
@@ -294,7 +294,7 @@ default:
           ...
 
     extract_panel_sequence:
-      model: "gpt-5.6-sol"
+      model: "gpt-6-luna"
       prompts:
         system: |
           ...
@@ -364,8 +364,7 @@ The soda-curation pipeline processes scientific manuscripts through the followin
     - Figure label (e.g., "Figure 1")
     - Caption title (main descriptive heading)
     - Complete caption text with panel descriptions
-  - Identifies panel labels (A, B, C, etc.) within each caption
-  - Ensures panel labels follow a monotonically increasing sequence
+  - Identifies panel labels (A, B, C, etc.) within each caption: grouped panels and ranges ("(A–D)") get every panel with the shared text, sub-panels (A, A') collapse into one, captions without single-character labels become a single panel A
   - Associates each panel with its specific description from the caption
 
 ### 4. Data Availability Analysis
@@ -966,6 +965,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, please open an issue on the GitHub repository. We appreciate your interest and contributions to the soda-curation project!
 
 ## Changelog
+
+### 3.9.0 (2026-10-29)
+- **Repair step removed**: `repair_empty_panel_markers` deleted every panel with an empty caption and relabelled the rest, which dropped real panels of grouped labels ("(C, D)") and shifted captions onto the wrong images (e.g. EMBOR-2026-64272-T). On the caption benchmark it hurt 11 figure runs and helped none.
+- **Panel prompt**: `extract_panel_sequence` rewritten: grouped panels and ranges share the group's text instead of getting empty captions, sub-panels collapse, unlabelled figures become a single panel A. Benchmark exact panel match 0.90 → 0.99.
+- **Caption models**: `extract_caption_title` and `extract_panel_sequence` use `gpt-6-luna` (was `gpt-5.6-sol`), default reasoning effort: same benchmark accuracy at about 1/30 of the cost. Other steps are unchanged.
+- **Cost tracking**: `gpt-6-luna` priced.
 
 ### 3.8.3 (2026-10-28)
 - **Remove hardcoded char fixes**: no longer necessary after upgrade from Python 3.9 (did not read correct filenames from nested .zip) to Python 3.12 in soda-curation 3.4.0.

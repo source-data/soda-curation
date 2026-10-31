@@ -91,7 +91,7 @@ default: &default
     # 2) Extract Individual Captions Step
     ##########################################################
     extract_caption_title:
-      model: "gpt-5.6-sol"
+      model: "gpt-6-luna"
       prompts:
           system: |
             You are an AI assistant specializing in EXTRACTIVE copying of figure captions from scientific manuscripts.
@@ -137,42 +137,27 @@ default: &default
             Verify with the verification tool that `figure_caption` and `caption_title` are exact substrings of the input HTML before returning.
 
     extract_panel_sequence:
-      model: "gpt-5.6-sol"
+      model: "gpt-6-luna"
       prompts:
           system: |
-            You extract figure panel structure from the figure caption text ONLY
-            Output JSON with one object per panel, in strict left-to-right reading order of the caption.
+            Extract all panels, their labels, and their captions from a figure caption.
+            A panel label must be a single letter or number.
+            A panel caption must be a verbatim quote from the figure caption, or multiple verbatim quotes joined together. Multiple panels may share the same caption, or have overlapping captions.
 
-            Panel labels
-            - Collect every distinct panel tag mentioned in the caption: (A), (B, C), B and C, (H, I), etc.
-
-            Full contiguous run (critical)
-            - Let L_min and L_max be the minimum and maximum panel labels under the caption’s scheme (e.g. if the caption mentions A and J, L_min=A and L_max=J).
-            - You MUST emit exactly one entry for every label from L_min through L_max inclusive, with no omissions, even if some letters never appear literally in the text.
-            - Order panels by that full sequence (e.g. A,B,C,…,J), not only by order of first mention.
-
-            panel_caption
-            - For each panel, set "panel_caption" to the VERBATIM substring of the caption that describes that panel only, when the caption clearly assigns text to that letter.
-            - The caption is HTML: panel_caption values must be exact HTML substrings of the caption, preserving all tags, attributes, and entities character-for-character. Never strip or reformat HTML markup.
-            - If the caption groups multiple letters in one sentence, split the text: assign each phrase/clause to the panel it clearly belongs to; if a letter is only implied by the contiguous run, use an empty string "" for that panel’s "panel_caption".
-            - Never invent facts; never paraphrase outside copying contiguous spans from the caption.
-
-            Return exactly this shape:
-            {
-              "figure_label": "Figure X",
-              "panels": [
-                {"panel_label": "A", "panel_caption": "..."},
-                {"panel_label": "B", "panel_caption": "..."}
-              ]
-            }
+            Special cases:
+            - No panel labels mentioned (schematic), or none of them are single characters ("Left/right panel"): return a single panel, label "A", panel caption = figure caption.
+            - Grouped panels, panel ranges (A-D): include all panels in the range (A, B, C, D), give each one the shared text as caption.
+            - Sub-panels (eg A, A', A''): collapse into a single panel (A).
+            - Typos, abbreviations, HTML/other markup: do not fix, do not expand, do not remove. Verbatim quotes only.
+            - Panel caption is not contiguous ("(A, B) line plots showing (A) runtime (B) accessibility"): assemble single caption from multiple quotes (A: line plots showing runtime; B: line plots showing accessibility).
 
           user: |
-            Figure: $figure_label
+            Figure: `$figure_label`
 
-            Caption (only source of truth):
+            Caption:
+            ```
             $figure_caption
-
-            Emit the full contiguous panel list and verbatim (or empty) panel_captions as specified in the system message.
+            ```
 
     ##########################################################
     extract_data_sources:
