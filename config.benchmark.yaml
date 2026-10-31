@@ -6,6 +6,14 @@ ground_truth_dir: "/app/data/ground_truth"
 manuscript_dir: "/app/data/archives"
 prompts_source: "/app/config.dev.yaml"
 
+# Prompt variants to compare, as name: full pipeline config. Each test case runs
+# once per variant. "prod" is cached without a variant suffix; other variants
+# are cached under their name, so rename the variant (or bump cache.version)
+# after editing its file. Omit to run prompts_source only.
+# prompt_variants:
+#   prod: "/app/config.dev.yaml"
+#   my-variant: "/app/path/to/variant.yaml"
+
 # Test selection
 enabled_tests:
   # - extract_sections
@@ -18,11 +26,11 @@ enabled_tests:
 providers:
   openai:
     models:
-      - name: "gpt-4o"
-        temperatures: [1.0, 0.5]
+      - name: "gpt-6-luna"  # config.dev.yaml caption steps
+        temperatures: [1.0]
         top_p: [1.0]
-      - name: "gpt-4o-mini"
-        temperatures: [1.0, 0.5]
+      - name: "gpt-5.6-sol"  # config.dev.yaml non-caption steps
+        temperatures: [1.0]
         top_p: [1.0]
 
 # Test run configuration  
@@ -31,6 +39,6 @@ test_runs:
   manuscripts: "all"
 
 cache:
-  version: "1.2.0"  # Increment this when making significant changes
+  version: "2026-10-29"  # Increment this when making significant changes
 
 # Results configuration

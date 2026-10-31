@@ -87,24 +87,30 @@ def get_test_cases() -> Generator[Dict[str, Any], None, None]:
                         dev_config = yaml.safe_load(f)
                     default_config = dev_config.get("default", {})
 
+                    variants = config.get_prompt_variants().items()
                     for test_name in config.get_enabled_tests():
-                        for msid in config.get_manuscript_ids():
-                            for run in range(config.get_test_runs().get("n_runs", 1)):
-                                yield {
-                                    "test_name": test_name,
-                                    "msid": msid,
-                                    "provider": provider,
-                                    "model": model["name"],
-                                    "temperature": temp,
-                                    "top_p": top_p,
-                                    "frequency_penalty": default_config.get(
-                                        "frequency_penalty", 0.0
-                                    ),
-                                    "presence_penalty": default_config.get(
-                                        "presence_penalty", 0.0
-                                    ),
-                                    "run": run,
-                                }
+                        for variant, prompts_source in variants:
+                            for msid in config.get_manuscript_ids():
+                                for run in range(
+                                    config.get_test_runs().get("n_runs", 1)
+                                ):
+                                    yield {
+                                        "test_name": test_name,
+                                        "msid": msid,
+                                        "provider": provider,
+                                        "model": model["name"],
+                                        "temperature": temp,
+                                        "top_p": top_p,
+                                        "frequency_penalty": default_config.get(
+                                            "frequency_penalty", 0.0
+                                        ),
+                                        "presence_penalty": default_config.get(
+                                            "presence_penalty", 0.0
+                                        ),
+                                        "prompt_variant": variant,
+                                        "prompts_source": prompts_source,
+                                        "run": run,
+                                    }
 
 
 def pytest_generate_tests(metafunc):

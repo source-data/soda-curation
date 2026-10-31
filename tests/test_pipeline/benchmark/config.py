@@ -9,6 +9,10 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
+# Variant name used when no prompt_variants are configured. Its results are
+# cached without a variant suffix, so pre-existing caches stay valid.
+DEFAULT_PROMPT_VARIANT = "prod"
+
 
 class BenchmarkConfig:
     """Handle loading and accessing benchmark configuration."""
@@ -65,6 +69,16 @@ class BenchmarkConfig:
     def get_prompts_source(self) -> str:
         """Get path to prompts source file."""
         return self._config.get("prompts_source", "/app/config.dev.yaml")
+
+    def get_prompt_variants(self) -> Dict[str, str]:
+        """Get prompt variants to benchmark, as {name: config file}.
+
+        Defaults to a single variant named DEFAULT_PROMPT_VARIANT using
+        prompts_source.
+        """
+        return self._config.get("prompt_variants") or {
+            DEFAULT_PROMPT_VARIANT: self.get_prompts_source()
+        }
 
     def get_manuscript_ids(self) -> List[str]:
         """Get list of manuscript IDs to test."""

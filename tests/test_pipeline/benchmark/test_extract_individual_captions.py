@@ -1,8 +1,10 @@
 """Figure captions extraction benchmark tests."""
 
+import dataclasses
 import logging
 import time
-from typing import Any, Dict
+import uuid
+from typing import Any, Dict, List
 
 import yaml
 
@@ -19,6 +21,29 @@ from src.soda_curation.pipeline.step_config import resolve_step_config
 from .base_runner import BaseBenchmarkRunner
 
 logger = logging.getLogger(__name__)
+
+
+def _panel_labels(figure: Any) -> List[str]:
+    """Panel labels of a figure whose panels may be dicts or Panel objects."""
+    labels = []
+    for p in figure.panels if figure else []:
+        if isinstance(p, dict):
+            labels.append(p.get("panel_label", ""))
+        else:
+            labels.append(getattr(p, "panel_label", ""))
+    return labels
+
+
+def _panel_scores(expected: List[str], actual: List[str]) -> Dict[str, float]:
+    """Recall of expected labels (``panel_sequence``) and exact set match (``panel_exact``)."""
+    expected_set, actual_set = set(expected), set(actual)
+    recall = 1.0
+    if expected_set:
+        recall = len(expected_set & actual_set) / len(expected_set)
+    return {
+        "panel_sequence": recall,
+        "panel_exact": float(expected_set == actual_set),
+    }
 
 
 class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
@@ -48,8 +73,11 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
         try:
             start_time = time.time()
 
-            # Load prompts from development configuration
-            with open(self.config["prompts_source"]) as f:
+            # Load prompts from the test case's prompt variant
+            prompts_source = test_case.get(
+                "prompts_source", self.config["prompts_source"]
+            )
+            with open(prompts_source) as f:
                 dev_config = yaml.safe_load(f)
 
             # Get the default configuration which contains our pipeline setup
@@ -58,25 +86,23 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                 raise ValueError("No pipeline configuration found in default profile")
 
             provider = test_case["provider"]
-            caption_prompts = resolve_step_config(
-                pipeline_config["extract_caption_title"]
-            )["prompts"]
-            panel_prompts = resolve_step_config(
-                pipeline_config["extract_panel_sequence"]
-            )["prompts"]
+            # A per-test-case nonce at the start of every system prompt keeps
+            # test cases from reading each other's prompt cache (runs 1..n would
+            # otherwise repeat run 0's prompts exactly), so token usage matches
+            # prod, where each manuscript is processed once.
+            nonce = f"Request {uuid.uuid4().hex}.\n\n"
+            steps = {}
+            for step_name in ("extract_caption_title", "extract_panel_sequence"):
+                step = resolve_step_config(pipeline_config[step_name])
+                steps[step_name] = {
+                    "model": test_case["model"],
+                    "prompts": {
+                        **step["prompts"],
+                        "system": nonce + step["prompts"]["system"],
+                    },
+                }
 
-            extractor_config = {
-                "pipeline": {
-                    "extract_caption_title": {
-                        "model": test_case["model"],
-                        "prompts": caption_prompts,
-                    },
-                    "extract_panel_sequence": {
-                        "model": test_case["model"],
-                        "prompts": panel_prompts,
-                    },
-                },
-            }
+            extractor_config = {"pipeline": steps}
 
             # Create prompt handler
             prompt_handler = PromptHandler(extractor_config["pipeline"])
@@ -146,34 +172,7 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                     # AI extracted values
                     actual_caption = extracted_figure.figure_caption
                     actual_title = extracted_figure.caption_title
-                    actual_caption = extracted_figure.figure_caption
-                    actual_title = extracted_figure.caption_title
-
-                    # Fix: Handle both dictionary and object types for panels
-                    actual_panels = []
-                    for p in extracted_figure.panels:
-                        if isinstance(p, dict):
-                            actual_panels.append(p.get("panel_label", ""))
-                        else:
-                            # Safely access the panel_label attribute
-                            try:
-                                actual_panels.append(p.panel_label)
-                            except AttributeError:
-                                # If it's neither a dict nor has panel_label attribute
-                                logger.warning(
-                                    f"Panel object {p} has no panel_label attribute"
-                                )
-                                actual_panels.append("")
-
-                    # Calculate score for panel sequence
-                    panel_sequence_score = 1.0
-                    if expected_panels:
-                        missing_panels = len(set(expected_panels)) - len(
-                            set(expected_panels).intersection(set(actual_panels))
-                        )
-                        panel_sequence_score = 1.0 - (
-                            missing_panels / len(set(expected_panels))
-                        )
+                    actual_panels = _panel_labels(extracted_figure)
 
                     # Add to results for the DataFrame
                     results.append(
@@ -198,17 +197,23 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                         )
                     )
 
-                    results.append(
-                        self.fill_results_bag(
-                            test_case={**test_case, "duration_ms": duration_ms},
-                            result={"input": ground_truth["all_captions"]},
-                            actual_output=str(actual_panels),
-                            expected_output=str(expected_panels),
-                            figure_label=figure_label,
-                            task="panel_sequence",
-                            score=panel_sequence_score,
+                    # Raw extractor output only. Pipeline post-processing steps
+                    # are replayed offline on extracted_structure by
+                    # scripts/analyze_panel_steps.py.
+                    for task, score in _panel_scores(
+                        expected_panels, actual_panels
+                    ).items():
+                        results.append(
+                            self.fill_results_bag(
+                                test_case={**test_case, "duration_ms": duration_ms},
+                                result={"input": ground_truth["all_captions"]},
+                                actual_output=",".join(actual_panels),
+                                expected_output=",".join(expected_panels),
+                                figure_label=figure_label,
+                                task=task,
+                                score=score,
+                            )
                         )
-                    )
 
             return {
                 "input": ground_truth["all_captions"],
@@ -238,13 +243,8 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
                         for fig in extracted_zip_structure.figures
                     ]
                 },
-                "cost": (
-                    extracted_zip_structure.cost.extract_individual_captions.model_dump()
-                    if hasattr(
-                        extracted_zip_structure.cost.extract_individual_captions,
-                        "model_dump",
-                    )
-                    else {}
+                "cost": dataclasses.asdict(
+                    extracted_zip_structure.cost.extract_individual_captions
                 ),
             }
 

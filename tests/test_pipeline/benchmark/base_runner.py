@@ -14,6 +14,7 @@ from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import
 )
 
 from ..metrics import get_metrics_for_task
+from .config import DEFAULT_PROMPT_VARIANT
 
 logger = logging.getLogger(__name__)
 
@@ -32,11 +33,13 @@ class BaseBenchmarkRunner:
 
     def get_cache_path(self, test_case: Dict[str, Any]) -> Path:
         """Get path for cached result with version info."""
+        variant = test_case.get("prompt_variant", DEFAULT_PROMPT_VARIANT)
+        suffix = "" if variant == DEFAULT_PROMPT_VARIANT else f"_{variant}"
         return (
             self.cache_dir
             / f"{test_case['test_name']}_{test_case['msid']}_{test_case['provider']}_"
             f"{test_case['model']}_{test_case['temperature']}_{test_case['top_p']}_"
-            f"{test_case['run']}_{self.cache_version}.json"
+            f"{test_case['run']}_{self.cache_version}{suffix}.json"
         )
 
     def get_cached_result(self, cache_path: Path) -> Optional[Dict[str, Any]]:
@@ -141,6 +144,9 @@ class BaseBenchmarkRunner:
                 "presence_penalty": test_case.get("presence_penalty", 0.0),
                 "seed": test_case["run"],  # Using run as seed
                 "provider": test_case["provider"],
+                "prompt_variant": test_case.get(
+                    "prompt_variant", DEFAULT_PROMPT_VARIANT
+                ),
             }
 
             if score is not None:
