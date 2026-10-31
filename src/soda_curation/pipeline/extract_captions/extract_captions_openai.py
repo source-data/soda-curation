@@ -10,7 +10,7 @@ import openai
 from ..ai_observability import summarize_text
 from ..cost_tracking import update_token_usage
 from ..manuscript_structure.manuscript_structure import TokenUsage, ZipStructure
-from ..openai_utils import call_openai
+from ..openai_utils import call_openai, supports_explicit_prompt_cache
 from ..step_config import resolve_step_config
 from .extract_captions_base import (
     CaptionExtraction,
@@ -55,25 +55,43 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             },
         )
 
+        # The legends section goes in its own message, before the figure-specific
+        # prompt, so it is a prefix shared by all figures of the manuscript.
         prompts = self.prompt_handler.get_prompt(
             step="extract_caption_title",
-            variables={
-                "figure_label": figure_label,
-                "figure_captions": all_captions,
-            },
+            variables={"figure_label": figure_label},
         )
+        if "$figure_captions" in prompts["user"]:
+            raise ValueError(
+                "extract_caption_title user prompt must not contain $figure_captions; "
+                "the legends are sent as a separate message before it."
+            )
 
         system_prompt = prompts["system"]
         if "json" not in system_prompt.lower():
             system_prompt += "\n\nProvide your response in JSON format."
 
+        step = resolve_step_config(self.config["pipeline"]["extract_caption_title"])
+        model_ = step["model"]
+
+        # Without an explicit breakpoint the cache entry ends at the last user
+        # message, which differs per figure, so the legends would never be reused.
+        extra_body = None
+        legends_message = {"role": "user", "content": all_captions}
+        if supports_explicit_prompt_cache(model_):
+            legends_message["content"] = [
+                {
+                    "type": "text",
+                    "text": all_captions,
+                    "prompt_cache_breakpoint": {"mode": "explicit"},
+                }
+            ]
+            extra_body = {"prompt_cache_options": {"mode": "explicit"}}
+
         messages = [
             {"role": "system", "content": system_prompt},
+            legends_message,
             {"role": "user", "content": prompts["user"]},
-        ]
-
-        model_ = resolve_step_config(self.config["pipeline"]["extract_caption_title"])[
-            "model"
         ]
 
         response = call_openai(
@@ -83,6 +101,7 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             response_format=CaptionExtraction,
             operation="main.extract_caption_title",
             request_metadata={"figure_label": figure_label},
+            extra_body=extra_body,
         )
 
         token_usage = TokenUsage()
@@ -127,9 +146,8 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
             {"role": "user", "content": prompts["user"]},
         ]
 
-        model_ = resolve_step_config(self.config["pipeline"]["extract_panel_sequence"])[
-            "model"
-        ]
+        step = resolve_step_config(self.config["pipeline"]["extract_panel_sequence"])
+        model_ = step["model"]
 
         response = call_openai(
             client=self.client,

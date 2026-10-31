@@ -130,9 +130,7 @@ default: &default
             ```
             
           user: |
-            EXTRACTIVE TASK: copy the caption for $figure_label verbatim from the HTML below — character-for-character, including all HTML tags.
-
-            $figure_captions
+            EXTRACTIVE TASK: copy the caption for $figure_label verbatim from the HTML above — character-for-character, including all HTML tags.
 
             Verify with the verification tool that `figure_caption` and `caption_title` are exact substrings of the input HTML before returning.
 

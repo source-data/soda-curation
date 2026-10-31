@@ -89,7 +89,8 @@ class CaptionsExtractionBenchmarkRunner(BaseBenchmarkRunner):
             # A per-test-case nonce at the start of every system prompt keeps
             # test cases from reading each other's prompt cache (runs 1..n would
             # otherwise repeat run 0's prompts exactly), so token usage matches
-            # prod, where each manuscript is processed once.
+            # prod, where each manuscript is processed once. Figures of the same
+            # test case still share the cached legends.
             nonce = f"Request {uuid.uuid4().hex}.\n\n"
             steps = {}
             for step_name in ("extract_caption_title", "extract_panel_sequence"):

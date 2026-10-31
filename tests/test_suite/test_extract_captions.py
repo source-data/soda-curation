@@ -450,3 +450,72 @@ class TestTokenUsage:
             300,
         )
         assert usage.cache_write_tokens == 150
+
+
+class TestCaptionPromptCaching:
+    """The legends section is sent as its own message, cached for later figures."""
+
+    @staticmethod
+    def _extractor(model, prompt_handler):
+        config = json.loads(json.dumps(VALID_CONFIG))
+        config["pipeline"]["extract_caption_title"]["openai"]["model"] = model
+        return FigureCaptionExtractorOpenAI(config, prompt_handler)
+
+    @staticmethod
+    def _call(extractor, zip_structure):
+        parsed = CaptionExtraction(
+            figure_label="Figure 1",
+            caption_title="Title",
+            figure_caption="Caption",
+            is_verbatim=True,
+        )
+        response = TestTokenUsage._response(parsed)
+        with patch(
+            "src.soda_curation.pipeline.extract_captions.extract_captions_openai.call_openai",
+            return_value=response,
+        ) as call:
+            extractor.extract_figure_caption("Figure 1", "All captions", zip_structure)
+        return call.call_args.kwargs
+
+    def test_legends_before_instruction_with_cache_breakpoint(
+        self, mock_prompt_handler, zip_structure
+    ):
+        kwargs = self._call(
+            self._extractor("gpt-5.6-sol", mock_prompt_handler), zip_structure
+        )
+
+        system, legends, instruction = kwargs["messages"]
+        assert system["role"] == "system"
+        assert legends == {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "All captions",
+                    "prompt_cache_breakpoint": {"mode": "explicit"},
+                }
+            ],
+        }
+        assert instruction == {"role": "user", "content": "User prompt"}
+        assert kwargs["extra_body"] == {"prompt_cache_options": {"mode": "explicit"}}
+        # The figure-specific prompt must not embed the legends again.
+        variables = mock_prompt_handler.get_prompt.call_args.kwargs["variables"]
+        assert variables == {"figure_label": "Figure 1"}
+
+    def test_older_models_get_plain_legends_message(
+        self, mock_prompt_handler, zip_structure
+    ):
+        kwargs = self._call(self._extractor("gpt-4o", mock_prompt_handler), zip_structure)
+
+        assert kwargs["messages"][1] == {"role": "user", "content": "All captions"}
+        assert kwargs.get("extra_body") is None
+
+    def test_prompt_still_embedding_legends_is_rejected(self, zip_structure):
+        handler = MagicMock()
+        handler.get_prompt.return_value = {
+            "system": "System json",
+            "user": "Caption for Figure 1 in: $figure_captions",
+        }
+        extractor = self._extractor("gpt-5.6-sol", handler)
+        with pytest.raises(ValueError, match="figure_captions"):
+            self._call(extractor, zip_structure)

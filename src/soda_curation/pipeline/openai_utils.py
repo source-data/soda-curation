@@ -45,6 +45,8 @@ DEFAULT_OPENAI_MODEL = "gpt-5.6-sol"
 
 # Model name prefixes that don't support additional parameters (temperature, top_p, etc.)
 MODELS_WITHOUT_PARAMETERS_PREFIXES = ("gpt-5", "gpt-6")
+# Models with explicit prompt cache breakpoints (GPT-5.6 and later).
+EXPLICIT_PROMPT_CACHE_PREFIXES = ("gpt-5.6", "gpt-6")
 # Backward-compatible symbol expected by existing tests/importers.
 MODELS_WITHOUT_PARAMETERS = {GPT5_MODEL}
 
@@ -84,6 +86,11 @@ def _fallback_encoding_for_model(model: str) -> str:
     ):
         return "o200k_base"
     return "cl100k_base"
+
+
+def supports_explicit_prompt_cache(model: str) -> bool:
+    """Return True if the model accepts ``prompt_cache_breakpoint`` on content blocks."""
+    return model.lower().startswith(EXPLICIT_PROMPT_CACHE_PREFIXES)
 
 
 def _is_model_without_parameters(model: str) -> bool:
@@ -307,6 +314,9 @@ def count_messages_tokens(
         for key, value in message.items():
             if isinstance(value, str):
                 num_tokens += count_tokens(value, model)
+            elif key == "content" and isinstance(value, list):
+                for part in value:
+                    num_tokens += count_tokens(part.get("text", ""), model)
             if key == "name":
                 num_tokens += tokens_per_name
 
@@ -994,6 +1004,7 @@ def call_openai(
     enable_chunking: bool = True,
     operation: str = "unspecified_operation",
     request_metadata: Optional[Dict[str, Any]] = None,
+    extra_body: Optional[Dict[str, Any]] = None,
 ) -> Any:
     """
     Call the Chat Completions API. Optionally chunk when the prompt exceeds the model limit.
@@ -1054,6 +1065,7 @@ def call_openai(
         json_mode=json_mode,
         operation=operation,
         request_metadata=request_metadata,
+        extra_body=extra_body,
     )
 
 
@@ -1071,6 +1083,7 @@ def _call_openai_single(
     operation: str = "unspecified_operation",
     request_metadata: Optional[Dict[str, Any]] = None,
     allow_context_chunk_retry: bool = True,
+    extra_body: Optional[Dict[str, Any]] = None,
 ) -> Any:
     """One Chat Completions request; on context-length errors, chunk with the same model."""
     params = prepare_model_params(
@@ -1084,6 +1097,8 @@ def _call_openai_single(
         max_tokens=max_tokens,
         json_mode=json_mode,
     )
+    if extra_body:
+        params["extra_body"] = extra_body
 
     try:
         logger.info(

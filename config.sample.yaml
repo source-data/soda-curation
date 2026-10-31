@@ -39,7 +39,8 @@ default: &default
           user: |
             # User prompt template with variables:
             # $figure_label
-            # $figure_captions
+            # The legends section is sent as a separate message before this prompt
+            # (cached across figures), so it must not contain $figure_captions.
             # Reinforces extractive one-to-one HTML copy.
 
     extract_panel_sequence:

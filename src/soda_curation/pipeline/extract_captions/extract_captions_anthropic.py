@@ -53,18 +53,17 @@ class FigureCaptionExtractorAnthropic(FigureCaptionExtractor):
 
         prompts = self.prompt_handler.get_prompt(
             step="extract_caption_title",
-            variables={
-                "figure_label": figure_label,
-                "figure_captions": all_captions,
-            },
+            variables={"figure_label": figure_label},
         )
 
         system_prompt = prompts["system"]
         if "json" not in system_prompt.lower():
             system_prompt += "\n\nProvide your response in JSON format."
 
+        # Legends first, as in the OpenAI extractor (shared prompt layout).
         messages = [
             {"role": "system", "content": system_prompt},
+            {"role": "user", "content": all_captions},
             {"role": "user", "content": prompts["user"]},
         ]
 

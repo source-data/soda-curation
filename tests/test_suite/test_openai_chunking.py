@@ -62,6 +62,15 @@ def test_count_messages_tokens():
     assert token_count > 0
 
 
+def test_count_messages_tokens_counts_text_content_parts():
+    """List content (e.g. a text block with a cache breakpoint) is counted like a string."""
+    text = "Figure 1. A long legend. " * 50
+    as_string = [{"role": "user", "content": text}]
+    as_parts = [{"role": "user", "content": [{"type": "text", "text": text}]}]
+
+    assert count_messages_tokens(as_parts) == count_messages_tokens(as_string)
+
+
 def test_chunk_file_list():
     """Test chunking file lists."""
     # Enough lines to force multiple chunks without huge tokenization cost
@@ -263,3 +272,22 @@ def test_create_chunked_messages_without_file_list_marker():
 
     # Should still create chunks (may use generic line splitting)
     assert len(chunked_messages) >= 1
+
+
+def test_call_openai_forwards_extra_body():
+    """extra_body (e.g. prompt cache options) reaches the API request."""
+    from soda_curation.pipeline.openai_utils import call_openai
+
+    extra_body = {"prompt_cache_options": {"mode": "explicit"}}
+    with patch(
+        "soda_curation.pipeline.openai_utils._parse_with_retry",
+        return_value="response",
+    ) as parse:
+        call_openai(
+            client=None,
+            model="gpt-5.6-sol",
+            messages=[{"role": "user", "content": "Hi"}],
+            extra_body=extra_body,
+        )
+
+    assert parse.call_args.args[1]["extra_body"] == extra_body

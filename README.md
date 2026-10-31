@@ -364,6 +364,7 @@ The soda-curation pipeline processes scientific manuscripts through the followin
     - Figure label (e.g., "Figure 1")
     - Caption title (main descriptive heading)
     - Complete caption text with panel descriptions
+  - Sends the figure legends section as its own message before the figure-specific prompt; on GPT-5.6 and later it carries an explicit prompt-cache breakpoint, so figures 2..n read the legends from cache
   - Identifies panel labels (A, B, C, etc.) within each caption: grouped panels and ranges ("(A–D)") get every panel with the shared text, sub-panels (A, A') collapse into one, captions without single-character labels become a single panel A
   - Associates each panel with its specific description from the caption
 
@@ -991,6 +992,7 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 - **Repair step removed**: `repair_empty_panel_markers` deleted every panel with an empty caption and relabelled the rest, which dropped real panels of grouped labels ("(C, D)") and shifted captions onto the wrong images (e.g. EMBOR-2026-64272-T). On the caption benchmark it hurt 11 figure runs and helped none.
 - **Panel prompt**: `extract_panel_sequence` rewritten: grouped panels and ranges share the group's text instead of getting empty captions, sub-panels collapse, unlabelled figures become a single panel A. Benchmark exact panel match 0.90 → 0.99.
 - **Caption models**: `extract_caption_title` and `extract_panel_sequence` use `gpt-6-luna` (was `gpt-5.6-sol`), default reasoning effort: same benchmark accuracy at about 1/30 of the cost. Other steps are unchanged.
+- **Legend caching**: the figure legends are sent once per figure as a separate, explicitly cached message; the caption prompt no longer contains `$figure_captions` (a prompt that still does raises).
 - **Cost tracking**: `cost` blocks add `cached_tokens`, `cache_write_tokens` and `reasoning_tokens`; cached and cache-write tokens are priced at their own rates; `gpt-6-luna` priced. The caption step no longer counts its tokens twice.
 
 ### 3.8.3 (2026-10-28)
