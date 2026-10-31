@@ -86,20 +86,7 @@ class FigureCaptionExtractorOpenAI(FigureCaptionExtractor):
         )
 
         token_usage = TokenUsage()
-        token_usage.prompt_tokens = response.usage.prompt_tokens
-        token_usage.completion_tokens = response.usage.completion_tokens
-        token_usage.total_tokens = response.usage.total_tokens
-        token_usage = update_token_usage(
-            token_usage,
-            {
-                "usage": {
-                    "prompt_tokens": response.usage.prompt_tokens,
-                    "completion_tokens": response.usage.completion_tokens,
-                    "total_tokens": response.usage.total_tokens,
-                }
-            },
-            model_,
-        )
+        update_token_usage(token_usage, response, model_)
 
         if hasattr(response.choices[0].message, "parsed"):
             caption_result = response.choices[0].message.parsed

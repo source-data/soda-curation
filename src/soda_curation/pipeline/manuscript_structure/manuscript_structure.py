@@ -89,6 +89,10 @@ class TokenUsage:
     completion_tokens: int = 0
     total_tokens: int = 0
     cost: float = 0.0
+    # Subsets of prompt_tokens / completion_tokens, as reported by the API.
+    cached_tokens: int = 0
+    cache_write_tokens: int = 0
+    reasoning_tokens: int = 0
 
 
 @dataclass
@@ -163,6 +167,9 @@ class ZipStructure:
         total.completion_tokens = 0
         total.total_tokens = 0
         total.cost = 0.0
+        total.cached_tokens = 0
+        total.cache_write_tokens = 0
+        total.reasoning_tokens = 0
 
         # Add up each component
         for component in [
@@ -175,6 +182,9 @@ class ZipStructure:
         ]:
             total.prompt_tokens += component.prompt_tokens
             total.completion_tokens += component.completion_tokens
+            total.cached_tokens += component.cached_tokens
+            total.cache_write_tokens += component.cache_write_tokens
+            total.reasoning_tokens += component.reasoning_tokens
             total.total_tokens += component.total_tokens
             total.cost += component.cost
 

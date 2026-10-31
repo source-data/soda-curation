@@ -119,6 +119,9 @@ class FigureCaptionExtractor(ABC):
         total_token_usage.completion_tokens += caption_token_usage.completion_tokens
         total_token_usage.total_tokens += caption_token_usage.total_tokens
         total_token_usage.cost += caption_token_usage.cost
+        total_token_usage.cached_tokens += caption_token_usage.cached_tokens
+        total_token_usage.cache_write_tokens += caption_token_usage.cache_write_tokens
+        total_token_usage.reasoning_tokens += caption_token_usage.reasoning_tokens
 
         if not caption_result.figure_caption:
             logger.warning(
@@ -140,6 +143,9 @@ class FigureCaptionExtractor(ABC):
         total_token_usage.completion_tokens += panel_token_usage.completion_tokens
         total_token_usage.total_tokens += panel_token_usage.total_tokens
         total_token_usage.cost += panel_token_usage.cost
+        total_token_usage.cached_tokens += panel_token_usage.cached_tokens
+        total_token_usage.cache_write_tokens += panel_token_usage.cache_write_tokens
+        total_token_usage.reasoning_tokens += panel_token_usage.reasoning_tokens
 
         figure.caption_title = caption_result.caption_title
         figure.figure_caption = caption_result.figure_caption
@@ -180,6 +186,9 @@ class FigureCaptionExtractor(ABC):
             total_token_usage.completion_tokens += figure_token_usage.completion_tokens
             total_token_usage.total_tokens += figure_token_usage.total_tokens
             total_token_usage.cost += figure_token_usage.cost
+            total_token_usage.cached_tokens += figure_token_usage.cached_tokens
+            total_token_usage.cache_write_tokens += figure_token_usage.cache_write_tokens
+            total_token_usage.reasoning_tokens += figure_token_usage.reasoning_tokens
 
         zip_structure.cost.extract_individual_captions = total_token_usage
         zip_structure.update_total_cost()

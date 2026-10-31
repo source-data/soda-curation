@@ -392,3 +392,61 @@ class TestPanelDuplication:
             assert len(figure.duplicated_panels) == 1
             assert figure.duplicated_panels[0].panel_label == "A"
             assert figure.duplicated_panels[0].panel_caption == "Duplicate panel A"
+
+
+class TestTokenUsage:
+    """Token usage reported by the OpenAI extractor."""
+
+    @staticmethod
+    def _response(parsed):
+        return MagicMock(
+            choices=[MagicMock(message=MagicMock(parsed=parsed))],
+            usage=MagicMock(
+                prompt_tokens=1000,
+                completion_tokens=400,
+                total_tokens=1400,
+                prompt_tokens_details=MagicMock(
+                    cached_tokens=800, cache_write_tokens=150
+                ),
+                completion_tokens_details=MagicMock(reasoning_tokens=300),
+            ),
+        )
+
+    def test_caption_tokens_counted_once_with_cached_and_reasoning(
+        self, mock_prompt_handler, zip_structure
+    ):
+        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+        parsed = CaptionExtraction(
+            figure_label="Figure 1",
+            caption_title="Title",
+            figure_caption="Caption",
+            is_verbatim=True,
+        )
+        with patch(
+            "src.soda_curation.pipeline.extract_captions.extract_captions_openai.call_openai",
+            return_value=self._response(parsed),
+        ):
+            _, usage = extractor.extract_figure_caption(
+                "Figure 1", "All captions", zip_structure
+            )
+
+        assert (usage.prompt_tokens, usage.completion_tokens) == (1000, 400)
+        assert usage.total_tokens == 1400
+        assert (usage.cached_tokens, usage.reasoning_tokens) == (800, 300)
+        assert usage.cache_write_tokens == 150
+
+    def test_panel_tokens_include_cached_and_reasoning(self, mock_prompt_handler):
+        extractor = FigureCaptionExtractorOpenAI(VALID_CONFIG, mock_prompt_handler)
+        parsed = PanelExtraction(figure_label="Figure 1", panels=[])
+        with patch(
+            "src.soda_curation.pipeline.extract_captions.extract_captions_openai.call_openai",
+            return_value=self._response(parsed),
+        ):
+            _, usage = extractor.extract_figure_panels("Figure 1", "Caption")
+
+        assert (usage.prompt_tokens, usage.cached_tokens, usage.reasoning_tokens) == (
+            1000,
+            800,
+            300,
+        )
+        assert usage.cache_write_tokens == 150

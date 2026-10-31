@@ -524,43 +524,64 @@ After extraction, each figure caption is checked against the manuscript text (`v
       "prompt_tokens": number,
       "completion_tokens": number,
       "total_tokens": number,
-      "cost": number
+      "cost": number,
+      "cached_tokens": number,
+      "cache_write_tokens": number,
+      "reasoning_tokens": number
     },
     "extract_individual_captions": {
       "prompt_tokens": number,
       "completion_tokens": number,
       "total_tokens": number,
-      "cost": number
+      "cost": number,
+      "cached_tokens": number,
+      "cache_write_tokens": number,
+      "reasoning_tokens": number
     },
     "assign_panel_source": {
       "prompt_tokens": number,
       "completion_tokens": number,
       "total_tokens": number,
-      "cost": number
+      "cost": number,
+      "cached_tokens": number,
+      "cache_write_tokens": number,
+      "reasoning_tokens": number
     },
     "match_caption_panel": {
       "prompt_tokens": number,
       "completion_tokens": number,
       "total_tokens": number,
-      "cost": number
+      "cost": number,
+      "cached_tokens": number,
+      "cache_write_tokens": number,
+      "reasoning_tokens": number
     },
     "extract_data_sources": {
       "prompt_tokens": number,
       "completion_tokens": number,
       "total_tokens": number,
-      "cost": number
+      "cost": number,
+      "cached_tokens": number,
+      "cache_write_tokens": number,
+      "reasoning_tokens": number
     },
     "check_acceptance_guidelines": {
       "prompt_tokens": number,
       "completion_tokens": number,
       "total_tokens": number,
-      "cost": number
+      "cost": number,
+      "cached_tokens": number,
+      "cache_write_tokens": number,
+      "reasoning_tokens": number
     },
     "total": {
       "prompt_tokens": number,
       "completion_tokens": number,
       "total_tokens": number,
-      "cost": number
+      "cost": number,
+      "cached_tokens": number,
+      "cache_write_tokens": number,
+      "reasoning_tokens": number
     }
   }
 }
@@ -970,7 +991,7 @@ For any questions or issues, please open an issue on the GitHub repository. We a
 - **Repair step removed**: `repair_empty_panel_markers` deleted every panel with an empty caption and relabelled the rest, which dropped real panels of grouped labels ("(C, D)") and shifted captions onto the wrong images (e.g. EMBOR-2026-64272-T). On the caption benchmark it hurt 11 figure runs and helped none.
 - **Panel prompt**: `extract_panel_sequence` rewritten: grouped panels and ranges share the group's text instead of getting empty captions, sub-panels collapse, unlabelled figures become a single panel A. Benchmark exact panel match 0.90 → 0.99.
 - **Caption models**: `extract_caption_title` and `extract_panel_sequence` use `gpt-6-luna` (was `gpt-5.6-sol`), default reasoning effort: same benchmark accuracy at about 1/30 of the cost. Other steps are unchanged.
-- **Cost tracking**: `gpt-6-luna` priced.
+- **Cost tracking**: `cost` blocks add `cached_tokens`, `cache_write_tokens` and `reasoning_tokens`; cached and cache-write tokens are priced at their own rates; `gpt-6-luna` priced. The caption step no longer counts its tokens twice.
 
 ### 3.8.3 (2026-10-28)
 - **Remove hardcoded char fixes**: no longer necessary after upgrade from Python 3.9 (did not read correct filenames from nested .zip) to Python 3.12 in soda-curation 3.4.0.
