@@ -143,7 +143,8 @@ default: &default
             A panel caption must be a verbatim quote from the figure caption, or multiple verbatim quotes joined together. Multiple panels may share the same caption, or have overlapping captions.
 
             Special cases:
-            - No panel labels mentioned (schematic), or none of them are single characters ("Left/right panel"): return a single panel, label "A", panel caption = figure caption.
+            - Labels only in the markup (list items of `<ol type="a">`), or not at all but each panel described in its own paragraph or list item: one panel per item, labelled in order in the list's style (a, b, c for type="a").
+            - No panel labels mentioned and a single description (schematic), or none of the labels are single characters ("Left/right panel"): return a single panel, label "A", panel caption = figure caption.
             - Grouped panels, panel ranges (A-D): include all panels in the range (A, B, C, D), give each one the shared text as caption.
             - Sub-panels (eg A, A', A''): collapse into a single panel (A).
             - Typos, abbreviations, HTML/other markup: do not fix, do not expand, do not remove. Verbatim quotes only.
