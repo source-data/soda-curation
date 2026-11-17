@@ -73,10 +73,7 @@
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": [
-            "suppl_data/Figure 2.zip:Figure 2/2F/ha.tif",
-            "suppl_data/Figure 2.zip:Figure 2/2F/lamp.tif"
-          ]
+          "sd_files": []
         },
         {
           "panel_label": "H",

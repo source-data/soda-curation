@@ -11,18 +11,7 @@
     ],
   
 
-    "sd_files": [
-        "suppl_data/Figure 1.zip",
-        "suppl_data/Figure 2.zip",
-        "suppl_data/Figure 3.zip",
-        "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
-        "suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz",
-        "suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
-        "suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
-        "suppl_data/Figure 4.zip",
-        "suppl_data/Figure 5.zip",
-        "suppl_data/Figure 6.zip"
-    ],
+    "sd_files": [],
     "figures": [
         {
             "figure_caption": "\n\n<strong>A</strong>. Schematic showing\nthe theoretical experimental set-up. <strong>B</strong>. Overview of\ncollected time-points and their relevance for decay or deadenylation\nmodeling. <strong>C.</strong> Time-dependent abundance change of\n<em>HHF1</em> or <em>RPL18B</em> mRNAs following Mex67-depletion in DRS\ndatasets (dot) or by reverse-transcription coupled with qPCR (ring). A\nfitted line represents the decay factor calculated from DRS data.\n<strong>D.</strong> mRNA and ncRNA half-life distribution calculated\nfrom the Mex67-depletion time course. <strong>E.</strong> Comparison of\nmRNA half-life estimations from various studies visualized as a matrix\nof Spearman rho coefficients (Miller et al, 2011; Neymotin et al, 2014;\nPresnyak et al, 2015; Chan et al, 2018). <strong>F.</strong> Correlation\nbetween half-life values in Mex67-depleted sample and half-life values\nfrom Miller et al, (2011).</p>\n\n\n",
@@ -72,7 +61,7 @@
                     "panel_caption": "",
                     "panel_label": "E",
                     "sd_files":[
-                        "suppl_data/igure 1/Figure 1E/FIGURE 1E README.txt",
+                        "suppl_data/Figure 1/Figure 1E/FIGURE 1E README.txt",
                         "suppl_data/Figure 1.zip:Figure 1/Figure 1E/HL_Chan2018.csv",
                         "suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxn.csv",
                         "suppl_data/Figure 1.zip:Figure 1/Figure 1E/HLtxnAnnot.csv",
@@ -162,11 +151,7 @@
             "caption_title": "Pab1 controls deadenylation and decapping.",
             "figure_label": "Figure 3",
             "figure_caption": "\n\n<strong>A.</strong> Global distribution of pA-tail lengths of RNAs\nisolated from control, Dcp2- or Xrn1-depleted cells. Gray areas\ndelineate the pA-tail lengths underestimated in the DRS library, as\npreviously reported (Tudek et al, 2021). <strong>B.</strong> pA-tail\nlength distribution of <em>HCH1</em> and <em>YMR122W-A</em> mRNAs in\ncontrol and Dcp2- or Xrn1-depleted cells. <strong>C.</strong> pA-tail\nlength distribution of <em>DED81</em>, <em>GAS1</em>, <em>HHF1</em>,\n<em>HTA1</em>, <em>MCH5,</em> and <em>DCP2</em> mRNAs in control cells\ncompared to strains depleted of Pab1 using the AID system for 1 or 2\nhours. The mRNAs are ranked by half-life time. The number of reads\ncontributing to each distribution is indicated in the panel with\nn='control'/'1h depletion'/'2h depletion'. The gray boxes show the range\nof adenosines added <em>de novo</em> in the nucleus by the\npolyA-polymerase Pap1 on pre-mRNAs (Turtola et al, 2021).\n<strong>D.</strong> Comparison of log2 fold-change in mRNA abundance to\nabsolute change in mean pA-tail length for 2h Pab1-depleted cells\ncompared to control. <strong>E.</strong> Schematic illustrating that one\nPab1 can bind from 20-30 adenosines, therefore newly synthesized mRNA\npA-tail bear di- or trimers of Pab1. Depending on the number of Pab1\nattached to the pA-tail the mRNA is either susceptible to deadenylation\nof decapping.</p>\n\n\n",
-            "sd_files": [
-                "suppl_data/Figure 3.zip",
-                "suppl_data/Figures 3A 3B counts_table_xrn1_dcp2_AID_eno_minus.csv.gz",
-                "suppl_data/Figure 3C counts_table_pab1_AID_eno_minus.csv.gz"
-                ],
+            "sd_files": ["suppl_data/Figure 3.zip"],
             "panels": [
                 {
                     "panel_caption": "",
@@ -264,8 +249,6 @@
                         "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL36A_Mex67_repB.csv",
                         "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repA.csv",
                         "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/RPL4A_Mex67_repB.csv",
-                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
-                        "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/",
                         "suppl_data/Figure 4.zip:Figure 4/FIGURE 4C/Rcode_modified_gamma_shape_rate_estimation_ .txt"
                     ]
                   },
@@ -447,9 +430,8 @@
             "figure_label": "Figure 6",
             "caption_title": "Deadenylation stimulates decay but is not a prerequisite for RPG mRNA decapping under stress conditions.",
             "sd_files": [
-                "suppl_data/Figure 6H part 2 wt_all_eno_minus_fit.csv.gz",
-                "suppl_data/Figure 6H part 1 ccr4_pan2_all_eno_minus_fit.csv.gz",
-                "suppl_data/Figure 6.zip"
+                "suppl_data/Figure 6.zip",
+                "suppl_data/Figure 6.zip:Figure 6/02072022_spottest_wtpan2ccr4double_30C_013.tif"
             ],
             "panels": [
                 {
@@ -568,7 +550,6 @@
                         "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/FIGURE 6I README.txt",
                         "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_18C_010.tif",
                         "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_25C_012.tif",
-                        "suppl_data/Figure 6.zip:Figure 6/02072022_spottest_wtpan2ccr4double_30C_013.tif",
                         "suppl_data/Figure 6.zip:Figure 6/FIGURE 6I/02072022_spottest_wtpan2ccr4double_37C_011.tif"
                     ]
                 },

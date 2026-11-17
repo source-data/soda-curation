@@ -46,10 +46,8 @@ class BenchmarkConfig:
             raise FileNotFoundError(
                 f"Ground truth directory not found: {self.ground_truth_dir}"
             )
-        if not self.manuscript_dir.exists():
-            raise FileNotFoundError(
-                f"Manuscript directory not found: {self.manuscript_dir}"
-            )
+        # manuscript_dir (packages) is only read by extract_sections and
+        # match_caption_panel; the other tasks run from ground truth.
 
         # Create output directory if it doesn't exist
         self.output_dir.mkdir(parents=True, exist_ok=True)

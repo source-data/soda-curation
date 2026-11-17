@@ -4,82 +4,192 @@
   "docx": "",
   "pdf": "",
   "appendix": [],
+  "sd_files": [
+    "suppl_data/Muelleretal_DatasetEV5.xlsx",
+    "suppl_data/Muelleretal_Dataset_EV1.xlsx",
+    "suppl_data/Muelleretal_Dataset_EV2.xlsx",
+    "suppl_data/Muelleretal_Dataset_EV3.xlsx",
+    "suppl_data/Muelleretal_Dataset_EV4.xlsx"
+  ],
+  "unassigned_sd_files": [
+    "suppl_data/EMBOR202563072V3Peer_Review_File.pdf"
+  ],
   "figures": [
     {
       "figure_label": "Figure 1",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 1.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "Immunoblots showing N-MYC, c-MYC and AURORA A expression levels in AML MV4 11-cells, osteosarcoma U2OS cells and neuroblastoma IMR32 cells. One representative loading control (Vinculin) is shown.\nAURORA A levels after 6 h of PROTAC treatment based on luciferase measurements. MV4-11 AURORA A HiBiT cells were treated with different concentrations of JB170 and JB301 for 6 h. Cells were lysed and complemented with the second luciferase fragment and the substrate. Luminescence was measured and normalized to DMSO treated cells. Each point represents the mean ± SD of three technical replicates.\nPROTAC effect on cell viability. MV4-11 cells were treated with various PROTAC concentrations for 72 h. Cell viability was measured using an alamarBlue assay and compared to DMSO treated cells. Each point represents the mean ± SD from three technical replicates and was normalized to DMSO treated cells. EC50: half maximal effective concentration.\nCell cycle distribution analyzed by flow cytometry. Unsynchronized MV4-11 cells were treated with the AURORA A inhibitor Alisertib (0.5 µM) or PROTACs (JB170: 0.5 µM or JB301: 0.2 µM) for 16 h. Cells were labelled with BrdU and stained with PI followed by analysis with flow cytometry. The percentage of cells in S-phase (High-BrdU: green, Low-BrdU: red) was determined in biological triplicate experiments (*: p<0.05, unpaired two-tailed Welch’s t test). The gating strategy is depicted in Fig. EV1B and all cell cycle phases are quantified in Fig. EV1C.\nEnrichment plot for AURORA A interactors in S-phase synchronized MV4-11 cells. Enrichment of proteins after exogenous HA-AURORA A IP is shown and compared to cells not expressing HA-AURORA A. The experiment was performed in unicates (1x N-tag HA-AURORA A, 1x C-tag HA-AURORA A) and analyzed by mass spectrometry.\nVolcano plot for AURORA A interactors in MV4-11 cells. The experiment was performed in biological duplicates (2x N-tag HA-AURORA A, 2x C-tag HA-AURORA A) and p values were calculated using a two-sample unpaired t-test. AURORA A substrates (Kettenbach et al., 2011) and RNA-binding proteins (mammalian RNA-binding protein resource, proteins are labelled as RNA-binding if they were found in at least 5 out of 18 studies (Caudron-Herger et al., 2019)) are colored. Dotted lines indicate the cut-offs for significant enriched proteins (log2FC> 3, p-value< 0.05).\nHA-AURORA A IP was conducted as in (F) but with addition of a RNase mixture.\nVolcano plot depicting the differences in - and + RNase IP condition for all 60 AURORA A interactors. The difference in enrichment is plotted versus the significance of this difference. The p-values were calculated by a two-sample unpaired t-test. RNA-binding proteins are labelled in orange.\nImmunoblot of gradient fractions. MV4-11 HA-CRBN cell lysate was loaded on a 5-50% sucrose gradient, centrifuged and fractionated. The precipitated fractions were loaded on an immunoblot.\nQuantification of immunoblot in (I) and two additional biological replicates. The AURORA A signal was normalized to the Input and the highest signal was set to 1.0. Each point represents the mean ± SEM.",
       "caption_title": "AURORA A interacts with RNA-binding proteins during S-phase",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1A/1A_WB_AURORA A.png",
+            "suppl_data/Figure 1.zip:Figure 1/1A/1A_WB_AURORA A.tif",
+            "suppl_data/Figure 1.zip:Figure 1/1A/1A_WB_N-MYC.png",
+            "suppl_data/Figure 1.zip:Figure 1/1A/1A_WB_N-MYC.tif",
+            "suppl_data/Figure 1.zip:Figure 1/1A/1A_WB_Vinculin.png",
+            "suppl_data/Figure 1.zip:Figure 1/1A/1A_WB_Vinculin.tif",
+            "suppl_data/Figure 1.zip:Figure 1/1A/1A_WB_c-Myc.tif",
+            "suppl_data/Figure 1.zip:Figure 1/1A/1A_WB_overview.pdf"
+          ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1B/1B_HiBiT_data_analysis.xlsx"
+          ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1C/1C_cell_viability_analysis.xlsx"
+          ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R1_current_1D/Alisertib.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R1_current_1D/DMSO.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R1_current_1D/JB170.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R1_current_1D/JB301.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R1_current_1D/no-BrdU_DMSO.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R2-R3/BA2026-03-10_Alisertib_R1.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R2-R3/BA2026-03-10_Alisertib_R2.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R2-R3/BA2026-03-10_DMSO_R1.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R2-R3/BA2026-03-10_DMSO_R2.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R2-R3/BA2026-03-10_JB170_R1.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R2-R3/BA2026-03-10_JB170_R2.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R2-R3/BA2026-03-10_JB301_R1.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R2-R3/BA2026-03-10_JB301_R2.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/1_Raw_data/R2-R3/BA2026-03-10_no BrdU.fcs",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis.flowjo",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis.wsp",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-29b3e49b-dc7d-4bf5-84eb-ffb1c079ee9a.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-43c5b0a8-f4bf-4593-bc66-2925b67e440f.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-5cda62ad-19d7-495e-808f-95d42e382ece.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-6181ae4a-96ab-4412-bd5c-185cbc440034.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-6a29a590-3338-4522-bc6b-b01dbd2b899c.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-6b2275fb-b36e-495c-8bac-83b3ca52b5c2.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-8e82085d-3d68-427d-bd7e-dac6c5cdef9e.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-95e744d1-614d-45af-b2d3-b95f7b17dcc7.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-adc304cc-142c-461a-8257-290279072f20.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-ce5e605c-023e-4ff2-8cde-493943857864.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-ee2ada53-baef-4086-be97-fb7f858d28bf.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-f59560ab-8a25-4ba2-82e9-4d190d92eea6.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-f5a7d783-e277-4707-bbea-bb1c8f63b6ba.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/2_Analysis/Naive_complete_analysis/platform-1bc76e28-2048-4382-b9b4-ea83a4a6118b/datasource-fefb0f12-ca01-409d-9123-0bf49053b4b1.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/3_Report/1_Gating_BrdU_Naive.prism",
+            "suppl_data/Figure 1.zip:Figure 1/1D/3_Report/1_Gating_BrdU_Naive.xlsx",
+            "suppl_data/Figure 1.zip:Figure 1/1D/3_Report/R1.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/3_Report/R1.pdf",
+            "suppl_data/Figure 1.zip:Figure 1/1D/3_Report/R2-R3.csv",
+            "suppl_data/Figure 1.zip:Figure 1/1D/3_Report/R2-R3.pdf",
+            "suppl_data/Figure 1.zip:Figure 1/1D/Figures_1_BA.afdesign",
+            "suppl_data/Figure 1.zip:Figure 1/1D/Gating_strategy.pdf",
+            "suppl_data/Figure 1.zip:Figure 1/1D/Gating_strategy_BA.afdesign",
+            "suppl_data/Figure 1.zip:Figure 1/1D/MV4-11_Naive_FACS_analysis_BA.pptx"
+          ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1E/Mueller-et-al_Table_EV1.xlsx"
+          ]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1F, G/Mueller-et-al_Table_EV2.xlsx"
+          ]
         },
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1F, G/Mueller-et-al_Table_EV2.xlsx"
+          ]
         },
         {
           "panel_label": "H",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1H/1H_Differences_HA-AURORA A_IP_with_RNase_treatment.xlsx"
+          ]
         },
         {
           "panel_label": "I",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1I/1I_WB_AURORA A.png",
+            "suppl_data/Figure 1.zip:Figure 1/1I/1I_WB_AURORA A.tiff",
+            "suppl_data/Figure 1.zip:Figure 1/1I/1I_WB_overview.pdf"
+          ]
         },
         {
           "panel_label": "J",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/1J/1J_Quantification_GC_images.xlsx",
+            "suppl_data/Figure 1.zip:Figure 1/1J/1J_WB_AURORA A_R1.png",
+            "suppl_data/Figure 1.zip:Figure 1/1J/1J_WB_AURORA A_R1.tiff",
+            "suppl_data/Figure 1.zip:Figure 1/1J/1J_WB_AURORA A_R2.png",
+            "suppl_data/Figure 1.zip:Figure 1/1J/1J_WB_AURORA A_R2.tiff",
+            "suppl_data/Figure 1.zip:Figure 1/1J/1J_WB_AURORA A_R3.png",
+            "suppl_data/Figure 1.zip:Figure 1/1J/1J_WB_AURORA A_R3.tiff"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 2",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 2.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "Immunoblots of gradient fractions. MV4-11 HA-CRBN cells were lysed and treated with or without an RNase mixture. The lysate was loaded on a 5-50% sucrose gradient, centrifuged and fractionated. The precipitated fractions were loaded on an immunoblot.\nQuantification of gradient centrifugation immunoblots +/- RNase treatment. Quantification was performed with three biological replicates per condition. The AURORA A signal was normalized to the Input and the highest signal was set to 1.0. Each point represents the mean ± SEM.\nModel of gradient centrifugation +/- RNase to identify AURORA A high-molecular-weight complex partner via mass spectroscopy.\nSedimentation profiles of AURORA A in a 5-50% sucrose gradient analyzed by mass spectroscopy. MV4-11 HA-CRBN cell lysates were treated +/- RNase, loaded on a 5-50% sucrose gradient and individual fractions were analyzed by label free mass spectroscopy. AURORA A intensities of three biological replicates were normalized to 100 and are shown for every fraction.\nRNA-dependency of S-phase AURORA A interactors in gradient centrifugation. Gradient centrifugation and analysis were performed as described in (D). The RNA-dependency was calculated by the division of heavy (F12-F24) and light fractions (F1-F11) for DMSO and RNase condition (DMSO and RNase score, respectively). The quotient of DMSO and RNase score was defined as RNA-dependency. Data is plotted for AURORA A interactors, which shift to lower fractions with RNase treatment. P values were calculated from three biological replicates using a two-sample unpaired t-test. AURORA A interactors were identified in an IP experiment (Fig. 1E) and RNA-binding proteins are labelled in orange.\nSedimentation profiles of selected AURORA A interactors from (E).",
       "caption_title": "Integrity of AURORA A protein complexes depends on RNA",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/2A/2A_WB_AURORA A_+RNase.png",
+            "suppl_data/Figure 2.zip:Figure 2/2A/2A_WB_AURORA A_+RNase.tiff",
+            "suppl_data/Figure 2.zip:Figure 2/2A/2A_WB_AURORA A_-RNase.png",
+            "suppl_data/Figure 2.zip:Figure 2/2A/2A_WB_AURORA A_-RNase.tiff",
+            "suppl_data/Figure 2.zip:Figure 2/2A/2A_WB_overview.pdf"
+          ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_+RNase_R1.png",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_+RNase_R1.tiff",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_+RNase_R2.png",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_+RNase_R2.tiff",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_+RNase_R3.png",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_+RNase_R3.tiff",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_-RNase_R1.png",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_-RNase_R1.tiff",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_-RNase_R2.png",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_-RNase_R2.tiff",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_-RNase_R3.png",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_WB_AURORA A_-RNase_R3.tiff",
+            "suppl_data/Figure 2.zip:Figure 2/2B/2B_quantification_immunoblots_GC.xlsx"
+          ]
         },
         {
           "panel_label": "C",
@@ -89,31 +199,135 @@
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/2D, F/Mueller-et-al_Table_EV3.xlsx"
+          ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/2E/2E_RNA_dependency_analysis.xlsx"
+          ]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/2D, F/Mueller-et-al_Table_EV3.xlsx"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 3",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 3.zip"
+      ],
+      "unassigned_sd_files": [
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._STDERR",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._STDOUT",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Franking_debug.json",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_1_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_1_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_2_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_2_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_3_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_3_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_4_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_4_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_5_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Fresult_model_5_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_1_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_1_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_2_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_2_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_3_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_3_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_4_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_4_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_5_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/._output_dir%2Finput_D-1-565%2Funrelaxed_model_5_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._STDERR",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._STDOUT",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Franking_debug.json",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_1_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_1_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_2_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_2_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_3_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_3_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_4_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_4_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_5_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Fresult_model_5_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_1_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_1_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_2_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_2_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_3_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_3_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_4_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_4_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_5_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/._output_dir%2Finput_D-1079-1292%2Funrelaxed_model_5_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._STDERR",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._STDOUT",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Franking_debug.json",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_1_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_1_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_2_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_2_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_3_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_3_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_4_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_4_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_5_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Fresult_model_5_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_1_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_1_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_2_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_2_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_3_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_3_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_4_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_4_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_5_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/._output_dir%2Finput_D1293-1922%2Funrelaxed_model_5_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._STDERR",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._STDOUT",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Franking_debug.json",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_1_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_1_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_2_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_2_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_3_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_3_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_4_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_4_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_5_multimer_v3_pred_0_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Fresult_model_5_multimer_v3_pred_1_plddt.png",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_1_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_1_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_2_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_2_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_3_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_3_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_4_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_4_multimer_v3_pred_1.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_5_multimer_v3_pred_0.pdb",
+        "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/._output_dir%2Finput_D-565-1078%2Funrelaxed_model_5_multimer_v3_pred_1.pdb"
+      ],
       "figure_caption": "Venn diagram to select a representative protein from the RNA-dependent high-molecular-weight complex. The data of three experiments was overlaid: the S-phase interactome of AURORA A (Fig. 1E), RNA-binding proteins from the interactome study +/- RNase (Fig. 1F, G) and GC AURORA A interactors, which shift with RNase treatment to lower fractions (Fig. 2E). The three overlapping proteins are YPLM1, FXR1 and DICER.\nCryo-EM structure of DICER in complex with RNA (PDB: 5ZAL) (Liu et al, 2018). The folded N-terminal helicase domain (brown), the pincer-like domain until connector domain (light blue) and the C-terminal RIIIDa domain (yellow) are shown. Marked in green is the predicted AURORA A interaction region (green, 1079-1292 aa) between the platform domain and the processing center.\nList summarizing AlphaFold predictions for the catalytic AURORA A domain together with truncated DICER protein versions. For possible interacting atoms of DICER and AURORA A, exclusively atoms with a pLDDT score above 50 were taken into account. Possible interaction was defined as atoms of AURORA A and DICER in a distance of ≥ 5 Å. WT AURORA A: 1-403 aa; WT DICER: 1-1922 aa. aa: amino acids, pLDDT: per-residue measure of local confidence.\nAlphaFold prediction of the catalytic domain of AURORA A (122-403 aa) and partial DICER (1051-1110 aa). The three DICER amino acids (L1094, F1096 and W1098), which are predicted to bind in the Y-pocket of AURORA A are shown as sticks.\nDICER (1051-1110 aa) and AURORA A (122-403 aa) predictions are overlayed with TPX2 crystal structure (PDB: 1OL5) (Bayliss et al., 2003). Top: DICER amino acids binding in the AURORA A Y-pocket are labelled. Bottom: Sequence alignment of TPX2 and DICER sequence, which binds in the AURORA A Y-pocket. Bold amino acids are important for binding the Y-pocket of AURORA A.\nImmunoblot of endogenous DICER IP. Co-IP was performed with HEK293 cell lysate and magnetic beads coupled to a DICER antibody. The asterisk indicates the IgG heavy chain.\nTop: Immunoblot of exogenous HA-AURORA A IP showing binding of AURORA A mutants to DICER WT. HEK293 cells were transfected with HA-AURORA A WT or HA-AURORA A mutants and co-IP was performed using magnetic beads. Bottom: Quantification of DICER binding to AURORA A mutants. DICER signals in immunoblots were quantified in three biological replicate experiments. Data was normalized to WT interaction and each bar represents the mean ± SD. HA-AURORA A mut1: W128E, I209R, Y197R, F157E, L169R, L178R, V182E, I184R, H187E, V252E, L188R, HA-AURORA A mut2: L169R, L178R, V182E.\nTop: Immunoblot of exogenous HA-AURORA A IP showing binding of DICER mutants to AURORA A WT. HEK293 cells were transfected with HA-AURORA A WT and co-transfected with FLAG-DICER WT or a FLAG-DICER mutant (Δ L1058-R1288) and co-IP was performed using magnetic beads. Bottom: Quantification of FLAG-DICER binding to AURORA A WT. FLAG-DICER signals in immunoblots were quantified in three biological replicate experiments. Data was normalized to WT interaction and each bar represents the mean ± SD.",
       "caption_title": "AURORA A interacts with the C-linker domain of DICER",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/3A/3A_BioVenn.xlsx"
+          ]
         },
         {
           "panel_label": "B",
@@ -123,95 +337,474 @@
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora-A_122-403_Dicer_1-565_pLLDT_lager_50_pymol.pse",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora-A_122-403_Dicer_1-565_pymol.pse",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/STDERR",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/STDOUT",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Franking_debug.json",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_1_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_1_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_2_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_2_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_3_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_3_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_4_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_4_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_5_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Fresult_model_5_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_1_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_1_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_2_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_2_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_3_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_3_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_4_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_4_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_5_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/Aurora_Dicer-1/output_dir%2Finput_D-1-565%2Funrelaxed_model_5_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/input_D-1-565.fst",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1-565/slurm_af2.sh",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/STDERR",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/STDOUT",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/aurora-a_122-403_dicer_1079-1292_pLDDT_larger_50_pymol.pse",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/aurora-a_122-403_dicer_1079-1292_pymol.pse",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Franking_debug.json",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_1_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_1_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_2_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_2_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_3_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_3_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_4_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_4_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_5_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Fresult_model_5_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_1_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_1_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_2_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_2_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_3_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_3_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_4_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_4_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_5_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/Aurora_Dicer-3_1/output_dir%2Finput_D-1079-1292%2Funrelaxed_model_5_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/input_D-1079-1292.fst",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1079-1292/slurm_af2.sh",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/STDERR",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/STDOUT",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/aurora-A_122-403_dicer_1293-1922_pLDDT_larger_50_pymol.pse",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/aurora-A_122-403_dicer_1293-1922_pymol.pse",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Franking_debug.json",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_1_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_1_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_2_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_2_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_3_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_3_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_4_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_4_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_5_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Fresult_model_5_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_1_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_1_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_2_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_2_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_3_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_3_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_4_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_4_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_5_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/Aurora_Dicer-4_1/output_dir%2Finput_D1293-1922%2Funrelaxed_model_5_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/input_D1293-1922.fst",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_1293-1922/slurm_af2.sh",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/STDERR",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/STDOUT",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Franking_debug.json",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_1_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_1_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_2_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_2_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_3_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_3_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_4_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_4_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_5_multimer_v3_pred_0_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Fresult_model_5_multimer_v3_pred_1_plddt.png",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_1_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_1_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_2_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_2_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_3_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_3_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_4_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_4_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_5_multimer_v3_pred_0.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/Aurora_Dicer-2/output_dir%2Finput_D-565-1078%2Funrelaxed_model_5_multimer_v3_pred_1.pdb",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/aurora-A_122-403_dicer_566-1078_pLDDT_larger_50_pymol.pse",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/aurora-A_122-403_dicer_566-1078_pymol.pse",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/input_D-565-1078.fst",
+            "suppl_data/Figure 3.zip:Figure 3/3C/AURORA_A_DICER_566-1078/slurm_af2.sh",
+            "suppl_data/Figure 3.zip:Figure 3/3C/Read me.txt"
+          ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/3D/AURORA_A_122-403_DICER_1051-1110.pse",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_full_data_0.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_full_data_1.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_full_data_2.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_full_data_3.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_full_data_4.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_job_request.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_model_0.cif",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_model_1.cif",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_model_2.cif",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_model_3.cif",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_model_4.cif",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_summary_confidences_0.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_summary_confidences_1.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_summary_confidences_2.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_summary_confidences_3.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/fold_aurka_122_403_dicer1_1051_1110_summary_confidences_4.json",
+            "suppl_data/Figure 3.zip:Figure 3/3D/fold_aurka_122_403_dicer1_1051_1110/terms_of_use.md"
+          ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/3E/AURORA_A_DICER_TPX2_binding_pocket.pse"
+          ]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/3F/3F_WB_AURORA A.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3F/3F_WB_DICER.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3F/3F_WB_GAPDH.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3F/3F_WB_overview.pdf"
+          ]
         },
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/3G/3G_WB_DICER_bottom.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/3G_WB_DICER_top.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/3G_WB_GAPDH.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/3G_WB_HA.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/3G_WB_overview.pdf",
+            "suppl_data/Figure 3.zip:Figure 3/3G/WBs quantification/3G_WB_DICER_R1.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/WBs quantification/3G_WB_DICER_R2.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/WBs quantification/3G_WB_DICER_R3.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/WBs quantification/3G_WB_HA_R1.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/WBs quantification/3G_WB_HA_R2.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/WBs quantification/3G_WB_HA_R3.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3G/WBs quantification/3G_WB_quantification.xlsx"
+          ]
         },
         {
           "panel_label": "H",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/3H/3H_WB_FLAG_bottom.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3H/3H_WB_FLAG_top.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3H/3H_WB_GAPDH.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3H/3H_WB_HA.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3H/3H_WB_overview.pdf",
+            "suppl_data/Figure 3.zip:Figure 3/3H/WBs quantification/3H_WB_FLAG_R1.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3H/WBs quantification/3H_WB_FLAG_R2,R3.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3H/WBs quantification/3H_WB_HA_R1.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3H/WBs quantification/3H_WB_HA_R2,R3.tif",
+            "suppl_data/Figure 3.zip:Figure 3/3H/WBs quantification/3H_quantification_WB.xlsx"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 4",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 4.zip"
+      ],
+      "unassigned_sd_files": [
+        "suppl_data/Figure 4.zip:Figure 4/4B/4B_AURORA A_only_control/._Maximum Projection_overlay.tif",
+        "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_AURORA A_PLA/._Maximum Projection_overlay.tif",
+        "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_only_control/._Maximum Projection_ch01_SV.tif",
+        "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_only_control/._Maximum Projection_overlay.tif"
+      ],
       "figure_caption": "<ol type=\"A\">\n<li><p>Immunofluorescence images of AURORA A and DICER showing its subcellular distribution in U2OS cells. Images were acquired with a 10x objective. Scale bar 50 µm. Example cells were picked and are shown on the right. For DICER, an example cell with high signal in the nucleus was chosen.</p></li>\n<li><p>Immunofluorescence images of PLAs between DICER and AURORA A in U2OS cells. Images were taken using a 10x objective and are labelled with the antibodies used for the PLA (DICER and AURORA A correspond to single antibody controls, DICER/AURORA A: PLA). Red dots (λ647): intensity centers of proximity pairs, blue (λ405): Hoechst staining for nucleus, green (λ568): phalloidin staining for cytoskeleton.</p></li>\n<li><p>Quantification of PLA-positive cells. The PLA spot intensity was analyzed and summarized for every nucleus, cytoplasm or the whole cell in every field of view (FoV). Nuclei, cytoplasm or whole cells with a higher intensity of 25 (rU) were defined as positive. For each condition three biological replicate experiments were conducted and three FoVs were analyzed (total analyzed cells, DICER: 500, AURORA A: 429, DICER+AURORA A: 498). Data was normalized to the total number of cells in every FoV. Each bar represents the mean ± SEM. The p-value between the boxes represents the Tukey’s multiple comparison test.</p></li>\n<li><p>Cell cycle-resolved analysis of DICER/AURORA A PLA in U2OS cells. Scatter plot (top panel) shows individual nuclei (n=1500) as dots plotted according to DNA content (Hoechst integrated intensity, log scale) and DNA synthesis (EdU mean intensity, log scale) on the x- and y-axis, respectively, enabling cell cycle assignment. Dots were colored according to the number of PLA foci per nucleus. The color scale was limited from 20 to 60 PLA foci, with values outside this range squished to the nearest limit. Marginal histograms represent the distribution of Hoechst and EdU intensities. Bar plot (bottom panel) shows the percentage of PLA-positive nuclei (defined as nuclei with &gt;50 PLA dots) quantified per cell cycle phase.</p></li>\n<li><p>Cell cycle distribution analyzed by flow cytometry. Unsynchronized MV4-11 cells expressing shDICER-4 (doxycycline inducible) were treated with doxycycline (1 µg/ml) or EtOH as control for 2 days, followed by DMSO or 200 nM JB301 for 16 h. Doxycycline treated cells are labelled with shDICER in the figure. 16 h prior BrdU staining, indicated cells were treated with 200 nM of JB301 or DMSO as control. Cells were labelled with BrdU and stained with PI followed by analysis with flow cytometry. The percentage of cells in S-phase (High-BrdU: green, Low-BrdU: red) was determined in biological triplicate experiments (**: p&lt;0.01, ***: p&lt;0.001 unpaired two-tailed Welch’s t test) shown as average ± SEM. All cell cycle phases are quantified in <strong>Fig. EV4F</strong>.</p></li>\n</ol>",
       "caption_title": "AURORA A and DICER are in close cellular proximity",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/4A/IF AURORA A/4A_IF_AURORA A.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4A/IF AURORA A/4A_IF_HOECHST.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4A/IF AURORA A/4A_IF_overlay.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4A/IF DICER/4A_IF_DICER.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4A/IF DICER/4A_IF_Hoechst.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4A/IF DICER/4A_IF_overlay.tif"
+          ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_AURORA A_only_control/4B_HOECHST.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_AURORA A_only_control/4B_PLA.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_AURORA A_only_control/4B_Phalloidin.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_AURORA A_only_control/4B_overlay.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_AURORA A_PLA/4B_HOECHST.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_AURORA A_PLA/4B_PLA.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_AURORA A_PLA/4B_Phalloidin.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_AURORA A_PLA/4B_overlay.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_only_control/4B_HOECHST.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_only_control/4B_PLA.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_only_control/4B_Phalloidin.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4B/4B_DICER_only_control/4B_overlay.tif"
+          ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/4C/4C_PLA_Analysis.xlsx",
+            "suppl_data/Figure 4.zip:Figure 4/4C/4C_readme.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_1/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_1/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_1/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_2/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_2/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_2/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_3/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_3/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_3/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_4/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_4/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A only/F5_4/Maximum Projection_overlay.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_1/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_1/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_1/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_2/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_2/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_2/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_3/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_3/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_3/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_4/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_4/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_4/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_5/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_5/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/AURORA A+DICER/H5_5/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_1/Maximum Projection_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_1/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_1/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_2/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_2/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_2/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_3/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_3/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_3/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_4/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_4/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 1/DICER only/D5_4/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_1/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_1/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_1/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_2/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_2/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_2/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_5/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_5/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_5/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_7/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_7/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A only/D10_7/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_1/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_1/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_1/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_2/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_2/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_2/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_4/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_4/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_4/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_7/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_7/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/AURORA A+DICER/F10_7/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/DICER only/B10_1/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/DICER only/B10_1/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/DICER only/B10_1/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/DICER only/B10_2/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/DICER only/B10_2/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/DICER only/B10_2/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/DICER only/B10_4/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/DICER only/B10_4/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 2/DICER only/B10_4/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A only/E10_3/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A only/E10_3/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A only/E10_3/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A only/E10_4/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A only/E10_4/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A only/E10_4/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A only/E10_5/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A only/E10_5/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A only/E10_5/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A+DICER/G10_1/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A+DICER/G10_1/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A+DICER/G10_1/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A+DICER/G10_3/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A+DICER/G10_3/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A+DICER/G10_3/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A+DICER/G10_4/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A+DICER/G10_4/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/AURORA A+DICER/G10_4/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/DICER only/C10_1/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/DICER only/C10_1/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/DICER only/C10_1/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/DICER only/C10_2/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/DICER only/C10_2/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/DICER only/C10_2/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/DICER only/C10_4/Maximum Projection_ch00_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/DICER only/C10_4/Maximum Projection_ch01_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/analyzed images/Replicate 3/DICER only/C10_4/Maximum Projection_ch02_SV.tif",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 1/F5_1_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 1/F5_2_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 1/F5_3_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 1/F5_4_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 2/D10_1_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 2/D10_2_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 2/D10_5_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 2/D10_7_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 3/E10_3_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 3/E10_4_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/AURORA A only/Replicate 3/E10_5_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 1/D5_1_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 1/D5_2_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 1/D5_3_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 1/D5_4_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 2/B10_1_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 2/B10_2_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 2/B10_4_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 3/C10_1_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 3/C10_2_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/DICER_only/Replicate 3/C10_4_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 1/H5_1_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 1/H5_2_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 1/H5_3_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 1/H5_4_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 1/H5_5_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 2/F10_1_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 2/F10_2_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 2/F10_4_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 2/F10_7_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 3/G10_1_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 3/G10_3_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/control_images/PLA/Replicate 3/G10_4_Maximum Projection_ch00_SV_overlay.tiff",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 1/AURORA A only/Cells.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 1/AURORA A only/Cytoplasm.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 1/AURORA A only/Identified_DAPI.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 1/AURORA-A+DICER/Cells.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 1/AURORA-A+DICER/Cytoplasm.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 1/AURORA-A+DICER/Identified_DAPI.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 1/DICER only/Cells.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 1/DICER only/Cytoplasm.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 1/DICER only/Identified_DAPI.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 2/AURORA A only/Cells.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 2/AURORA A only/Cytoplasm.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 2/AURORA A only/Identified_DAPI.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 2/AURORA-A+DICER/Cells.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 2/AURORA-A+DICER/Cytoplasm.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 2/AURORA-A+DICER/Identified_DAPI.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 2/DICER only/Cells.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 2/DICER only/Cytoplasm.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 2/DICER only/Identified_DAPI.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 3/AURORA A only/Cells.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 3/AURORA A only/Cytoplasm.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 3/AURORA A only/Identified_DAPI.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 3/AURORA-A+DICER/Cells.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 3/AURORA-A+DICER/Cytoplasm.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 3/AURORA-A+DICER/Identified_DAPI.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 3/DICER only/Cells.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 3/DICER only/Cytoplasm.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4C/spreadsheets/Replicate 3/DICER only/Identified_DAPI.txt"
+          ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/4D/4D_PB222_4_R4_Seq003moreImages_CellCyclePlot_PLApositive_Thr50_Control.pdf",
+            "suppl_data/Figure 4.zip:Figure 4/4D/4D_PB222_4_R4_Seq003moreImages_Phases_PLAstatus_thr50.txt",
+            "suppl_data/Figure 4.zip:Figure 4/4D/Figure4D_ReadMe.txt"
+          ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/4E/1_Raw_data/R1_current_4E/R1_DMSO_P1437.fcs",
+            "suppl_data/Figure 4.zip:Figure 4/4E/1_Raw_data/R1_current_4E/R1_Dox-JB301_P1437.fcs",
+            "suppl_data/Figure 4.zip:Figure 4/4E/1_Raw_data/R1_current_4E/R1_Dox_P1437.fcs",
+            "suppl_data/Figure 4.zip:Figure 4/4E/1_Raw_data/R1_current_4E/R1_JB301_P1437.fcs",
+            "suppl_data/Figure 4.zip:Figure 4/4E/1_Raw_data/R1_current_4E/R1_noBrdU_P1437.fcs",
+            "suppl_data/Figure 4.zip:Figure 4/4E/2_Report/1_Gating_BrdU_shDicer.xlsx",
+            "suppl_data/Figure 4.zip:Figure 4/4E/2_Report/1_Gating_BrdU_shDicer/R1.csv",
+            "suppl_data/Figure 4.zip:Figure 4/4E/2_Report/1_Gating_BrdU_shDicer/R2.csv",
+            "suppl_data/Figure 4.zip:Figure 4/4E/2_Report/1_Gating_BrdU_shDicer/R3-R4.csv"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 5",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 5.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "Immunoblot with input lysates for gradient centrifugation. MV4‑11 cells overexpressing HA-CRBN were treated with different concentrations of JB301 for 6 h.\nSedimentation profiles of DICER in a 5-50% sucrose gradient analyzed by mass spectroscopy. MV4-11 were treated +/- JB301 for 6 h, lysed and loaded on a 5-50% sucrose gradient. Individual fractions were analyzed by label free mass spectroscopy. DICER intensities were normalized to 100 and are shown for every fraction.\nPROTAC-dependency of AURORA A interactors in gradient centrifugation. Gradient centrifugation and analysis were performed as described in (B). The PROTAC-dependency was calculated by the division of heavy (F12-F24) and light fractions (F1-F11) for DMSO and PROTAC conditions (0.6 nM and 150 nM, DMSO and PROTAC score, respectively). The quotient of DMSO and PROTAC score was defined as PROTAC-dependency. Data is plotted for all AURORA A interactors. AURORA A interactors were identified in an IP experiment (Fig. 1G, H) and RNA-binding proteins are labelled in orange.\nSedimentation profiles for control, RNase and PROTAC conditions of SETD2 in a 5-50% sucrose gradient analyzed by mass spectroscopy. Gradient centrifugation and analysis were performed as described in (B) and SETD2 LFQ intensities were normalized to 100 and are shown for every fraction.\nGenome browser tracks of the SETD2 CUT&RUN-seq signal in MV4‑11 cells treated with DMSO or 150 nM JB301 for 6 h. Binding of the RPL18 gene is shown and compared to IgG as control.\nMetagene plot of SETD2 CUT&RUN seq signals in expressed genes (n=10821). Mean binding of SETD2 in MV4‑11 cells treated with DMSO (n=2, biological replicates) or 150 nM JB301 (n=3, biological replicates) for 6 h compared to the IgG control.\nVolcano plot of SETD2 CUT&RUN-seq signal as in panel (F) in the gene bodies of expressed genes(n=5008). p-value, Wald test.\nMetagene plots of SETD2 CUT&RUN-seq signals as in panel (F) in expressed genes with (n=7118) and without (n=3703) R-loops, respectively.\nBox plot of the change (log2FC) in SETD2 gene body reads as in panel (G) in expressed genes with (n=3231) and without (n=1777) R-loops. Box plots show the median (center line), interquartile range (box, Q1-Q3), and whiskers extending to the most extreme values within 1.5 x interquartile range. Values outside this range are not shown. p-values above the respective box represent the one sample Wilcoxon signed-rank test against 0 (no change). The p-value between the two boxes represents the Wilcoxon signed-rank test.\nBox plot of the change (log2FC) in the SETD2 promoter ratio (i.e., the ratio of IgG control-subtracted, length-normalized reads in the promoter and gene body) in expressed genes with (n=1856) and without (n=831) R-loops. Box plots show the median (center line), interquartile range (box, Q1-Q3), and whiskers extending to the most extreme values within 1.5 x interquartile range. Values outside this range are not shown. p-values above the respective box represent the one sample Wilcoxon signed-rank test against 0 (no change). The p-value between the two boxes represents the Wilcoxon signed-rank test.\nGenome browser tracks of the SETD2 CUT&RUN-seq signal of DICER wild type, DICER knock-out MV4 11 cells and DICER wild type MV4-11 cells treated with RNase H after cell permeabilization. Protein-coding genes are labeled with their HGNC symbol. IgG, negative control.",
       "caption_title": "AURORA A supports the association of SETD2 with high-molecular-weight complexes and chromatin",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/5A/5A_WB_AURORA A.tif",
+            "suppl_data/Figure 5.zip:Figure 5/5A/5A_WB_AURORA A.tiff",
+            "suppl_data/Figure 5.zip:Figure 5/5A/5A_WB_Vinculin.tif",
+            "suppl_data/Figure 5.zip:Figure 5/5A/5A_WB_Vinculin.tiff",
+            "suppl_data/Figure 5.zip:Figure 5/5A/5A_WB_overview.pdf"
+          ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/5B, D/Mueller-et-al_Table_EV3.xlsx"
+          ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/5C/5C_PROTAC_dependency.xlsx"
+          ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/5B, D/Mueller-et-al_Table_EV3.xlsx"
+          ]
         },
         {
           "panel_label": "E",
@@ -226,22 +819,43 @@
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/5G/Differential_binding_SETD2_gene_body_3_vs_2.tsv",
+            "suppl_data/Figure 5.zip:Figure 5/5G/Volcano_SETD2_gene_body_coverage_3_vs_2.pdf",
+            "suppl_data/Figure 5.zip:Figure 5/5G/counts_SETD2_TSS_2kb.tsv",
+            "suppl_data/Figure 5.zip:Figure 5/5G/counts_SETD2_gene_body.tsv"
+          ]
         },
         {
           "panel_label": "H",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/5H/GRCh38.113_expressed_MV4_11_with_R_loops_level_4.bed",
+            "suppl_data/Figure 5.zip:Figure 5/5H/SETD2_metagene_all_replicates_expressed_R_loops_level_4.pdf",
+            "suppl_data/Figure 5.zip:Figure 5/5H/SETD2_metagene_expressed_R_loops_level_4.txt.gz"
+          ]
         },
         {
           "panel_label": "I",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/5I/GRCh38.113_expressed_MV4_11_with_R_loops_level_4.bed",
+            "suppl_data/Figure 5.zip:Figure 5/5I/SETD2_counts.tsv",
+            "suppl_data/Figure 5.zip:Figure 5/5I/SETD2_promoter_ratio_change_R_loops_4.pdf",
+            "suppl_data/Figure 5.zip:Figure 5/5I/counts_SETD2_TSS_2kb.tsv",
+            "suppl_data/Figure 5.zip:Figure 5/5I/counts_SETD2_gene_body.tsv"
+          ]
         },
         {
           "panel_label": "J",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/5J/Differential_binding_SETD2_gene_body_3_vs_2.tsv",
+            "suppl_data/Figure 5.zip:Figure 5/5J/GRCh38.113_expressed_MV4_11_with_R_loops_level_4.bed",
+            "suppl_data/Figure 5.zip:Figure 5/5J/SETD2_gene_body_coverage_change_DEseq_R_loops_4.pdf",
+            "suppl_data/Figure 5.zip:Figure 5/5J/counts_SETD2_TSS_2kb.tsv",
+            "suppl_data/Figure 5.zip:Figure 5/5J/counts_SETD2_gene_body.tsv"
+          ]
         },
         {
           "panel_label": "K",
@@ -254,6 +868,7 @@
       "figure_label": "Figure 6",
       "img_files": [],
       "sd_files": [],
+      "unassigned_sd_files": [],
       "figure_caption": "Model summarizing the scaffolding function of AURORA A, DICER and SETD2 in S-phase.",
       "caption_title": "Two-output model of the AURORA A complex",
       "panels": [

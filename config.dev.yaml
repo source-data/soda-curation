@@ -273,46 +273,51 @@ default: &default
 
             Follow these guidelines carefully:
 
-            1. Examine the provided panel labels (A, B, C, etc.) and list of data files.
+            1. Examine the provided panel labels (A, B, C, etc.) and list of data files. Panel labels in file and folder names may differ in case from the provided labels ("1c" = "C").
 
             2. Analyze file names and patterns to match files with specific panels based on:
-              - Panel letter indicators in file names
+              - Panel letter indicators in file and folder names
               - Data type descriptions that match panel content
               - Numerical sequences that align with panel ordering
               - File groupings that logically correspond to panel data
 
-            3. For each panel, assign:
-              - Files that explicitly mention that panel's label
-              - Files containing data shown in that panel
-              - Associated raw data files
-              - Analysis files specific to that panel
-              - Any supporting files clearly related to that panel's data
+            3. For each panel, assign every file that holds its data: files whose name or folder names the panel, raw data, analysis files and supporting files for that panel.
 
-            4. Files that cannot be confidently assigned to specific panels should be marked as 'unassigned'.
+            4. Files for several panels: assign the file to EVERY panel it belongs to. A file may appear in several panels' `panel_sd_files`. Read panel references in file and folder names:
+              - ranges: "A-E", "2C-D", "B to D", "H'-K'" → every panel in the range
+              - lists: "BandD", "D&F", "1F, G", "3A 3B", "A_C" → each panel listed
+              - a folder named for several panels ("Figure 5/A-F/") → its files belong to all of them
+              - the most specific reference wins: a file's own name over its folder, an inner folder over an outer one ("6 H-K/6J/x.tif" → J; "3E-X/image 3L_008.tif" → L)
+              - sub-panels (A', A'') belong to panel A
 
-            5. Important rules:
-              - Each file should only be assigned to one panel unless there's explicit evidence it belongs to multiple. 
-              - If a data file belongs to multiple panels, add it to `not_assigned_files`
-              - When in doubt, mark files as 'not_assigned_files' rather than guessing
-              - Include ALL files in your response (either assigned to panels or marked as unassigned)
+            5. `not_assigned_files` holds the figure-level files: files that belong to the figure but to no specific panel. Examples: data for the whole figure ("Figure 1 Numerical Data.xlsx", "Fig2_source_data.xlsx"), README or documentation files, and files whose name and folder give no clue which panel(s) they belong to. A file shared by several panels is NOT a figure-level file.
 
-            THIS IS AN EXAMPLE OF THE OUTPUT YOU SHOULD PROVIDE, given this input example:
-            INPUT EXAMPLE: ['suppl_data/figure_1.zip:A/A_1.csv', 'suppl_data/figure_1.zip:A/A_2.csv', 'suppl_data/figure_1.zip:A/A_3.csv', 'suppl_data/figure_1.zip:B/B_1.csv', 'suppl_data/figure_1.zip:B/B_2.csv', 'suppl_data/figure_1.zip:B/B_3.csv', 'suppl_data/data_table.csv']
+            6. System files are not data: leave them out of your response entirely (neither in a panel nor in `not_assigned_files`). These are macOS and Windows metadata files: names starting with "._" (e.g. "Figure 2/2A/._image.tif"), ".DS_Store", "Thumbs.db", "desktop.ini", and anything inside a "__MACOSX/" folder.
+
+            7. Every other file appears in your response exactly once per place it belongs: in one or more panels' `panel_sd_files`, or in `not_assigned_files`, never both.
+
+            EXAMPLE INPUT:
+            Panel labels: A, B, C, D
+            File list:
+            suppl_data/figure_1.zip:Figure 1/1A/A_1.csv
+            suppl_data/figure_1.zip:Figure 1/1A/._A_1.csv
+            suppl_data/figure_1.zip:Figure 1/1B-C/stats_BC.xlsx
+            suppl_data/figure_1.zip:Figure 1/1B-D/1D_blot.tif
+            suppl_data/figure_1.zip:Figure 1/1B-D/raw_counts.csv
+            suppl_data/figure_1.zip:Figure 1/Figure 1 source data.xlsx
+            suppl_data/figure_1.zip:Figure 1/README.txt
+
             CORRECT OUTPUT:
             ```json
-              {
-                "assigned_files": [
-                  {
-                      "panel_label": "A",
-                      "panel_sd_files": ['suppl_data/figure_1.zip:A/A_1.csv', 'suppl_data/figure_1.zip:A/A_2.csv', 'suppl_data/figure_1.zip:A/A_3.csv'],
-                  },
-                  {
-                    "panel_label": "B",
-                    panel_sd_files: ['suppl_data/figure_1.zip:B/B_1.csv', 'suppl_data/figure_1.zip:B/B_2.csv', 'suppl_data/figure_1.zip:B/B_3.csv'],
-                  }
-                ],
-                "not_assigned_files": ['suppl_data/data_table.csv']
-              }
+            {
+              "assigned_files": [
+                {"panel_label": "A", "panel_sd_files": ["suppl_data/figure_1.zip:Figure 1/1A/A_1.csv"]},
+                {"panel_label": "B", "panel_sd_files": ["suppl_data/figure_1.zip:Figure 1/1B-C/stats_BC.xlsx", "suppl_data/figure_1.zip:Figure 1/1B-D/raw_counts.csv"]},
+                {"panel_label": "C", "panel_sd_files": ["suppl_data/figure_1.zip:Figure 1/1B-C/stats_BC.xlsx", "suppl_data/figure_1.zip:Figure 1/1B-D/raw_counts.csv"]},
+                {"panel_label": "D", "panel_sd_files": ["suppl_data/figure_1.zip:Figure 1/1B-D/1D_blot.tif", "suppl_data/figure_1.zip:Figure 1/1B-D/raw_counts.csv"]}
+              ],
+              "not_assigned_files": ["suppl_data/figure_1.zip:Figure 1/Figure 1 source data.xlsx", "suppl_data/figure_1.zip:Figure 1/README.txt"]
+            }
             ```
 
             NOW YOU WILL RECEIVE THE REAL USER INPUT THAT YOU MUST ANALYZE, following the format:

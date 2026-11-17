@@ -2,7 +2,6 @@
 
 import logging
 import time
-from pathlib import Path
 from typing import Any, Dict
 
 import yaml
@@ -10,10 +9,11 @@ import yaml
 from src.soda_curation.pipeline.data_availability.data_availability_openai import (
     DataAvailabilityExtractorOpenAI,
 )
-from src.soda_curation.pipeline.manuscript_structure.manuscript_xml_parser import (
-    XMLStructureExtractor,
+from src.soda_curation.pipeline.manuscript_structure.manuscript_structure import (
+    ZipStructure,
 )
 from src.soda_curation.pipeline.prompt_handler import PromptHandler
+from src.soda_curation.pipeline.step_config import resolve_step_config
 
 from .base_runner import BaseBenchmarkRunner
 
@@ -44,56 +44,29 @@ class DataAvailabilityBenchmarkRunner(BaseBenchmarkRunner):
         self, test_case: Dict[str, Any], ground_truth: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Run data availability extraction test."""
-        temp_extract_dir = None
         try:
             start_time = time.time()
-
-            # Get manuscript path
             msid = test_case["msid"]
-            temp_extract_dir = self.create_temp_extract_dir(msid)
 
-            # Get ZIP path
-            zip_path = Path(self.config["manuscript_dir"]) / f"{msid}.zip"
-            if not zip_path.exists():
-                raise FileNotFoundError(f"ZIP file not found: {zip_path}")
+            # Input is the ground truth's data availability section; no package needed.
+            zip_structure = ZipStructure(manuscript_id=msid)
 
-            # Use XML extractor to get structure and extract files
-            extractor = XMLStructureExtractor(str(zip_path), str(temp_extract_dir))
-            zip_structure = extractor.extract_structure()
-
-            # Get the DOCX content
-            docx_content = extractor.extract_docx_content(zip_structure.docx)
-
-            # Load prompts from development configuration
-            with open(self.config["prompts_source"]) as f:
+            prompts_source = test_case.get(
+                "prompts_source", self.config["prompts_source"]
+            )
+            with open(prompts_source) as f:
                 dev_config = yaml.safe_load(f)
-
-            # Get the default configuration which contains our pipeline setup
             pipeline_config = dev_config.get("default", {}).get("pipeline", {})
             if not pipeline_config:
                 raise ValueError("No pipeline configuration found in default profile")
 
-            # Provider-specific configuration
             provider = test_case["provider"]
-
-            # Create extractor configuration
+            step = resolve_step_config(pipeline_config["extract_data_sources"])
             extractor_config = {
-                "api_key": None,  # We don't need to pass the API key here
                 "pipeline": {
                     "extract_data_sources": {
-                        provider: {
-                            "model": test_case["model"],
-                            "temperature": test_case["temperature"],
-                            "top_p": test_case["top_p"],
-                            "prompts": {
-                                "system": pipeline_config["extract_data_sources"][
-                                    provider
-                                ]["prompts"]["system"],
-                                "user": pipeline_config["extract_data_sources"][
-                                    provider
-                                ]["prompts"]["user"],
-                            },
-                        }
+                        "model": test_case["model"],
+                        "prompts": step["prompts"],
                     }
                 },
             }
@@ -189,7 +162,10 @@ class DataAvailabilityBenchmarkRunner(BaseBenchmarkRunner):
             }
 
             # Base result info
-            base_result = {"input": docx_content, "ai_response": str(updated_structure)}
+            base_result = {
+                "input": ground_truth_text,
+                "ai_response": str(updated_structure),
+            }
 
             # Collect rows for results DataFrame
             results = []
@@ -231,7 +207,7 @@ class DataAvailabilityBenchmarkRunner(BaseBenchmarkRunner):
             )
 
             return {
-                "input": docx_content,
+                "input": ground_truth_text,
                 "output": data_availability_text,
                 "expected": ground_truth_text,
                 "extracted_sources": data_sources,
@@ -251,8 +227,3 @@ class DataAvailabilityBenchmarkRunner(BaseBenchmarkRunner):
                 f"Error running data availability test: {str(e)}", exc_info=True
             )
             raise
-
-        finally:
-            # Cleanup temporary directory after processing
-            if temp_extract_dir:
-                self.cleanup_temp_dir(temp_extract_dir)

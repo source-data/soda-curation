@@ -9,13 +9,7 @@
       "suppl_data/SourceData_allEV.zip",
       "suppl_data/EMBOJ2023115537_Reagents_Tools_Table.docx"
   ],
-  "sd_files": [
-      "suppl_data/Figure1.zip",
-      "suppl_data/Figure2.zip",
-      "suppl_data/Figure4.zip",
-      "suppl_data/Figure5.zip",
-      "suppl_data/Figure6.zip"
-  ],
+  "sd_files": [],
   "figures": [
     {
       "figure_caption": "\n\n<p>(A and B) Representative images (left) and spline graphs of the\nintensity profiles along the indicated arrows (from position 0) in the\nrespective images (right) of wild-type HeLa cells expressing one of the\nGFP-tagged autophagy adaptors or ubiquitin, mRuby–Omp25, and\nHaloTag7–LC3B at 45 min after CCCP treatment. Separate mitochondria\nwithout contacting other mitochondria or isolation membranes (A; Mt) or\nmitochondria with an isolation membrane (B; Mt–IM) are shown. The\n<em>y</em>-axis in each of the graphs indicates the fluorescence\nintensity. Scale bars indicate 1 μm.</p>\n<p>(C) The relative intensity of GFP-tagged adaptors or ubiquitin (a and\nb) in LC3B-positive areas compared with LC3B-negative areas in panel B.\nGFP signals were normalized to the mRuby–Omp25 signals (a′ and b′) using\nthe formula Relative Intensity = (a/b)/(a′/b′), where a and a′ represent\nthe intensities in the LC3B-positive area, and b and b′ represent the\nintensities in the LC3B-negative area. Solid horizontal bars indicate\nthe means, and dots indicate the data from five structures. Differences\nwere statistically analyzed by one-way analysis of variance with\nDunnett’s post-hoc test.</p>\n<p>(D) Immunostaining of endogenous OPTN or NDP52 in wild-type HeLa\ncells expressing mRuby–Omp25 and HaloTag7–LC3B at 45 min after CCCP\ntreatment. Scale bars indicate 4 µm and 1 µm (magnified images).</p>\n<p>(E) Representative images (left) and spline graphs of the intensity\nprofiles along the indicated arrows (from position 0) in the respective\nimages (right) of HeLa cells lacking all five autophagy adaptors (penta\nKO cells) expressing indicated GFP-tagged autophagy adaptors,\nmRuby–Omp25, and HaloTag7–LC3B at 45 min after CCCP treatment.\nMitochondria with an isolation membrane (Mt–IM) are shown. The\n<em>y</em>-axis in each of the graphs indicates the fluorescence\nintensity. Scale bars indicate 1 μm.</p>\n<p>(F) The relative intensity of GFP-tagged adaptors or ubiquitin (a and\nb) in LC3B-positive areas compared with LC3B-negative areas in panel E.\nRelative intensities were calculated as in (C). Solid horizontal bars\nindicate the means, and dots indicate the data from five structures.\nDifferences were statistically analyzed by one-way analysis of variance\nwith Dunnett’s post-hoc test.</p>\n\n",

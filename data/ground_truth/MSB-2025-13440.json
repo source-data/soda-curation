@@ -4,45 +4,91 @@
   "docx": "",
   "pdf": "",
   "appendix": [],
+  "sd_files": [
+    "suppl_data/Dataset EV1.xlsx",
+    "suppl_data/Dataset EV2.xlsx",
+    "suppl_data/Dataset EV3.xlsx",
+    "suppl_data/Dataset EV4.xlsx",
+    "suppl_data/Dataset EV5.xlsx"
+  ],
+  "unassigned_sd_files": [
+    "suppl_data/Appendix_merged.pdf",
+    "suppl_data/MSB202513440RRRPeer Review File_figs in.pdf"
+  ],
   "figures": [
     {
       "figure_label": "Figure 1",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/figure 1.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<ol type=\"a\">\n<li><p>Allocation of glycolysis enzyme abundances in 8 human cancer cell lines in the CCLE project.</p></li>\n<li><p>Scatter plot comparing the abundances of metabolic enzymes between two human cancer cell lines, MCF-7 and HCT-116. Colors indicate density of data points. Sample size: n = 1830 enzymes; statistical test: Spearman’s rank correlation test. <mark>P-value &lt; 10<sup>-323</sup> means that the p-value is below the numerical precision limit of MATLAB double-precision calculations.</mark></p></li>\n<li><p>Distribution of Spearman’s rank correlation coefficient of metabolic enzyme abundance between 378 different human cancer cell lines in the CCLE project. Sample size: n = 87990 cell line pairs.</p></li>\n<li><p>Distributions of Spearman’s rank correlation coefficient of metabolic gene expression between human tumor samples in the TCGA project. Horizontal lines indicate median values. Sample size: n = 624403 (BRCA), 42196 (COAD), 135981 (HNSC), 146611 (KIRC), 146070 (LUAD), 125751 (LUSC), 125751 (PRAD), 131328 (THCA) sample pairs.</p></li>\n<li><p>Distributions of Spearman’s rank correlation coefficient of metabolic gene expression between human normal tissue samples in the TCGA project. Horizontal lines indicate median values. Sample size: n = 6328 (BRCA), 820 (COAD), 946 (HNSC), 2556 (KIRC), 1711 (LUAD), 1275 (LUSC), 1326 (PRAD), 1711 (THCA) sample pairs.</p></li>\n</ol>",
       "caption_title": "Allocation of human metabolic enzyme abundances is conserved",
       "panels": [
         {
           "panel_label": "a",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 1.zip:figure 1/a/Glycolysis_fraction_8_celllines.csv",
+            "suppl_data/figure 1.zip:figure 1/a/README.txt"
+          ]
         },
         {
           "panel_label": "b",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 1.zip:figure 1/b/Proteomics_two_celllines.csv",
+            "suppl_data/figure 1.zip:figure 1/b/README.txt"
+          ]
         },
         {
           "panel_label": "c",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 1.zip:figure 1/c/CCLE.csv",
+            "suppl_data/figure 1.zip:figure 1/c/README.txt"
+          ]
         },
         {
           "panel_label": "d",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 1.zip:figure 1/d/BRCA_tumor.csv",
+            "suppl_data/figure 1.zip:figure 1/d/COAD_tumor.csv",
+            "suppl_data/figure 1.zip:figure 1/d/HNSC_tumor.csv",
+            "suppl_data/figure 1.zip:figure 1/d/KIRC_tumor.csv",
+            "suppl_data/figure 1.zip:figure 1/d/LUAD_tumor.csv",
+            "suppl_data/figure 1.zip:figure 1/d/LUSC_tumor.csv",
+            "suppl_data/figure 1.zip:figure 1/d/PRAD_tumor.csv",
+            "suppl_data/figure 1.zip:figure 1/d/README.txt",
+            "suppl_data/figure 1.zip:figure 1/d/THCA_tumor.csv"
+          ]
         },
         {
           "panel_label": "e",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 1.zip:figure 1/e/BRCA_normal.csv",
+            "suppl_data/figure 1.zip:figure 1/e/COAD_normal.csv",
+            "suppl_data/figure 1.zip:figure 1/e/HNSC_normal.csv",
+            "suppl_data/figure 1.zip:figure 1/e/KIRC_normal.csv",
+            "suppl_data/figure 1.zip:figure 1/e/LUAD_normal.csv",
+            "suppl_data/figure 1.zip:figure 1/e/LUSC_normal.csv",
+            "suppl_data/figure 1.zip:figure 1/e/PRAD_normal.csv",
+            "suppl_data/figure 1.zip:figure 1/e/README.txt",
+            "suppl_data/figure 1.zip:figure 1/e/THCA_normal.csv"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 2",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/figure 2.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<ol type=\"a\">\n<li><p>The mathematical model for maximization of flux efficiency in a linear metabolic pathway with first-order kinetics.</p></li>\n<li><p>Scheme of a linear metabolic pathway model with reversible Michaelis-Menten kinetics.</p></li>\n<li><p>Bar plot showing the distribution of Pearson’s correlation coefficient between log10(K) and log10(CAQ) at optimal efficiency for the linear metabolic pathway with Michaelis-Menten kinetics. Sample size: n = 4533 parameter sets.</p></li>\n<li><p>Scatter plot comparing mean enzyme saturation term and Pearson’s correlation coefficient between log10(K) and log10(CAQ) at optimal efficiency for the linear metabolic pathway with Michaelis-Menten kinetics. Colors indicate density of data points. Sample size: n = 4533 parameter sets.</p></li>\n</ol>",
       "caption_title": "K-CAQ coupling at optimal efficiency of metabolic pathways",
       "panels": [
@@ -59,12 +105,18 @@
         {
           "panel_label": "c",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 2.zip:figure 2/c/Pearson_R_log10K_log10CAQ.csv",
+            "suppl_data/figure 2.zip:figure 2/c/README.txt"
+          ]
         },
         {
           "panel_label": "d",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 2.zip:figure 2/d/Pearson_R_vs_Saturation.csv",
+            "suppl_data/figure 2.zip:figure 2/d/README.txt"
+          ]
         }
       ]
     },
@@ -72,6 +124,7 @@
       "figure_label": "Figure 3",
       "img_files": [],
       "sd_files": [],
+      "unassigned_sd_files": [],
       "figure_caption": "<ol type=\"a\">\n<li><p>Workflow for validation of the K-CAQ relationship with thermodynamics, enzyme kinetics, and omics datasets.</p></li>\n<li><p>Adjustment of equilibrium constants for reactions depending on cofactors such as ATP/ADP.</p></li>\n<li><p>K-CAQ relationship at maximal flux efficiency for reactions catalyzed by isozymes.</p></li>\n</ol>",
       "caption_title": "Validation of the K-CAQ relationship at maximal flux efficiency",
       "panels": [
@@ -95,7 +148,10 @@
     {
       "figure_label": "Figure 4",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/figure 4.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<ol type=\"a\">\n<li><p>Diagram of the glycolysis pathway in <em>H. sapiens</em>, <em>S. cerevisiae</em>, and <em>E.coli</em>.</p></li>\n<li><p>Scatter plot comparing K and average CAQ (<span class=\"math inline\"><em>a</em><sub><em>i</em></sub>[<em>E</em><sub><em>i</em></sub>]<sup>2</sup>/(<em>a</em><sub><em>i</em> + 1</sub>[<em>E</em><sub><em>i</em> + 1</sub>]<sup>2</sup>)</span>)\nof tandem reaction pairs in glycolysis for normal human tissue samples\nin TCGA. Sample size: n = 112 (BRCA), 41 (COAD), 43 (HNSC), 71 (KIRC),\n58 (LUAD), 50 (LUSC), 51 (PRAD), 58 (THCA) samples.</p></li>\n<li><p>Same as in (b) but for TCGA human tumor samples. Sample size: n =\n1117 (BRCA), 291 (COAD), 521 (HNSC), 541 (KIRC), 540 (LUAD), 501 (LUSC),\n501 (PRAD), 512 (THCA) samples.</p></li>\n<li><p>Same as in (b) but for 378 CCLE human cell lines. <mark>Dots\nindicate the mean of log<sub>10</sub>(CAQ), and horizontal bars indicate\nthe standard deviation of log<sub>10</sub>(CAQ) across different cell\nlines.</mark> Sample size: n = 378 cell lines.</p></li>\n<li><p>Distribution of RMSE between log10(K) and log10(CAQ), i.e. EOI of\nglycolysis, for the human cell lines, tumors, and normal tissue samples.\nHorizontal lines indicate median values. Sample size: n = 4531 (TCGA\ntumor), 491 (TCGA normal), 378 (CCLE cell lines).</p></li>\n<li><p>Same as in (b) but for the budding yeast <em>Saccharomyces\ncerevisiae</em>. <mark>Dots indicate the mean of log<sub>10</sub>(CAQ),\nand horizontal bars indicate the standard deviation of\nlog<sub>10</sub>(CAQ) across different samples.</mark> Sample size: n =\n16 experimental conditions.</p></li>\n<li><p>Same as in (b) but for the bacteria <em>Escherichia coli</em>.\n<mark>Dots indicate the mean of log<sub>10</sub>(CAQ), and horizontal\nbars indicate the standard deviation of log<sub>10</sub>(CAQ) across\ndifferent samples.</mark> Sample size: n = 66 experimental\nconditions.</p></li>\n<li><p>Distribution of the EOI of glycolysis in the <em>E.coli</em> and\n<em>S.cerevisiae</em> samples. Sample size: n = 16\n(<em>S.cerevisiae</em>), 66 (<em>E.coli</em>).</p></li>\n</ol>",
       "caption_title": "Comparison between enzyme allocation profiles and the K-CAQ relationship for glycolysis",
       "panels": [
@@ -107,44 +163,82 @@
         {
           "panel_label": "b",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 4.zip:figure 4/b-c/README.txt",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-BRCA.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-COAD.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-HNSC.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-KIRC.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-LUAD.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-LUSC.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-PRAD.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-THCA.glycolysis.csv"
+          ]
         },
         {
           "panel_label": "c",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 4.zip:figure 4/b-c/README.txt",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-BRCA.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-COAD.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-HNSC.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-KIRC.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-LUAD.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-LUSC.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-PRAD.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/b-c/TCGA-THCA.glycolysis.csv"
+          ]
         },
         {
           "panel_label": "d",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 4.zip:figure 4/d/CCLE_proteome.glycolysis.csv",
+            "suppl_data/figure 4.zip:figure 4/d/README.txt"
+          ]
         },
         {
           "panel_label": "e",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 4.zip:figure 4/e/README.txt",
+            "suppl_data/figure 4.zip:figure 4/e/human_RMSE.csv"
+          ]
         },
         {
           "panel_label": "f",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 4.zip:figure 4/f/README.txt",
+            "suppl_data/figure 4.zip:figure 4/f/S.cerevisiae_calc.csv"
+          ]
         },
         {
           "panel_label": "g",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 4.zip:figure 4/g/E.coli_calc.csv",
+            "suppl_data/figure 4.zip:figure 4/g/README.txt"
+          ]
         },
         {
           "panel_label": "h",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 4.zip:figure 4/h/README.txt",
+            "suppl_data/figure 4.zip:figure 4/h/RMSE.csv"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 5",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/figure 5.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<ol type=\"a\">\n<li><p>Definition of flux efficiency and control efficiency, and the Pareto front balancing the needs to maximize these two objectives.</p></li>\n<li><p>Scatter plot showing flux efficiency and control efficiency in randomly sampled enzyme allocation profiles (grey dots), Pareto front balancing these two (green curve), and the CAQ-matched Pareto solution (orange diamond) for human glycolysis. Sample size: n = 2000 (random), 101 (Pareto).</p></li>\n<li><p>Relationship between K and CAQ on the Pareto front for glycolysis in <em>H.sapiens</em>. Orange diamonds indicate the CAQ-matched Pareto solution. Sample size: n = 101 Pareto solutions.</p></li>\n<li><p>Scatter plot comparing CAQ values between the CAQ-matched Pareto solution and experimental values computed from proteomics data for glycolysis in <em>H.sapiens.</em></p></li>\n<li><p>Same as in (b), but for the budding yeast <em>S.cerevisiae</em>. Sample size: n = 2000 (random), 101 (Pareto).</p></li>\n<li><p>Same as in (c), but for the budding yeast <em>S.cerevisiae</em>. Sample size: n = 101 Pareto solutions.</p></li>\n<li><p>Same as in (d) but for the budding yeast <em>S.cerevisiae</em>.</p></li>\n<li><p>Same as in (b), but for the bacteria <em>E.coli</em>. Sample size: n = 2000 (random), 101 (Pareto).</p></li>\n<li><p>Same as in (c), but for the bacteria <em>E.coli</em>. Sample size: n = 101 Pareto solutions.</p></li>\n<li><p>Same as in (d), but for the bacteria <em>E.coli</em>.</p></li>\n</ol>",
       "caption_title": "A trade-off between flux efficiency and control efficiency explains the deviation between K and CAQ",
       "panels": [
@@ -156,93 +250,147 @@
         {
           "panel_label": "b",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 5.zip:figure 5/b/Glycolysis, H. sapiens_flux_vs_control_Pareto.csv",
+            "suppl_data/figure 5.zip:figure 5/b/Glycolysis, H. sapiens_flux_vs_control_random.csv",
+            "suppl_data/figure 5.zip:figure 5/b/README.txt"
+          ]
         },
         {
           "panel_label": "c",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 5.zip:figure 5/c/Glycolysis, H. sapiens_Pareto_K_CAQ.csv",
+            "suppl_data/figure 5.zip:figure 5/c/README.txt"
+          ]
         },
         {
           "panel_label": "d",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 5.zip:figure 5/d/Glycolysis, H. sapiens_CAQ_comparison.csv",
+            "suppl_data/figure 5.zip:figure 5/d/README.txt"
+          ]
         },
         {
           "panel_label": "e",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 5.zip:figure 5/e/Glycolysis, S. cerevisiae_flux_vs_control_Pareto.csv",
+            "suppl_data/figure 5.zip:figure 5/e/Glycolysis, S. cerevisiae_flux_vs_control_random.csv",
+            "suppl_data/figure 5.zip:figure 5/e/README.txt"
+          ]
         },
         {
           "panel_label": "f",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 5.zip:figure 5/f/Glycolysis, S. cerevisiae_Pareto_K_CAQ.csv",
+            "suppl_data/figure 5.zip:figure 5/f/README.txt"
+          ]
         },
         {
           "panel_label": "g",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 5.zip:figure 5/g/Glycolysis, S. cerevisiae_CAQ_comparison.csv",
+            "suppl_data/figure 5.zip:figure 5/g/README.txt"
+          ]
         },
         {
           "panel_label": "h",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 5.zip:figure 5/h/Glycolysis, E. coli_flux_vs_control_Pareto.csv",
+            "suppl_data/figure 5.zip:figure 5/h/Glycolysis, E. coli_flux_vs_control_random.csv",
+            "suppl_data/figure 5.zip:figure 5/h/README.txt"
+          ]
         },
         {
           "panel_label": "i",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 5.zip:figure 5/i/Glycolysis, E. coli_Pareto_K_CAQ.csv",
+            "suppl_data/figure 5.zip:figure 5/i/README.txt"
+          ]
         },
         {
           "panel_label": "j",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 5.zip:figure 5/j/Glycolysis, E. coli_CAQ_comparison.csv",
+            "suppl_data/figure 5.zip:figure 5/j/README.txt"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 6",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/figure 6.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<ol type=\"a\">\n<li><p>Scatter plots comparing metabolite concentrations predicted by\nthe maximal-flux solution to experimental measurements for glycolysis in\n<em>H.sapiens</em>.</p></li>\n<li><p>Same as in (a) but for the budding yeast\n<em>S.cerevisiae</em>.</p></li>\n<li><p>Same as in (a) but for the bacteria <em>E.coli</em>.</p></li>\n<li><p>Scatter plots comparing metabolite concentrations predicted by\nthe CAQ-matched Pareto solution to experimental measurements for\nglycolysis in <em>H.sapiens.</em></p></li>\n<li><p>Same as in (d) but for the budding yeast\n<em>S.cerevisiae</em>.</p></li>\n<li><p>Same as in (d) but for the bacteria <em>E.coli</em>.</p></li>\n</ol>",
       "caption_title": "The theory of flux-control trade-off correctly predicts metabolite concentrations",
       "panels": [
         {
           "panel_label": "a",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 6.zip:figure 6/ad/Glycolysis, H. sapiens_metconc_comparison.csv",
+            "suppl_data/figure 6.zip:figure 6/ad/README.txt"
+          ]
         },
         {
           "panel_label": "b",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 6.zip:figure 6/be/Glycolysis, S. cerevisiae_metconc_comparison.csv",
+            "suppl_data/figure 6.zip:figure 6/be/README.txt"
+          ]
         },
         {
           "panel_label": "c",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 6.zip:figure 6/cf/Glycolysis, E. coli_metconc_comparison.csv",
+            "suppl_data/figure 6.zip:figure 6/cf/README.txt"
+          ]
         },
         {
           "panel_label": "d",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 6.zip:figure 6/ad/Glycolysis, H. sapiens_metconc_comparison.csv",
+            "suppl_data/figure 6.zip:figure 6/ad/README.txt"
+          ]
         },
         {
           "panel_label": "e",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 6.zip:figure 6/be/Glycolysis, S. cerevisiae_metconc_comparison.csv",
+            "suppl_data/figure 6.zip:figure 6/be/README.txt"
+          ]
         },
         {
           "panel_label": "f",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 6.zip:figure 6/cf/Glycolysis, E. coli_metconc_comparison.csv",
+            "suppl_data/figure 6.zip:figure 6/cf/README.txt"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 7",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/figure 7.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<ol type=\"a\">\n<li><p>Scheme of the TCA cycle in <em>E.coli</em>.</p></li>\n<li><p>Scatter plot showing flux efficiency and control efficiency in randomly sampled enzyme allocation profiles (grey dots), Pareto front balancing these two (green curve), and the CAQ-matched Pareto solution (orange diamond). Sample size: n = 2000 (random), 101 (Pareto).</p></li>\n<li><p>Scatter plot comparing K and CAQ for reaction pairs in <em>E.coli</em> TCA cycle. CAQ values were estimated from proteomics data for <em>E.coli</em>. <mark>Dots indicate the mean of log<sub>10</sub>(CAQ), and horizontal bars indicate the standard deviation of log<sub>10</sub>(CAQ) across different samples.</mark> Sample size: n = 66 experimental conditions.</p></li>\n<li><p>Relationship between K and CAQ on the Pareto front balancing flux efficiency and control efficiency. Sample size: n = 101 Pareto solutions.</p></li>\n<li><p>Scatter plot comparing CAQ values between the CAQ-matched Pareto solution and experimental values computed from proteomics data.</p></li>\n<li><p>Scatter plot comparing metabolite concentrations predicted by the CAQ-matched Pareto solution to experimental measurements.</p></li>\n<li><p>Scatter plot comparing metabolite concentrations predicted by the maximal-flux solution to experimental measurements.</p></li>\n</ol>",
       "caption_title": "Flux-control trade-off in E.coli TCA cycle",
       "panels": [
@@ -254,51 +402,79 @@
         {
           "panel_label": "b",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 7.zip:figure 7/b/README.txt",
+            "suppl_data/figure 7.zip:figure 7/b/TCA cycle, E. coli_flux_vs_control_Pareto.csv",
+            "suppl_data/figure 7.zip:figure 7/b/TCA cycle, E. coli_flux_vs_control_random.csv"
+          ]
         },
         {
           "panel_label": "c",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 7.zip:figure 7/c/README.txt",
+            "suppl_data/figure 7.zip:figure 7/c/eco_TCA.csv"
+          ]
         },
         {
           "panel_label": "d",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 7.zip:figure 7/d/README.txt",
+            "suppl_data/figure 7.zip:figure 7/d/TCA cycle, E. coli_Pareto_K_CAQ.csv"
+          ]
         },
         {
           "panel_label": "e",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 7.zip:figure 7/e/README.txt",
+            "suppl_data/figure 7.zip:figure 7/e/TCA cycle, E. coli_CAQ_comparison.csv"
+          ]
         },
         {
           "panel_label": "f",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 7.zip:figure 7/f-g/README.txt",
+            "suppl_data/figure 7.zip:figure 7/f-g/TCA cycle, E. coli_metconc_comparison.csv"
+          ]
         },
         {
           "panel_label": "g",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 7.zip:figure 7/f-g/README.txt",
+            "suppl_data/figure 7.zip:figure 7/f-g/TCA cycle, E. coli_metconc_comparison.csv"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 8",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/figure 8.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<ol type=\"a\">\n<li><p>Top pathways enriched in genes negatively correlated with EOI of glycolysis in TCGA-COAD. Statistical test: permutation test.</p></li>\n<li><p>Enrichment scores for oncogenic signaling pathways negatively associated with EOI of glycolysis.</p></li>\n<li><p>Regulatory links between oncogenic signaling pathways associated with EOI of glycolysis. Blue blocks indicate membrane-associated pathways and purple blocks indicate membrane-unassociated pathways.</p></li>\n<li><p>Spearman’s rank correlation between fraction of glycolytic enzyme in total cellular proteome and EOI of glycolysis. Sample size: n = 19 groups of samples.</p></li>\n</ol>",
       "caption_title": "Determinants of glycolytic efficiency optimization",
       "panels": [
         {
           "panel_label": "a",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 8.zip:figure 8/a/GSEA_COAD.csv",
+            "suppl_data/figure 8.zip:figure 8/a/README.txt"
+          ]
         },
         {
           "panel_label": "b",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 8.zip:figure 8/b/README.txt",
+            "suppl_data/figure 8.zip:figure 8/b/pathway_correlation.csv"
+          ]
         },
         {
           "panel_label": "c",
@@ -308,7 +484,10 @@
         {
           "panel_label": "d",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/figure 8.zip:figure 8/d/README.txt",
+            "suppl_data/figure 8.zip:figure 8/d/corr_P.csv"
+          ]
         }
       ]
     }

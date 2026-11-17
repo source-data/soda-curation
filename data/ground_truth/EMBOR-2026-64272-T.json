@@ -4,11 +4,34 @@
   "docx": "",
   "pdf": "",
   "appendix": [],
+  "sd_files": [],
+  "unassigned_sd_files": [
+    "suppl_data/AppendixEMBOR202664272R4.pdf",
+    "suppl_data/EMBOR202664272V4Peer Review File.pdf",
+    "suppl_data/Figure EV1.zip:Figure EV1/Figure EV1A/Figure EV1A-Pg whole cell-InlA.tiff",
+    "suppl_data/Figure EV1.zip:Figure EV1/Figure EV1A/Figure EV1A-Supernatant-InlA.tiff",
+    "suppl_data/Figure EV1.zip:Figure EV1/Figure EV1B/EV1B-Pg cells-InlB.tiff",
+    "suppl_data/Figure EV1.zip:Figure EV1/Figure EV1B/EV1B-Supernatant-InlB.tiff",
+    "suppl_data/Figure EV1.zip:Figure EV1/Figure EV1C-E/Pg Invasion Raw Data for Manuscript.xlsx",
+    "suppl_data/Figure EV1.zip:Figure EV1/Figure EV1C-E/Raw Data for MOI 100 vs 200 and 1hr2hr.xlsx",
+    "suppl_data/Figure EV2.zip:Figure EV2/Figure EV2A.jpg",
+    "suppl_data/Figure EV2.zip:Figure EV2/Figure EV2C.xlsx",
+    "suppl_data/Figure EV2.zip:Figure EV2/Figure EV2D.jpg",
+    "suppl_data/Figure EV2.zip:Figure EV2/Figure EV2E.jpg",
+    "suppl_data/Figure EV2.zip:Figure EV2/Figure EV2F.xlsx",
+    "suppl_data/Figure EV2.zip:Figure EV2/Figure EV2G.xlsx",
+    "suppl_data/Figure EV2.zip:Figure EV2/Figure EV2H.xlsx",
+    "suppl_data/Figure EV2.zip:Figure EV2/Figure EV2I.xlsx",
+    "suppl_data/Figure EV2.zip:Figure EV2/Figure EV2J-K.xlsx"
+  ],
   "figures": [
     {
       "figure_label": "Figure 1",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 1.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<p><strong>Figure 1. Identification of two internalin-like proteins\nin <em>P. gingivalis</em>. (A)</strong> Schematic diagrams illustrating\nthe domain architecture of PG0350 (InlA) and PG1374 (InlB). SP,\nSec-dependent signal peptide; β-s: β-strands; LRRs, leucine-rich\nrepeats; Ln, linker; CTD, C-terminal domain.\n<strong>(B)</strong> AlphaFold structural models of InlA (UniProt:\nQ7MX64) and InlB (UniProt: F5HDB6). N, N-terminus; C, C-terminus.\n<strong>(C)</strong> InlA and InlB are toxic to yeast cells. Yeast\nstrains expressing InlA (residues 26-484) or InlB (residues 24-428)\nunder a galactose-inducible promoter (PGAL1; pYES2/NTA2 plasmid) were\nserially diluted and spotted onto plates containing glucose or\ngalactose. Plates were incubated at 30 °C for 48 h prior to imaging.\nCtrl, empty vector control. <strong>(D, E)</strong> InlA and InlB are\ntoxic to mammalian cells. Codon-optimized InlA and InlB sequences were\ncloned into the pcDNA6.2 C-EmGFP-GW TOPO expression vector (Invitrogen)\nand transiently transfected into HEK293T cells. The expression of\nGFP-tagged InlA/InlB was confirmed by immunoblotting using anti-GFP\nantibody (D) and by fluorescence microscopy (E). Images were acquired 72\nh post-transfection. Arrows highlight round and shrinking cells. Scale\nbars, 20 μm. These experiments were repeated independently at least\nthree times and representative results from one experiment are\nshown.</p>",
       "caption_title": "<strong>Figure 1. Identification of two internalin-like proteins\nin <em>P. gingivalis</em>. (A)</strong>",
       "panels": [
@@ -25,12 +48,16 @@
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/Figure 1C-D.tiff"
+          ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 1.zip:Figure 1/Figure 1C-D.tiff"
+          ]
         },
         {
           "panel_label": "E",
@@ -42,56 +69,78 @@
     {
       "figure_label": "Figure 2",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 2.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<p><strong>Figure 2. InlA and InlB bind TIGK cells through E-cadherin. (A, B)</strong> Co-immunoprecipitation (co-IP) assays. TIGK cell lysates were incubated with His-tagged recombinant InlA (rInlA) or InlB (rInlB; 20 μg/ml) for 3 hours at 4 °C, followed by incubation with Ni-NTA resin overnight. After washing (PBS, 0.05% Tween 20), bound proteins were eluted in Laemmli buffer and analyzed by immunoblotting with anti-His and anti-E-cadherin antibodies. <strong>(C)</strong> Co-IP assays using rInlB and recombinant Fc-E-cadherin (rE-cad).\n<strong>(D)</strong> Co-localization of InlA/InlB with E-cadherin. TIGK cells were incubated with FITC-labeled InlA or InlB (20 μg/ml, 2 h), followed by immunostaining with anti-E-cadherin and Alexa Fluor 594-conjugated secondary antibodies. Nuclei were counterstained with DAPI. Images were acquired using a Zeiss fluorescence microscope with a 63× oil-immersion objective. Scale bars: 20 μm.\n<strong>(E)</strong> E-cadherin knockdown efficiency in siRNA-transfected TIGK cells was confirmed by immunoblotting.\n<strong>(F)</strong> Binding of FITC-InlB to TIGK cells following E-cadherin knockdown was assessed by immuno-fluorescence microscopy.\nScale bars: 20 μm. <strong>(G)</strong> Quantification of FITC-InlB-positive cells was performed using ImageJ.\n<strong>(H)</strong> Binding and internalization of FITC-labeled InlA or InlB in RKO and MOC1 cells were analyzed by immunofluorescence staining.\nScale bars: 20 μm. All experiments were repeated independently at least three times and representative results from one experiment are shown.</p>",
       "caption_title": "<strong>Figure 2. InlA and InlB bind TIGK cells through E-cadherin. (A, B)</strong>",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/Figure 2A.jpg"
+          ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/Figure 2B.jpg"
+          ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/Figure 2C.jpg"
+          ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/Figure 2D.jpg"
+          ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/Figure 2E.jpg"
+          ]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/Figure 2F.jpg"
+          ]
         },
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/Figure 2G.xlsx"
+          ]
         },
         {
           "panel_label": "H",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 2.zip:Figure 2/Figure 2H.jpg"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 3",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 3.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<p><strong>Figure 3. InlB binds the extracellular domains of E-cadherin\nwith high affinity. (A)</strong> Schematic of E-cadherin showing five\nextracellular cadherin repeats (Ec1-5), transmembrane domain (TM), and\ncytoplasmic domain (CD). <strong>(B)</strong> SDS-PAGE of purified\nGST-tagged E-cadherin constructs: Ec1-5, Ec1, Ec1* (Ec1<sup>P16E</sup>),\nand Ec2-5. <strong>(C, D)</strong> SPR analysis of InlB and Ec1-5.\n<strong>(E, F)</strong> SPR analysis of InlB and Ec1. <strong>(G,\nH)</strong> SPR analysis of InlB and Ec2-5. <strong>(I, J)</strong> SPR\nanalysis of InlB and Ec1<sup>P16E</sup>. For this study, SPR was\nconducted using multiple concentrations (0.5, 1.0, 2.0, 4.0 and 5.0 μM)\nof recombinant InlB. The same experiment was conducted using recombinant\nInlA (Appendix Fig. S7, 8). Detail association (<em>K<sub>a</sub></em>)\nand dissociation (<em>K<sub>d</sub></em>) kinetics for InlA and InlB and\nE-cadherin proteins are summarized in Appendix Table S1. The equilibrium\ndissociation constant (<em>K<sub>D</sub></em>) was calculated for each\nbinding experiment. The unit for <em>K<sub>D</sub></em> is Molar (M).\nDetail <em>K<sub>D </sub></em>values for InlA and InlB are summarized in\nAppendix Table S1. SPR experiments were repeated independently at least\nfive times and representative results from one experiment are shown.\n<strong>(K)</strong> Structural modeling shows that Ec1 (cyan) interacts\nin the internal grove of InlB (tan, F5HDB6). <strong>(L)</strong>\nClose-up of the InlB-Ec1 interface highlights key residues and hydrogen\nbonds/salt bridges. Models of protein complexes between human E-cadherin\nEc1 domain and InlA/InlB were generated using AlphaFold3. Structures\nwere visualized, analyzed and figures were prepared using PyMol.</p>",
       "caption_title": "<p><strong>Figure 3. InlB binds the extracellular domains of E-cadherin\nwith high affinity. (A)</strong>",
       "panels": [
@@ -103,47 +152,73 @@
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3B/Figure 3B.tiff"
+          ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3C/Figure 3C-InlB-Ec1-5.tif",
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3C/Figure 3C-InlB-Ec1-5.xlsx"
+          ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3D/Figure 3D-InlB-Ec1-5 - Affinity EC50.tif",
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3D/Figure 3D-InlB-Ec1-5 - Affinity Ec50.xlsx"
+          ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3E/Figure 3E-InlB-Ec1.tif",
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3E/Figure 3E-InlB-Ec1.xlsx"
+          ]
         },
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3F/Figure 3F-InlB-Ec1 - Affinity EC50.tif",
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3F/Figure 3F-InlB-Ec1 - Affinity EC50.xlsx"
+          ]
         },
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3G/Figure 3G-InlB-Ec2-5.tif",
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3G/Figure 3G-InlB-Ec2-5.xlsx"
+          ]
         },
         {
           "panel_label": "H",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3H/Figure 3H-InlB-Ec2-5 - Affinity EC50.tif",
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3H/Figure 3H-InlB-Ec2-5 - Affinity EC50.xlsx"
+          ]
         },
         {
           "panel_label": "I",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3I/Figure 3I-InlB- Ec1P16E.tif",
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3I/Figure 3I-InlB-EC1P16E.xlsx"
+          ]
         },
         {
           "panel_label": "J",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3J/Figure 3J- InlB-EC1P16E - Affinity EC50.tif",
+            "suppl_data/Figure 3.zip:Figure 3/Figure 3J/Figure 3J-InlB-ECP16E - Affinity EC50.xlsx"
+          ]
         },
         {
           "panel_label": "K",
@@ -160,7 +235,10 @@
     {
       "figure_label": "Figure 4",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 4.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<p><strong>Figure 4. InlB promotes migration and invasion of head and\nneck cancer cells. (A, B)</strong> Wound-healing assay assessing HN30\ncell migration following InlB treatment (20 μg/ml); representative\nimages at 0 and 24 h (A) and ImageJ quantification of wound area\nrelative to 0 h (B). Ctrl: PBS. Scale bars: 100 μm. <strong>(C,\nD)</strong> Transwell assays evaluating the effects of InlA or InlB on\nHN30 cell invasion after overnight treatment; invaded and migrated cells\nper field were quantified. Ctrl: PBS. Scale bars: 100 μm. <strong>(E,\nF)</strong> Transwell assays assessing HN30 cell migration following\nInlB or InlA treatment; wound area quantified using ImageJ. Ctrl: PBS.\nScale bars: 100 μm. <strong>(G, H)</strong> qRT-PCR analysis of ZEB1 and\nMMP9 expression in HN30 cells treated with InlB or InlA for 24 h. Ctrl:\nPBS. <strong>(I)</strong> Immunoblot analysis of ZEB1 and MMP9 protein\nlevels in HN30 cells following InlB or InlA treatment (24 h). Ctrl: PBS.\n<strong>(J)</strong> Immunoblot analysis of ZEB1 and MMP9 in HN30 cells\ntransfected with E-cadherin siRNA and treated with or without InlB or\nInlA. <strong>(K, L)</strong> qRT-PCR analysis of ZEB1 and MMP9\nexpression in HN30 cells transfected with E-cadherin siRNA and treated\nwith InlB. These experiments were repeated independently three times and\nrepresentative results from one experiment are shown.</p>",
       "caption_title": "<p><strong>Figure 4. InlB promotes migration and invasion of head and\nneck cancer cells. (A, B)</strong>",
       "panels": [
@@ -172,7 +250,9 @@
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/Figure 4B.xlsx"
+          ]
         },
         {
           "panel_label": "C",
@@ -182,7 +262,9 @@
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/Figure 4D.xlsx"
+          ]
         },
         {
           "panel_label": "E",
@@ -192,124 +274,172 @@
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/Figure 4F.xlsx"
+          ]
         },
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/Figure 4G.xlsx"
+          ]
         },
         {
           "panel_label": "H",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/Figure 4H.xlsx"
+          ]
         },
         {
           "panel_label": "I",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/Figure 4I.jpg"
+          ]
         },
         {
           "panel_label": "J",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/Figure 4J.tiff"
+          ]
         },
         {
           "panel_label": "K",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/Figure 4K.xlsx"
+          ]
         },
         {
           "panel_label": "L",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 4.zip:Figure 4/Figure 4L.xlsx"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 5",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 5.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<p><strong>Figure 5. JNK/p38 signaling mediates InlA/InlB-induced MMP9\nexpression. (A, B)</strong> InlB-induced MMP9 mRNA and protein\nexpression was suppressed by the JNK inhibitor SP600125. Ctrl: DMSO.\n<strong>(C, D)</strong> InlA/InlB-induced MMP9 protein levels were\ninhibited by NF-κB and p38 inhibitors. Ctrl: DMSO.\n<strong>(E)</strong> Activation of JNK/p38 signaling by InlA and InlB\nwas assessed by immunoblotting for phosphorylated JNK, p38, p65/NF-κB,\nand c-Jun. Ctrl: PBS. These experiments were repeated independently\nthree times and representative results from one experiment are\nshown.</p>",
       "caption_title": "Figure 5. JNK/p38 signaling mediates InlA/InlB-induced MMP9\nexpression. (A, B)",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/Figure 5A.xlsx"
+          ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/Figure 5B.jpg"
+          ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/Figure 5C.jpg"
+          ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/Figure 5D.jpg"
+          ]
         },
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 5.zip:Figure 5/Figure 5E-1.jpg",
+            "suppl_data/Figure 5.zip:Figure 5/Figure 5E-2.jpg"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 6",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 6.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<p><strong>Figure 6. InlA and InlB induce β-catenin phosphorylation and nuclear translocation. (A, B)</strong> β-catenin localization in TIGK cells treated with InlB (A) or InlA (B) for 2 h or overnight was assessed by immunofluorescence microscopy. Arrows highlight β-catenin in nuclear. Ctrl: PBS. Scale bars: 20 μm. <strong>(C)</strong> Immunoblot analysis of cytoplasmic and nuclear β-catenin levels in TIGK cells following overnight InlB treatment. Ctrl: PBS.\n<strong>(D)</strong> Immunoblot analysis of β-catenin phosphorylation in TIGK cells treated with InlB for 2 h or overnight. Ctrl: PBS. These experiments were repeated independently three times and representative results from one experiment are shown.</p>",
       "caption_title": "<strong>Figure 6. InlA and InlB induce β-catenin phosphorylation and nuclear translocation. (A, B)</strong>",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 6.zip:Figure 6/Figure 6A.jpg"
+          ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 6.zip:Figure 6/Figure 6B.jpg"
+          ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 6.zip:Figure 6/Figure 6C.jpg"
+          ]
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 6.zip:Figure 6/Figure 6D.jpg"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 7",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 7.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<p><strong>Figure 7. InlA and InlB enhance HNSCC cells resistance to\ncisplatin by inhibiting apoptosis. (A, B, C)</strong> CCK-8 assays\ndetermining the viability of TIGK (A), HN30 (B) and HSC3 (C) cells in\ncisplatin pretreated with or without InlA/InlB (2 h). Ctrl: PBS.\n<strong>(D)</strong> Crystal violet staining assessing cell viability\nfollowing cisplatin treatment in TIGK (top panel) and HN30 (lower panel)\ncells pretreated with or without InlA/InlB. Ctrl: PBS.\n<strong>(E)</strong> CCK-8 assays determining cisplatin IC₅₀ in TIGK\ncells pretreated with or without InlA/InlB (2 h). Ctrl: PBS. <strong>(F,\nG, H)</strong> Annexin V staining detecting cisplatin-induced apoptotic\ncells of TIGK and HN30 pretreated with or without InlA/InlB (2 h). Ctrl:\nPBS. <strong>(I)</strong> Immunoblot analysis of apoptosis-related\nproteins (cleaved caspase-3, cleaved caspase-9, cleaved PARP, Bcl-2, and\nBax) in cells treated with cisplatin with or without InlA/InlB\npretreatment. Ctrl: PBS. All experiments were repeated independently\nfive times and representative results from one experiment are shown.</p>",
       "caption_title": "<strong>Figure 7. InlA and InlB enhance HNSCC cells resistance to\ncisplatin by inhibiting apoptosis. (A, B, C)</strong>",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 7.zip:Figure 7/Figure 7A.xlsx"
+          ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 7.zip:Figure 7/Figure 7B.xlsx"
+          ]
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 7.zip:Figure 7/Figure 7C.xlsx"
+          ]
         },
         {
           "panel_label": "D",
@@ -319,7 +449,9 @@
         {
           "panel_label": "E",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 7.zip:Figure 7/Figure 7E.xlsx"
+          ]
         },
         {
           "panel_label": "F",
@@ -329,24 +461,33 @@
         {
           "panel_label": "G",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 7.zip:Figure 7/Figure 7G.xlsx"
+          ]
         },
         {
           "panel_label": "H",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 7.zip:Figure 7/Figure 7H.xlsx"
+          ]
         },
         {
           "panel_label": "I",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 7.zip:Figure 7/Figure 7I.jpg"
+          ]
         }
       ]
     },
     {
       "figure_label": "Figure 8",
       "img_files": [],
-      "sd_files": [],
+      "sd_files": [
+        "suppl_data/Figure 8.zip"
+      ],
+      "unassigned_sd_files": [],
       "figure_caption": "<p><strong>Figure 8. InlA and InlB promote tumor metastasis in vivo. (A,\nB)</strong> Whole-body bioluminescence of mice was imaged using the IVIS\nsystem, and luciferase flux was quantified. Ctrl: PBS. <strong>(C,\nD)</strong> Bioluminescence in the lungs of each group was measured by\nIVIS, and total luciferase flux was quantified. Ctrl: PBS. <strong>(E,\nF)</strong> Lungs were collected, and average lung weight per group was\nmeasured and quantified. Ctrl: PBS. <strong>(G)</strong> Hematoxylin and\neosin (H&amp;E) staining showing lung tumor nodules. Ctrl: PBS.\n<strong>(H)</strong> Quantification of tumor nodule number per lung\nsection across groups. Ctrl: PBS. <strong>(I)</strong> Tumor nodule area\nrelative to total lung area was measured using ImageJ. Ctrl: PBS. This\nexperiment was repeated independently three times and representative\nresults from one experiment are shown.</p>",
       "caption_title": "<strong>Figure 8. InlA and InlB promote tumor metastasis in vivo. (A,\nB)</strong>",
       "panels": [
@@ -358,7 +499,9 @@
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 8.zip:Figure 8/Figure 8B.xlsx"
+          ]
         },
         {
           "panel_label": "C",
@@ -368,7 +511,9 @@
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 8.zip:Figure 8/Figure 8D.xlsx"
+          ]
         },
         {
           "panel_label": "E",
@@ -378,7 +523,9 @@
         {
           "panel_label": "F",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 8.zip:Figure 8/Figure 8F.xlsx"
+          ]
         },
         {
           "panel_label": "G",
@@ -388,12 +535,16 @@
         {
           "panel_label": "H",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 8.zip:Figure 8/Figure 8H.xlsx"
+          ]
         },
         {
           "panel_label": "I",
           "panel_caption": "",
-          "sd_files": []
+          "sd_files": [
+            "suppl_data/Figure 8.zip:Figure 8/Figure 8I.xlsx"
+          ]
         }
       ]
     }

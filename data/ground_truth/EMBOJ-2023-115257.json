@@ -4,12 +4,7 @@
   "docx": "Doc/EMBOJ2023115257R1Manuscript_TextIG.docx",
   "pdf": "pdf/EMBOJ-2023-115257.pdf",
   "appendix": ["suppl_data/Appendix.pdf"],
-  "sd_files": [
-    "suppl_data/EMBOJ2023115257RFigure_3sd.zip",
-    "suppl_data/EMBOJ2023115257RFigure_4sd.zip",
-    "suppl_data/EMBOJ2023115257RFigure_5sd.zip",
-    "suppl_data/EMBOJ2023115257RFigure_6sd.zip"
-  ],
+  "sd_files": [],
   "figures": [
     {
       "figure_label": "Figure 1",
@@ -132,7 +127,7 @@
             "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/3E README.docx",
             "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 32.jpg",
             "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 3,5.jpg",
-            "uppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 3,5.jpg",
+            "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 3,5.jpg",
             "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 32.jpg",
             "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/RFP 350.jpg",
             "suppl_data/EMBOJ2023115257RFigure_3sd.zip:Figure 3/3E/L1 10,6.jpg"
@@ -298,7 +293,12 @@
     {
       "figure_label": "Figure 6",
       "img_files": ["graphic/FIGURE 6.tif"],
-      "sd_files": ["suppl_data/EMBOJ2023115257RFigure_6sd.zip"],
+      "sd_files": [
+        "suppl_data/EMBOJ2023115257RFigure_6sd.zip",
+        "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/RFP.JPG",
+        "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/L1.JPG",
+        "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/NT.JPG"
+      ],
       "figure_caption": "\n\n<p><strong>A)</strong> Upper panel: schematic representation of the\npathway inhibited by Lamivudine 3TC and G140. Lower panel: Alizarin Red\nstaining of differentiating osteoblasts transfected with L1 RNA and\ntreated with Lamivudine 3TC and G140. <strong>B)</strong> IF on RFP and\nL1 transfected osteoblasts, 6h post-transfection, shows the\ncolocalization between cy5 signal (L1 RNA, red) and 488-Anti-dsRNA\nsignal (dsRNA, green). Nuclei are stained with Hoechst (blue).</p>\n<p><strong>C)</strong>Western blot analysis showing the ratio between\ntotal eIF2α and phosphorylated eIF2α (P- eIF2α). H3: endogenous standard\nHistone 3. <strong>D)</strong> Volcano plot (left) showing the number of\nsignificantly upregulated and downregulated protein 24h post-L1 RNA\ntransfection. Right: tree plots showing gene ontology (GO) enrichment\nanalysis of biological processes (upper panel) and cellular components\n(lower panel) downregulated by L1 RNA delivery (MS data).\n<strong>E)</strong> qPCR analysis of “inflammatory response”\n(GO:0006954) and “immune response” (GO:0006955) genes 24h post L1 RNA\ntransfection with and without PKR inhibitor C16. <strong>F)</strong>\nAlizarin Red staining of differentiating osteoblasts transfected with L1\nRNA with and without PKR inhibitor C16. <strong>G)</strong> Tree plots\nshowing gene ontology (GO) enrichment analysis of biological processes\nupregulated by L1 RNA 24h after transfection (MS data).</p>\n\n",
       "caption_title": "L1-RNA-induced changes in osteoblast secretome ",
       "panels": [
@@ -306,38 +306,23 @@
           "panel_label": "A",
           "panel_caption": "",
           "sd_files": [
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/6A image.jpg",
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/RFP.JPG",
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/L1.JPG",
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/NT.JPG"
+            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/6A image.jpg"
           ]
         },
         {
           "panel_label": "B",
           "panel_caption": "",
-          "sd_files": [
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/RFP.JPG",
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/L1.JPG",
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/NT.JPG"
-          ]
+          "sd_files": []
         },
         {
           "panel_label": "C",
           "panel_caption": "",
-          "sd_files": [
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/RFP.JPG",
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/L1.JPG",
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/NT.JPG"
-          ]
+          "sd_files": []
         },
         {
           "panel_label": "D",
           "panel_caption": "",
-          "sd_files": [
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/RFP.JPG",
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/L1.JPG",
-            "suppl_data/EMBOJ2023115257RFigure_6sd.zip:Figure 6/NT.JPG"
-          ]
+          "sd_files": []
         }
       ]
     }

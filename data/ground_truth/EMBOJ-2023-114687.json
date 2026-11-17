@@ -9,21 +9,7 @@
     "suppl_data/Extended View and Appendix Source Data.zip",
     "suppl_data/EMBOJ2023114687R2Peer Review File_figs in.pdf"
   ],
-  "sd_files": [
-    "suppl_data/EMBOJ2023114687_SourceDataForFigure1.zip",
-    "suppl_data/EMBOJ2023114687_SourceDataForFigure2.zip",
-    "suppl_data/EMBOJ2023114687_SourceDataForFig3.zip",
-    "suppl_data/EMBOJ2023114687_SourceDataForFigure4.zip",
-    "suppl_data/EMBOJ2023114687_SourceDataForFigure5.zip",
-    "suppl_data/EMBOJ2023114687_SourceDataForFigure6.zip",
-    "suppl_data/EMBOJ2023114687R2_SourceDataForFig7.zip",
-    "suppl_data/EMBOJ2023114687_SourceDataForFigure8.zip",
-    "suppl_data/EMBOJ2023114687R2_SourceDataForFig9.zip",
-    "suppl_data/EMBOJ2023114687_SourceDataForFigure10.zip",
-    "suppl_data/EMBOJ2023114687_SourceDataForFigure11.zip",
-    "suppl_data/EMBOJ2023114687_SourceDataForFigure12.zip",
-    "suppl_data/Extended View and Appendix Source Data.zip"
-  ],
+  "sd_files": [],
   "figures": [
     {
       "figure_label": "Figure 1",
@@ -120,16 +106,17 @@
     {
       "figure_label": "Figure 3",
       "img_files": ["graphic/Fig3.eps"],
-      "sd_files": ["suppl_data/EMBOJ2023114687_SourceDataForFig3.zip"],
+      "sd_files": [
+        "suppl_data/EMBOJ2023114687_SourceDataForFig3.zip",
+        "suppl_data/EMBOJ2023114687_SourceDataForFig3.zip:EMBOJ-2023-114687_SourceDataForFig3/Fig. 3/Movie EV1.avi"
+      ],
       "figure_caption": "DsRed-CLC were co-expressed with Nedd4L-GFP in wild-type HeLa cells. Images were acquired at 1 s intervals through TIRF microscopy. Upper panel, TIRF images of HeLa cells. Insets represent enlarged images of the dashed boxes. Bottom panel, selected snapshots (every 10 sec) from a time series were obtained from a single CCP indicated by the arrowhead. The time point at which Nedd4L started to accumulate was set 0. Scale bar, 2 μm. ",
       "caption_title": "Recruitment of Nedd4L to CCPs.",
       "panels": [
         {
           "panel_label": "A",
           "panel_caption": "",
-          "sd_files": [
-            "suppl_data/EMBOJ2023114687_SourceDataForFig3.zip:EMBOJ-2023-114687_SourceDataForFig3/Fig. 3/Movie EV1.avi"
-          ]
+          "sd_files": []
         }
       ]
     },

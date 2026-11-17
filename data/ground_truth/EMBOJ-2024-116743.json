@@ -8,14 +8,7 @@
         "suppl_data/EMBOJ2024116743R1Peer Review File_figs in.pdf",
         "suppl_data/Reagent and tool table_092324.docx"
     ],
-    "sd_files": [
-        "suppl_data/Figure 2.zip",
-        "suppl_data/Figure 3.zip",
-        "suppl_data/Figure 4.zip",
-        "suppl_data/Figure 5.zip",
-        "suppl_data/Figure 6.zip",
-        "suppl_data/Figure 7.zip"
-    ],
+    "sd_files": [],
     "figures": [
         {
             "figure_caption": "\n\n<p>A) GS mice showed a similar physical appearance as WT mice at 8M of\nage.</p>\n<p>B) Kaplan–Meier survival curves of WT and GS mice from a total of 76\n8M old WT mice and 73 8M old GS mice.</p>\n<p>C) Average (±SEM) body mass of 8M old WT (n=20) and GS (n=15) mice.\nSignificance was calculated using student’s t-test. The exact\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>D) Average (±SEM) whole blood iCa<sup>2+</sup> level of 8M old WT\n(n=10) and GS (n=11) mice. Significance was calculated using student’s\nt-test. The exact <em>p</em>-value is labeled in the figure when\n<em>p</em>&lt;0.05.</p>\n<p>E) Average (±SEM) serum CK level in 8M old WT (n=5) and GS (n=6)\nmice. Significance was calculated using Mann Whitney test. The exact\n<em>p</em>-value is labeled in the figure when <em>p</em>&lt;0.05.</p>\n<p>F) Representative H&amp;E staining images of EDL muscle cross\nsections showed a similar percentage of central nucleation between 8M WT\nand GS mice. Average (±SEM) percentage of fibers with central nuclei was\nquantified from the position of nuclei in 300 muscle\nfibers/genotype.</p>\n<p>G and H) Average (±SEM) cross-sectional area (CSA) of different\nmuscle fiber types in EDL (G) and SOL (H) muscles of 8M old WT and GS\nmice. For EDL muscle, n =2 and 4 for WT and GS group respectively. For\nSOL muscle, n=5 for both WT and GS group.</p>\n<p>I and J) Average (±SEM) fiber type distribution of EDL (I) and SOL\n(J) muscles of 8M WT and GS mice. For SOL muscle, n =2 and 4 for WT and\nGS group respectively. For EDL muscle, n=5 for both WT and GS group.</p>\n<p>K) Average (±SEM) tail bleeding time in 8M WT (n=8) and GS (n=9)\nmice.</p>\n<p>Source data: available online for Figure 1B-K <strong><br />\n</strong></p>\n\n\n\n",
@@ -384,6 +377,7 @@
             "figure_caption": "\n\nA and B) Pie charts\n(<em>upper</em>) and volcano plots (<em>lower</em>) of normalized\nabundance data depicting the proportion of significantly up\n(<em>red</em>) and down (<em>blue</em>) regulated proteins in\n<em>tibialis anterior</em> muscles of 2WK (A) and 8M (B) old WT and GS\nmice. Data were collected from 2 WT and 4 GS 2WK old mice and 3 WT and 4\nGS 8M old mice.</p>\n<p>C) Venn analysis of proteins that were significantly up-regulated\n(<em>upper panel</em>) and down-regulated (<em>lower panel</em>) in\n<em>tibialis anterior</em> muscles of 2WK and 8M old WT and GS mice.</p>\n<p>D-G) Top 20 altered GO Cellular Component pathways (D and F) and\nassociated network analyses (E and G) from proteomic analyses of\n<em>tibialis anterior</em> muscles from 2WK and 8M old WT and GS mice.\nData were collected from 2 WT and 4 GS 2 WK old mice and 3 WT and 4 GS\n8M old mice.</p>\n\n",
             "figure_label": "Figure 6",
             "caption_title": "Proteome analyses of <em>tibialis anterior</em>\nmuscle from 2WK and 8M old WT and GS mice.",
+            "sd_files": ["suppl_data/Figure 6.zip"],
             "panels": [
               {
                 "panel_caption": "",
